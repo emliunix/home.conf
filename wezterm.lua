@@ -1,6 +1,7 @@
 local wezterm = require "wezterm";
+local custom = require "custom";
 
-return {
+return custom.customize({
     font = wezterm.font_with_fallback({
         {
             family = "Iosevka Term",
@@ -15,5 +16,6 @@ return {
         },
         "Apple Color Emoji",
     }),
-    font_size = 16,
-}
+    font_size = 12,
+    color_scheme = "OneHalfDark",
+})
