@@ -15,3 +15,4 @@ autoload -U select-word-style
 select-word-style bash
 
 [[ -f "$HOME/.zshrc_local" ]] && source "$HOME/.zshrc_local"
+
