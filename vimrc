@@ -5,6 +5,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 Plug 'Shougo/vimshell.vim'
 Plug 'idris-hackers/idris-vim'
+Plug 'github/copilot.vim'
 
 call plug#end()
 
@@ -25,5 +26,6 @@ set expandtab
 set shiftwidth=4
 set tabstop=4
 
+" nice tab visualization
 set listchars=tab:▷▷⋮
 set invlist
