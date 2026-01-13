@@ -153,6 +153,10 @@ When updating projects from optional-dependencies to dependency-groups:
 
 use pytest for testing. place tests under `./tests/`. And never create './tests/__init__.py`
 
+Also follow the no `__init__.py` convention of pytest, that's no `__init__.py` in all subdirectories in `./tests`.
+
+If anything shall be shared, use conftest.py.
+
 options in pyproject.toml:
 
 ```toml
