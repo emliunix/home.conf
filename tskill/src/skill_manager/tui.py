@@ -5,6 +5,7 @@ from typing import Optional
 
 from rich.text import Text
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.widgets import DataTable, Footer, Static
 from textual.widgets._data_table import ColumnKey
