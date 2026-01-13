@@ -1,0 +1,29 @@
+{
+  "python.languageServer": "Pylance",
+  "python.analysis.typeCheckingMode": "standard",
+  "python.analysis.autoImportCompletions": true,
+  "python.linting.enabled": true,
+  "python.linting.ruffEnabled": true,
+  "python.linting.ruffLintArgs": ["--fix"],
+  "[python]": {
+    "editor.defaultFormatter": "charliemarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "editor.rulers": [
+    {
+      "column": 88,
+      "color": "#E5C07B"
+    }
+  ],
+  "files.exclude": {
+    "**/.venv": true,
+    "**/__pycache__": true,
+    "**/*.pyc": true
+    "**/.mypy_cache": true,
+    "**/.pytest_cache": true,
+    "**/.ruff_cache": true
+  }
+}

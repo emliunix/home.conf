@@ -1,0 +1,43 @@
+name: Type Check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  type-check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        checker: [mypy, pyright]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install UV
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Install dependencies
+        run: |
+          uv sync
+
+      - name: Run ${{ matrix.checker }}
+        run: |
+          if [ "$MATRIX_CHECKER" == "mypy" ]; then
+            uv run mypy src/ --strict
+          elif [ "$MATRIX_CHECKER" == "pyright" ]; then
+            uv run pyright src/
+          fi
+        env:
+          MATRIX_CHECKER: ${{ matrix.checker }}
+
+      - name: Run Ruff
+        run: |
+          uv run ruff check src/

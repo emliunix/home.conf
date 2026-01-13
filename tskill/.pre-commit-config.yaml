@@ -1,0 +1,99 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+default_stages: [commit]
+default_language: system
+fail_fast: false
+
+# CI: Auto-update pre-commit hooks
+# Run in CI: https://github.com/pre-commit-ci/pre-commit
+ci:
+  autoupdate_schedule: weekly
+  autofix_prs: true
+  autoupdate_commit_msg: "chore(deps): update pre-commit hooks"
+  skip: [mypy]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim Trailing Whitespace
+        types: [python, yaml, markdown]
+
+      - id: end-of-file-fixer
+        name: Fix End of Files
+        types: [python, yaml, markdown]
+
+      - id: check-added-large-files
+        name: Check for added large files
+        types: [python, yaml, markdown]
+        args: ['--maxkb=1000', '--enforce-all']
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        name: mypy (strict mode)
+        entry: mypy
+        language: system
+        types: [python]
+        require_serial: true
+        args: [--strict, --show-error-codes]
+        pass_filenames: true
+        additional_dependencies: []
+        exclude: |
+          (?x)^.eggs/
+          (?x)^src/skill_manager/tui.py
+          (?x)^.venv/
+          (?x)^(.eggs|.git)/
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.3
+    hooks:
+      - id: ruff
+        name: ruff (linting)
+        entry: ruff
+        language: system
+        types: [python]
+        args: [check, --fix]
+        pass_filenames: true
+        require_serial: true
+
+      - id: ruff-format
+        name: ruff (formatting)
+        entry: ruff
+        language: system
+        types: [python]
+        args: [format, --check]
+        pass_filenames: true
+        require_serial: true
+
+  - repo: local
+    hooks:
+      - id: check-imports
+        name: Check imports are sorted
+        entry: ruff
+        language: system
+        args: [check, --select, I, --output-format, grouped, --fix]
+        types: [python]
+        pass_filenames: true
+        require_serial: true
+
+      - id: check-docstrings
+        name: Check docstrings exist
+        entry: ruff
+        language: system
+        args: [check, --select, D, --output-format, grouped]
+        types: [python]
+        pass_filenames: true
+        require_serial: true
+
+      - id: check-line-length
+        name: Check line length (88 chars)
+        entry: ruff
+        language: system
+        args: [check, --select, E501, --output-format, grouped]
+        types: [python]
+        pass_filenames: true
+        require_serial: true
