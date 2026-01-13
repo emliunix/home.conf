@@ -47,7 +47,7 @@ class SkillsManagerApp(App[None]):
 
     BINDINGS = [
         ("space", "toggle_status", "Toggle"),
-        ("enter", "manage_skill", "Manage"),
+        ("m", "manage_skill", "Manage"),
         ("r", "refresh", "Refresh"),
         ("q", "quit", "Quit"),
     ]
@@ -117,16 +117,22 @@ class SkillsManagerApp(App[None]):
         symbol = status_symbols[status]
         return Text(f"{symbol} {status.upper()}", style=f"bold {color}")
 
+    def _get_action_hint(self, status: SkillStatus) -> str:
+        if status == SkillStatus.UNMANAGED:
+            return "Press m to manage"
+        return "Press space to toggle"
+
     def on_data_table_row_highlighted(self) -> None:
         table = self.query_one("#skills-table", DataTable)
         row_index = table.cursor_row
 
         if row_index is not None and 0 <= row_index < len(self.skills):
             skill = self.skills[row_index]
+            action_hint = self._get_action_hint(skill.status)
             desc = skill.description
             if len(desc) > 100:
                 desc = desc[:97] + "..."
-            self.query_one("#description", Static).update(desc)
+            self.query_one("#description", Static).update(f"{desc} | {action_hint}")
 
     def action_toggle_status(self) -> None:
         table = self.query_one("#skills-table", DataTable)
@@ -139,7 +145,7 @@ class SkillsManagerApp(App[None]):
 
         if skill.status == SkillStatus.UNMANAGED:
             self.notify(
-                f"'{skill.name}' is unmanaged. Press Enter to manage it.",
+                f"'{skill.name}' is unmanaged. Press m to manage it.",
                 title="Cannot Toggle",
                 severity="warning",
             )
