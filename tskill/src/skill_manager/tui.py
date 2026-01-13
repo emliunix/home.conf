@@ -36,7 +36,7 @@ class SkillsManagerApp(App[None]):
         height: 1fr;
     }
     Static#description {
-        height: 3;
+        height: 12;
         width: 1fr;
         padding: 0 1;
         overflow: auto;
