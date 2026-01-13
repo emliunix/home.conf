@@ -9,6 +9,13 @@ Guide for managing Python projects using the uv package manager with proper unde
 
 ## Key Concepts
 
+
+### Fetch Versions of a package
+
+For newly added dependency or when need to upgrade the version of a dependency, use pip to fetch versions.
+
+**Use `uv pip index versions <package>` to fetch versions**
+
 ### Dependency Groups vs Optional Dependencies
 
 Modern Python projects using uv should use `dependency-groups` instead of `[project.optional-dependencies]`:
