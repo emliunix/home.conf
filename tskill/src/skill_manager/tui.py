@@ -125,6 +125,7 @@ class SkillsManagerApp(App[None]):
         if row_index is not None and 0 <= row_index < len(self.skills):
             skill = self.skills[row_index]
             self.query_one("#description", Static).update(skill.description)
+            self.refresh_bindings()
 
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
         if action == "manage_skill":
