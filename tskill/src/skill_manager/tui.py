@@ -118,20 +118,23 @@ class SkillsManagerApp(App[None]):
         symbol = status_symbols[status]
         return Text(f"{symbol} {status.upper()}", style=f"bold {color}")
 
-    def _get_action_hint(self, status: SkillStatus) -> str:
-        if status == SkillStatus.UNMANAGED:
-            return "Press m to manage"
-        return "Press space to toggle"
-
     def on_data_table_row_highlighted(self) -> None:
         table = self.query_one("#skills-table", DataTable)
         row_index = table.cursor_row
 
         if row_index is not None and 0 <= row_index < len(self.skills):
             skill = self.skills[row_index]
-            action_hint = self._get_action_hint(skill.status)
-            desc = skill.description
-            self.query_one("#description", Static).update(f"{desc} | {action_hint}")
+            self.query_one("#description", Static).update(skill.description)
+
+    def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
+        if action == "manage_skill":
+            table = self.query_one("#skills-table", DataTable)
+            row_index = table.cursor_row
+            if row_index is not None and 0 <= row_index < len(self.skills):
+                skill = self.skills[row_index]
+                if skill.status != SkillStatus.UNMANAGED:
+                    return None
+        return True
 
     def action_toggle_status(self) -> None:
         table = self.query_one("#skills-table", DataTable)
@@ -144,7 +147,7 @@ class SkillsManagerApp(App[None]):
 
         if skill.status == SkillStatus.UNMANAGED:
             self.notify(
-                f"'{skill.name}' is unmanaged. Press m to manage it.",
+                f"'{skill.name}' is unmanaged",
                 title="Cannot Toggle",
                 severity="warning",
             )
@@ -186,7 +189,7 @@ class SkillsManagerApp(App[None]):
 
         if skill.status != SkillStatus.UNMANAGED:
             self.notify(
-                f"'{skill.name}' is already managed. Use Space to toggle.",
+                f"'{skill.name}' is already managed",
                 title="Already Managed",
                 severity="information",
             )
