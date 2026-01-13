@@ -36,14 +36,13 @@ class SkillsManagerApp(App[None]):
         height: 1fr;
     }
     Static#description {
-        height: 3;
+        height: 5;
         width: 1fr;
         padding: 0 1;
         overflow: auto;
         margin: 1;
         background: $panel;
         border: round $primary;
-        box-sizing: content-box;
     }
     """
 
