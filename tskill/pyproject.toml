@@ -13,7 +13,6 @@ dev = [
     "ruff>=0.14.11,<1.0.0",
     "pyright>=1.1.0,<2.0.0",
     "mypy>=1.19.1,<2.0.0",
-    "prek>=0.13.0,<1.0.0",
 ]
 
 [project.scripts]
@@ -37,6 +36,19 @@ python_version = "3.11"
 strict = true
 warn_return_any = true
 warn_unused_configs = true
+exclude = [
+    "tests",
+]
 
-[tool.pytest.ini_options]
-addopts = []
+[[tool.mypy.overrides]]
+module = "rich.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "textual.*"
+ignore_missing_imports = true
+
+[tool.pytest]
+addopts = ["--import-mode=importlib"]
+pythonpath = [".", "src"]
+testpaths = ["tests"]

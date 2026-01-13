@@ -1,6 +1,6 @@
 ---
-name: uv-project-management
-description: Manage Python projects using uv package manager with proper support for pyproject.toml, dependency-groups, and modern Python project structure. Use when working with uv-based Python projects, managing dependencies with dependency-groups instead of optional-dependencies, or setting up Python project configurations.
+name: python-project
+description: Use whenever working on a python project. Manage Python projects using uv package manager with modern Python project structure.
 ---
 
 # UV Project Management
@@ -8,7 +8,6 @@ description: Manage Python projects using uv package manager with proper support
 Guide for managing Python projects using the uv package manager with proper understanding of modern Python project structures.
 
 ## Key Concepts
-
 
 ### Fetch Versions of a package
 
@@ -149,6 +148,74 @@ When updating projects from optional-dependencies to dependency-groups:
    ```
 
 3. **Update CI/CD scripts** to use `uv sync --all-groups` or specific groups
+
+## Pytest
+
+use pytest for testing. place tests under `./tests/`. And never create './tests/__init__.py`
+
+options in pyproject.toml:
+
+```toml
+[tool.pytest]
+addopts = ["--import-mode=importlib"]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+```
+
+Do **NOTE** that don't create folders in tests that are the same name with your bebing tested package.
+
+So this file structure is **NOT** allowed cause it will shadow your package.
+
+```
+src/app/__init__.py
+src/app/mymodule.py
+tests/app/__init__.py
+tests/app/test_mymodule.py # this will shadow and fail to import app.mymodule
+```
+
+## pytest fixtures
+
+fixtures are shared test objects among all tests. 
+
+use `@pytest.fixture def some_fixture()` to create a fixture.
+
+declare tests with args of the same name to request the fixture. def test
+
+```python
+@pytest.fixture
+def sample_data1():
+    reutrn "a"
+
+@pytest.fixture
+def sample_data(sample_data1):
+    """fixture can also request another fixture"""
+    return f"hello {sample_data1)"
+
+def test_ok(sample_data):
+    assert "hello a" == sample_data
+```
+
+## test asset files with fixture
+
+use `tests/conftest.py` to manage shared fixtures, and also it's a common pattern to provide file paths in conftest.py as fixtures.
+
+The rational is you have stable file path handling if you do all the relative paths in a single conftest.py file.
+
+```python
+import pytest
+from pathlib import Path
+
+@pytest.fixture
+def test_data_dir():
+    """Returns the absolute path to the directory containing test assets."""
+    return Path(__file__).parent / "data"
+
+@pytest.fixture
+def sample_json(test_data_dir):
+    """Provides the path to a specific asset."""
+    return test_data_dir / "sample_input.json"
+```
 
 ## Best Practices
 
