@@ -39,7 +39,7 @@ class SkillsManagerApp(App[None]):
         height: 3;
         width: 1fr;
         padding: 0 1;
-        overflow-x: hidden;
+        overflow: auto;
         margin: 1;
         background: $panel;
         border: round $primary;
@@ -131,8 +131,6 @@ class SkillsManagerApp(App[None]):
             skill = self.skills[row_index]
             action_hint = self._get_action_hint(skill.status)
             desc = skill.description
-            if len(desc) > 100:
-                desc = desc[:97] + "..."
             self.query_one("#description", Static).update(f"{desc} | {action_hint}")
 
     def action_toggle_status(self) -> None:
