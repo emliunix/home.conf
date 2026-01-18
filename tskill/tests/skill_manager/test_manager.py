@@ -1,14 +1,12 @@
-import shutil
 from pathlib import Path
 
 from skill_manager.manager import SkillManager
 from skill_manager.models import SkillStatus
 
 
-def test_scan_skills(tmp_path: Path, skill_repo_template: Path) -> None:
-    source_dir = tmp_path / "source_repo"
-    shutil.copytree(skill_repo_template, source_dir)
-
+def test_scan_skills(tmp_path: Path, test_parent_repo_dir: Path) -> None:
+    """Test scanning skills using the new fixture structure."""
+    source_dir = test_parent_repo_dir.parent / "skills"
     target_dir = tmp_path / "target_repo"
     target_dir.mkdir()
 
@@ -19,4 +17,4 @@ def test_scan_skills(tmp_path: Path, skill_repo_template: Path) -> None:
     skill = skills[0]
     assert skill.name == "test_skill"
     assert skill.status == SkillStatus.INACTIVE
-    assert skill.description == "Skill for testing purposes"
+    assert skill.description == "Skill from parent directory"

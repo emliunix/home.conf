@@ -3,7 +3,6 @@
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 
 class SkillStatus(str, Enum):
@@ -18,4 +17,4 @@ class Skill:
     status: SkillStatus
     description: str
     source_path: Path
-    target_path: Optional[Path] = None
+    target_path: Path | None = None

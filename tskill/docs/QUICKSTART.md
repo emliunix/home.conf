@@ -77,11 +77,27 @@ The application determines status based on your skill setup:
 
 ## Configuration
 
-Edit `src/skill_manager/__main__.py` to change paths:
+Edit `src/skill_manager/cli.py` to change default paths or fallback order:
 
 ```python
-source_dir = Path("~/Documents/home.conf/skills")  # Your skill repository
-target_dir = Path("~/.claude/skills")         # Claude skills directory
+DEFAULT_TARGET = Path("~/.claude/skills")
+FALLBACK_SOURCES = [
+    Path("./skills"),
+    Path("../skills"),
+]
+```
+
+### Command Line Arguments
+
+```bash
+# Use default fallback (./skills → ../skills)
+uv run tskill
+
+# Specify custom source
+uv run tskill --source-dir ~/my-skills
+
+# Specify both source and target
+uv run tskill --source-dir ./skills --target-dir ~/.custom-skills
 ```
 
 ## Development

@@ -87,9 +87,22 @@ uv run tskill
 
 ## Configuration
 
-Default paths (can be modified in `src/skill_manager/__main__.py`):
-- **Source**: `~/Documents/home.conf/skills`
-- **Target**: `~/.claude/skills`
+Default paths (can be overridden with CLI arguments):
+- **Source**: Tries `./skills`, then `../skills`, or specify `--source-dir`
+- **Target**: `~/.claude/skills`, or specify `--target-dir`
+
+### Examples
+
+```bash
+# Use default fallback (./skills → ../skills)
+uv run tskill
+
+# Specify custom source
+uv run tskill --source-dir ~/my-skills
+
+# Specify both source and target
+uv run tskill --source-dir ./skills --target-dir ~/.custom-skills
+```
 
 ## How It Works
 

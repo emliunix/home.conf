@@ -1,17 +1,14 @@
 """Textual TUI application for skill management."""
 
 from pathlib import Path
-from typing import Optional
 
 from rich.text import Text
 from textual.app import App, ComposeResult
-from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.widgets import DataTable, Footer, Static
 from textual.widgets._data_table import ColumnKey
 
 from skill_manager.manager import SkillManager
-
 from skill_manager.models import Skill, SkillStatus
 
 
@@ -57,7 +54,7 @@ class SkillsManagerApp(App[None]):
         super().__init__()
         self.source_dir = str(Path(source_dir).resolve())
         self.target_dir = str(Path(target_dir).resolve())
-        self.manager: Optional[SkillManager] = None
+        self.manager: SkillManager | None = None
         self.skills: list[Skill] = []
 
     def _update_header(self, skill_count: int) -> None:

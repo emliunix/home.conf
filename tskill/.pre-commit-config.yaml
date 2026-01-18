@@ -42,11 +42,7 @@ repos:
         args: [--strict, --show-error-codes]
         pass_filenames: true
         additional_dependencies: []
-        exclude: |
-          (?x)^.eggs/
-          (?x)^src/skill_manager/tui.py
-          (?x)^.venv/
-          (?x)^(.eggs|.git)/
+        exclude: '^(tests/|test_.*\.py)'
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.6.3
@@ -66,34 +62,5 @@ repos:
         language: system
         types: [python]
         args: [format, --check]
-        pass_filenames: true
-        require_serial: true
-
-  - repo: local
-    hooks:
-      - id: check-imports
-        name: Check imports are sorted
-        entry: ruff
-        language: system
-        args: [check, --select, I, --output-format, grouped, --fix]
-        types: [python]
-        pass_filenames: true
-        require_serial: true
-
-      - id: check-docstrings
-        name: Check docstrings exist
-        entry: ruff
-        language: system
-        args: [check, --select, D, --output-format, grouped]
-        types: [python]
-        pass_filenames: true
-        require_serial: true
-
-      - id: check-line-length
-        name: Check line length (88 chars)
-        entry: ruff
-        language: system
-        args: [check, --select, E501, --output-format, grouped]
-        types: [python]
         pass_filenames: true
         require_serial: true

@@ -4,7 +4,6 @@ import os
 import re
 import shutil
 from pathlib import Path
-from typing import Optional
 
 from skill_manager.models import Skill, SkillStatus
 
