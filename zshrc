@@ -17,3 +17,6 @@ select-word-style bash
 [[ -f "$HOME/.zshrc_local" ]] && source "$HOME/.zshrc_local"
 
 . "$HOME/.local/bin/env"
+
+# opencode
+export PATH=/home/liu/.opencode/bin:$PATH
