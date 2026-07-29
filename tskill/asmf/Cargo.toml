@@ -1,0 +1,9 @@
+[package]
+name = "asmf"
+version = "0.1.0"
+edition = "2024"
+
+[license]
+text = "CC0-1-0"
+
+[dependencies]
