@@ -1,5 +1,5 @@
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="fino"
+ZSH_THEME="fino" # set by `omz`
 
 plugins=(git dotenv)
 
@@ -18,3 +18,8 @@ select-word-style bash
 
 [[ -f "$HOME/.local/bin/env" ]] && source "$HOME/.local/bin/env"
 
+# >>> grok installer >>>
+export PATH="$HOME/.grok/bin:$PATH"
+fpath=(~/.grok/completions/zsh $fpath)
+autoload -Uz compinit && compinit -C
+# <<< grok installer <<<
