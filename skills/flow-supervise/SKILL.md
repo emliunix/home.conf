@@ -128,6 +128,10 @@ Evaluation bar depends on the product's nature — for a user-facing product, sc
   single-segment-max-overlap vs union coverage — the same flaw class reappears.
   When a headline metric is "100%" or "clean", recompute it independently with a
   union-of-spans formulation before accepting.
+- **Default-consistency check.** When a parameter default changes, verify it landed
+  on ALL creation surfaces — UI spec, backend `Params`, CLI default, tests. A
+  UI-only flip silently diverges for API/CLI jobs (hit twice: `stitch_sim`,
+  `match_threshold`). This is part of blast-radius review, not a footnote.
 
 ## Anti-patterns (observed, don't repeat)
 
