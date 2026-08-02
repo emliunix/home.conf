@@ -55,6 +55,12 @@ Write a **small set of high-value angles** into the Review log. Start from the s
 
 Angles must be concrete, evidence-seeking, and tied to the project/user outcome. Prioritize correctness boundaries, observed source behavior, minimum end-to-end path, scope, and verification. Add compatibility, migration, scale, or performance angles only when current evidence requires them—never for hypothetical future formats.
 
+**Practice lessons (kept from earlier refinement — apply, don't re-learn):**
+
+- **Metric correctness:** recompute any headline coverage/percentage with a union-of-spans / de-duplicated formulation before trusting it — sum-of-durations and single-segment-max-overlap both over/under-count (seen twice). "100%"/"clean" headlines get recomputed, not quoted.
+- **Premise verification:** when the draft asserts a pipeline/stage behavior ("stage X reads Y"), verify against the code before accepting the premise — the framing may inherit an earlier wrong claim, and correcting it can reframe the whole scope. A premise correction is a design edit with a Revision-history entry, not an embarrassment.
+- **Experiment specs:** any experiment in the design is specified as **INPUT → SUBJECT → OUTPUT** — INPUT: exact snippet(s) + params, pinned, small cuts (never full recordings); SUBJECT: the isolated lever/stage under test and the question it answers; OUTPUT: measured metrics + the pre-stated decision (ship / falsified / next lever). One question per experiment, paired baselines, a production-config witness, and diagnostics proving the lever actually engaged.
+
 **The three heads are always reviewable claims**, not orientation-only decoration. Every grill checks them alongside the body:
 
 - **Problem statement** — is this the RIGHT problem: one major thing, real (evidenced pain), not a feature wishlist wearing a problem costume?
