@@ -1,56 +1,64 @@
 ---
 name: flow-impl
 description: >-
-  Implementation cycle for one design number: land design and commit, execute and
-  commit, retro and commit, then first-principles refined re-execution and commit.
-  Composes flow-grill-review and flow-retro. Use when the user says flow:impl or
-  asks to run the design→execute→retro→refine loop for a design NN.
+  Use when the user says flow:impl or asks to execute a design through
+  implementation and verification for a design number.
 ---
 
 # Flow: Impl
 
-**One job:** Orchestrate the **design → execute → retro → refine** commit cycle for one design number `NN`.
+**One job:** Orchestrate **landed design → implementation → outcome verification** for one design number `NN`, one gate at a time.
 
 **Landed** means the design passed `flow-grill-review` and shows `Status: landed`.
 
 This skill **composes** other skills — read and follow them; do not restate their internals:
 
-- `flow-grill-review` — land a draft (plan attack angles → multi-angle review → defend)
-- `flow-retro` — run a retrospective and refine the design after execution
+- `flow-grill-review` — land a draft through focused independent review and active defense
+- `flow-retro` — use only when execution evidence reveals design mismatch, meaningful rework, or a requested retrospective
 
 ## Preconditions
 
-- Design draft path (default convention `design/NN-<topic>.md`). **If no draft exists, stop and ask the caller** who should write it — do not invent a draft inside this flow, and do not call `flow-grill-review` on a missing file.
+- Design draft path (convention `design/NN-<topic>.md`, lowest unused `NN`; see `design/00-design-file-guide.md`). **If no draft exists, stop and ask the caller** who should write it — do not invent a draft inside this flow, and do not call `flow-grill-review` on a missing file.
 - Design number `NN` (from filename or caller)
-- Whether commits are **pre-authorized** (project `AGENTS.md` / user rules). If not pre-authorized, **pause and ask** before each commit.
+- User/project authorization for commits. Never infer authorization from this flow.
 
-## Workflow (four commits)
+## Workflow
 
-| Step | Action | Commit message |
-| --- | --- | --- |
-| 1 | Confirm draft exists → invoke **`flow-grill-review`** until `Status: landed` → commit | `design(NN): initial` |
-| 2 | Implement according to the landed design (code, UI, artifacts) → commit | `impl(NN): execution` |
-| 3 | Invoke **`flow-retro`** → commit the refined design doc | `retro(NN): refine design` |
-| 4 | First-principles re-implement from the refined design (goal → constraints → minimal correct impl). Reconcile implementation with the refined design; fix remaining design↔code mismatches, or record **Design holds** under the retro’s **Design revisions** (with evidence) if they already match → commit | `impl(NN): refined execution` |
+### 1. Land the design
 
-### Step rules
+Confirm the draft exists, then use `flow-grill-review` until `Status: landed`. The design must state the user goal, explicit non-goals, observed-data boundary, minimum real-data-first vertical slice, operational/failure/atomicity boundary, and outcome-proving verification.
 
-1. **Step 1** — A draft alone is not enough; the design must be **landed** (`Status: landed`) via `flow-grill-review` before `design(NN): initial`.
-2. **Step 2** — Implement only what the landed design requires; do not expand scope mid-flight.
-3. **Step 3** — Always run `flow-retro` after execution; do not skip to step 4. Commit the design doc only (no silent AGENTS/`rules/` edits unless the caller authorized them).
-4. **Step 4 is mandatory** — Re-derive from first principles against the refined design. If implementation already matches, still verify and ensure **Design holds** is recorded under **Design revisions** before committing (the commit may have no code changes, but the step must not be skipped). Prefer a real commit when there are fixes.
+Do not implement before landing. Stop if the draft is missing, required evidence is unavailable, or scope needs user choice.
 
-### Exit / redesign
+### 2. Implement the landed slice
 
-If execution or retro shows the design cannot stand:
+Implement only the smallest end-to-end happy path and accepted current-scope requirements. Reuse existing architecture; add source-specific seams only where the source contract differs. Do not add speculative future compatibility, migration machinery, or scale engineering without evidence.
 
-- Stop the cycle
-- Fix or rewrite the design (often another `flow-grill-review`)
-- Resume from the appropriate step — **do not skip commit points** once work for that step is done
+Keep architect, implementer, and independent reviewer pairwise distinct where those roles are used: architect owns design/defense, implementer owns code and implementation remediation, reviewer stays read-only. Dispatch one stage at a time; roadmap context does not authorize later work.
+
+### Round budget (hard)
+
+A **round** is one implementer dispatch → report → first-party grade cycle on the same landing. Count them aloud in every bounce message ("round N") and record the final count in the design file's Review log.
+
+- **Rounds 1–2:** normal turbulence; remediate.
+- **Rounds 3–4:** audit COMMUNICATION before touching code again — vague brief, non-deterministic fixture, dropped enumeration, mis-specified gate, or wrong acceptance evidence are the prime suspects. Rewrite the brief much more than the code.
+- **Round 5 budget ceiling.** A round >5 is by definition a broken loop — not bad luck: the design is wrong, the brief is wrong, or the role is wrong. HALT, name the structural cause, and return to design review (or the user). Never start round 6 as if it were just another bounce.
+
+### 3. Verify the user outcome
+
+Run verification proportional to risk, starting with the landed criteria and representative real data, then relevant regression coverage. A check counts only if it proves part of the user outcome or a necessary boundary; passing incidental tests is not closure.
+
+- **Pass:** criteria prove the outcome and no blocking mismatch remains → stop.
+- **Implementation defect:** remediate within the landed design, then rerun affected verification.
+- **Design mismatch or meaningful rework:** stop implementation, use `flow-retro`, revise the design, and return to `flow-grill-review` when architecture changed materially. Resume only after the design is landed again.
+
+A concise `Design holds` note is optional evidence, never a required stage or no-op artifact. Refined reimplementation is not automatic.
 
 ### Commits
 
-When commits are pre-authorized (or the user approved), use the exact message templates above (`NN` substituted). Follow the user’s git safety rules (no force push, no config changes, etc.).
+Commits follow explicit user authorization and meaningful artifact boundaries—not a fixed count or message template. A landed design and its implementation may be separate commits when useful; retro changes merit a commit only when they materially change an artifact. Never create no-op commits.
+
+**Stop condition:** end when the landed current-scope outcome is demonstrated by fresh evidence, accepted blockers are resolved, and no authorized work remains. Do not continue into optional hardening, future compatibility, ritual retro, or reimplementation.
 
 ## Out of scope
 
@@ -60,7 +68,10 @@ When commits are pre-authorized (or the user approved), use the exact message te
 
 ## Done checklist
 
-- [ ] `design(NN): initial` after `Status: landed`
-- [ ] `impl(NN): execution` after first build
-- [ ] `retro(NN): refine design` after `flow-retro`
-- [ ] `impl(NN): refined execution` after first-principles pass (or **Design holds**)
+- [ ] **P0 project-contract cleared (always first when the project has legislated one):** nothing the project law bans — template classes for zero-compat postures: second-world assumptions, dual-world support (temporary included), epoch vocabulary, history-predicated shape selection, structurally compat arms reachable only from past-era data; covers code/comments/fixtures/tests/docs
+- [ ] Design landed before implementation
+- [ ] Round budget respected (count stated per bounce; >5 halted as structural, not retried)
+- [ ] Smallest real-data-first vertical slice implemented without scope expansion
+- [ ] Fresh criteria prove the user outcome and required boundaries
+- [ ] Retro/redesign run only if triggered by execution evidence
+- [ ] Commits, if any, were authorized and match meaningful artifacts
