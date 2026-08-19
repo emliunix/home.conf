@@ -1,93 +1,66 @@
 ---
 name: flow-retro
 description: >-
-  Run a retrospective after execution: keep what worked, surface design errors and
-  rework, extract lessons and patterns, then refine the design doc with corrections
-  and supporting facts. Use when the user says flow:retro, asks for a design
-  retrospective, or after an impl execution pass before refined re-execution.
+  Use when the user says flow:retro, requests a design retrospective, or execution
+  reveals design mismatch, meaningful rework, or avoidable complexity.
 ---
 
 # Flow: Retro
 
-**One job:** After execution against a design, run a retrospective and **refine the design document** with corrections backed by reasoning and facts.
+**One job:** When triggered, run a **full design retrospection**: compare execution evidence with the design, make the smallest evidence-backed corrections, and — as the non-waivable bottom line — pass the **first-principles ↔ problem statement** check proving we didn't pile up accretions to make it work.
 
 Does not run the full impl cycle or grill a brand-new draft (use `flow-grill-review` for that).
 
-## Section map
+## Trigger gate
 
-| Section | Owns |
-| --- | --- |
-| **`## Retrospective`** | Parent for each retro pass (append a dated entry; do not overwrite prior passes) |
-| **Keep / Problems / Lessons / Design revisions** | Four required subsections under that entry |
-| **Design revisions** | Concrete design edits **or** the marker **Design holds** (with evidence) |
+Run this flow when requested, or when execution shows at least one of:
 
-`Revision history` / `Review log` belong to `flow-grill-review`, not this skill.
+- A design assumption or boundary was wrong
+- Meaningful rework, hacks, or silent deviation were required
+- Verification did not prove the user outcome
+- Complexity can be removed because the real operational shape is now known
 
-## Preconditions
-
-- A design doc path (typically `design/NN-<topic>.md`)
-- Execution has happened (code, UI, or other artifacts exist to compare against the design)
-- Access to what was built and what failed / was reworked
+Do not require a retro after every execution. If no trigger exists, a concise `Design holds` note with fresh evidence is sufficient—or no retro artifact at all. Process cost must stay below task complexity.
 
 ## Workflow
 
-### 1. Gather evidence
+### 1. Gather concrete evidence
 
-Compare design claims to what execution actually produced:
+Compare the design with built artifacts, representative source data, diffs, and test results. Identify the exact mismatch and distinguish design error from implementation defect. Check the true operational and failure/atomicity boundary, minimum end-to-end path, existing architecture reuse, and whether compatibility/scale assumptions were evidenced or speculative.
 
-- What matched the design
-- What required rework, hacks, or silent deviation
-- Where the **design itself was wrong** (wrong assumption, missing constraint, unmeasurable verification criteria, bad API shape, etc.)
-- Patterns that emerged in the implementation (reusable structure, naming, pipeline)
+### 2. First-principles bottom line (mandatory, non-waivable)
 
-Prefer file paths, test results, and concrete diffs over memory.
+Every retro — even a small one — answers this pass; a retro without it does not count:
 
-### 2. Write the retrospective into the design doc
+1. **Re-derive from the Problem statement alone** (the design's head, re-read fresh, not from memory of what got built) the minimal architecture that solves it given TODAY's observed reality.
+2. **Diff that derivation against the as-built system.** Classify every divergence:
+   - **(a) constraint-justified** — a spec/runtime constraint still in force demands it; name the constraint.
+   - **(b) known debt** — a pragmatic shortcut taken knowingly; name the removal path and condition.
+   - **(P0) project-law violation (always classified first):** anything the project's declared P0 contract bans — zero-compat template: dual-world support (temporary included), epoch vocabulary, history-gated shape selection, era-reachable compat arms — removal is unconditional and rides this retro, ahead of (a)–(c).
+   - **(c) accretion** — code, flags, compat shims, abstractions, or indirection that exist only because of HOW the work unfolded (history), not because the problem demands them. Category (c) is the pile-up: schedule each item for removal **in this retro record** (removal is the default; keeping one requires explicit evidence it is load-bearing).
+3. **Re-validate the heads against reality:** is the Problem statement still THE problem (or did execution reveal it was mis-stated)? Did Scope hold (no creep during implementation)? Does the Rationale survive contact with the as-built (rejected alternatives still rejected for the stated reasons)?
+4. **Write the bottom line explicitly** in the retro record: either "matches the first-principles minimal architecture — no pile-up" with the derivation shown, or the (b)/(c) list with removal actions. "It works" is not a bottom line.
 
-Append a dated entry under **`## Retrospective`** with **exactly these four subsections**:
+### 3. Record proportionally
 
-#### Keep
+Append a dated `## Retrospective` entry without overwriting prior passes. The **First-principles bottom line** heading is mandatory; the others only as needed for clarity:
 
-Practices and design choices validated by execution — keep them.
+- **First-principles bottom line:** the derivation, the divergence classification, removal actions, head re-validation verdicts (mandatory even when everything passed — prove the match, don't assert it)
+- **Evidence:** what happened and where
+- **Design mismatch / rework:** root cause and user impact
+- **Complexity removed:** what can be deleted, narrowed, or reused
+- **Design revisions:** smallest edits, with supporting facts
+- **Design holds:** only for relevant decisions execution actually validated
 
-#### Problems
+Apply accepted revisions to the design body. Preserve explicit scope/non-goals and classify observed facts versus inference/TBD. Do not invent future compatibility, generalized abstractions, or promotion rules from one case.
 
-What went wrong and where rework happened. Call out explicitly when the root cause was a **design error** (not just a coding bug).
+### 4. Route by severity
 
-#### Lessons
+- **No architecture failure:** make bounded corrections and return to implementation/verification.
+- **Genuine architecture failure:** stop; set the design back to draft (or equivalent), state the invalid assumptions, and send it through `flow-grill-review` before more implementation.
+- **Implementation-only defect:** do not rewrite the design to describe a bug; return it to implementation remediation.
 
-- **In-execution:** reusable takeaways and patterns from this build
-- **Promotion candidates:** rules worth promoting to `AGENTS.md` (or similar) and/or archiving in `rules/` when fully settled
-
-List promotion candidates clearly. Do not edit those files unless the caller asks.
-
-#### Design revisions
-
-Concrete list of edits to make to the design body, each with **supporting reasoning / facts** (paths, measurements, failed attempts).
-
-Then **apply** those edits to the design (goals, scope, verification criteria, decisions, etc.). This is first-principles correction of the design, not cosmetic rewording.
-
-### 3. No-diff case
-
-If execution confirmed the design and no design edits are needed:
-
-- Still write the four subsections
-- In **Design revisions**, record **Design holds** and why (evidence)
-
-Skipping the retro is not allowed.
-
-### 4. Exit when design is invalid
-
-If the design is fundamentally broken and cannot be patched in place:
-
-```
-Exit reason: cannot complete directly
-Completed: … (evidence gathered)
-Missing / blocked: design needs a rewrite / another flow-grill-review
-Suggested fix: main session revises or rewrites the draft, then re-dispatch
-```
-
-Do not fake a refined design.
+**Stop condition:** stop when the concrete mismatch is explained, necessary design edits and complexity removals are applied, and the next gate is explicit. Do not add ritual sections, lessons, or redesign unsupported by execution evidence.
 
 ## Out of scope
 
@@ -97,7 +70,9 @@ Do not fake a refined design.
 
 ## Done checklist
 
-- [ ] Evidence gathered against the design
-- [ ] Dated `## Retrospective` entry with Keep / Problems / Lessons / Design revisions
-- [ ] Design body updated (or **Design holds** recorded under Design revisions)
-- [ ] Ready for caller/`flow-impl` commit: `retro(NN): refine design`
+- [ ] Trigger is explicit; evidence distinguishes design from implementation defects
+- [ ] **First-principles bottom line passed and written out: derivation from the Problem statement, divergence classification (a/b/c), accretion removals scheduled, heads re-validated**
+- [ ] Record is proportional and names concrete mismatch/rework
+- [ ] Smallest design correction and complexity removals applied
+- [ ] Architecture failures routed back to `flow-grill-review`
+- [ ] Stop condition and next gate are explicit

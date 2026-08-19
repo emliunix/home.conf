@@ -1,11 +1,9 @@
----
-name: compatibility-design
-description: Guide architecture and design work involving wire formats, compatibility, migrations, schemas, or version handling; use automatically when such compatibility concerns arise.
----
-
 # Compatibility Design
 
-1. reject any compatibility design,
-2. maintain an inventory with index of right choices
-3. the current matching one is: introduce wire format versioning gate (detection, and all following processing take assume guaranteed the version). and fail hard on mismatch.
-4. otherwise, an exit of current flow with a strong request of design with gate + take assumed at higher level earlier stage
+Reject any compatibility/fallback design. Maintain an inventory of right choices; pick the current matching one. Otherwise exit the flow and request a design with gate + assumption taken at a higher, earlier stage.
+
+**P0 project law (first check, always):** where the project has legislated a zero-compat/current-model law, design proposals that breach it are rejected outright — template posture: no dual-world support (temporary included), no migration machinery, no era-named transition artifacts, no history-gated shape selection; positive contract-match-or-refuse only; provenance lives in history/logs, never in code.
+
+## Inventory
+
+- [Gated Design](references/gated-design.md) — gate styles: empty (clarify assumptions, go) or versioned (version/type routes to different impls).
