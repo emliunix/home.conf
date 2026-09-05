@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "role": "Flow lifecycle evaluator",
+  "task": "Call submit_decision with the single Decision the flow skills prescribe for the Tier 2 fixture.",
+  "skillNames": [
+    "flow-common",
+    "flow-grill-review",
+    "flow-retro"
+  ],
+  "skillHashes": [
+    "353f24573f094e19a8b4e4d55e1d7bec4eb7eef19752a48cbac49250161fd72f",
+    "f3d5fac80dc2a33afeb222ead312106b1aaa79f03e39b33af2e7d05e300e1839",
+    "1aa9470f532936f7126cd61a36ce2d35316f9c67deb8b3fcc8396e153d889280"
+  ],
+  "promptHash": "d584bab4aef7cd886c0e9184b3007b2af5230d5ab336ad673d859b4b4f198b44"
+}

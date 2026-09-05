@@ -1,3 +1,11 @@
+---
+name: compatibility-design
+description: >-
+  Use when a design or implementation proposes compatibility, fallback, dual-world,
+  migration, or history-gated shape selection. Reject compat/fallback; pick the
+  current matching inventory choice, or stop and request a gated design.
+---
+
 # Compatibility Design
 
 Reject any compatibility/fallback design. Maintain an inventory of right choices; pick the current matching one. Otherwise exit the flow and request a design with gate + assumption taken at a higher, earlier stage.
