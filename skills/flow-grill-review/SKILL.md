@@ -1,29 +1,42 @@
 ---
 name: flow-grill-review
 description: >-
-  Use when the user says flow:grill-review, asks to grill/review/defend a design,
-  or needs to turn a draft into a finalized design before implementation.
+  Use when the user says flow:grill-review or flow:impl, asks to grill/review/defend
+  a design, or needs to take a draft through review and implement it to pending-retro.
 ---
 
-# Flow: Grill → Review → Defend
+# Flow: Grill Review → Defend → Implement
 
-**One job:** Turn an existing design draft into a **landed** design. Does not write the initial draft, implement, or commit.
+**One job:** Turn an existing design draft into a **reviewed** design, then implement the reviewed design to `pending-retro`. Does not write the initial draft, does not commit, and does not close the loop (`flow-retro` does that).
+
+This skill **composes** other skills — read and follow them; do not restate their internals:
+
+- `flow-common` — the lifecycle vocabulary, role-to-impl mapping, and the implementation gate (round budget, verification, commits, stop condition, dispatch notes)
+- `flow-retro` — closes the loop at `pending-retro` → `landed`
 
 Design path convention: `design/NN-<topic>.md`, where `NN` is the lowest unused zero-padded sequential number (the folder's own `design/00-design-file-guide.md` documents the contract and the `NN`/`goal-`/`ref-` distinction). Do not renumber existing files — numbers are stable handles. If the caller gives a different path, use it, but flag the deviation.
 
+The design's status words (`draft` → `reviewed` → `pending-retro` → `landed`) and the implementation gate live in `flow-common`; this flow sets `reviewed` at the review gate and `pending-retro` at the implementation gate per that skill.
+
 ## Section map
 
-| Section | Owns |
+The design file is **canon**: intact current machine, direct speech. Grill ledgers do **not** live in the design body.
+
+| Place | Owns |
 | --- | --- |
-| **Review log** | Attack angles, findings, rejects, deferred items, exit outcomes |
-| **Revision history** | Accepted design edits and the post-defense Simplicity delta |
-| **Status** | `draft` → `landed` when this flow completes |
+| Design **User inputs** | Optional. Owner asks, verbatim, when present. A goal-file draft may copy these into the frozen root (`goal-file`). After that freeze, the goal file is the root. |
+| Design **Goal** | Path to `goals/*.md` (administrative source). Omit only when no goal file exists. |
+| Design **Review** | One backlink to `worklog/NN-<same-topic>.md` |
+| Design **Status** | `draft` → `reviewed` when the review gate completes; `reviewed` → `pending-retro` when the implementation gate completes |
+| Worklog `worklog/NN-<same-topic>.md` | Attack angles, findings, rejects, deferred items, exit outcomes, defense record, Simplicity delta, rematch, closing retro |
+
+If the worklog file does not exist, create it. Do not paste angles, findings, or defense into the design. Accepted P1s rewrite the design body as current law (no “we rejected X” / historical tradeoff prose in the design).
 
 ## Preconditions
 
 - Design draft exists on disk **and satisfies the Draft contract below** — a draft missing it is returned to the drafter untouched (cheap gate; prevents review churn).
 - Assumptions are listed: observed facts (with source) vs inferences vs TBD
-- Architect/designer owns the design and defense; reviewer is independent. If an implementer is also assigned, architect, implementer, and reviewer are pairwise distinct.
+- Role occupancy follows `flow-common` Roles (architect/defender vs independent reviewer; implementer only if assigned).
 
 ## Draft contract
 
@@ -33,11 +46,17 @@ Every design file must open with **the three heads**, in order (this skill does 
 | --- | --- | --- |
 | **Problem statement** | The ONE major problem in 2–5 sentences: what hurts, for whom, why now. Not a feature list. | Everyone. Reviewers pick attack angles against it; the defender rejects findings that don't serve it; the implementer checks code against it. This is the anti-bikeshed anchor. |
 | **Scope — what we touch** | Explicit list of the surfaces/components this design may modify, plus non-goals (what we will NOT touch). | Reviewers reject out-of-scope findings cheaply; implementer knows its boundaries; users can verify no silent scope creep. |
-| **Rationale** | Why this approach: key alternatives considered and why they lost, tied to observed facts. | Parties evaluate the reasoning, not just the conclusion; prevents re-litigating settled tradeoffs every round. |
+| **Rationale** | Why this machine is shaped this way, stated positively (observed facts + the mechanism). Alternatives considered and why they lost belong in the worklog. | Parties evaluate the reasoning; the worklog holds the tradeoff transcript so the design stays intact current speech. |
 
-Everything after the three heads is the **detailed design body — free-style organization**: the drafter names and orders those sections (goal, mechanism, key decisions, verification criteria, …) to fit the problem. The only fixed tail is what this skill owns per the Section map: Review log, Revision history, Status (draft → landed).
+**User inputs** (optional, before the three heads when present): owner asks, verbatim. A goal-file draft may vendor these into the frozen root. Absence means a goal-file draft takes the Problem statement as already user-confirmed (`goal-file` freeze table). After freeze, do not treat this section as a second root.
+
+Everything after the three heads is the **intact design body**. Direct speech: types, verbs, tables, wires, verification. No negative comparison to a discarded tree, no “rejected: …”, no epoch vocabulary of a past matcher. The only fixed tail on the design is **Goal** (admin source), **Review** (worklog backlink), and **Status**.
+
+**The design file is the rulings home as current law** (the sentence that is true now). How that sentence was reached — grill, defense, rejected alternatives, RCA narrative — lives in the corresponding worklog. A ruling recorded only in a goal file dies when that goal closes. Goal files reference rulings by path (`design/NN §k`), never restate them.
 
 Sizing: proportional to the problem. The contract is about PRESENCE of the three heads and orientation, not page count or fixed body structure. The heads exist so all parties focus on the major problem — a finding that touches neither Problem statement nor Scope is Reject/Defer by default, not a new work item.
+
+# Review gate (grill → reviewed)
 
 ## Workflow
 
@@ -47,11 +66,11 @@ Before any attack angle runs, test the draft's heads and body against the projec
 
 ### 1. Plan attack angles
 
-Write a **small set of high-value angles** into the Review log. Start from the scenario table that matches the draft (below). Default to 2–4 from that table; use fewer for a narrow design. Batch tightly related checks when one reviewer can evaluate them coherently. Process cost must not exceed task complexity.
+Write a **small set of high-value angles** into the **worklog** (`worklog/NN-<same-topic>.md`). Start from the scenario table that matches the draft (below). Default to 2–4 from that table; use fewer for a narrow design. Batch tightly related checks when one reviewer can evaluate them coherently. Process cost must not exceed task complexity.
 
 **The tables are suggestions, not a closed set.** Add any further angle the draft actually needs (a seam, a reset, a named failure class, a copy law — whatever the problem requires). Do not refuse an appropriate extra angle because the default count is 2–4. Do not run the whole catalog as padding.
 
-**Exceptions are allowed.** Skip a suggested row when it does not apply; record a one-line reason in the Review log (e.g. “observability N/A — no new writer”). Skipping without a reason is not an exception — it is an omitted check.
+**Exceptions are allowed.** Skip a suggested row when it does not apply; record a one-line reason in the worklog (e.g. “observability N/A — no new writer”). Skipping without a reason is not an exception — it is an omitted check.
 
 Angles must be concrete, evidence-seeking, and tied to the project/user outcome. Prioritize correctness boundaries, observed source behavior, minimum end-to-end path, scope, and verification. Add compatibility, migration, scale, or performance angles only when current evidence requires them—never for hypothetical future formats.
 
@@ -66,9 +85,16 @@ Angles must be concrete, evidence-seeking, and tied to the project/user outcome.
 
 - **Problem statement** — is this the RIGHT problem: one major thing, real (evidenced pain), not a feature wishlist wearing a problem costume?
 - **Scope** — is the boundary drawn at the true operational edge: not padded with speculative surfaces, not clipped to avoid the hard part?
-- **Rationale** — do the rejected alternatives match reality (observed facts cited, no strawmen), and does the chosen approach actually follow from them?
+- **Rationale** — is the mechanism stated positively and does it follow from observed facts? Rejected alternatives (in the worklog) must match reality (no strawmen).
 
 A defective head is a blocker: the whole design inherits it.
+
+**P1 angles when a goal file exists** (skip with a one-line reason only when there is no goal file):
+
+- **Design acceptance criteria** — the frozen-root rows this design claims to cover (`goal-file` **Covers**): would a pass deliver those rows? Are they named, falsifiable, and the dual-gate match (design gate vs live evidence)?
+- **Requirements hierarchy** — valid path from those rows to the **frozen** root (live additions only; obsoleted additions do not bind). A design that satisfies a dangling or obsoleted addition and misses the frozen root is a blocker. After freeze, do not re-open the source User inputs / Problem statements as a second root.
+
+These two are gate-blocking when they hit. They are not optional hardening.
 
 #### Suggested angles by scenario
 
@@ -79,7 +105,7 @@ Pick the scenario(s) the draft actually touches. A wave that is both schema and 
 | Angle | Ask |
 |---|---|
 | Observability | Every refusal/floor writes one structured log (or trace/metric) **before** the response, with a reason **class** — not raw upstream payloads. Silent floors fail. |
-| Testability | Clear boundary; relying parties swap behind interfaces. Producer↔consumer claims have **one golden** through the real path, not two mocked literals. |
+| Testability | Clear boundary; relying parties swap behind interfaces. Producer↔consumer claims have **one golden** through the real path, not two mocked literals. A trait/interface makes code testable, but **test mocks must be thin and must never live in production code** — unless genuinely general (`InMemoryXxx`). A double that ships is a second implementation of the verb, reachable from a real entry point (see Seam honesty). A production name beginning `Mock` is either misplaced or misnamed: decide which. |
 | Failure / atomicity | What is in the tx vs outside it; replay/idempotency; typed outcome vs generic 500. |
 | Seam honesty | One writer per field class; no silent second implementation of the same verb. |
 | Minimum e2e | One real-data happy path named; verification proves that path. |
@@ -107,30 +133,47 @@ Pick the scenario(s) the draft actually touches. A wave that is both schema and 
 | Copy + first-time | Verbatim inventory; a first-time user can walk the flow. |
 | Confirm / door | Mutating acts use the designed confirm; navigable doors are marked. |
 
-
 ### 2. Review (parallel where useful)
 
-Use independent reviewers for materially independent angles; do not spawn one agent per trivial check. Reviewers do not share findings, edit the design, adjudicate, or implement.
+Use independent reviewers (`flow-common` Roles) for materially independent angles; do not spawn one agent per trivial check. Reviewers do not share findings, edit the design, adjudicate, or implement.
 
-Give each reviewer the draft path, its angle(s), relevant source paths, **the three heads excerpted into the brief (they review these, not just read them)**, and the user goal. Every finding must state:
+Give each reviewer the draft path, its angle(s), relevant source paths, **the three heads excerpted into the brief (they review these, not just read them)**, the frozen root rows this design **Covers** when a goal file exists, and the user goal. Every reviewed angle must emit one entry with exactly one reviewer verdict from this list:
+
+- **`PASS`** — the supplied artifact and evidence satisfy this angle;
+- **`NEEDS-FIX`** — an evidenced defect, mismatch, or insufficiency exists; or
+- **`NOT-REVIEWABLE`** — the angle cannot be evaluated because named context,
+  artifact material, or reproducible evidence is missing or unusable.
+
+`PASS`, `NEEDS-FIX`, and `NOT-REVIEWABLE` are reviewer verdicts for the supplied
+angle only; none is a lifecycle promotion. `FIX`, `NO-GO`, `ACCEPT`, `REJECT`,
+and `DEFER` are not reviewer verdicts. They belong to supervisor/defender
+adjudication after the review. `NEEDS-FIX` and `NOT-REVIEWABLE` are terminal
+reviewer outputs: the reviewer reports the gap and stops; it does not obtain the
+missing material or repair it.
 
 ```
-Finding: …
+Reviewer verdict: PASS | NEEDS-FIX | NOT-REVIEWABLE
+Angle: the named review angle or acceptance row
 Evidence: (observed source, file path + location, or reproducible fact)
 User impact: why this matters to the stated outcome
-Severity: blocker | optional hardening | question
-Smallest correction: minimum change that resolves the evidenced issue
+Severity: blocker | optional hardening | question (required for NEEDS-FIX;
+  omit for PASS)
+Suggested resolution boundary: optional owner/action category only; do not
+  implement, amend the artifact, author evidence, or make a gate decision
+Missing / blocked: required only for NOT-REVIEWABLE
 ```
 
-A **blocker** means the design cannot safely achieve its stated current outcome. Optional hardening cannot block landing and must not silently enter scope. (Reviewer severity is a hint; the defender re-ranks every finding P1/P2/P3 at adjudication — see §3 — and only P1s block landing.)
+A **blocker** means the design cannot safely achieve its stated current outcome. Optional hardening cannot block landing and must not silently enter scope. (Reviewer severity is a hint; the defender re-ranks every `NEEDS-FIX` P1/P2/P3 at adjudication — see §3 — and only P1s block the review gate.)
 
 If context or evidence is unavailable, exit instead of guessing:
 
 ```
+Reviewer verdict: NOT-REVIEWABLE
 Exit reason: incomplete context | cannot complete directly
 Completed: …
 Missing / blocked: …
-Smallest next step: …
+Suggested resolution boundary: obtain the named input or route the angle to
+  the owning supervisor/fact/evidence lane; do not obtain it here
 ```
 
 ### 3. Defend — reduce complexity and protect scope
@@ -155,52 +198,71 @@ Mandatory defense lens (record concise answers or point to design sections):
 - Removal/simplification opportunities and role separation
 - Whether any accepted finding expands scope; if so, reject it or obtain explicit scope authorization
 
+This is **review-gate defense** of grill findings on a draft. It is not `flow-common` breakout adjudication (impl-loop halt → architecture redesign). Do not start architecture redesign from a grill finding without that halt.
+
 Adjudicate each finding — every defended finding carries BOTH a verdict and an importance rank:
 
-- **Accept:** necessary for the current outcome and evidenced; apply the smallest correction and log it in Revision history.
+- **Accept:** necessary for the current outcome and evidenced; apply the smallest correction to the design body as current speech; log the verdict in the worklog.
 - **Reject:** irrelevant, speculative, disproportionate, or outside scope; record rebuttal evidence.
-- **Defer:** a decision truly depends on named missing evidence; record how to obtain it. A defer blocks landing only when it concerns a current correctness boundary (see P1).
+- **Defer:** a decision truly depends on named missing evidence; record how to obtain it. A defer blocks the review gate only when it concerns a current correctness boundary (see P1).
 
 **Importance rank (assigned by the defender, consistently — reviewer severity is input, the P-rank is the landing-relevant truth):**
 
-- **P1 — landing-blocking.** The stated Problem's outcome is unsafe/wrong/undelivered without it. Accepted P1s must be fixed (smallest correction) before landing; a P1 Defer blocks landing until its named evidence is obtained. Accepted P1s are the ONLY findings that force a rematch.
+- **P1 — gate-blocking.** The stated Problem's outcome is unsafe/wrong/undelivered without it. Accepted P1s must be fixed (smallest correction) before the review gate passes; a P1 Defer blocks the gate until its named evidence is obtained. Accepted P1s are the ONLY findings that force a rematch.
 - **P2 — this-cycle-if-cheap.** Real value, not blocking. Fix alongside P1s when the correction is cheap; otherwise sweep into the follow-up design (below).
 - **P3 — noise floor.** Nits, taste, speculative hardening. Default verdict Reject; if adopted, either fold in silently with zero ceremony or sweep into the follow-up design if genuinely valuable. P3s never force a rematch, never justify another implementer round.
 
-**Follow-up sweep (systematic, not a laundry list):** every accepted-but-unfixed P2/P3 gets a destination before landing: a follow-up design file at the next free design number (`design/NN-<topic>.md`, `Status: draft-followup`), seeded with findings **grouped by functional unit** (coherent clusters — e.g. "test hygiene", "UX polish", "operational tooling" — each unit named by what a reader would recognize as one job, not by finding id). The file carries no three heads and no obligation until someone picks it up; when picked up, the units become the scope of a normal design and the heads get written before grill. A finding with no sweep destination and no fix is not "deferred" — it is untracked, which is forbidden.
+**Follow-up sweep (systematic, not a laundry list):** every accepted-but-unfixed P2/P3 gets a destination before the review gate passes: a follow-up design file at the next free design number (`design/NN-<topic>.md`, `Status: draft-followup`), seeded with findings **grouped by functional unit** (coherent clusters — e.g. "test hygiene", "UX polish", "operational tooling" — each unit named by what a reader would recognize as one job, not by finding id). The file carries no three heads and no obligation until someone picks it up; when picked up, the units become the scope of a normal design and the heads get written before grill. A finding with no sweep destination and no fix is not "deferred" — it is untracked, which is forbidden.
 
 Batch ALL adjudications of a wave into one defense record; continue the defense lens checklist as ordered by rank (P1s get full rigor; P3s get one line).
 
-Treat reviewer exits separately: obtain the missing evidence, reframe/drop the angle with a reason, or revise away its relevance. Do not turn unavailable evidence into invented requirements.
+Treat `NOT-REVIEWABLE` exits separately: the supervisor may obtain the missing
+evidence through its owning fact/evidence lane, reframe or drop the angle with a
+reason, or revise away its relevance. The reviewer does none of those actions.
+Do not turn unavailable evidence into invented requirements.
 
-After defense, add an explicit **Simplicity delta**: what was removed, what was retained, and why each retained element is necessary to the user outcome.
+After defense, add an explicit **Simplicity delta** in the worklog: what was removed, what was retained, and why each retained element is necessary to the user outcome.
 
-### 4. Rematch and land
+### 4. Rematch and pass the review gate
 
-Require a clean independent rematch only after accepted **P1** changes. P2/P3 acceptances, rejected findings, editorial corrections, and non-blocking defers do not force ritual rematches. The rematch checks the accepted P1s and resulting design as a coherent whole; it does not reopen scope without new evidence.
+A rematch is the full match re-run, not one delegated verdict to wait on: an independent **re-review** leg (`flow-common` Roles), then this session's own defense and correction of what it returns. Only the review leg is independent; adjudication and rewriting stay with the architect/defender duty and are never delegated. Require one only after accepted **P1** changes. P2/P3 acceptances, rejected findings, editorial corrections, and non-blocking defers do not force ritual rematches. The re-review checks the accepted P1s and resulting design as a coherent whole; it does not reopen scope without new evidence.
 
-Land when — **GO condition is: every accepted P1 is solved.** Nothing more is required:
+Pass the review gate when — **GO condition is: every accepted P1 is solved.** Nothing more is required:
 
-1. All accepted P1 findings are resolved (smallest correction applied, or a P1 Defer discharged with its named evidence)
-2. Accepted revisions are in the design body; rejected items carry rebuttal evidence; every accepted-but-unfixed P2/P3 has its follow-up sweep destination recorded (file + functional unit) — unfollowed "we'll get to it" notes do not count
+1. All accepted P1 findings are resolved (smallest correction applied to the design body, or a P1 Defer discharged with its named evidence)
+2. Design body is intact current speech; rejected items, defense, and Simplicity delta are in the worklog; every accepted-but-unfixed P2/P3 has its follow-up sweep destination recorded (file + functional unit) — unfollowed "we'll get to it" notes do not count
 3. The minimum real-data happy path and outcome-proving verification are coherent
-4. Simplicity delta is recorded and no unauthorized scope expansion remains
-5. Set `Status: landed`
+4. Design **Review** backlinks the worklog; no unauthorized scope expansion remains
+5. Set `Status: reviewed`
+6. **Supervisor gate** (`flow-common` orchestrator): re-warm on the goal hierarchy and this design, then dispatch `flow:impl` or not. Review-passed is not impl-started.
 
-**Stop condition:** stop reviewing when these landing conditions hold. Do not add angles, hardening, compatibility, or process steps without new evidence tied to the current goal.
+**Stop condition:** stop reviewing when these conditions hold. Do not add angles, hardening, compatibility, or process steps without new evidence tied to the current goal.
+
+# Implementation gate (reviewed → pending-retro)
+
+The implementation gate — roles, round budget, verification, commits, stop condition, dispatch — is `flow-common`'s Implementation gate. Follow that skill: implement the reviewed slice only after the review gate **and** the supervisor gate pass; end the stage by setting `Status: pending-retro` and handing to `flow-retro`.
 
 ## Out of scope
 
 - Writing the first draft of the design
-- Implementation / execution
-- Git commits (caller or `flow-impl` commits)
+- Closing the loop — the retro stage and `Status: landed` belong to `flow-retro`
+- Git commits (caller authorizes commits)
+- Rewriting grill/review/defend or retro section formats (retro owns its format)
+- The lifecycle vocabulary and implementation-gate machinery (hosted by `flow-common`)
 
 ## Done checklist
 
+Review gate:
+
 - [ ] Draft satisfies the Draft contract (the three heads — Problem statement / Scope / Rationale — present and loaded, not boilerplate; body free-style)
 - [ ] Small, outcome-focused attack set reviewed independently where useful
-- [ ] Each finding carries verdict + defender-assigned P-rank with smallest correction named; defense batched in one record
+- [ ] Every reviewed angle has exactly one reviewer verdict (`PASS`, `NEEDS-FIX`, or `NOT-REVIEWABLE`); each `NEEDS-FIX` later receives a separate defender verdict + P-rank with the defense batched in one record
 - [ ] GO condition met: every accepted P1 solved; unfixed P2/P3 swept to the follow-up design file, grouped by functional unit
 - [ ] Defense lens completed; each verdict evidenced; scope expansion rejected or authorized
-- [ ] Design body updated for accepted P1s; Simplicity delta recorded
-- [ ] Rematch (P1-triggered only) passed if required; `Status: landed` set
+- [ ] Design body updated for accepted P1s as current speech; Simplicity delta recorded in the worklog
+- [ ] Design **Review** is a worklog backlink only (no ledger pasted into the design)
+- [ ] Rematch (P1-triggered only) passed if required; `Status: reviewed` set
+- [ ] Goal-file P1 angles (AC rows + path to root) ran or were skipped with a no-goal-file reason
+- [ ] Supervisor gate passed (re-warm, then `flow:impl` or halt) before implementation
+
+Implementation gate (`flow-common`'s checklist governs):

@@ -1,0 +1,32 @@
+{
+  "name": "flow-skills-eval",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "tsc && vp build",
+    "preview": "vp preview",
+    "test": "vp test",
+    "eval": "vp exec vieval run --config ./vieval.config.ts",
+    "eval:e2e": "vp exec vieval run --config ./vieval.config.ts",
+    "lock:update": "node --experimental-strip-types scripts/update-lock.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "typescript": "~6.0.2",
+    "vieval": "0.0.12",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.9",
+    "vite-plus": "0.2.9"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.9"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": "12.0.2",
+      "onFail": "download"
+    }
+  }
+}
