@@ -18,7 +18,7 @@ Default trigger: the owner says "you supervise + review", "@X drive the projects
 ## Sub-skills (orthogonal — reference, don't copy)
 
 - **`flow-grill-review`** — the attack-angle toolbox (design grill angles + experiment review: INPUT → SUBJECT → OUTPUT) and the grill → defend → land process. Used in step 3.
-- **`flow-impl`** — implementation workflow; invoked after a design lands (step 3→4 boundary).
+- **`flow-common` (Implementation gate)** — implementation workflow and gate (`flow:impl`); invoked after a design reaches `reviewed` (step 3→4 boundary).
 - **`flow-retro`** — retrospective after completion; run when a project or phase closes.
 
 This skill is the administrative shell: it routes to sub-skills and supervises their outputs; their content does not live here.
@@ -57,7 +57,7 @@ Set a recurring reminder so the project can never silently stall:
 
 - **Progress instruments:** track progress with the task tools at hand — never from memory alone.
   - **raft tasks** — the shared board: one task per work item, statuses kept honest (`todo` → `in_progress` → `in_review` → `done`), claims before work starts. Convert owner requests into tasks; don't create duplicates of existing ones.
-  - **Design file inventory** — keep a list of the project's `design/NN-*.md` files with each one's **status marker** (`draft` / `landed` / implemented / retro'd). The inventory is just the list + markers; the detailed content of each design is out of scope for this skill (that's `flow-grill-review` / `flow-impl` territory).
+  - **Design file inventory** — keep a list of the project's `design/NN-*.md` files with each one's **status marker** (`draft` / `reviewed` / `pending-retro` / `landed`). The inventory is just the list + markers; the detailed content of each design is out of scope for this skill (that's `flow-grill-review` / `flow-common` territory).
   - **Your own task tracker** (e.g. TodoList) — for your supervision loop itself: what's under review, what's blocked, what you're waiting on.
   - Report from these instruments in your cycle updates, so the owner can cross-check your picture against the board at a glance.
 
@@ -71,7 +71,7 @@ Set a recurring reminder so the project can never silently stall:
 - Require a design doc per project (`design/NN-<topic>.md`, numbered so old vs new is obvious).
 - Push for **concept-first modeling** over mechanical translation of existing structure (e.g. model domain entities, not the directory layout).
 - Run **grill review** per `flow-grill-review` before implementation — with one amendment: **the implementer joins the defend step** (step 3). They wrote the draft; they can defend, clarify, or accept findings in real time. The supervisor still adjudicates and lands the design. The attack-angle toolbox (design grill angles + experiment review angles) lives in `flow-grill-review`, not here — skills stay orthogonal.
-- Design status must reach `landed` before `flow-impl` begins.
+- Design status must reach `reviewed` before implementation (`flow:impl` via `flow-common`) begins.
 
 ### 3a. Serial vs parallel — follow the owner's execution shape
 
