@@ -7,6 +7,8 @@ description: >-
 
 # Flow: Retro — closes the loop
 
+> **Process is recommendation, not ceremony.** `flow-*` is a toolbox, not rigid enforcement. Weigh each step against the frozen requirements and current architecture. Skip any step that does not change the outcome. Completing a skill checklist is not success. Do not write designs, grills, or receipts whose only job is to bless work already specified.
+
 **One job:** Close the loop on an executed design. Run the evidence-based retrospection, make the smallest evidence-backed corrections, and — as the non-waivable bottom line — pass the **first-principles ↔ problem statement** check proving we didn't pile up accretions to make it work. When the pass is clean, set `Status: landed`.
 
 This skill **composes** other skills — read and follow them; do not restate their internals:

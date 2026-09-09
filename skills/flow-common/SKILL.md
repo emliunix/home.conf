@@ -9,6 +9,8 @@ description: >-
 
 # Flow: Common — lifecycle + implementation machinery
 
+> **Process is recommendation, not ceremony.** `flow-*` is a toolbox, not rigid enforcement. Weigh each step against the frozen requirements and current architecture. Skip any step that does not change the outcome. Completing a skill checklist is not success. Do not write designs, grills, or receipts whose only job is to bless work already specified.
+
 **One job:** Host the machinery every flow shares — the design status lifecycle, role-to-impl mapping, the implementation gate, wrong-machine supersession, and **breakout adjudication**. `flow-grill-review` (review gate) and `flow-retro` (loop closing) reference this skill; the goal-file wave plan and the `flow:impl NN` / `flow:retro NN` phrases dispatch through it. Do not restate this skill's internals in the other flows. The goal file (`goal-file`) is the administrative source (frozen root + funnel). This skill runs those slots.
 
 ## Lifecycle
@@ -83,8 +85,9 @@ required reviewer.
 A rematch's **review leg** uses the same reviewer candidate pool; reusing the reviewer who filed the P1s is allowed. Its defense and correction stay with the manager. Complex impl is usually delegated to a dedicated implementer, and the design's reviewer is eligible for that seat. Dispatch one stage at a time; roadmap context does not authorize later work.
 
 Defaults: manager = this session, holding supervisor/orchestrator, architect/
-defender, and outcome-verifier duties; reviewer = subagent(s), batching related
-angles; implementer = any agent the manager assigns.
+defender, and outcome-verifier duties; reviewer = single independent subagent /
+seat (batching all attack angles into one brief to minimize warm-up cost);
+implementer = any agent the manager assigns.
 
 **Manager re-warm:** before architecture, review-gate defense, breakout
 adjudication, arbitration, promotion, or completion decisions, the manager
@@ -159,6 +162,36 @@ Commits follow explicit user authorization and meaningful artifact boundaries—
 ### Stop condition
 
 The implementation stage ends when the reviewed current-scope outcome is demonstrated by fresh evidence, accepted blockers are resolved, and no authorized work remains — with the loop still open at `Status: pending-retro`. Do not continue into optional hardening, future compatibility, or reimplementation.
+
+## User reporting convention
+
+When reporting progress, lifecycle status, review outcomes, or transitions to the user:
+
+- **Concise first:** summarize outcomes, decisions, and blockers directly; avoid repeating background narration or file dumps.
+- **Mermaid diagram:** use compact Mermaid diagrams (e.g. `flowchart LR` or `stateDiagram-v2`) to visualize current phase, active states, dependencies, and completed vs pending transitions.
+- **Accompanying legend:** every diagram must include an explicit legend explaining node shapes, colors/styles, status codes, and abbreviations so the user never has to poke around or guess meanings.
+
+Example template:
+
+```markdown
+### Summary
+- **Current status:** `reviewed` → implementing Wave 1 (Leg 1/2)
+- **Blockers:** None
+
+```mermaid
+flowchart LR
+    D[draft] --> R[reviewed]
+    R --> P[pending-retro]:::active
+    P --> L[landed]
+    classDef active fill:#2d5016,stroke:#458528,stroke-width:2px,color:#fff
+```
+
+**Legend:**
+- `draft` — written, not yet reviewed
+- `reviewed` — passed grill review
+- `pending-retro` (highlighted) — implementation in progress / under verification
+- `landed` — loop closed via retrospective
+```
 
 ## Dispatch notes
 

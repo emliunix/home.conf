@@ -7,6 +7,8 @@ description: >-
 
 # Flow: Grill Review → Defend → Implement
 
+> **Process is recommendation, not ceremony.** `flow-*` is a toolbox, not rigid enforcement. Weigh each step against the frozen requirements and current architecture. Skip any step that does not change the outcome. Completing a skill checklist is not success. Do not write designs, grills, or receipts whose only job is to bless work already specified.
+
 **One job:** Turn an existing design draft into a **reviewed** design, then implement the reviewed design to `pending-retro`. Does not write the initial draft, does not commit, and does not close the loop (`flow-retro` does that).
 
 This skill **composes** other skills — read and follow them; do not restate their internals:
@@ -133,11 +135,11 @@ Pick the scenario(s) the draft actually touches. A wave that is both schema and 
 | Copy + first-time | Verbatim inventory; a first-time user can walk the flow. |
 | Confirm / door | Mutating acts use the designed confirm; navigable doors are marked. |
 
-### 2. Review (parallel where useful)
+### 2. Review (single independent reviewer seat)
 
-Use independent reviewers (`flow-common` Roles) for materially independent angles; do not spawn one agent per trivial check. Reviewers do not share findings, edit the design, adjudicate, or implement.
+Use a **single independent reviewer seat / subagent** (`flow-common` Roles) that batches all planned attack angles into one brief. Do not spawn multiple parallel subagents per angle — the context warm-up cost is expensive and unnecessary. The single reviewer evaluates all angles in one turn, keeping angles distinct in its report. Reviewers do not edit the design, adjudicate, or implement.
 
-Give each reviewer the draft path, its angle(s), relevant source paths, **the three heads excerpted into the brief (they review these, not just read them)**, the frozen root rows this design **Covers** when a goal file exists, and the user goal. Every reviewed angle must emit one entry with exactly one reviewer verdict from this list:
+Give the reviewer the draft path, all planned angles, relevant source paths, **the three heads excerpted into the brief (they review these, not just read them)**, the frozen root rows this design **Covers** when a goal file exists, and the user goal. Every reviewed angle must emit one entry with exactly one reviewer verdict from this list:
 
 - **`PASS`** — the supplied artifact and evidence satisfy this angle;
 - **`NEEDS-FIX`** — an evidenced defect, mismatch, or insufficiency exists; or
@@ -203,14 +205,14 @@ This is **review-gate defense** of grill findings on a draft. It is not `flow-co
 Adjudicate each finding — every defended finding carries BOTH a verdict and an importance rank:
 
 - **Accept:** necessary for the current outcome and evidenced; apply the smallest correction to the design body as current speech; log the verdict in the worklog.
-- **Reject:** irrelevant, speculative, disproportionate, or outside scope; record rebuttal evidence.
+- **Reject / WON'T DO:** irrelevant, speculative, disproportionate, outside scope, or not important. Mark clearly as **`NOT_IMPORTANT` / `WON'T DO`** in the worklog with a concise rebuttal/reason, and **stop taking further actions** or expanding focus on it. Do not track, do not sweep into follow-ups, and do not let it distract the loop.
 - **Defer:** a decision truly depends on named missing evidence; record how to obtain it. A defer blocks the review gate only when it concerns a current correctness boundary (see P1).
 
 **Importance rank (assigned by the defender, consistently — reviewer severity is input, the P-rank is the landing-relevant truth):**
 
 - **P1 — gate-blocking.** The stated Problem's outcome is unsafe/wrong/undelivered without it. Accepted P1s must be fixed (smallest correction) before the review gate passes; a P1 Defer blocks the gate until its named evidence is obtained. Accepted P1s are the ONLY findings that force a rematch.
 - **P2 — this-cycle-if-cheap.** Real value, not blocking. Fix alongside P1s when the correction is cheap; otherwise sweep into the follow-up design (below).
-- **P3 — noise floor.** Nits, taste, speculative hardening. Default verdict Reject; if adopted, either fold in silently with zero ceremony or sweep into the follow-up design if genuinely valuable. P3s never force a rematch, never justify another implementer round.
+- **P3 / NOT_IMPORTANT — noise floor / won't do.** Nits, taste, speculative hardening, or unimportant items. Mark **`NOT_IMPORTANT` / `WON'T DO`** and stop further action. P3s never force a rematch, never justify another implementer round, and must not consume attention.
 
 **Follow-up sweep (systematic, not a laundry list):** every accepted-but-unfixed P2/P3 gets a destination before the review gate passes: a follow-up design file at the next free design number (`design/NN-<topic>.md`, `Status: draft-followup`), seeded with findings **grouped by functional unit** (coherent clusters — e.g. "test hygiene", "UX polish", "operational tooling" — each unit named by what a reader would recognize as one job, not by finding id). The file carries no three heads and no obligation until someone picks it up; when picked up, the units become the scope of a normal design and the heads get written before grill. A finding with no sweep destination and no fix is not "deferred" — it is untracked, which is forbidden.
 
