@@ -77,6 +77,8 @@ Full spec + sources: `~/Documents/vibe-s3/board.md`.
   Port-A carries SDA/SCL + 5 V/GND (units are typically 5 V with 3.3 V logic).
 - Protocols at the IC: ISO14443A/B, FeliCa, ISO15693 — all four sensor-capable;
   firmware polls Type-A today.
-- IRQ / reset / power-enable GPIOs are exposed by the M5Unit-NFC driver but were
-  never confirmed on the physical unit — confirm before relying on them.
+- **There is no IRQ line** (confirmed on hardware 2026-09-10): the unit is 4 wires only
+  (5 V / GND / SDA / SCL). The M5Unit-NFC driver *supports* an IRQ pin
+  (`using_irq` / `irq`, `wait_for_interrupt()`) but it is unreachable here — so any
+  "wake on card" path must poll chip status over I2C (e.g. register 0x1C) instead.
 - Sources: `~/Documents/nfcplay/board.md`.
