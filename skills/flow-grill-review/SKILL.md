@@ -101,7 +101,7 @@ These two are gate-blocking when they hit. They are not optional hardening.
 
 #### Suggested angles by scenario
 
-Pick the scenario(s) the draft actually touches. A wave that is both schema and UI takes rows from both tables, then cuts to what the heads need.
+Pick the scenario(s) the draft actually touches. A design that is both schema and UI takes rows from both tables, then cuts to what the heads need.
 
 **Code** (API, pipeline, serving, system component)
 
@@ -217,7 +217,7 @@ Adjudicate each finding — every defended finding carries BOTH a verdict and an
 
 **Follow-up sweep (systematic, not a laundry list):** every accepted-but-unfixed P2/P3 gets a destination before the review gate passes: a follow-up design file at the next free design number (`design/NN-<topic>.md`, `Status: draft-followup`), seeded with findings **grouped by functional unit** (coherent clusters — e.g. "test hygiene", "UX polish", "operational tooling" — each unit named by what a reader would recognize as one job, not by finding id). The file carries no three heads and no obligation until someone picks it up; when picked up, the units become the scope of a normal design and the heads get written before grill. A finding with no sweep destination and no fix is not "deferred" — it is untracked, which is forbidden.
 
-Batch ALL adjudications of a wave into one defense record; continue the defense lens checklist as ordered by rank (P1s get full rigor; P3s get one line).
+Batch ALL adjudications of a review pass into one defense record; continue the defense lens checklist as ordered by rank (P1s get full rigor; P3s get one line).
 
 Treat `NOT-REVIEWABLE` exits separately: the supervisor may obtain the missing
 evidence through its owning fact/evidence lane, reframe or drop the angle with a
