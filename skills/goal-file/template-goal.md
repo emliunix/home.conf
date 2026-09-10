@@ -39,17 +39,17 @@ participate in the path-to-root; obsoleted ones do not.
 ## Design files
 
 The new well-scoped set, each linked back here as admin source. One line: path —
-status word — **covers** `R#`/`A#` — **admin source:** this goal file. (§Design
-files is a pure index; the canonical status word lives on the per-design line
-inside its Workstream.)
+**covers** `R#`/`A#` — **admin source:** this goal file. No design-body prose.
+(§Design files is a pure index; the canonical status word lives on the per-design
+line inside its Workstream, never here.)
 
-- `design/01-<topic>.md` — draft — covers R1 — admin source: this goal file
+- `design/01-<topic>.md` — covers R1 — admin source: this goal file
 
 ## Dependencies
 
 **Scope analysis** (one impl scope per design; a design spanning two scopes is
 not well-scoped — split it first. Architecture is design-time, not a scope; no
-impl wave, no landing edge):
+landing edge):
 
 - design/NN — core-schema (cross-module data structure)
 - design/PP — module:<name>
@@ -104,7 +104,9 @@ Retro (action). Edge labels: `PASS` / `NEEDS-FIX` / `FAIL` / `ESCALATE` /
 `ROUTE: BREAKOUT` / `ROUTE: SUPERSEDE` / `ROUTE: DEFER` / `SKIP`. FAIL never sets
 a status; BREAKOUT may revert `draft`; SUPERSEDE keeps last status + `Superseded
 by:`. Hooks are typed slots on an edge (`[+step]` / `[-step]`). **Legend
-mandatory.** Edge-label vocabulary referenced from `flow-common`, not restated.
+mandatory.** The edge-label vocabulary and this flowchart are defined in
+`goal-authoring.md`; the `flow-*` skills reference them and reconcile toward this skill,
+not the reverse. The four-word status table and roles live in `flow-common`.
 
 ## Workflow slots
 

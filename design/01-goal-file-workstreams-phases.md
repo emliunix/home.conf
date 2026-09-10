@@ -13,7 +13,7 @@ hooks — while staying compact enough to remain a ledger, not a second design d
 
 ## Scope — what we touch
 
-- `skills/goal-file/SKILL.md` — restructure Impl waves → Workstreams + Phases;
+- `skills/goal-file/goal-authoring.md` (moved from `skills/goal-file/SKILL.md`) — restructure Impl waves → Workstreams + Phases;
   add the three-graph model, generative-edge rule, resource/parallelizability
   partition, phase states and owner, AC coverage matrix, opt-out clause.
 - `skills/goal-file/template-goal.md` — new copyable template with opinionated

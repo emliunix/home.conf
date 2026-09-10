@@ -70,7 +70,7 @@ Bounded corrections rewrite the design body as current speech. A genuine archite
 
 ### 5. Close the loop (set `landed`)
 
-Land when the closing pass is complete: no blocking mismatch remains, the First-principles bottom line is written in the worklog, heads are re-validated, and all necessary corrections (or removals) are applied — then set `Status: landed`. `landed` means the whole loop finished: design + implementation + retro. A later discovery that a **landed** design is the wrong machine does not un-land it: open a new `design/NN`, grill it, and when it lands mark the old file `Superseded by:` (`design/00`).
+Land when the closing pass is complete: no blocking mismatch remains, the First-principles bottom line is written in the worklog, heads are re-validated, and all necessary corrections (or removals) are applied — then set `Status: landed`. `landed` means the whole loop finished: design + implementation + retro. A later discovery that a **landed** design is the wrong machine does not un-land it: open a new `design/NN`, grill it, and when it lands mark the old file `Superseded by:` (see `design/00-design-file-guide.md`).
 
 **Stop condition:** stop when the concrete mismatch is explained, necessary design edits and complexity removals are applied, and the next gate is explicit. Do not add ritual sections, lessons, or redesign unsupported by execution evidence.
 

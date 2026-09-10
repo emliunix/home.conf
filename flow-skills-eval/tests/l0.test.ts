@@ -29,7 +29,7 @@ describe("L0 contract lint", () => {
       landed: [...table.matchAll(/\|\s*`landed`\s*\|[^|]*\|\s*([^|]+)\|/g)].map((m) => m[1]?.trim()),
     };
 
-    expect(owners.draft).toEqual(["drafter"]);
+    expect(owners.draft).toEqual(["drafter; **or** breakout adjudication (status revert)"]);
     expect(owners.reviewed).toEqual(["`flow-grill-review` (review gate)"]);
     expect(owners["pending-retro"]).toEqual(["the implementation gate (this skill)"]);
     expect(owners.landed).toEqual(["`flow-retro` (closing pass)"]);
