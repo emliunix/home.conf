@@ -33,7 +33,7 @@ populated.
 
 ## Working background
 
-- Existing target document: `skills/goal-file/SKILL.md` (currently has
+- Existing target document: `skills/goal-file/goal-authoring.md` (currently has
   `## Impl waves`).
 - Related skills referenced, not edited: `flow-common` (lifecycle vocabulary,
   implementation gate, roles, "defines bounded workstreams"),
@@ -47,7 +47,7 @@ populated.
 
 ## Design files
 
-- `design/01-goal-file-workstreams-phases.md` — draft — covers R1–R5 — admin
+- `design/01-goal-file-workstreams-phases.md` — covers R1–R5 — admin
   source: this goal file.
 
 (one design)

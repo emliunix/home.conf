@@ -14,9 +14,10 @@ description: >-
 This skill **composes** other skills — read and follow them; do not restate their internals:
 
 - `flow-common` — the lifecycle vocabulary, role-to-impl mapping, and the implementation gate (round budget, verification, commits, stop condition, dispatch notes)
+- `goal-file` — the frozen root + funnel the review reconciles against (Covers rows, AC coverage, workstreams/phases). This skill consults it; it does not restate the funnel vocabulary.
 - `flow-retro` — closes the loop at `pending-retro` → `landed`
 
-Design path convention: `design/NN-<topic>.md`, where `NN` is the lowest unused zero-padded sequential number (the folder's own `design/00-design-file-guide.md` documents the contract and the `NN`/`goal-`/`ref-` distinction). Do not renumber existing files — numbers are stable handles. If the caller gives a different path, use it, but flag the deviation.
+Design path convention: `design/NN-<topic>.md`, where `NN` is the lowest unused zero-padded sequential number (the folder's own `design/00-design-file-guide.md` documents the contract and the `NN`/`ref-` distinction from goal files in `goals/NN-<topic>.md`). Do not renumber existing files — numbers are stable handles. If the caller gives a different path, use it, but flag the deviation.
 
 The design's status words (`draft` → `reviewed` → `pending-retro` → `landed`) and the implementation gate live in `flow-common`; this flow sets `reviewed` at the review gate and `pending-retro` at the implementation gate per that skill.
 

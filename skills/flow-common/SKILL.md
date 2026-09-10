@@ -11,7 +11,7 @@ description: >-
 
 > **Process is recommendation, not ceremony.** `flow-*` is a toolbox, not rigid enforcement. Weigh each step against the frozen requirements and current architecture. Skip any step that does not change the outcome. Completing a skill checklist is not success. Do not write designs, grills, or receipts whose only job is to bless work already specified.
 
-**One job:** Host the machinery every flow shares — the design status lifecycle, role-to-impl mapping, the implementation gate, wrong-machine supersession, and **breakout adjudication**. `flow-grill-review` (review gate) and `flow-retro` (loop closing) reference this skill; the goal-file wave plan and the `flow:impl NN` / `flow:retro NN` phrases dispatch through it. Do not restate this skill's internals in the other flows. The goal file (`goal-file`) is the administrative source (frozen root + funnel). This skill runs those slots.
+**One job:** Host the machinery every flow shares — the design status lifecycle, role-to-impl mapping, the implementation gate, wrong-machine supersession, and **breakout adjudication**. `flow-grill-review` (review gate) and `flow-retro` (loop closing) reference this skill; the goal-file workstream plan and the `flow:impl NN` / `flow:retro NN` phrases dispatch through it. Do not restate this skill's internals in the other flows. The goal file (`goal-file`) is the administrative source (frozen root + funnel). This skill runs those slots.
 
 ## Lifecycle
 
@@ -175,7 +175,7 @@ Example template:
 
 ```markdown
 ### Summary
-- **Current status:** `reviewed` → implementing Wave 1 (Leg 1/2)
+- **Current status:** `reviewed` → implementing Workstream 1 (Phase P1)
 - **Blockers:** None
 
 ```mermaid
@@ -195,7 +195,7 @@ flowchart LR
 
 ## Dispatch notes
 
-- `flow:impl NN` — the caller dispatches the implementation seat to this skill's Implementation gate **after** the supervisor gate (review passed + re-warm). The goal-file wave plan names the seat's work (legs, gates, Prep). Where no goal file exists, the same request that invoked grill names the implementation section. The phrase never implies a separate skill file.
+- `flow:impl NN` — the caller dispatches the implementation seat to this skill's Implementation gate **after** the supervisor gate (review passed + re-warm). The goal-file workstream plan names the seat's work (Prep, gates, Covers path). Where no goal file exists, the same request that invoked grill names the implementation section. The phrase never implies a separate skill file.
 - `flow:retro NN` — dispatch to `flow-retro` (closing pass).
 
 ## Done checklist (implementation gate)

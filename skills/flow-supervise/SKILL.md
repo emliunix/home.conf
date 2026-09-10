@@ -20,8 +20,9 @@ Default trigger: the owner says "you supervise + review", "@X drive the projects
 - **`flow-grill-review`** — the attack-angle toolbox (design grill angles + experiment review: INPUT → SUBJECT → OUTPUT) and the grill → defend → land process. Used in step 3.
 - **`flow-common` (Implementation gate)** — implementation workflow and gate (`flow:impl`); invoked after a design reaches `reviewed` (step 3→4 boundary).
 - **`flow-retro`** — retrospective after completion; run when a project or phase closes.
+- **`goal-file`** — the funnel this skill supervises: frozen root + live additions, the workstream/phase structure, the per-design workflow slots and AC coverage matrix. The design-file inventory of §2 is the goal file's funnel, referenced not restated.
 
-This skill is the administrative shell: it routes to sub-skills and supervises their outputs; their content does not live here.
+This skill is the administrative shell: it routes to sub-skills and supervises their outputs; their content does not live here. It reconciles toward `goal-file` for the funnel structure and toward `flow-common` for the lifecycle/status vocabulary.
 
 ## Core stance
 
