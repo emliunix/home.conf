@@ -2,227 +2,160 @@
 
 ## Problem statement
 
-The Vieval suite grades flow-skill application by substring-matching expected
-vocabulary in free-text answers. That passes answers that prescribe a forbidden
-route while containing the right words, fails correct paraphrases that lack the
-exact phrase, and cannot observe the facts that matter: next action, status
-write, and write target. We need evals whose unit of assertion is those facts.
+The Vieval suite this replaces graded skill understanding by substring-matching
+expected vocabulary in free-text answers. That passed answers prescribing
+forbidden behavior while containing the right words, failed correct paraphrases
+lacking the exact phrase, and could not see the failure modes that matter
+(misrouting, wrong file placement, broken round budget). It was also expensive: a
+forced sequential `read_skill` ritual made every case 4–6 serial API calls, while
+the heavy shared content sat *after* the per-case divergence point, defeating
+provider prefix caching. We need evals that assert real facts and measure their
+own cost.
 
 ## Scope — what we touch
 
-- `flow-skills-eval/src/eval/*` — prompt assembly, agent loop, Decision grading
+- `flow-skills-eval/src/eval/*` — prompt assembly, agent loop, scoring
 - `flow-skills-eval/evals/*` — case corpus and Vieval task
-- `flow-skills-eval/tests/*` — deterministic layer, including contract lint
-- `flow-skills-eval/vieval.config.ts` — calls the same env reader as the agent loop
-- `flow-skills-eval/README.md` — documents that contract
-- `flow-skills-eval/frozen-prefix.lock.json` and `flow-skills-eval/scripts/update-lock.ts`
-- Non-goals: the flow skills themselves (edited separately), the goal-file skill,
-  CI wiring, a judge-model layer, a temp-dir L2 sandbox agent (guide-owned, later).
+- `flow-skills-eval/tests/*` — deterministic layer, extended with contract lint
+- Non-goals: the flow skills themselves (edited separately), the goal-file skill
+  (future integration seam), CI wiring, any judge-model layer.
 
 ## Rationale
 
-The assertion unit is a structured `Decision` compared field-by-field, plus L0
-invariants over checked-in SKILL.md text, plus usage metrics. Model calls exist
-only to produce the Decision. Tier 1 inlines the skill bodies, so the “skills
-are loaded” fixture costs zero live calls. Token counts and optional cache
-reads are measured; they are not a pass/fail on provider capability.
-
-## Assumptions
-
-- **Observed:** live grading is `compareDecision` on a `submit_decision` payload
-  (`src/eval/decision.ts`, `evals/flow-skills.qa.eval.ts`). Live agent is one POST
-  (`src/eval/agent.ts`). vieval’s openai/xsai usage type exposes `prompt_tokens`,
-  `completion_tokens`, `total_tokens`.
-- **Inference:** the configured `/chat/completions` endpoint accepts tools and a
-  required `tool_choice`.
-- **TBD:** whether that endpoint populates `usage.prompt_tokens_details.cached_tokens`.
-  Absence is recorded as metric `0`; it does not fail the run.
+Every defect class found in review traces to one root: the eval checks *text about
+behavior* instead of *behavior*. The fix is to make the unit of assertion a
+machine-checkable fact — a JSON decision, a cross-skill invariant, a usage metric —
+and to spend model calls only where a model is irreducibly needed (producing the
+decision), never for grading it.
 
 ## Layers
 
-`design/ref-eval-design-guide.md` principles 1–6 apply except where this file
-overrides them. This file is the law for Decision shape, `CaseOutcome`, smoke/full
-contents, L1 run shape (one POST, no warm-up barrier, cache is a metric), and
-which forks exist. Guide L2, guide profiles, guide coverage floor, and
-“concurrently after one warm-up call” are not this outcome.
+This design applies the layer structure, principles, and case-authoring rules
+owned by `design/ref-eval-design-guide.md` (L0 contract lint / L1 structured
+decisions / L2 sandboxed e2e). This file owns only the flow-skills-specific
+decisions below.
 
-### L0 — Contract lint
+### L0 — Contract lint: flow-specific invariants
 
-Zero model calls, every `vp test` run. Assert on the checked-in skill texts:
+Beyond the guide's canonical checks, assert: write-target sections referenced by
+`flow-common` exist per `flow-grill-review`'s design/worklog split (this would
+have caught the "Review log" contradiction), and each of
+`draft`/`reviewed`/`pending-retro`/`landed` is set by exactly one gate.
 
-- Write-target sections one skill names exist per `flow-grill-review`’s
-  design/worklog split.
-- Each of `draft` / `reviewed` / `pending-retro` / `landed` is set by exactly
-  one gate.
+### L1 — Decision schema for flow cases
 
-L0 does not prove the Problem statement. It is a cheap invariant.
-
-### L1 — Decision
-
-A `Decision` is the single outcome the flow skills prescribe for the fixture.
+**Case shape:**
 
 ```ts
 interface DecisionCase {
   id: string;
   kind: "canonical" | "trap" | "paraphrase";
-  fixture: string;
-  question: string;
-  expected: Decision;
-  /** SKILL.md path + location that makes `expected` correct. */
-  cite: string;
-  /** Wrong Decision this case exists to catch. */
-  catches: string;
+  fixture: string;        // rendered repo-state snippet: design file with Status, finding, etc.
+  question: string;       // the decision to make
+  expected: Decision;     // exact-match target
 }
 
 interface Decision {
-  next_action: NextAction;
-  status_to_set: StatusToSet;
-  write_target: WriteTarget;
+  next_action: "implement" | "remediate" | "open_new_design" | "run_retro"
+             | "set_status" | "halt_structural" | "reject_finding";
+  status_to_set: "reviewed" | "pending-retro" | "landed"
+               | "draft-followup" | "unchanged";
+  write_target: "design_body" | "worklog" | "new_design_file"
+              | "followup_design_file" | "none";
+  opens_new_design: boolean;
 }
-
-type NextAction =
-  | "implement"
-  | "remediate"
-  | "open_new_design"
-  | "run_retro"
-  | "set_status"
-  | "halt_structural"
-  | "reject_finding";
-
-type StatusToSet = "draft" | "reviewed" | "pending-retro" | "landed" | "unchanged";
-type WriteTarget = "design_body" | "worklog" | "new_design_file" | "none";
 ```
 
-**Who writes.** `expected` is immutable corpus data. `actual` is only the
-`submit_decision` payload. The model does not supply derived flags.
+`next_action` is deliberately coarse: the machine-checkable fact is the action ×
+`write_target` product (`remediate` + `worklog` vs `remediate` + `design_body`),
+not a fine-grained verb taxonomy. `followup_design_file` (paired with
+`status_to_set: "draft-followup"`) is the P2/P3 sweep destination and is distinct
+from `new_design_file`, which supersedes the current design after architecture
+failure.
 
-**`next_action` — when this is the value**
+The agent must answer with only this JSON (tool-forced via a `submit_decision`
+function so the schema is provider-enforced). `expected` is compared field-by-field;
+a miss reports which field diverged.
 
-| Value | When |
-| --- | --- |
-| `set_status` | The prescribed act is a gate status write (review pass → `reviewed`; impl pass → `pending-retro`). |
-| `implement` | Design is `reviewed`; do the work. Status is not written in this decision. |
-| `remediate` | Implementation defect inside the reviewed design. Status stays as-is. |
-| `run_retro` | Implementation complete and evidence proves the outcome; dispatch the closing pass. |
-| `open_new_design` | A `reviewed` / `pending-retro` / `landed` design is the wrong machine. |
-| `halt_structural` | Implementer round would exceed 5. |
-| `reject_finding` | Occupying reviewer: the finding is out of scope, speculative, or disproportionate. |
+### L2 — Sandboxed end-to-end (release-level only, optional)
 
-**`status_to_set`.** A lifecycle word means write that `## Status` line.
-`unchanged` means do not write `## Status`. Re-emitting the fixture’s current
-word is wrong; that is `unchanged`.
+A real agent run against a temp-dir fixture repo, asserting the resulting
+filesystem: which files changed, final `Status:` lines, worklog entries appended
+not overwritten, old design carries `Superseded by:`. Expensive; run on skill
+releases, not every edit.
 
-**`write_target`.** The non-Status artifact this action writes. Status is
-`status_to_set`, never this field. `none` means no design/worklog/new-file
-write (code-only `implement` / `remediate`). Operations that the skills split
-across Status + worklog use `write_target: "worklog"` plus a non-`unchanged`
-status.
+## Case-authoring guidance
 
-**Required conjunctions** (corpus and grader refuse *violations* of these
-implications, not the listed shapes themselves):
+Rules for writing L1 cases (and the UT fixtures backing them):
 
-- `open_new_design` ⇒ `write_target: "new_design_file"` ∧ `status_to_set: "unchanged"`
-- `write_target: "new_design_file"` ⇒ `open_new_design`
-- `halt_structural` ⇒ `status_to_set: "unchanged"` ∧ `write_target: "worklog"`
-- `implement` ∨ `remediate` ⇒ `status_to_set: "unchanged"` ∧ `write_target: "none"`
-- `set_status` ⇒ `status_to_set ≠ "unchanged"` ∧ `write_target: "worklog"`
-- `run_retro` (land close) ⇒ `status_to_set: "landed"` ∧ `write_target: "worklog"`
-- `reject_finding` ⇒ `status_to_set: "unchanged"` ∧ `write_target: "worklog"`
+1. **State a fact, not a rule.** The fixture shows a repo state ("design 03 is
+   `pending-retro`; retro found the parser rejects valid input X"); the question
+   asks for the decision. Never ask the agent to recite what a skill says.
+2. **Every case must be falsifiable by a wrong route.** Before adding a case, name
+   the specific wrong decision it catches (e.g. "resets reviewed design to draft").
+   If no plausible wrong answer exists, the case measures nothing — drop it.
+3. **Triplets: canonical / trap / paraphrase.** For each behavior under test,
+   author (a) the straightforward case, (b) a trap whose fixture invites the
+   forbidden route using the correct vocabulary, (c) a rewording with none of the
+   skill's terminology. The trap kills false positives; the paraphrase kills false
+   negatives.
+4. **One decision per case.** A case asserting two transitions can pass half-right;
+   split it.
+5. **Expected values come from the skills, cited.** Each case carries a comment
+   with the `SKILL.md` line that makes the expected decision correct, so a skill
+   edit that invalidates a case is traceable, and cases die with the rule they
+   test.
+6. **Fixtures are inline strings, not files** — deterministic, diffable in review,
+   and reusable verbatim by unit tests that assert the fixture itself is
+   well-formed (valid status word, three heads present).
+7. **Minimum corpus:** one triplet per gate transition (draft→reviewed,
+   reviewed→pending-retro, pending-retro→landed), one per routing fork
+   (implementation defect vs. bounded correction vs. architecture failure vs. P0
+   violation), one for round-budget behavior (round 5 halt vs. round 3 brief
+   audit), one for write-target discipline (retro prose → worklog, never design
+   body), one for the follow-up sweep destination (accepted-but-unfixed P2/P3 →
+   `draft-followup` file, never left untracked).
 
-A fork is not in the corpus until its expected tuple is unique under these rules.
+## Prompt & efficiency redesign
 
-**Case loop.** One POST to `/chat/completions`. Tools: only `submit_decision`
-(the schema above). `tool_choice` required for that function. `askAgent` is the
-only model client. vieval `ChatModels` is not a second agent loop.
+**Invert the tiers.** Tier 1 (frozen system prompt) inlines the full skill bodies —
+they are already hashed by the lock, ~412 lines, the ideal cacheable prefix. Tier 2
+stays the per-case user message. `read_skill` and the forced sequential reading
+loop are deleted; each case becomes exactly one API call. (The old loop was a
+fixture-construction attempt — "agent has read all skills" — but it built the
+fixture with 3–5 live calls per case and failed the whole case on ordering
+violations that say nothing about skill comprehension. Inlining constructs the same
+fixture for free.)
 
-**Case outcome** (closed; no retry, no nudge turn):
+**Measure, don't assert.** Per case, emit as Vieval metrics from the response
+`usage`: `prompt_tokens`, `completion_tokens`, cache-read tokens (normalized from
+the provider's cache-read field), and wall latency. Cache-read enforcement is
+capability-gated on observability: when the provider omits the cache-read field
+(e.g. Anthropic's OpenAI-compatible shim supports no prompt caching and always
+returns empty `prompt_tokens_details`), the run warns and skips enforcement — a
+missing field is never coerced to a failing zero, and provider telemetry never
+fails a comprehension case. When the provider does expose the field, a run-level
+check asserts at least one case past the warm-up read cache (per-case ordering is
+meaningless under concurrency, so the assertion is run-level, not per-case). The
+always-on hard invariants are the ones the suite controls: exactly one API call
+per case and a stable `promptHash` (enforced by the lock).
+Measuring real cache hits on Claude requires the native Anthropic API with
+`cache_control` breakpoints or a caching gateway in front of the
+OpenAI-compatible executor. One unscored warm-up probe runs before all scored
+cases (its usage/latency emitted as a diagnostic metric), then cases run
+concurrently (the shared prefix is identical).
 
-```ts
-type CaseOutcome =
-  | { kind: "ok"; decision: Decision }
-  | { kind: "missing_submit" }
-  | { kind: "invalid_arguments" }
-  | { kind: "extra_tool" }
-  | { kind: "api_error"; class: string };
-```
+**Two profiles.** `smoke` = L0 + L1 canonical cases (runs on any skill edit);
+`full` = all L1 triplets + L2 (release-level). `smoke` is a fast regression gate
+only — the anti-gaming claim (trap/paraphrase resistance) is owned by `full` and
+is not proven by a green smoke run. Default eval model should be the
+model family that actually consumes these skills; `gpt-4o-mini` remains only an
+explicit cheap-mode override, not the default.
 
-Grade: `ok` + `compareDecision(expected, actual)` empty ⇒ pass; `ok` + named
-field divergences ⇒ fail; any non-`ok` kind ⇒ fail as that kind. Lock drift
-aborts the suite, not a case.
-
-`compareDecision` runs only on two valid `Decision`s. Parse failure is
-`invalid_arguments`, not a Decision.
-
-The harness throws if the loop issues more than one HTTP call (construction
-defect, not a skill-behavior grade).
-
-## Minimum e2e
-
-One live L1 case. All listed checks observe this case.
-
-- **id:** `arch-failure-canonical`
-- **kind:** `canonical`
-- **fixture:** Design `03-parser.md` with the three heads, `Status: pending-retro`.
-  Worklog records retro evidence: the parser cannot accept valid input X; the
-  machine is wrong.
-- **question:** What next action, status write, and write target do the flow
-  skills prescribe?
-- **expected:** `{ next_action: "open_new_design", status_to_set: "unchanged", write_target: "new_design_file" }`
-- **cite:** `skills/flow-common/SKILL.md` Lifecycle — a `pending-retro` design that
-  is the wrong machine is superseded by a new `design/NN`; never un-pended.
-- **catches:** reset `03-parser.md` to `draft` / `status_to_set: "draft"`.
-
-Checks on this case: one HTTP call, `CaseOutcome.kind === "ok"`, field match.
-
-Smoke also runs the trap and paraphrase of this same behavior (same `expected`,
-fixture that invites the reset-to-draft route; paraphrase with none of the
-skill’s terminology).
-
-## Corpus
-
-One exported `DecisionCase[]`. Fixture well-formedness tests and the Vieval
-task import the same `expected` object. There is no concept list, no
-`minimumScore`, no fractional score, no `scoreAnswer`.
-
-**smoke:** L0 + the `arch-failure` triplet.
-
-**full:** smoke + one **canonical** per remaining unique tuple:
-
-| id | next_action | status_to_set | write_target | catches |
-| --- | --- | --- | --- | --- |
-| `review-pass-canonical` | `set_status` | `reviewed` | `worklog` | implement while still `draft` |
-| `impl-pass-canonical` | `set_status` | `pending-retro` | `worklog` | set `landed` without retro |
-| `retro-land-canonical` | `run_retro` | `landed` | `worklog` | write retro prose into the design body |
-| `round-budget-halt-canonical` | `halt_structural` | `unchanged` | `worklog` | start round 6 as another bounce |
-| `impl-defect-canonical` | `remediate` | `unchanged` | `none` | open a new design for an implementation defect |
-| `reject-finding-canonical` | `reject_finding` | `unchanged` | `worklog` | accept an out-of-scope finding as a work item |
-
-Further trap/paraphrase triplets for those rows are not this outcome.
-
-## Prompt and measurement
-
-`createFrozenPrompt` inlines the full skill bodies in stable order. The lock
-hashes those bodies. Tier 2 is fixture + question. The only tool is
-`submit_decision`.
-
-`readApiConfig` is the only env reader. It requires
-`FLOW_SKILLS_EVAL_API_BASE_URL`, `FLOW_SKILLS_EVAL_API_KEY`,
-`FLOW_SKILLS_EVAL_MODEL`. Missing any is a refuse. No other env names.
-`vieval.config.ts` and `askAgent` call this function.
-
-Per case, emit Vieval metrics:
-
-- `prompt_tokens` ← `usage.prompt_tokens`
-- `completion_tokens` ← `usage.completion_tokens`
-- `cached_tokens` ← `usage.prompt_tokens_details.cached_tokens` (0 if absent)
-- wall latency
-
-No other usage keys are read. `cached_tokens === 0` does not fail the run.
-Cases may run concurrently; there is no warm-up barrier and no “second case
-onward” pass/fail.
-
-**Lock.** `frozen-prefix.lock.json` fails closed on prefix or skill-hash drift.
-`vp run lock:update` regenerates that lock from current skill content.
+**Lock lifecycle.** Keep fail-closed drift detection, add the missing acceptance
+path: a `vp run lock:update` script that regenerates `frozen-prefix.lock.json`
+from current skill content, so intentional skill edits are a one-command
+re-approval instead of a hand-edited JSON.
 
 ## Review
 
@@ -230,4 +163,4 @@ worklog/01-fact-based-eval.md
 
 ## Status
 
-reviewed
+pending-retro

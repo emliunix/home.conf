@@ -1,131 +1,113 @@
 import { buildTier2CasePrompt, type FrozenPrompt } from "./prompt.ts";
 import { readApiConfig, type ApiConfig } from "./env.ts";
 import {
-  SUBMIT_DECISION_TOOL,
+  NEXT_ACTIONS,
+  STATUSES_TO_SET,
+  WRITE_TARGETS,
   parseDecision,
-  type CaseOutcome,
-} from "./decision.ts";
+  type Decision,
+  type DecisionCase,
+} from "./decisions.ts";
 
-export interface UsageMetrics {
-  readonly prompt_tokens: number;
-  readonly completion_tokens: number;
-  readonly cached_tokens: number;
-}
-
-export interface AgentResult {
-  readonly outcome: CaseOutcome;
+export interface DecisionRunResult {
+  readonly decision: Decision;
+  /** Raw `submit_decision` arguments, kept for report debugging. */
+  readonly rawArguments: string;
   readonly promptHash: string;
-  readonly usage: UsageMetrics;
+  readonly usage?: Record<string, unknown>;
   readonly latencyMs: number;
-}
-
-interface ToolCall {
-  readonly id: string;
-  readonly type: "function";
-  readonly function: { readonly name: string; readonly arguments: string };
 }
 
 interface ChatPayload {
   readonly choices?: Array<{
     readonly message?: {
       readonly content?: unknown;
-      readonly tool_calls?: readonly ToolCall[];
+      readonly tool_calls?: readonly {
+        readonly id: string;
+        readonly type: "function";
+        readonly function: { readonly name: string; readonly arguments: string };
+      }[];
     };
   }>;
   readonly error?: { readonly message?: string };
-  readonly usage?: unknown;
+  readonly usage?: Record<string, unknown>;
 }
+
+/** Provider-enforced Decision schema; the only tool the agent may call. */
+const SUBMIT_DECISION_TOOL = {
+  type: "function",
+  function: {
+    name: "submit_decision",
+    description: "Submit the single next flow decision for the Tier 2 case.",
+    parameters: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        next_action: { type: "string", enum: [...NEXT_ACTIONS] },
+        status_to_set: { type: "string", enum: [...STATUSES_TO_SET] },
+        write_target: { type: "string", enum: [...WRITE_TARGETS] },
+        opens_new_design: { type: "boolean" },
+      },
+      required: ["next_action", "status_to_set", "write_target", "opens_new_design"],
+    },
+  },
+} as const;
 
 function chatCompletionsUrl(baseUrl: string): string {
   return baseUrl.endsWith("/chat/completions") ? baseUrl : `${baseUrl}/chat/completions`;
 }
 
-function numberOrZero(value: unknown): number {
-  return typeof value === "number" && Number.isFinite(value) ? value : 0;
-}
-
-export function usageMetrics(usage: unknown): UsageMetrics {
-  const record = usage !== null && typeof usage === "object" ? (usage as Record<string, unknown>) : {};
-  const details =
-    record.prompt_tokens_details !== null && typeof record.prompt_tokens_details === "object"
-      ? (record.prompt_tokens_details as Record<string, unknown>)
-      : {};
-
-  return Object.freeze({
-    prompt_tokens: numberOrZero(record.prompt_tokens),
-    completion_tokens: numberOrZero(record.completion_tokens),
-    cached_tokens: numberOrZero(details.cached_tokens),
-  });
-}
-
-function outcomeFromToolCalls(toolCalls: readonly ToolCall[]): CaseOutcome {
-  if (toolCalls.length === 0) return { kind: "missing_submit" };
-  if (toolCalls.length !== 1 || toolCalls[0]?.function.name !== "submit_decision") {
-    return { kind: "extra_tool" };
-  }
-
-  const parsed = parseDecision(toolCalls[0].function.arguments);
-  if (parsed.kind === "invalid_arguments") return { kind: "invalid_arguments" };
-  return { kind: "ok", decision: parsed.decision };
-}
-
-export async function askAgent(
+/**
+ * Run one decision case: exactly one API call with the Decision schema
+ * tool-forced. The full skill bodies already live in the Tier 1 system prompt,
+ * so no read_skill round-trips exist.
+ */
+export async function runDecisionCase(
   frozen: FrozenPrompt,
-  fixture: string,
-  question: string,
+  decisionCase: Pick<DecisionCase, "fixture" | "question">,
   config: ApiConfig = readApiConfig(),
-): Promise<AgentResult> {
-  const started = Date.now();
-  let response: Response;
-  try {
-    response = await fetch(chatCompletionsUrl(config.baseUrl), {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${config.apiKey}`,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: config.model,
-        temperature: 0,
-        messages: [
-          { role: "system", content: frozen.text },
-          { role: "user", content: buildTier2CasePrompt(fixture, question) },
-        ],
-        tools: [SUBMIT_DECISION_TOOL],
-        tool_choice: { type: "function", function: { name: "submit_decision" } },
-      }),
-      signal: AbortSignal.timeout(120_000),
-    });
-  } catch (error) {
-    const className = error instanceof Error && error.name === "TimeoutError" ? "timeout" : "network";
-    const outcome: CaseOutcome = { kind: "api_error", class: className };
-    return Object.freeze({
-      outcome,
-      promptHash: frozen.hash,
-      usage: usageMetrics(undefined),
-      latencyMs: Date.now() - started,
-    });
-  }
+): Promise<DecisionRunResult> {
+  const startedAt = performance.now();
+  const response = await fetch(chatCompletionsUrl(config.baseUrl), {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${config.apiKey}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: config.model,
+      temperature: 0,
+      messages: [
+        { role: "system", content: frozen.text },
+        { role: "user", content: buildTier2CasePrompt(decisionCase.fixture, decisionCase.question) },
+      ],
+      tools: [SUBMIT_DECISION_TOOL],
+      tool_choice: { type: "function", function: { name: "submit_decision" } },
+    }),
+    signal: AbortSignal.timeout(120_000),
+  });
+  const latencyMs = Math.round(performance.now() - startedAt);
 
   const payload = (await response.json()) as ChatPayload;
-  const usage = usageMetrics(payload.usage);
-  const latencyMs = Date.now() - started;
-
   if (!response.ok) {
-    const outcome: CaseOutcome = { kind: "api_error", class: "http" };
-    return Object.freeze({
-      outcome,
-      promptHash: frozen.hash,
-      usage,
-      latencyMs,
-    });
+    throw new Error(
+      `Agent API request failed (${response.status}): ${payload.error?.message ?? "unknown error"}`,
+    );
   }
 
   const toolCalls = payload.choices?.[0]?.message?.tool_calls ?? [];
+  const submitCall = toolCalls.find(
+    (call) => call.type === "function" && call.function.name === "submit_decision",
+  );
+  if (!submitCall) {
+    throw new Error("Agent API response did not contain a submit_decision tool call");
+  }
+
   return Object.freeze({
-    outcome: outcomeFromToolCalls(toolCalls),
+    decision: parseDecision(submitCall.function.arguments),
+    rawArguments: submitCall.function.arguments,
     promptHash: frozen.hash,
-    usage,
+    usage: payload.usage,
     latencyMs,
   });
 }

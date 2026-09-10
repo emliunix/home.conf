@@ -1,162 +1,176 @@
-# Worklog — 01 fact-based eval
+# Worklog 01 — Fact-based, efficient flow-skill evals
 
-Path deviation (flagged): design lives at `flow-skills-eval/design/01-fact-based-eval.md`, not repo-root `design/NN-<topic>.md`. Same-topic worklog is `flow-skills-eval/worklog/01-fact-based-eval.md`.
+Design: `design/01-fact-based-eval.md`
 
-Roles: orchestrator + architect/defender = this session. Reviewer = independent subagents. Implementer = not seated until `Status: reviewed`.
+## Context note
 
-## 0. P0 project-contract
-
-Project law: `skills/compatibility-design` + `skills/code-quality` (zero-compat / current-model). `flow-skills-eval` is in this repo; the law applies.
-
-### P0-1 Dual grading worlds
-
-- Finding: The draft adds Decision field-compare but does not state that as the only grader. Live code still grades free text: `src/eval/scoring.ts` `scoreAnswer`, `src/eval/qa.ts` `concepts`/`minimumScore`, `evals/flow-skills.qa.eval.ts`.
-- Evidence: those files; design L1 § only describes the new schema.
-- User impact: a dual harness can pass substring cases and fail Decision cases (or the reverse) for the same skill edit.
-- Severity: blocker (P1, P0)
-- Smallest correction: current machine is Decision field-compare only. No concept list.
-
-### P0-2 Usage-field alias walk
-
-- Finding: "cached_tokens (or the provider's cache-read field)" selects a shape by walking aliases.
-- Evidence: `design/01-fact-based-eval.md` Prompt & efficiency.
-- User impact: cache metric is not a positive contract; providers without that key get a second parse.
-- Severity: blocker (P1, P0)
-- Smallest correction: one usage path; absent field → 0; no other keys.
-
-### P0-3 Env alias chain + cheap-model default
-
-- Finding: `FLOW_SKILLS_EVAL_*` plus `API_KEY`/`OPENAI_*`/`PROVIDER_*` aliases and a hardcoded `gpt-4o-mini` default. Design leaves that chain in place and names gpt-4o-mini as a cheap-mode override.
-- Evidence: `src/eval/env.ts`, `vieval.config.ts`, `README.md`. Design Prompt & efficiency last two paragraphs.
-- User impact: two env worlds and two model defaults; missing project keys still boot via leftover names.
-- Severity: blocker (P1, P0)
-- Smallest correction: the three `FLOW_SKILLS_EVAL_*` keys are required; missing any is refuse. `vieval.config.ts` and `README.md` are in scope because they are the other writers of that contract.
-
-### P0-4 Discarded-tree prose
-
-- Finding: Prompt section narrates the deleted `read_skill` loop as a failed fixture-construction attempt.
-- Evidence: `design/01-fact-based-eval.md` Prompt & efficiency.
-- User impact: design body is not current speech; implementers keep a second-world story.
-- Severity: blocker (P1, P0)
-- Smallest correction: state the current prompt machine; do not compare to the discarded loop.
-
-Architect verdict (item 0, this session): **Accept P0-1..P0-4 as P1.** Applied to the design body as current speech before other angles. `vieval.config.ts` + `README.md` added to Scope because they write the same env/model contract.
+Implementation was user-authorized ahead of the grill (Claude session, "All recommendation
+LGTM" + worktree directive) and landed in this worktree before the review gate ran. The grill
+below therefore reviews the design as-written against the as-built code; any accepted P1 that
+changes the design materially triggers implementation remediation per the round budget.
 
 ## Attack angles
 
-Skipped: UI table — scope is eval harness, not the Vite shell.
+Scenario: code (eval pipeline). Three heads always under review.
 
-Skipped: Observability as a standalone row — batched into verification (metrics). Schema rows batched into Decision-object angle.
+1. **Case-corpus fidelity** — Do the L1 `Decision` enum values and the triplet corpus
+   (expected decisions, SKILL.md line citations, trap/paraphrase construction) match what
+   `skills/flow-common`, `flow-grill-review`, `flow-retro` actually say? Are traps/paraphrases
+   genuinely falsifiable (each kills a named wrong route)?
+2. **Measurement & efficiency mechanism** — Does the prompt inversion (inlined skill bodies,
+   one call per case, tool-forced `submit_decision`) plus the `cached_tokens > 0` assertion
+   actually prove prefix caching on the vieval OpenAI-compatible executor fronting Claude?
+   Are usage metrics extracted correctly per provider shape?
+3. **Minimum e2e & verification sufficiency** — Does the smoke profile (L0 lint + L1
+   canonical) prove the stated user outcome ("evals assert real facts and measure their own
+   cost")? Is deferring L2 safe, or does it hide a current correctness boundary?
 
-| ID | Angle | Reviewer | Ask |
-| --- | --- | --- | --- |
-| A | Heads + Decision object | independent | Right problem? Scope at the true edge? Is `Decision` the object (identity, field semantics, completeness vs flow skills), not four unrelated columns? |
-| B | Seam honesty + failure + testability | independent | One grader, one prompt, one agent loop. Missing/invalid `submit_decision`. One golden through the real path. |
-| C | Minimum e2e + verification + cost claims | independent | Named happy path and outcome-proving checks. Cache-nonzero as pass/fail vs metric. L2 in this cycle? Corpus floor vs smallest slice. |
+Skipped suggested rows: observability (eval harness, no serving path — assertion/metric
+output is the observability); failure/atomicity folded into angle 2's mechanism check.
 
-## Findings (reviewer wave)
+## Findings
 
-Independent reviewers. Architect ranks below. Design body rewritten as current speech for every accepted P1.
+Reviewers: A = case-corpus fidelity (subagent), B = mechanism + verification (subagent),
+C = peer agent (Claude pane wJ:p3, designer of record). Verdicts and P-ranks are the
+defender's; reviewer severity was input only.
 
-### A — heads + Decision object
-
-| ID | Verdict | Rank | Note |
-| --- | --- | --- | --- |
-| A1 Two problems in the head | Accept | P1 | Head is assertion-unit only. Call-shape/cache are Rationale constraints. |
-| A2 “One root” does not follow | Accept | P1 | Rationale restated as Decision + L0 + metrics; model calls only produce the Decision. |
-| A3 L2 vs scope edge | Accept | P1 | L2 is a non-goal this cycle. |
-| A4 Decision has no identity | Accept | P1 | Decision = the prescribed outcome. When-table for each `next_action`. |
-| A5 Writer / floor unnamed | Accept | P1 | expected=corpus, actual=tool; missing/invalid is `CaseOutcome`, not a Decision. |
-| A6 `unchanged` / `opens_new_design` | Accept | P1 | `unchanged` = do not write Status. `opens_new_design` removed (derived from `open_new_design`). |
-| A7 Exclusive `write_target` vs split writes | Accept | P1 | `write_target` is the non-Status artifact. Status is `status_to_set`. |
-| A8 Corpus forks not unique tuples | Accept | P1 | Illegal-conjunction table; a fork is not in the corpus until unique. Extra forks not unique under the table are out. |
-
-### B — seam + failure + testability
-
-| ID | Verdict | Rank | Note |
-| --- | --- | --- | --- |
-| B1 Dual graders | Accept | P1 | Strengthens P0-1: no `scoreAnswer` / concepts / `minimumScore`. |
-| B2 Dual prompt/agent/HTTP | Accept | P1 | One `createFrozenPrompt` (bodies inlined), one `askAgent` POST, `ChatModels` is not the case loop. |
-| B3 Dual env readers | Accept | P1 | Strengthens P0-3: `readApiConfig` is the only reader; both callers use it. |
-| B4 Untyped missing/invalid submit | Accept | P1 | Closed `CaseOutcome`; no retry/nudge. |
-| B5 Missing cache field as a run fail; warmup owner | Reject | P3 | Cache is a metric (0 if absent). No second run-level outcome. Warm-up latch is extra machine — removed (see C3/C6). |
-| B6 Two goldens | Accept | P1 | One exported `DecisionCase[]`; UT and eval import the same `expected`. |
-
-### C — e2e + verification + cost
-
-| ID | Verdict | Rank | Note |
-| --- | --- | --- | --- |
-| C1 No named happy path | Accept | P1 | `arch-failure-canonical` is the minimum e2e; listed checks observe only that case. |
-| C2 L2 in `full` is YAGNI | Accept | P2 | Applied this cycle (cheap): L2 non-goal; `full` is smoke + remaining canonicals. |
-| C3 Cache-nonzero pass/fail | Accept | P1 | Metric only. Does not fail the run. |
-| C4 L0 doesn’t prove the problem; `http_calls===1` | Accept | P2 | Applied: L0 is a cheap invariant; harness throws on >1 HTTP call (construction defect). |
-| C5 smoke drops trap/paraphrase | Accept | P1 | smoke = L0 + `arch-failure` triplet. Remaining rows are canonical-only. |
-| C6 Warm-up barrier vs vieval | Accept | P1 | Correction is removal: no warm-up barrier, no “second case onward” pass/fail. |
-| C7 Unverified provider assumptions | Accept | P1 | Assumptions section. Missing `submit_decision` is `missing_submit`, not assumed enforcement. |
+- **A1** Schema gap: `draft-followup` / follow-up sweep inexpressible in `Decision`
+  (`StatusToSet` omits it; `WriteTarget` conflates sweep files with architecture-failure
+  new designs). Evidence: flow-grill-review/SKILL.md:177 mandates the sweep destination.
+  → **Accept, P2.** Fix alongside P1s (schema extension + corpus triplet).
+- **A2** `budget-paraphrase` expects `write_target: "none"` but flow-common/SKILL.md:65
+  demands a brief rewrite at rounds 3–4; the correct route is under-specified.
+  → **Accept, P2.** Expected becomes `worklog` (the round/audit record's home).
+- **A3** `remediate` overloaded across design-fix / impl-fix / brief-audit.
+  → **Reject, P3.** The action × `write_target` product is the designed unit of fact;
+  design body gained one sentence saying so. A finer verb taxonomy adds enum surface
+  without killing a new wrong route.
+- **A4** `opens_new_design` conflates architecture failure with sweep. → **Accept, P2**,
+  subsumed by A1's fix (`followup_design_file` + `draft-followup`).
+- **A5** Problem statement's "current suite" no longer on disk to verify. → **Accept, P3.**
+  Tense fix applied ("the suite this replaces"); the audit findings predate the worktree
+  (untracked project, no git history).
+- **A6** Minimum corpus lacks a sweep triplet. → **Accept, P2**, subsumed by A1's fix.
+- **B1** `cached_tokens > 0` is guaranteed to fail on the configured default:
+  Anthropic's OpenAI-compatible shim supports no prompt caching and always returns empty
+  `prompt_tokens_details` (Anthropic docs cited); agent.ts posts plain
+  `/chat/completions` with no `cache_control`. → **Accept, P1.** Design corrected:
+  cache-read is a metric + soft warn, never an assertion (see C2 refinement).
+- **B2** Cache-metric extraction coupled to two provider field names. → **Reject, P3.**
+  Normalizing a speculative provider zoo is unevidenced; the always-warn rule (B1 fix)
+  already separates "field absent" from "no cache read".
+- **B3** Warm-up runs inside the first concurrent batch, unmeasured. → **Accept, P2.**
+  Move to run body before scored cases; emit as diagnostic metric.
+- **B4** vieval.config.ts ChatModels/`flow-agent` alias is dead for the live path
+  (agent.ts reads env directly) — two sources of truth for the model. → **Accept, P2.**
+  Prefer removal: delete the dead plugin/override; env is the single source.
+- **B5** Hard cache assertion contradicts "measure, don't assert". → **Accept, P1**,
+  same correction as B1.
+- **B6** Smoke omits trap/paraphrase, so green smoke doesn't validate anti-gaming.
+  → **Accept, P2** as documentation: design now states smoke is a regression gate and
+  `full` owns the anti-gaming claim (that was the intent; it was unsaid).
+- **B7** L1 decisions can't observe filesystem behavior; deferring L2 leaves a boundary
+  open (worklog overwrite, retro prose in design body, missing `Superseded by:`).
+  → **Defer, P2** → `design/02-eval-l2-sandbox.md` (draft-followup). L2 is a declared
+  non-goal this cycle; the boundary is real but release-level by scope.
+- **B8** Schema asserts write *target*, not write *content*. → **Defer, P2** → same
+  follow-up file, same functional unit (L2 filesystem assertions).
+- **C1** (peer) Decision-record falsifiability: with small enums, is the correct answer
+  unique per case, and is any enum value unproduced by skill rules? Folded into defense:
+  all 7 `next_action` values trace to named skill rules; the ambiguous case is
+  `budget-paraphrase` (A2, fixed); the unrepresentable route was the sweep (A1, fixed).
+  Rematch re-checks unique-answer per case. → **Closed via A1/A2 + rematch brief.**
+- **C2** (peer) Cache assertion is provider telemetry, not a suite fact; under
+  concurrency-8 "second case onward" ordering doesn't hold either; keep hard invariants
+  on what the suite controls (one call per case, stable promptHash). → **Accept, P1**,
+  refines B1: soft warn *always*, even when the field exists. Design text updated.
+- **C3** (peer) `eval:e2e` script is a byte-identical copy of `eval` — a false promise
+  while L2 is unbuilt. → **Accept, P1.** Delete the script (prefer removal;
+  `eval:full` already owns the profile axis).
+- **C4** (peer) Old substring path fully deleted; no dead parallel scorer. Informational —
+  seam honesty clean.
 
 ## Defense record
 
-- **Problem first:** A1/A2 keep the major problem as the assertion unit. Cost is measured, not a second problem. Off-problem L2 (A3/C2) is out of scope, not a work item.
-- **Scope / non-goals:** L2, CI, judge model, goal-file, editing the flow skills stay out. `vieval.config.ts` / README stay in as the env contract’s other writers (P0-3).
-- **Operational / failure boundary:** one POST, closed `CaseOutcome`, lock drift = suite abort. No nudge turns.
-- **Observed vs TBD:** Assumptions section. Cache field is TBD; metric 0.
-- **First-principles machine:** inline skills + one `submit_decision` + field-compare on a unique tuple. Corpus is the unique tuples that falsify substring grading, not a fork catalog.
-- **Minimum e2e:** `arch-failure-canonical` + trap + paraphrase.
-- **Complexity:** dropped `opens_new_design`, L2, 27-case floor, warm-up latch, cache pass/fail, env aliases, fractional score.
-- **Reuse:** existing lock, `readApiConfig`, Vieval task, `vp test`. Custom `fetch` stays because ChatModels is not the case loop.
-- **Compat:** none. Three env keys, refuse if missing.
-- **Verification:** field match + one HTTP call + L0. Cache metrics do not prove the problem.
-- **Scope expansion:** none authorized. Extra triplets swept.
+Lens, in rank order:
+
+- **Problem statement first:** B1/B5/C2 and C3 serve the stated problem directly — the
+  redesign's own cost claim must not rest on an unmeasured stack assumption, and a
+  misnamed script is the same defect class (text promising behavior it doesn't have).
+  A1/A2/A4/A6 serve "wrong file placement" falsifiability. B7/B8 are real but outside
+  the declared scope edge (L2 is a named non-goal) → sweep, not scope creep.
+- **Evidence:** B1/C2 carry external documentation (Anthropic compat page) plus code
+  paths; C3 verified on disk (package.json scripts diffed). A3/B2 rejected for lack of
+  an evidenced wrong route / speculative providers.
+- **Complexity budget:** every accepted fix is removal or a small extension; no new
+  subsystem. The schema grows by exactly two enum values, justified by a mandated skill
+  route that was previously unrepresentable.
+- **Scope check:** no accepted finding expands scope; L2 items carry a sweep destination.
+- **Reversibility:** all corrections are local to flow-skills-eval; the lock regenerates
+  with one command if skill text moves.
 
 ## Simplicity delta
 
-**Removed**
-- Second problem (cache/call-shape as a GO condition)
-- L2 sandbox from this outcome and from `full`
-- `opens_new_design` as a model-supplied field
-- 27-case triplet floor; P0-vs-bounded-correction and round-3-audit forks (not unique under the table)
-- Warm-up barrier and cache-nonzero run fail
-- Env alias chain, `gpt-4o-mini` default, usage-key walk
-- `scoreAnswer` / concepts / `minimumScore` / fractional Vieval score
-- `read_skill` loop and discarded-tree narration
+Removed (this pass): the hard cache-read assertion (provider-coupled flake), the dead
+ChatModels/runMatrix config, the `eval:e2e` script. Removed (round 1, pre-grill): the
+`read_skill` loop and the substring scorer (C4 confirms no residue).
 
-**Retained (load-bearing)**
-- Three-field `Decision` with when-table and illegal conjunctions — unique expected tuples
-- `CaseOutcome` — missing submit is a fact, not a crash
-- One exported `DecisionCase[]`
-- Inlined Tier 1 + one POST + `submit_decision`
-- Named e2e `arch-failure` triplet in smoke
-- Canonicals for the other unique tuples in `full`
-- L0 as cheap invariant
-- `readApiConfig` as sole env reader
-- Lock fail-closed + `lock:update`
-- Cache/token metrics (measurement only)
+Retained, and why each is necessary to the outcome: tool-forced `Decision` schema (the
+machine-checkable fact), triplet corpus (falsifiability in both directions), L0 contract
+lint (cross-skill invariants a decision eval can't see), frozen-prefix lock (fail-closed
+drift), two profiles (cost proportional to the edit's risk), cache/tokens/latency as
+metrics (the "measure your own cost" requirement — as data, not verdicts).
 
-## Follow-up sweep
+## Implementation rounds
 
-Accepted-unfixed P2/P3: none left untracked. Extra trap/paraphrase triplets for the non-smoke rows are not accepted into this cycle; they are seeded in `design/02-eval-corpus-triplets.md` (`Status: draft-followup`), unit: L1 triplets for remaining unique tuples.
+Round 1: coder subagent implemented the full redesign (prompt inversion, L0 lint, L1
+decisions corpus + eval, metrics, profiles) — 34/34 `vp test` pass, `tsc` clean, `vp build`
+clean. (Recorded retroactively; implementation preceded the grill, see Context note.)
+
+Round 2: grill remediation. P1s: cache capability gate (per-case assert deleted;
+`cached_tokens` always a metric; terminal `cache-observability` case warns+skips when the
+provider omits the field, else asserts a nonzero read was observed — run-level because
+concurrency-8 makes per-case ordering meaningless; vieval exposes no afterRun hook, hence
+the terminal-case mechanism) and `eval:e2e` deleted from package.json. P2s: schema
+extension (`draft-followup`, `followup_design_file`), sweep triplet, `budget-paraphrase`
+write_target → `worklog`, dead ChatModels/runMatrix removal, README cache semantics.
+Implementer was stopped mid-flight (design owner demanded direct orchestrator edits);
+orchestrator completed package.json + a half-finished import, implementer resumed for the
+remainder. Verification after orchestrator completion: `tsc` clean, 36/36 `vp test`.
+
+Round 2 final state after implementer completion: `tsc` clean, `vp build` OK, 45/45
+`vp test` (7 files; added metrics/capability-gate and schema-extension coverage).
+Deviation noted: warm-up is a first-registered unscored `caseOf("warmup")` with a
+`warmupDone` barrier — vieval's DSL has no run-body hook; same for the run-level cache
+check (terminal `cache-observability` case + module accumulator, no afterRun hook).
 
 ## Rematch
 
-First rematch (independent): two blockers on the rewrite, not new scope.
+Independent rematch (subagent) over the accepted P1/P2 corrections and the whole design:
+**REMATCH CLEAN.** All corrections verified against code and skill citations; design body
+intact current speech; baseline green (45/45, tsc clean).
 
-| ID | Verdict | Rank | Note |
-| --- | --- | --- | --- |
-| R1 Conjunction table labeled “illegal” but listed the required shapes; `⇔ unchanged` collided across actions | Accept | P1 | Renamed to required implications `next_action ⇒ fields`; `new_design_file ⇒ open_new_design`. |
-| R2 Layers pointer reimported guide warm-up / profiles / L2 / coverage floor | Accept | P1 | 01 is the law for those; guide principles 1–6 only, with listed exceptions. |
-| R3 “No read_skill tool” discarded name | Accept | P3 | Folded: “The only tool is submit_decision.” |
+One new finding, P3: `"draft"` in `StatusToSet` is unproduced by skill rules (the
+lifecycle forbids un-reviewing; new design files carry `draft` as file content, never as
+a `status_to_set` decision). Adopted and folded in silently: removed from
+`src/eval/decisions.ts` (`StatusToSet`, `STATUSES_TO_SET`) and the design's `Decision`
+interface; "keep as draft" remains expressible as `status_to_set: "unchanged"`.
+Post-fold verification: `tsc` clean, 45/45. P3s do not force a rematch.
 
-Applied. Second rematch required.
+## Gate status
 
-Second rematch (same reviewer, independent): **Rematch clean. Accepted P1s solved.** No new blocker. Review gate GO.
+Review gate: designer of record (wJ:p3) accepted round 2 and authorized the transition;
+rematch clean → `Status: reviewed` set by orchestrator. Two peer corrections absorbed:
+README landed at 19:48:40, after the peer's 19:48:13 grep (my "already fixed" claim was
+wrong — report only verified ordering); the npm-test devEngines blocker (pin 12.0.2 vs
+installed 11.17.0, EBADDEVENGINES) must be disclosed, not hidden behind a bare green —
+swept to design/02 (tooling hygiene unit).
 
-`Status: reviewed` set on `design/01-fact-based-eval.md`.
-
-## Implementation
-
-**Round 1.** Decision harness per reviewed design: three-field `Decision`, `CaseOutcome`, inlined Tier 1, one POST `submit_decision`, `readApiConfig` as sole env reader, one `DecisionCase[]`, L0 lint, substring grader removed.
-
-Evidence: `npx tsc --noEmit` clean; `vp test --run` 21/21. Named e2e tuple is in the corpus and well-formedness tests. Live L1 (`vp run eval`) is not run: no project `.env` with the three required keys.
-
-Not `pending-retro` yet — the minimum e2e is a live L1 case.
-
+Implementation gate: fresh evidence at transition — `tsc` clean, 45/45 `vp test`
+(7 files: L0 contract lint, corpus triplet/fixture/coherence, decisions schema,
+metrics capability gate, prompt lock, env, skill loader), `vp build` OK. Verification
+boundary: live eval (`vp exec vieval run`) never executed — no API credentials in this
+environment (only `.env.example`); the one-call-per-case + cache-metric behavior is
+proven to the mockable layer only. `npm test` remains broken by the devEngines pin
+(swept); `./node_modules/.bin/vp test --run` is the verified path.
+→ `Status: pending-retro`; loop handed to `flow-retro`.
