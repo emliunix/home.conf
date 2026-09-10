@@ -47,6 +47,40 @@ provider exposes the field, a run-level check asserts at least one scored case
 observed a nonzero cache read (per-case ordering is meaningless at concurrency
 8, so the assertion is run-level, not per-case).
 
+### Prefix cache: what makes reuse work
+
+The cacheable prefix is the whole request head — the frozen Tier 1 system text
+**plus** the tool schema, `tool_choice`, and the model/route. Reuse requires that
+head to be **byte-identical** across calls; only the Tier 2 user message may
+differ. What guarantees it:
+
+- **Fixed per run.** `readApiConfig()` resolves one provider/model/route for the
+  entire run (`src/eval/env.ts`), the system text is built once
+  (`createFrozenPrompt`), and `tools` / `tool_choice` / `temperature` are module
+  constants (`src/eval/agent.ts`). There is no per-case model, route, or tool
+  override.
+- **Fail-closed drift.** `frozen-prefix.lock.json` + `assertFrozenPromptLock`
+  refuse the run if the skill text or Tier 1 hash changes; re-approve with
+  `vp run lock:update`.
+
+Caveats:
+
+- **Provider-side, not local.** The harness holds no cache. Reuse is entirely the
+  provider's; a provider without prefix caching yields `cached_tokens: 0`, and the
+  run warns (capability-gated) rather than failing.
+- **Cross-process, single model/route.** A separate process sending the identical
+  prefix hits the same cache (verified: 11,392 of 11,896 prompt tokens cached on a
+  second `node` process). The cache is **not** shared across different models or
+  routes.
+- **Eviction is provider-controlled** and time-bounded, so the warm-up must run
+  immediately before the scored cases. The eval does this: an unscored warm-up
+  case primes the cache, and scored cases `await warmupDone` before running
+  concurrently.
+- **Automatic vs explicit.** Some providers cache automatically (e.g. DeepSeek via
+  a local gateway: `cache_write_tokens: 0`, cache read in
+  `prompt_tokens_details.cached_tokens`); Anthropic needs `cache_control`
+  breakpoints or a caching gateway to show real cache reads.
+
 ### Profiles
 
 - **smoke** (default) — L0 lint plus L1 canonical cases; runs on any skill edit.
@@ -84,6 +118,33 @@ with existing local setups, `src/eval/env.ts` also accepts `API_KEY`,
 `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `PROVIDER_API_KEY` and matching base URL
 names (including `OPENAI_API_BASE`) as fallbacks; the project-specific
 `FLOW_SKILLS_EVAL_*` names take precedence.
+
+A local OpenAI-compatible gateway (e.g. a Bifrost instance on
+`http://127.0.0.1:8080`) works as-is — set the base URL, any non-empty key, and a
+tool-calling model:
+
+```dotenv
+FLOW_SKILLS_EVAL_API_BASE_URL=http://127.0.0.1:8080/v1
+FLOW_SKILLS_EVAL_API_KEY=local
+FLOW_SKILLS_EVAL_MODEL=openai/deepseek/deepseek-v4-flash-0731
+```
+
+### Helper scripts
+
+- `scripts/ask.ts "<question>"` — run one ad-hoc question through the real frozen
+  Tier 1 + `submit_decision`, printing the Decision, raw arguments, usage, and
+  latency. Useful for probing the skills without authoring a case.
+- `scripts/cache-probe.ts save|load [file]` — demonstrate cross-process prefix
+  cache reuse: `save` sends the frozen prefix and writes the messages array to
+  `file`; `load` (a separate process) reads it, appends a turn, and prints the
+  cache fields. On a caching provider the `load` call reports nonzero
+  `cached_tokens`.
+
+```bash
+node --experimental-strip-types scripts/ask.ts "you find that the change surface is small, and the process is long, what should you do"
+node --experimental-strip-types scripts/cache-probe.ts save /tmp/flow-cache-probe.json
+node --experimental-strip-types scripts/cache-probe.ts load /tmp/flow-cache-probe.json
+```
 
 ## Commands
 
