@@ -1,12 +1,9 @@
 import { describe, expect, it } from "vite-plus/test";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { resolve } from "node:path";
 
-import { readApiConfig } from "../src/eval/env.ts";
+import { DEFAULT_EVAL_MODEL, readApiConfig, readProfile } from "../src/eval/env.ts";
 
 describe("project .env API configuration", () => {
-  it("reads the three FLOW_SKILLS_EVAL keys and refuses missing model", () => {
+  it("reads the project-specific endpoint, key, and model without hardcoding values", () => {
     expect(
       readApiConfig({
         FLOW_SKILLS_EVAL_API_BASE_URL: "https://provider.example/v1/",
@@ -20,34 +17,43 @@ describe("project .env API configuration", () => {
     });
   });
 
-  it("fails when any of the three keys is absent", () => {
-    expect(() =>
+  it("accepts the Anthropic env names as fallbacks", () => {
+    expect(
       readApiConfig({
-        FLOW_SKILLS_EVAL_API_KEY: "key",
-        FLOW_SKILLS_EVAL_MODEL: "model",
+        ANTHROPIC_BASE_URL: "https://anthropic.example/v1",
+        ANTHROPIC_API_KEY: "anthropic-key",
+        ANTHROPIC_MODEL: "claude-opus-4-1",
       }),
-    ).toThrow("FLOW_SKILLS_EVAL_API_BASE_URL");
-    expect(() =>
-      readApiConfig({
-        FLOW_SKILLS_EVAL_API_BASE_URL: "https://example/v1",
-        FLOW_SKILLS_EVAL_API_KEY: "key",
-      }),
-    ).toThrow("FLOW_SKILLS_EVAL_MODEL");
+    ).toEqual({
+      apiKey: "anthropic-key",
+      baseUrl: "https://anthropic.example/v1",
+      model: "claude-opus-4-1",
+    });
   });
 
-  it("does not read alias env names", () => {
-    expect(() =>
-      readApiConfig({
-        API_KEY: "alias-key",
-        OPENAI_API_KEY: "openai-key",
-        FLOW_SKILLS_EVAL_API_BASE_URL: "https://example/v1",
-        FLOW_SKILLS_EVAL_MODEL: "model",
-      }),
-    ).toThrow("FLOW_SKILLS_EVAL_API_KEY");
+  it("defaults to the Claude model family that consumes the skills", () => {
+    const config = readApiConfig({
+      FLOW_SKILLS_EVAL_API_BASE_URL: "https://provider.example/v1",
+      FLOW_SKILLS_EVAL_API_KEY: "key",
+    });
+
+    expect(config.model).toBe(DEFAULT_EVAL_MODEL);
+    expect(config.model).toContain("claude");
   });
 
-  it("vieval.config.ts calls readApiConfig", () => {
-    const path = resolve(fileURLToPath(new URL("..", import.meta.url)), "vieval.config.ts");
-    expect(readFileSync(path, "utf8")).toContain("readApiConfig");
+  it("fails with a project .env hint when the endpoint is absent", () => {
+    expect(() => readApiConfig({ FLOW_SKILLS_EVAL_API_KEY: "key" })).toThrow("project .env");
+  });
+});
+
+describe("eval profile selection", () => {
+  it("defaults to smoke and accepts explicit profile names", () => {
+    expect(readProfile({})).toBe("smoke");
+    expect(readProfile({ FLOW_SKILLS_EVAL_PROFILE: "smoke" })).toBe("smoke");
+    expect(readProfile({ FLOW_SKILLS_EVAL_PROFILE: " full " })).toBe("full");
+  });
+
+  it("rejects unknown profile names", () => {
+    expect(() => readProfile({ FLOW_SKILLS_EVAL_PROFILE: "nightly" })).toThrow("smoke|full");
   });
 });

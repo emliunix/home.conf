@@ -13,7 +13,6 @@ export interface SkillDocument {
 export function isSkillName(value: string): value is SkillName {
   return value === "flow-common" || value === "flow-grill-review" || value === "flow-retro";
 }
-
 const skillsRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../../skills");
 
 /** Load the exact checked-in flow skill documents in the requested order. */

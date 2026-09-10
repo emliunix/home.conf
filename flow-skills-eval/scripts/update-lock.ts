@@ -1,7 +1,6 @@
 /**
  * Regenerate frozen-prefix.lock.json from the current checked-in skill content.
- * Run after an intentional skill edit: `vp exec tsx scripts/update-lock.ts`
- * (or `node --experimental-strip-types scripts/update-lock.ts`).
+ * Run after an intentional skill edit: `vp run lock:update`.
  */
 import { writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";

@@ -9,7 +9,7 @@
     "preview": "vp preview",
     "test": "vp test",
     "eval": "vp exec vieval run --config ./vieval.config.ts",
-    "eval:e2e": "vp exec vieval run --config ./vieval.config.ts",
+    "eval:full": "FLOW_SKILLS_EVAL_PROFILE=full vp exec vieval run --config ./vieval.config.ts",
     "lock:update": "node --experimental-strip-types scripts/update-lock.ts"
   },
   "devDependencies": {

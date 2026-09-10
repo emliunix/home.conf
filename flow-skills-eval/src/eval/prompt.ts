@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 
 import type { SkillDocument, SkillName } from "./skill-loader.ts";
-import { loadSkillDocuments } from "./skill-loader.ts";
+import { isSkillName, loadSkillDocuments } from "./skill-loader.ts";
 
 export interface EvaluationContext {
   readonly role: string;
@@ -13,6 +13,7 @@ export interface EvaluationContext {
   readonly skills: readonly SkillDocument[];
 }
 
+/** Tier 1: immutable, shared across every evaluation case. */
 export interface FrozenPrompt {
   readonly hash: string;
   readonly role: string;
@@ -35,9 +36,15 @@ const SKILL_NAMES: readonly SkillName[] = ["flow-common", "flow-grill-review", "
 
 const loadedSkills = await loadSkillDocuments(SKILL_NAMES);
 
+/**
+ * The designated context is deliberately independent of a case fixture,
+ * question, timestamp, or run matrix. Every decision case supplies a separate,
+ * non-frozen Tier 2 context so providers can reuse the Tier 1 prefix cache
+ * across repeated runs.
+ */
 export const FROZEN_EVALUATION_CONTEXT: EvaluationContext = Object.freeze({
   role: "Flow lifecycle evaluator",
-  task: "Call submit_decision with the single Decision the flow skills prescribe for the Tier 2 fixture.",
+  task: "Decide the single next flow action for one repo-state case and submit it as a structured decision.",
   skillNames: Object.freeze([...SKILL_NAMES]),
   skills: loadedSkills,
 });
@@ -46,19 +53,27 @@ function skillHash(skill: SkillDocument): string {
   return createHash("sha256").update(skill.content).digest("hex");
 }
 
+/**
+ * Tier 1 is deliberately independent of a case fixture, question, timestamp, or
+ * run matrix. The full skill bodies are inlined here — they are the cacheable
+ * frozen prefix — so each case costs exactly one API call and providers can
+ * reuse the Tier 1 prefix cache across cases and runs.
+ */
 export function createFrozenPrompt(context: EvaluationContext): FrozenPrompt {
   const text = [
     "<tier_1_frozen_context>",
     `<role>${context.role}</role>`,
     `<task>${context.task}</task>`,
     "<skills>",
-    ...context.skills.map(
-      (skill) =>
-        `<skill name="${skill.name}" path="skills/${skill.name}/SKILL.md" sha256="${skillHash(skill)}">\n${skill.content}\n</skill>`,
-    ),
+    "The full checked-in text of every flow skill follows. This is the complete governing contract for every Tier 2 case; you need no other files.",
+    ...context.skills.flatMap((skill) => [
+      `<skill name="${skill.name}" path="skills/${skill.name}/SKILL.md" sha256="${skillHash(skill)}">`,
+      skill.content,
+      `</skill>`,
+    ]),
     "</skills>",
     "<tier_1_agent_instructions>",
-    "Treat Tier 1 as the governing context. Answer the Tier 2 case by calling submit_decision with the single Decision the flow skills prescribe. Do not claim to have performed actions that are not present in the fixture.",
+    "Treat Tier 1 as the governing context. For each Tier 2 case, decide the single next flow action from the fixture and question, and answer only by calling the submit_decision tool. Do not narrate, do not ask for files, and do not claim actions that are not present in the Tier 2 fixture.",
     "</tier_1_agent_instructions>",
     "</tier_1_frozen_context>",
   ].join("\n");
@@ -73,9 +88,11 @@ export function createFrozenPrompt(context: EvaluationContext): FrozenPrompt {
   });
 }
 
+/** Build Tier 2 only. It is intentionally not concatenated into Tier 1. */
 export function buildTier2CasePrompt(fixture: string, question: string): string {
   return [
     "<tier_2_case_context>",
+    "This is the non-frozen context for one decision evaluation case. Decide using Tier 1 and answer with the submit_decision tool.",
     `<fixture>${fixture.trim()}</fixture>`,
     `<question>${question.trim()}</question>`,
     "</tier_2_case_context>",
@@ -95,7 +112,7 @@ export function readFrozenPromptLock(path = LOCK_PATH): FrozenPromptLock {
     typeof parsed.role !== "string" ||
     typeof parsed.task !== "string" ||
     !Array.isArray(parsed.skillNames) ||
-    !parsed.skillNames.every((name): name is SkillName => typeof name === "string") ||
+    !parsed.skillNames.every((name): name is SkillName => isSkillName(name)) ||
     !Array.isArray(parsed.skillHashes) ||
     !parsed.skillHashes.every((hash): hash is string => typeof hash === "string") ||
     typeof parsed.promptHash !== "string"
