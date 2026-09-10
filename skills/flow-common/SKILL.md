@@ -99,7 +99,7 @@ Review-gate finding defense stays in `flow-grill-review` §3. Breakout adjudicat
 
 ## Breakout adjudication (architecture redesign)
 
-Architecture is design-time only (`goal-file` scope analysis). It is **not** an impl wave. It activates only on an inner-loop **breakout**.
+Architecture is design-time only (`goal-file` scope analysis). It is **not** a workstream. It activates only on an inner-loop **breakout**.
 
 ### When
 
@@ -109,7 +109,7 @@ Run this process — and only this process — when **all** of:
 2. The failure is **not** an implementation-only defect (that remediates in place; status stays).
 3. The failure is **not** yet proved a wrong machine (that is the supersession outer loop).
 
-Do **not** run it: to start a sprint, to “improve” architecture without a halt, as a scheduled wave, or because a reviewer filed ordinary grill findings (those are `flow-grill-review` §3).
+Do **not** run it: to start a sprint, to “improve” architecture without a halt, as a scheduled workstream, or because a reviewer filed ordinary grill findings (those are `flow-grill-review` §3).
 
 ### How
 

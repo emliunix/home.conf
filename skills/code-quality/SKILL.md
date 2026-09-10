@@ -11,15 +11,15 @@ description: >-
 
 # Code quality
 
-Standing quality law. Distinct from wave/flow procedure (`flow-grill-review` / `flow-retro`). Project P0 current-model law, when legislated, lives in that repo's `AGENTS.md` and is the first check; this skill is the reusable quality machinery.
+Standing quality law. Distinct from flow procedure (`flow-grill-review` / `flow-retro`). Project P0 current-model law, when legislated, lives in that repo's `AGENTS.md` and is the first check; this skill is the reusable quality machinery.
 
 ## Standing gates
 
-Quality checks, not wave procedure. Lifecycle lives in `flow-grill-review` / `flow-retro`.
+Quality checks, not flow procedure. Lifecycle lives in `flow-grill-review` / `flow-retro`.
 
 - **Current-model P0 (ALWAYS top-1 of every review when the project has legislated it):** any second-world assumption, epoch vocabulary, compat arm, or ledger/history-predicated shape selection in code/comments/fixtures/tests/docs vocabulary stops the review before all else; shape checks are positive signature-match-else-refuse only; dual-world support is a violation at birth (temporary included). Semantics count, not just words — era-reachability test on every branch/variant/optional/nullable/tolerant-parse (if only a past era can produce the input, the arm is compat; rename cannot launder); struct classes incl. old-obligate dual arms, history-only optional plumbing, alias exports, tolerant parses of retired payloads, 2-impl abstractions with one dead era = P0 reject. If the project has no P0 contract, skip this bullet.
 - **Positive-only boot:** live code and live data stand on current architecture. No compat shim, legacy arm, special-case, or carried old-era data at boot.
-- **Suite discipline:** the project's named suites (typecheck + tests) green per slice, every time. A red tree wedges the wave.
+- **Suite discipline:** the project's named suites (typecheck + tests) green per slice, every time. A red tree wedges the workstream.
 - **Finalize evidence:** a close is not quality-green without grep/diff/read evidence of epoch-vocabulary-zero (when P0 applies), positive-only boot, era-reachability struct classes, and green suites. Gate receipts are prerequisites, never that evidence. Report-acceptance does not discharge.
 
 ## Local-type
