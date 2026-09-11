@@ -74,6 +74,18 @@ Rules learned:
   samples (i.e. the monitor did not halt it for the whole window).
 - The on-chip ring is tiny (≈1 KB): it overwrites. Events missing from a dump are
   not evidence of "not read".
+- **A raw memory-dump reader does NOT consume RTT, so the target silently drops
+  writes once the buffer is full.** `mdb $pBuffer 1024` never advances the host read
+  pointer (`aUp[0].RdOff`, `CB+0x28`), and RTT's default NO_BLOCK_SKIP mode drops
+  everything after that: with ~100 B heartbeats and a 1 KB buffer the app stops
+  emitting after ~27 s, and every later sample re-reads the same frozen block. A
+  whole night of "clean idle" was actually one 27-second window (cost us a day,
+  2026-09-11). Fixes: write `RdOff = WrOff` (`mww <CB+0x28> <WrOff>`) after each
+  dump, read through OpenOCD's RTT server (`rtt setup/start`, `rtt server start`),
+  or — best — have the firmware own a RAM ring + monotonic counters read by symbol.
+- **Before citing a long capture as evidence, prove it advances:** distinct newest
+  values across samples > 1. A frozen ring plus a delta filter that discards zero
+  deltas looks exactly like a steady cadence.
 - Sampling must not reset or halt the chip long enough to disturb the behavior
   under test; if the app must run free, sample sparsely and confirm with WrOff.
 
