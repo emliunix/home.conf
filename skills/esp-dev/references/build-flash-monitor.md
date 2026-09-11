@@ -81,8 +81,11 @@ Rules learned:
   emitting after ~27 s, and every later sample re-reads the same frozen block. A
   whole night of "clean idle" was actually one 27-second window (cost us a day,
   2026-09-11). Fixes: write `RdOff = WrOff` (`mww <CB+0x28> <WrOff>`) after each
-  dump, read through OpenOCD's RTT server (`rtt setup/start`, `rtt server start`),
-  or — best — have the firmware own a RAM ring + monotonic counters read by symbol.
+  dump, set the up-buffer Flags word (`CB+0x2C`) to **NO_BLOCK_TRIM — which is `1`,
+  not `2`** (`2` is `BLOCK_IF_FIFO_FULL` and will stall the target when nothing is
+  consuming; check the in-tree `SEGGER_RTT.h` rather than guessing the constant),
+  read through OpenOCD's RTT server (`rtt setup/start`, `rtt server start`), or —
+  best — have the firmware own a RAM ring + monotonic counters read by symbol.
 - **Before citing a long capture as evidence, prove it advances:** distinct newest
   values across samples > 1. A frozen ring plus a delta filter that discards zero
   deltas looks exactly like a steady cadence.
