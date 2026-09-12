@@ -89,6 +89,10 @@ Rules learned:
 - **Before citing a long capture as evidence, prove it advances:** distinct newest
   values across samples > 1. A frozen ring plus a delta filter that discards zero
   deltas looks exactly like a steady cadence.
+- **…and pin every quoted value to the sample label it appeared under.** A rolling ring
+  re-shows recent lines, so "it looked newest in the dump" is not a timestamp: a card-tap
+  signature read out of a later dump was once attributed to a test that never happened.
+  Consume-on-read keeps the capture live; it does not make ring position a clock.
 - Sampling must not reset or halt the chip long enough to disturb the behavior
   under test; if the app must run free, sample sparsely and confirm with WrOff.
 
