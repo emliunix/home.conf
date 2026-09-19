@@ -15,7 +15,7 @@ description: >-
 3. **Candidates** — two or three designs, one per point on the axis. A second flavour of the first shape does not count.
 4. **Pre-register** — record the outcome expected of each candidate **before the first run**. A prediction written after the measurement is a regression gate, not a prediction.
 5. **Run**, then **evaluate**: what measured, which candidate the measurement selects, what it leaves unmeasured, which expectations the run contradicted.
-6. **Predicate** — one committed command runs every track and reports an honest `complete` flag. A skip is not a pass.
+6. **Predicate** — the committed commands this round runs (the corpus predicate, then its suite), each reporting an honest `complete` flag; one command per track, not one for all of them. A skip is not a pass.
 
 A run that disagrees with the prediction is the finding: correct the prediction in place and say so.
 
