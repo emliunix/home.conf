@@ -30,7 +30,7 @@ dimensions:
             claim: "step 'Blind the readers' is performed with its observable evidence"
             red_when: "the step is skipped or its evidence is absent"
           - id: P-STEP-3
-            claim: "step 'One reader per batch' is performed with its observable evidence"
+            claim: "step 'Three to five readers per batch' is performed with its observable evidence"
             red_when: "the step is skipped or its evidence is absent"
           - id: P-STEP-4
             claim: "step 'Metrics per reader' is performed with its observable evidence"
