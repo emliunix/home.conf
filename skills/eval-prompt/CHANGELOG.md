@@ -12,4 +12,6 @@ One row per change: date, what changed, the finding that caused it, and the reco
 
 | 2026-09-19 | v4 | + `Preconditions`: **lint the artifact before measuring it** (parse the frontmatter, then confirm the exposed catalog holds the name) | the frontmatter of this skill and all ten `visflow-*` skills was **invalid YAML** - every loader silently dropped them; five trials measured an artifact that could never fire, and each arm reported it as "not exposed" while the parent diagnosed the wrong root twice | `iter5-pos-flash-retry`, catalog refresh |
 
+| 2026-09-19 | v6 | + `walk` case (W1-W6) and its section; the description still lists six cases - **a trigger run is owed** before adding the word there | six walks over the real tree: consistency failed in all six; the entry surfaces were sound and the bodies had drifted from the tree (a batch size, a command count, a citation to two trees that do not name absences) | `worklog/dryrun-walk/` |
+
 **Open at v2:** whether clause-based exclusions generalise at all (iteration 5), and whether the package's rubric and cases make two subjects' records comparable (iteration 6).

@@ -15,4 +15,4 @@ The file set arrives **as its stages arrive** — `README.md`, `grounding.md`, `
 A question that spans two trees (semantics in one, price in another) belongs in a new directory: a round in either answers only half.
 
 ## References
-`method.md` · *Starting a new programme*; `loop-surface/` and `catch-surface/` are the worked examples; records follow `visflow-records`.
+`method.md` · *Starting a new programme*; `select-retirement/README.md` is the tree that names the files it has not created yet, and `loop-surface/`/`catch-surface/` show the file set arriving in stages; records follow `visflow-records`.
