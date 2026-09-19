@@ -1,0 +1,51 @@
+# visflow-gate - rubrics by dimension
+# An item names the defect that must flip it; a property item says so.
+skill: visflow-gate
+dimensions:
+  trigger:
+    rubrics:
+      - id: selection
+        arms: [entry-only]
+        control_substitutes: [distractor_set, excluded_shapes]
+        pass_bar: fires on gate-shaped work; silent on the three excluded shapes
+        items:
+          - {id: T-SELECT, claim: a new check or a check about to be trusted selects this surface, red_when: a distractor is selected instead}
+          - {id: T-SILENT, claim: the excluded shapes stay silent, red_when: any surface fires on a green-only suite or a re-run}
+      - id: generalisation
+        arms: [entry-only]
+        pass_bar: the trap and the paraphrase score alike
+        items:
+          - {id: T-TRAP, claim: a re-run of an existing green suite stays silent, red_when: the surface fires on the vocabulary "suite/green/verify"}
+          - {id: T-PARA, claim: the same situation without the vocabulary stays silent, red_when: silence depends on the clause wording appearing in the task}
+  procedure:
+    rubrics:
+      - id: steps
+        arms: [entry-only, full]
+        pass_bar: all six steps present, in order, with observable evidence
+        items:
+          - {id: P-CLAIM, claim: the claim is named in one line before the check, red_when: a check appears with no stated claim}
+          - {id: P-ONECMD, claim: one committed entry point carries an honest complete flag, red_when: several entry points, or a flag that cannot report incomplete}
+          - {id: P-BIDIR, claim: green on the known-good fixture and red on a defect of exactly the clause, red_when: only one direction is ever run}
+          - {id: P-CENSUS, claim: every cell names its fixture class, red_when: a class with no fixture leaves the census green}
+          - {id: P-BLAST, claim: the isolation fact is proven by running code, red_when: it is argued in prose}
+      - id: honesty
+        pass_bar: the gate reports what did not run
+        items:
+          - {id: P-SKIP, claim: a skip is reported as not-a-pass, red_when: a skipped cell counts as green}
+          - {id: P-REHOME, claim: a claim living only in a probe is moved into a named cell and the probe deleted, red_when: the probe survives beside the cell}
+  production:
+    rubrics:
+      - id: acceptance
+        arms: [full]
+        pass_bar: the produced gate fails on the seeded defect and passes when restored
+        items:
+          - {id: R-SEED, claim: a defect of exactly the clause turns the gate red, red_when: the gate stays green with the defect in place}
+          - {id: R-RESTORE, claim: restoring the fixture returns the gate to green, red_when: the gate stays red}
+  ablation:
+    rubrics:
+      - id: steps
+        arms: [full, full-minus-one-step]
+        pass_bar: each step either degrades the produced gate or is deleted
+        items:
+          - {id: A-STEP, claim: a step whose removal changes nothing on a trial that exercised it is decoration, red_when: it survives a fair test}
+          - {id: A-UNPRICED, claim: a step the trial never exercised is recorded unpriced, red_when: it is deleted on that evidence}

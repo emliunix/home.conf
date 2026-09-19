@@ -1,0 +1,10 @@
+{
+ "files": {
+  "README.md": "c87125af4143379669f1a22b0388da3ab60de472c61f9c880e761db72110bd40",
+  "SKILL.md": "7bbe7a84fafc88772d9b9db906b526d992d47ff216605f2fc9773080388b40d2",
+  "tests/cases/trigger.yaml": "2c7c537fef50a00f5f1ff446b640160cfc47f5fd31c752d42fbe76210f4b83f5",
+  "tests/rubric.yaml": "b8b532ca934040059dfa4f175742984b26b33cace1f33c1c98ade67538878795"
+ },
+ "skill": "visflow-orient",
+ "version": 1
+}

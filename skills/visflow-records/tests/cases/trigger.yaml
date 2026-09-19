@@ -1,0 +1,22 @@
+# visflow-records - trigger cases, as canonical / trap / paraphrase triplets
+# Derived from the batch task set (tasks-v5), which mapped 1:1 onto the ten surfaces.
+skill: visflow-records
+dimension: trigger
+triplets:
+  - behavior: the work this skill owns
+    canonical:
+      prompt: "Where is the evidence that the v3 loop-over-parallel gap is closed, and which files record it?"
+      expected: [visflow-records]
+      cites: "SKILL.md:3-7 - the Use clause names this shape"
+    trap:
+      prompt: "Trust the manifest and tell me what has run."
+      expected: []
+      cites: "SKILL.md:3-7 - the exclusion names this shape, in this skill's own vocabulary"
+    paraphrase:
+      prompt: "Put the numbers we collected yesterday into a chart."
+      expected: []
+      cites: "SKILL.md:3-7 - the same shape with the vocabulary removed"
+run_notes:
+  - 'Arms: entry-only over the full catalog; the degenerate control is replaced by the distractor set, the excluded shapes, and route repetition.'
+  - 'Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss.'
+  - 'The trap and the paraphrase are the same situation; if only the trap stays silent, the surface is reading words, not the shape.'

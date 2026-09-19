@@ -1,0 +1,22 @@
+# visflow-canon-change - trigger cases, as canonical / trap / paraphrase triplets
+# Derived from the batch task set (tasks-v5), which mapped 1:1 onto the ten surfaces.
+skill: visflow-canon-change
+dimension: trigger
+triplets:
+  - behavior: the work this skill owns
+    canonical:
+      prompt: "Change theory.md section 4 item 1 to the per-class frame condition the frame-declaration round measured."
+      expected: [visflow-canon-change]
+      cites: "SKILL.md:3-7 - the Use clause names this shape"
+    trap:
+      prompt: "Rewrite the sentence in theory.md so it says what we now believe."
+      expected: []
+      cites: "SKILL.md:3-7 - the exclusion names this shape, in this skill's own vocabulary"
+    paraphrase:
+      prompt: "Our documented rule turned out wrong in practice - can we change it?"
+      expected: []
+      cites: "SKILL.md:3-7 - the same shape with the vocabulary removed"
+run_notes:
+  - 'Arms: entry-only over the full catalog; the degenerate control is replaced by the distractor set, the excluded shapes, and route repetition.'
+  - 'Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss.'
+  - 'The trap and the paraphrase are the same situation; if only the trap stays silent, the surface is reading words, not the shape.'

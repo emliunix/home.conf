@@ -1,0 +1,10 @@
+{
+ "files": {
+  "README.md": "3da30d6be38a1d57d1de44c065ee1395e2cd70c3c38cd4334405367a74fee87f",
+  "SKILL.md": "6746c8d83460ed74dca526e4dd733b5906d39bea2787dda3dd44fc5c97dbc0ab",
+  "tests/cases/trigger.yaml": "f602aefe3c365621d88fb27bef98bb5b8516c0a7831ad0afce133f606e584be5",
+  "tests/rubric.yaml": "d6cdc6ea1eb51120d3f85c5777d5f45629962930438dd27a9606c2358c58b745"
+ },
+ "skill": "visflow-gate",
+ "version": 1
+}

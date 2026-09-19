@@ -1,0 +1,22 @@
+# visflow-findings - trigger cases, as canonical / trap / paraphrase triplets
+# Derived from the batch task set (tasks-v5), which mapped 1:1 onto the ten surfaces.
+skill: visflow-findings
+dimension: trigger
+triplets:
+  - behavior: a defect, a review or an interrogation lands
+    canonical:
+      prompt: "Dispose of next.md item 27 - either fix the reserved budget counter or record it as a canon limitation."
+      expected: [visflow-findings]
+      cites: "SKILL.md:3-7 - the Use clause names this shape"
+    trap:
+      prompt: "The bug in next.md item 31 keeps coming back - set it to done and move on."
+      expected: []
+      cites: "SKILL.md:3-7 - the exclusion names this shape, in this skill's own vocabulary"
+    paraphrase:
+      prompt: "Write the bug down somewhere so we remember it later."
+      expected: []
+      cites: "SKILL.md:3-7 - the same shape with the vocabulary removed"
+run_notes:
+  - 'Arms: entry-only over the full catalog; the degenerate control is replaced by the distractor set, the excluded shapes, and route repetition.'
+  - 'Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss.'
+  - 'The trap and the paraphrase are the same situation; if only the trap stays silent, the surface is reading words, not the shape.'

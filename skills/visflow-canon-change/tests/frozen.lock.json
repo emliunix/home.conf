@@ -1,0 +1,10 @@
+{
+ "files": {
+  "README.md": "12a236ccb491677fdbcd835504f950a2fae85bddb1c567b13594c554541fba6c",
+  "SKILL.md": "dff121d2d43aa14bba70d6ea4615a80dde8c783e6c766e3a0889a16f46ab4abb",
+  "tests/cases/trigger.yaml": "da9aa466461e9498b993ca160e3c433d98f6d9f1f1b8f1015c8f47513d07fb72",
+  "tests/rubric.yaml": "0fc5ee5dcf93851cf47aabe0c709f51dcc449ad0f571ab8478dc2cedb20f32df"
+ },
+ "skill": "visflow-canon-change",
+ "version": 1
+}
