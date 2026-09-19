@@ -1,0 +1,48 @@
+# visflow-evaluate - trigger cases, as canonical / trap / paraphrase triplets
+# Drawn from the project's own vocabulary and its own evaluation artifacts.
+skill: visflow-evaluate
+dimension: trigger
+triplets:
+  - behavior: a round's evidence is to be evaluated
+    canonical:
+      prompt: "Adversarially evaluate round 2 of the loop-surface experiment - does its evidence establish what it claims?"
+      expected: [visflow-evaluate]
+      cites: "SKILL.md:5-7 - the Use clause names a round needing an adversarial verdict"
+    trap:
+      prompt: "Sanity-check my write-up of the round and fix the typos."
+      expected: []
+      cites: "SKILL.md:7 - prose or style is refused; an evaluation does not change the artifact"
+    paraphrase:
+      prompt: "Get a second opinion on that round from other models before we trust it."
+      expected: [visflow-evaluate, interrogate]
+      cites: "SKILL.md:6 - model diversity is the signal; the multi-model mechanism is pstack's and a co-fire is correct"
+  - behavior: a design document's claims are to be tested against the tree
+    canonical:
+      prompt: "Test whether architecture.md's claims still hold against the tree, adversarially and independently."
+      expected: [visflow-evaluate]
+      cites: "SKILL.md:5-7 with the cases table row 'a design document'"
+    trap:
+      prompt: "One reviewer said the design is fine - can we move on?"
+      expected: []
+      cites: "SKILL.md:7 - a single impression is not a consensus"
+    paraphrase:
+      prompt: "Would a stranger reading the design find it honest about the code?"
+      expected: [visflow-evaluate]
+      cites: "SKILL.md:5 - the case is the design document; the wording is not the trigger"
+  - behavior: a unit of work before a round closes
+    canonical:
+      prompt: "Evaluate the 47 commits since the last pass on the graph compiler before we call this round done."
+      expected: [visflow-evaluate]
+      cites: "SKILL.md:5-6 - the review set is the commits since the previous evaluation, derived from the range"
+    trap:
+      prompt: "Add an evaluation row to the register."
+      expected: []
+      cites: "SKILL.md:8 - recording a row is visflow-records' work, not an evaluation"
+    paraphrase:
+      prompt: "What has landed since anyone looked at the compiler, and is it sound?"
+      expected: [visflow-evaluate]
+      cites: "SKILL.md:6 - the review set is derived from the range, whatever the phrasing"
+run_notes:
+  - "Arms: entry-only over the full catalog; the degenerate control is replaced by the distractor set, the two traps, and route repetition."
+  - "Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss."
+  - "The paraphrase cases matter most here: this skill's whole vocabulary ('adversarial', 'evaluation', 'seats') is missing from them."
