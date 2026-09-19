@@ -1,9 +1,9 @@
 {
  "files": {
   "README.md": "058ffcff1f881630d66b601d90b92f2a9183204eefeeee21711c260409095288",
-  "SKILL.md": "3ea29d14526a6742413050cb6446c5e18163c43fd55f8e3191ef0333d4a23c9d",
+  "SKILL.md": "163d68cb136cc91084ab80027e4582f1a8e7a324f3822c44b43a7327340de875",
   "tests/cases/trigger.yaml": "fc67b36346f0a2ff08d1a92f3084a2ffa813d7a0c0a4d998052ef1493f23ce0c",
-  "tests/rubric.yaml": "51378ef5e2e60fff73dbcd0c5e547a0b1afbb96f9eb2d366c349289fbe62fd15"
+  "tests/rubric.yaml": "5a7e959738cdb16e3ef1e0a35fec4e7f73877523a07e9a092d46536c404915d8"
  },
  "skill": "visflow-instrument-readers",
  "version": 1
