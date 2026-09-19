@@ -1,0 +1,44 @@
+# eval-prompt - trigger cases, as canonical / trap / paraphrase triplets
+# Rule: each case cites the SKILL.md line that makes its expectation correct.
+skill: eval-prompt
+dimension: trigger
+triplets:
+  - behavior: an artifact is under test
+    canonical:
+      prompt: "Evaluate whether our gate skill description actually triggers on gate-shaped tasks."
+      expected: [eval-prompt]
+      cites: "SKILL.md:3 - description: evaluate an instruction artifact by blinded trials"
+    trap:
+      prompt: "The suite is green - ship it?"
+      expected: []
+      cites: "SKILL.md:50-52 - Refusing: no artifact under test, and not prose review"
+    paraphrase:
+      prompt: "How do I know if this prompt actually works?"
+      expected: [eval-prompt]
+      cites: "SKILL.md:3 - the artifact is any instruction surface; the trial is how it is known"
+  - behavior: a reader or author measurement
+    canonical:
+      prompt: "Measure whether the machine-design tree onboards a reader who has never seen the repository."
+      expected: [visflow-instrument-readers, eval-prompt]
+      cites: "SKILL.md:14 - comprehension case: does a doc get a reader to the right place"
+    trap:
+      prompt: "A colleague skimmed it and shrugged - proceed?"
+      expected: []
+      cites: "SKILL.md:14 - one impression is not a batch"
+    paraphrase:
+      prompt: "Would a stranger find their way around this document?"
+      expected: [eval-prompt]
+      cites: "SKILL.md:14 - the question is the comprehension case, wording aside"
+  - behavior: work the instrument must refuse
+    canonical:
+      prompt: "Add the L-ARRIVAL check to the verifier."
+      expected: []
+      cites: "SKILL.md:52 - not a substitute for the work itself"
+    trap:
+      prompt: "Score this artifact on the trigger dimension and tell me if it passes."
+      expected: [eval-prompt]
+      cites: "SKILL.md:10-23 - Cases: trigger is defined by arms and a pass bar"
+    paraphrase:
+      prompt: "Is this thing any good at doing what it says?"
+      expected: [eval-prompt]
+      cites: "SKILL.md:3 - contribution, not prose"
