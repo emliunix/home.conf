@@ -1,9 +1,10 @@
 {
  "files": {
+  "CHANGELOG.md": "ed3776b4014c4b8bf190eaa838cd34a8ce803b7adfc59429c410e3045640f30b",
   "README.md": "f25c91bbbafcfc5c8cd17eea974540f1056e04c08e27393b3a87bbe91d16282d",
-  "SKILL.md": "332330c633cc680629b81ee97ef0a69127cb76d03f8debdfb18e8c62fc8e9139",
-  "tests/cases/trigger.yaml": "684d57b82c4bb28664804ade622170dc6947141451d86b64217747e3a73d6275",
-  "tests/rubric.yaml": "b818cc9f8267b22ef14c327f2511d627380d60dee2ee76d62d91da5aa524d6c8"
+  "SKILL.md": "3e8dabd05de149ac8c7aab037ff84d91b33162951f0aa60727c39da7bcc5a754",
+  "tests/cases/trigger.yaml": "d5bdfef0ec4e528f17344894a484b2c3a5baede6d04e1b6e65df5b6390aa99b3",
+  "tests/rubric.yaml": "66b5dd4fc51b14e257ad5422ffc600a6e7f39484d0c536c81f579177fe2c21d6"
  },
  "skill": "visflow-evaluate",
  "version": 1
