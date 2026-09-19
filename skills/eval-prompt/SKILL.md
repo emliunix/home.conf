@@ -23,6 +23,7 @@ Evaluate an **instruction artifact** by blinded trials with a control arm. *Prom
 | **production** | does a doc let someone produce a working artifact? | blind, assisted | acceptance implies execution — what it accepts, it runs |
 | **induction** | does it pay for itself? | control, full | at equal outcome, the full arm is cheaper |
 | **ablation** | does a part earn its place? | full vs full-minus-one-part | each part **either** degrades the outcome (keep, record why) **or** changes nothing — and is **deleted** |
+| **walk** | can the described work be *done* against the tree as it stands? | read-only, one scenario per trial | every step is grounded in a path, or is reported BLOCKED with the missing thing named |
 
 No case named → run **trigger**, then **procedure**. The cheap first move is always the **trigger probe**: one model, all entry surfaces in one context, one classification pass, no task execution.
 
@@ -45,6 +46,19 @@ Record the artifact’s digest and length, and hand subjects **those bytes**. If
 ## Running a trial
 
 1. **Declare** the subject — case, artifact paths, digest, and whether the subjects can load it — and what is held constant: task, model, effort, tools, environment.2. **Pre-register** the rubric, the arms, and the expected outcome per task, **before the first run**. Where an intended routing is genuinely ambiguous, record **both readings** and score the ambiguity as a finding — never as a miss against an intention the subject could not know.3. **Freeze** the artifact, the tree and the rubric for the batch.4. **Separate the subject from the scorer.** The expected routing per task is an **answer key**: it belongs to the pre-registration and to whoever scores, **never in the subject’s hand-out** — a subject that invents the key and then scores itself against it has measured nothing, and a subject handed it has nothing left to demonstrate. If the artifact ships as a package (`tests/rubric.yaml`, `tests/cases/`), hand the subject the package **minus the key** and pin what you handed with its digest.5. **Trajectory** — one file per trial: what it read, what it ran, what it decided, in order, plus the artifact it produced. Score that, never a memory of the run. Then, **after** the trial, ask for **feedback** on the artifact — where it re-read, what it skipped and why, what it would delete — and record it in the same file. Trajectory is evidence; feedback generates leads: not evidence until something reproduces it, and never scored.6. **Score** per rubric item, per trial, then report the **delta against control**: a claim counts only when control is worse — a tie is decoration, worse is harmful. If no clean subject can be obtained, say so and label the result a **sample**.7. **Disposition** every finding: fixed, or recorded with the trial that shows it. Where the host project has its own disposition rules, follow those.
+## Walking a workflow
+
+A walk takes a workflow — a skill, a method section, a documented procedure — with a scenario drawn from the real work, and asks whether the work can be **executed against the repository as it stands**. Read-only: the trial produces a plan and an evidence trail, never a change. One scenario per trial.
+
+- **W1 path resolution** — every path the workflow names resolves on disk, or is named as absent.
+- **W2 step executability** — every step ends in a command or an artifact that could be produced.
+- **W3 sufficiency** — complete as given; anything fetched from elsewhere is cited (file:line).
+- **W4 consistency** — the tree does not contradict the workflow; contradictions are cited.
+- **W5 blockers** — a step that cannot be done names a concrete missing thing: file, tool, fixture, decision.
+- **W6 checkability** — exact commands and the outcome each would have to show.
+
+**A BLOCKED step is a result, not a failure**, and a walk needs no blinding: its subject is the tree, which the walker and the reader both hold, so what replaces the delta-against-control bar is **reproducibility** — every claim is a path, a line, or a command with its stated output. **Verify the scenario is still open before dispatching it**: a walk of a closed question measures nothing and its own premise becomes the finding. A walk finds what a trigger trial cannot — a description can fire perfectly and the work still cannot be done.
+
 ## Self-application
 
 Run it on itself: `trigger` on its own description, `procedure` on its own body, `ablation` on its own sections.
