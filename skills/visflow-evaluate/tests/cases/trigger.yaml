@@ -11,7 +11,7 @@ triplets:
     trap:
       prompt: "Sanity-check my write-up of the round and fix the typos."
       expected: []
-      cites: "SKILL.md:7 - prose or style is refused; an evaluation does not change the artifact"
+      cites: "SKILL.md:9 - the description refuses prose or style"
     paraphrase:
       prompt: "Get a second opinion on that round from other models before we trust it."
       expected: [visflow-evaluate, interrogate]
@@ -24,7 +24,7 @@ triplets:
     trap:
       prompt: "One reviewer said the design is fine - can we move on?"
       expected: []
-      cites: "SKILL.md:7 - a single impression is not a consensus"
+      cites: "SKILL.md:10 - the description refuses one evaluator impressions presented as a consensus"
     paraphrase:
       prompt: "Would a stranger reading the design find it honest about the code?"
       expected: [visflow-evaluate]
@@ -36,8 +36,8 @@ triplets:
       cites: "SKILL.md:5-6 - the review set is the commits since the previous evaluation, derived from the range"
     trap:
       prompt: "Add an evaluation row to the register."
-      expected: []
-      cites: "SKILL.md:8 - recording a row is visflow-records' work, not an evaluation"
+      expected: [visflow-records]
+      cites: "SKILL.md:36 - step 6 puts the register row inside an evaluation, so the correct selection is ambiguous; this case records that ambiguity rather than scoring it"
     paraphrase:
       prompt: "What has landed since anyone looked at the compiler, and is it sound?"
       expected: [visflow-evaluate]

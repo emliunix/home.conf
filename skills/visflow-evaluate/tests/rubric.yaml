@@ -6,8 +6,8 @@ dimensions:
     rubrics:
       - id: selection
         arms: [entry-only]
-        control_substitutes: [distractor_set, prose_review_trap, single_impression_trap]
-        pass_bar: fires on evaluation-shaped work; silent on the two traps
+        control_substitutes: [distractor_set (the catalog's non-owner entries: 'how', 'interrogate', the principle-* skills), prose_review_trap, single_impression_trap]
+        pass_bar: fires on evaluation-shaped work; silent on the three traps (prose review, single impression, a register row)
         items:
           - {id: T-SELECT, claim: a round, a design or a unit to be evaluated selects this surface, red_when: a distractor is selected instead}
           - {id: T-SILENT, claim: prose review and single impressions stay silent, red_when: any surface fires on them}
@@ -26,18 +26,19 @@ dimensions:
           - {id: P-SET, claim: the review set is derived from the range and fixed before the first seat reads, red_when: the set is remembered or moves mid-evaluation}
           - {id: P-ROSTER, claim: seats are chosen for model diversity and the author is not a seat, red_when: personas are assigned, or the author grades the work}
           - {id: P-INSTR, claim: every seat receives the same committed prompt file, red_when: the prompt is improvised per seat or lives outside the tree}
-          - {id: P-READONLY, claim: seats are read-only, red_when: a seat edits the artifact it judges}
+          - {id: P-READONLY, claim: seats are read-only, as step 3 requires, red_when: a seat edits the artifact it judges (the brief-and-refine loop does this and is therefore not an example of this method)}
           - {id: P-CONSENSUS, claim: agreement is the verdict and factual disagreements are reproduced by the lead, red_when: a factual disagreement is settled by majority}
           - {id: P-DISP, claim: every finding is fixed or recorded as a canon limitation with this verdict, red_when: a finding is noted and dropped}
           - {id: P-RECORD, claim: the verdict lands as evaluate/interrogation-N.md with a decision row per landed disposition, red_when: the verdict lives only in chat}
   coverage:
     rubrics:
       - id: cases
+        cases_shipped: false   # no case file yet: the arms in this dimension would invent their own, which is the failure the package format exists to prevent (verdict experiment 3)
         arms: [one trial per case kind]
         pass_bar: every row of the cases table has been run at least once
         items:
           - {id: C-CASE, claim: each case kind - a round, a design, a tree record, a unit of work, a round verdict - has a worked example, red_when: only rounds have ever been evaluated}
-          - {id: C-EXEMPLAR, claim: the example cited for a case actually exercises that case, red_when: a 50-line review is offered as the design-document exemplar}
+          - {id: C-EXEMPLAR, claim: the example cited for a case was produced by this method - seats, one shared instrument, a pooled verdict, red_when: a single-author review or a one-seat review is offered as a method exemplar}
   record:
     rubrics:
       - id: verdict
