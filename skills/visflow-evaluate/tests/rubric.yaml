@@ -1,0 +1,49 @@
+# visflow-evaluate - rubrics by dimension
+# An item names the defect that must flip it; a property item says so.
+skill: visflow-evaluate
+dimensions:
+  trigger:
+    rubrics:
+      - id: selection
+        arms: [entry-only]
+        control_substitutes: [distractor_set, prose_review_trap, single_impression_trap]
+        pass_bar: fires on evaluation-shaped work; silent on the two traps
+        items:
+          - {id: T-SELECT, claim: a round, a design or a unit to be evaluated selects this surface, red_when: a distractor is selected instead}
+          - {id: T-SILENT, claim: prose review and single impressions stay silent, red_when: any surface fires on them}
+      - id: generalisation
+        arms: [entry-only]
+        pass_bar: trap and paraphrase score alike
+        items:
+          - {id: T-TRAP, claim: the excluded case dressed in evaluation vocabulary stays silent, red_when: the surface fires on the words}
+          - {id: T-PARA, claim: the same case without the vocabulary still selects this surface, red_when: selection depends on the phrase "adversarial evaluation" appearing}
+  procedure:
+    rubrics:
+      - id: steps
+        arms: [control, entry-only, full]
+        pass_bar: all six steps in order, each with its evidence
+        items:
+          - {id: P-SET, claim: the review set is derived from the range and fixed before the first seat reads, red_when: the set is remembered or moves mid-evaluation}
+          - {id: P-ROSTER, claim: seats are chosen for model diversity and the author is not a seat, red_when: personas are assigned, or the author grades the work}
+          - {id: P-INSTR, claim: every seat receives the same committed prompt file, red_when: the prompt is improvised per seat or lives outside the tree}
+          - {id: P-READONLY, claim: seats are read-only, red_when: a seat edits the artifact it judges}
+          - {id: P-CONSENSUS, claim: agreement is the verdict and factual disagreements are reproduced by the lead, red_when: a factual disagreement is settled by majority}
+          - {id: P-DISP, claim: every finding is fixed or recorded as a canon limitation with this verdict, red_when: a finding is noted and dropped}
+          - {id: P-RECORD, claim: the verdict lands as evaluate/interrogation-N.md with a decision row per landed disposition, red_when: the verdict lives only in chat}
+  coverage:
+    rubrics:
+      - id: cases
+        arms: [one trial per case kind]
+        pass_bar: every row of the cases table has been run at least once
+        items:
+          - {id: C-CASE, claim: each case kind - a round, a design, a tree record, a unit of work, a round verdict - has a worked example, red_when: only rounds have ever been evaluated}
+          - {id: C-EXEMPLAR, claim: the example cited for a case actually exercises that case, red_when: a 50-line review is offered as the design-document exemplar}
+  record:
+    rubrics:
+      - id: verdict
+        arms: [review of the produced record]
+        pass_bar: the verdict is reproducible from the tree
+        items:
+          - {id: R-SET, claim: the record names the commit range it evaluated, red_when: the set is unnamed and cannot be reconstructed}
+          - {id: R-LEAD, claim: the record shows how the lead judged the pooled findings, red_when: it reports findings with no judgement}
+          - {id: R-NEXT, claim: the next experiments are ranked with the falsifiers preferred, red_when: the verdict ends without what to do next}
