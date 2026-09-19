@@ -19,6 +19,26 @@ description: >-
 
 **Decision rows**: one row per landed unit — timestamp, decision, why, evidence, result.
 
+## Worklog names (2026-09-19)
+
+`worklog/` is the layer a reader enumerates *before* any programme, so its names carry a convention too:
+
+- **A new record** is `worklog/{YYYY-MM-DD}-{slug}.md` — the date is the day the record's subject was
+  fixed, and a frontmatter `created:` must agree with it.
+- **Living documents keep stable names**, because canon and the spine point at them: `next.md` (named by
+  four canon frontmatters as their open list), `experiment-manifest.md`, `experiments-and-lessons.md`,
+  `project-understanding.md`, `pstack-decision-log.tsv`. Adding a name to this list is a deliberate act,
+  recorded in a decision row.
+- **A round home is a directory** named for the topic (`dryrun-walk/`, `canon-check/`,
+  `parallel-plan-review/`); files inside are named for their role — `{seat}.md`,
+  `round-{n}-adjudication.md` — not dated, because the round's own record carries the dates.
+- **Forward-only.** The 38 top-level files created before 2026-09-19 keep their names: they used 38
+  different names, and renaming them would break citations across the repository for no gain. The
+  grandfather list lives in the checker, not in a document that would drift from it.
+- **The check** is `python3 worklog/tools/check_names.py`: non-zero when a top-level `worklog/` file is
+  neither dated nor on the living-or-grandfathered list, or when a dated name disagrees with its
+  `created:`. A rule with no check is speculation — this one included.
+
 ## Enumerating an experiment's record (the full protocol)
 
 *Moved here from `method.md` when that file became a manifest (2026-09-19).*
