@@ -1,0 +1,49 @@
+# visflow-gate - trigger cases, as canonical / trap / paraphrase triplets
+# Derived from the batch task set (tasks-v5), which mapped 1:1 onto the ten surfaces; each case cites
+# the SKILL.md line that makes its expectation correct.
+skill: visflow-gate
+dimension: trigger
+triplets:
+  - behavior: a check does not exist yet
+    canonical:
+      prompt: "Add the L-ARRIVAL check to the taskboard-v3 verifier and prove that a seeded double-delivery turns it red."
+      expected: [visflow-gate]
+      cites: "SKILL.md:4-8 - a check that does not exist yet; prove it by a seeded defect"
+    trap:
+      prompt: "Re-run the existing green suite and tell me it still passes."
+      expected: []
+      cites: "SKILL.md:7-8 - not when the suite already runs green, or the task is to re-run an existing check"
+    paraphrase:
+      prompt: "Everything already passes, so let us call it done - anything else needed?"
+      expected: []
+      cites: "SKILL.md:6-8 - nothing here is a check about to be trusted"
+  - behavior: a check is about to be trusted
+    canonical:
+      prompt: "We are about to trust the CI gate for the new module - what would make it fail?"
+      expected: [visflow-gate]
+      cites: "SKILL.md:6 - a check is about to be trusted and no seeded defect has flipped it"
+    trap:
+      prompt: "The suite is green - ship it?"
+      expected: []
+      cites: "SKILL.md:7-8 - a green suite is the excluded shape, and no check is being built"
+    paraphrase:
+      prompt: "The index says the gap is closed - just confirm that for me."
+      expected: []
+      cites: "SKILL.md:8 - there is no defect the check must catch"
+  - behavior: the gate that only ever ran green
+    canonical:
+      prompt: "Our new guard has never failed - show that it can."
+      expected: [visflow-gate]
+      cites: "SKILL.md:13 - a gate counts only when a seeded defect makes it fail"
+    trap:
+      prompt: "It built without errors, so the doc must be fine, right?"
+      expected: []
+      cites: "SKILL.md:7-8 - not the task of building a check, and no defect to catch"
+    paraphrase:
+      prompt: "A colleague skimmed the change and shrugged - proceed?"
+      expected: []
+      cites: "SKILL.md:6 - no check is about to be trusted; nothing is being verified"
+run_notes:
+  - "Arms: entry-only over the full catalog; control substitutes for the degenerate control are the distractor set, the excluded shapes above, and route repetition."
+  - "Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss."
+  - "The trap and the paraphrase are the same situation; if only the trap stays silent, the surface is reading words, not the shape."

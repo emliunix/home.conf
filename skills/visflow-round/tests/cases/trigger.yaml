@@ -1,0 +1,22 @@
+# visflow-round - trigger cases, as canonical / trap / paraphrase triplets
+# Derived from the batch task set (tasks-v5), which mapped 1:1 onto the ten surfaces.
+skill: visflow-round
+dimension: trigger
+triplets:
+  - behavior: the work this skill owns
+    canonical:
+      prompt: "Run a round to decide box-as-scope versus box-as-dominance-region, with two candidate designs."
+      expected: [visflow-round]
+      cites: "SKILL.md:3-8 - the Use clause names this shape"
+    trap:
+      prompt: "Write up the results table from the measurements we already have."
+      expected: []
+      cites: "SKILL.md:3-8 - the exclusion names this shape, in this skill's own vocabulary"
+    paraphrase:
+      prompt: "The experiment has finished - what did we learn from it?"
+      expected: []
+      cites: "SKILL.md:3-8 - the same shape with the vocabulary removed"
+run_notes:
+  - 'Arms: entry-only over the full catalog; the degenerate control is replaced by the distractor set, the excluded shapes, and route repetition.'
+  - 'Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss.'
+  - 'The trap and the paraphrase are the same situation; if only the trap stays silent, the surface is reading words, not the shape.'

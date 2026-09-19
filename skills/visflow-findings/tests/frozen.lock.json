@@ -1,0 +1,10 @@
+{
+ "files": {
+  "README.md": "80f5225ad325f21bcd5d127d4c9137c789ee868644c60b3b59e3694bd7fc8442",
+  "SKILL.md": "97d1e8b10b90a740e7d1024c05787ac63fe2de819825dbc057118909e0768ee7",
+  "tests/cases/trigger.yaml": "07af63e733120daa63a07a824a4a3c31067f9bd96d8a3f43354408da2cca4fc6",
+  "tests/rubric.yaml": "effa7e42ed2240fc71c0c9ae7747fe134569345de8d9f2abef7e0a4f8bcc92ae"
+ },
+ "skill": "visflow-findings",
+ "version": 1
+}

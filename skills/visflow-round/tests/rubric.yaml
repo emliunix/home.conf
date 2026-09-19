@@ -1,0 +1,58 @@
+# visflow-round - rubrics by dimension
+# An item names the defect that must flip it; a property item says so.
+skill: visflow-round
+dimensions:
+  trigger:
+    rubrics:
+      - id: selection
+        arms: [entry-only]
+        control_substitutes: [distractor_set, excluded_shapes, route_repetition]
+        pass_bar: fires on the work it owns; silent on the excluded shapes
+        items:
+          - {id: T-SELECT, claim: the owning task selects this surface, red_when: a distractor is selected instead}
+          - {id: T-SILENT, claim: excluded shapes stay silent, red_when: any surface fires on them}
+      - id: generalisation
+        arms: [entry-only]
+        pass_bar: trap and paraphrase score alike
+        items:
+          - {id: T-TRAP, claim: the excluded case dressed in this skill's vocabulary stays silent, red_when: the surface fires on the vocabulary}
+          - {id: T-PARA, claim: the same case without the vocabulary stays silent, red_when: silence depends on the clause wording appearing in the task}
+  procedure:
+    rubrics:
+      - id: steps
+        arms: [control, entry-only, full]
+        pass_bar: every step observed in order, each with its evidence
+        items:
+          - id: P-STEP-1
+            claim: "step 'Hypothesis' is performed with its observable evidence"
+            red_when: "the step is skipped or its evidence is absent"
+          - id: P-STEP-2
+            claim: "step 'Axis' is performed with its observable evidence"
+            red_when: "the step is skipped or its evidence is absent"
+          - id: P-STEP-3
+            claim: "step 'Candidates' is performed with its observable evidence"
+            red_when: "the step is skipped or its evidence is absent"
+          - id: P-STEP-4
+            claim: "step 'Pre-register' is performed with its observable evidence"
+            red_when: "the step is skipped or its evidence is absent"
+          - id: P-STEP-5
+            claim: "step 'Run' is performed with its observable evidence"
+            red_when: "the step is skipped or its evidence is absent"
+          - id: P-STEP-6
+            claim: "step 'Predicate' is performed with its observable evidence"
+            red_when: "the step is skipped or its evidence is absent"
+  production:
+    rubrics:
+      - id: acceptance
+        arms: [full]
+        pass_bar: acceptance implies execution
+        items:
+          - {id: R-ACCEPT, claim: what the trial accepts, it runs, red_when: the record asserts an outcome no run produced}
+  ablation:
+    rubrics:
+      - id: steps
+        arms: [full, full-minus-one-step]
+        pass_bar: each step either degrades the outcome or is deleted
+        items:
+          - {id: A-STEP, claim: a step that changes nothing on a trial that exercised it is decoration, red_when: it survives a fair test}
+          - {id: A-UNPRICED, claim: a step the trial never exercised is recorded unpriced, red_when: it is deleted on that evidence}
