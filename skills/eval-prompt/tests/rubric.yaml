@@ -1,0 +1,84 @@
+# eval-prompt - rubrics by dimension
+#
+# A rubric is a scoring scheme (arms + pass bar). A dimension holds one or more.
+# An item names the defect that must flip it; an item no defect can flip is a property and says so.
+skill: eval-prompt
+dimensions:
+  trigger:
+    philosophy: metadata is the trigger; the arms separate "never fired" from "fired and misled"
+    rubrics:
+      - id: selection
+        arms: [control, entry-only]
+        control_is_degenerate: true
+        control_substitutes: [distractor_set, negative_tasks, repetition_across_routes]
+        pass_bar: fires on every task it owns, and on no task it does not
+        items:
+          - {id: T-SELECT, claim: the right entry surface is chosen on a task it owns, red_when: a distractor is chosen instead}
+          - {id: T-SILENT, claim: nothing of the subject fires on a negative task, red_when: any subject surface fires}
+      - id: generalisation
+        arms: [full, positives-only]
+        pass_bar: canonical, trap and paraphrase cases score alike
+        items:
+          - {id: T-TRAP, claim: the forbidden case dressed in the skill vocabulary stays silent, red_when: the surface fires on the vocabulary}
+          - {id: T-PARA, claim: the excluded case with the vocabulary removed stays silent, red_when: the surface fires only when the case echoes its own clause}
+      - id: stability
+        arms: [entry-only]
+        pass_bar: selections survive route order and paraphrase of the tasks
+        items:
+          - {id: T-ORDER, claim: selections hold under reversed and shuffled catalog/task order, red_when: an order flip changes a selection}
+      - id: ambiguity
+        arms: [entry-only]
+        pass_bar: every genuinely two-owner task is recorded as ambiguity, never as a miss
+        items:
+          - {id: T-AMBIG, claim: ambiguity is a finding, red_when: it is scored against an intention the subject could not know}
+  procedure:
+    philosophy: the body guides; arms tell whether it is followed or merely read
+    rubrics:
+      - id: compliance
+        arms: [control, entry-only, full]
+        pass_bar: every mandatory step observed in order; the artifact accepted
+        items:
+          - {id: P-SUBJECT, claim: declares subject, case, digest and loadability, red_when: a verdict issues without a loadability check}
+          - {id: P-PREREG, claim: rubric, arms and expectations fixed before the first run, red_when: the rubric is written after the pass}
+          - {id: P-FENCE, claim: fenced material outside the tree for the batch, red_when: a subject reports prior verdicts in context}
+          - {id: P-TRAJ, claim: one trajectory file plus unscored feedback, red_when: the record summarizes method instead of logging reads and runs}
+      - id: scoring
+        arms: [control, full]
+        pass_bar: per-item scores with the delta against control; findings dispositioned; limits named
+        items:
+          - {id: P-SCORE, claim: a claim counts only when control is worse, red_when: a tie is counted as contribution}
+          - {id: P-DISP, claim: every finding fixed or recorded with its trial, red_when: a finding is noted and dropped}
+          - {id: P-LIMITS, claim: the run names its own limits (n, blinding, routes, material), red_when: a sample is presented as a property}
+  comprehension:
+    rubrics:
+      - id: landing
+        arms: [control, headings-only, full]
+        pass_bar: the reader reaches the files that own the claim
+        items:
+          - {id: C-LAND, claim: the reader lands on the right files, red_when: the reader settles on a file that does not own the claim}
+          - {id: C-WRONG, claim: no wrong inference goes uncorrected, red_when: a reader states a false belief the material caused}
+  production:
+    rubrics:
+      - id: acceptance
+        arms: [blind, assisted]
+        pass_bar: acceptance implies execution
+        items:
+          - {id: R-ACCEPT, claim: what the trial accepts, it runs, red_when: a document compiles and cannot run}
+  induction:
+    rubrics:
+      - id: cost
+        arms: [control, full]
+        pass_bar: at equal outcome the full arm is cheaper
+        items:
+          - {id: I-COST, claim: the artifact pays for itself, red_when: it costs more and changes nothing}
+  ablation:
+    rubrics:
+      - id: part
+        arms: [full, full-minus-one-part]
+        pass_bar: each part either degrades the outcome or is deleted; an unexercised part is unpriced
+        items:
+          - {id: A-PART, claim: a part that changes nothing on a trial that exercised it is decoration, red_when: it survives a fair test}
+          - {id: A-UNPRICED, claim: a part the trial never exercised is recorded unpriced, red_when: it is deleted on that evidence}
+profiles:
+  smoke: [trigger.selection, trigger.generalisation]
+  full: all
