@@ -33,6 +33,9 @@ dimensions:
             claim: "step 'Candidates' is performed with its observable evidence"
             red_when: "the step is skipped or its evidence is absent"
           - id: P-STEP-4
+          - id: P-PLANREVIEW
+            claim: "an independent seat reads the plan against the hypothesis before the first run, and the plan and its review are committed together"
+            red_when: "the first independent read of a plan happens after the measurement"
             claim: "step 'Pre-register' is performed with its observable evidence"
             red_when: "the step is skipped or its evidence is absent"
           - id: P-STEP-5

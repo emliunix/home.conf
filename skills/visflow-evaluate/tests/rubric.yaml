@@ -37,7 +37,8 @@ dimensions:
         arms: [one trial per case kind]
         pass_bar: every row of the cases table has been run at least once
         items:
-          - {id: C-CASE, claim: each case kind - a round, a design, a tree record, a unit of work, a round verdict - has a worked example, red_when: only rounds have ever been evaluated}
+          - {id: C-CASE, claim: each case kind - a round, a plan before its run, a design, a tree record, a unit of work - has a worked example, red_when: only rounds have ever been evaluated}
+          - {id: C-PLAN, claim: a plan is reviewed before its run, not after it, red_when: the first independent read of a plan happens after the measurement}
           - {id: C-EXEMPLAR, claim: the example cited for a case was produced by this method - seats, one shared instrument, a pooled verdict, red_when: a single-author review or a one-seat review is offered as a method exemplar}
   record:
     rubrics:

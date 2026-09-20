@@ -13,7 +13,7 @@ description: >-
 1. **Hypothesis** — what is claimed, in one sentence, with the cell that would refute it.
 2. **Axis** — the one dimension the candidates differ along, chosen because the hypothesis turns on it.
 3. **Candidates** — two or three designs, one per point on the axis. A second flavour of the first shape does not count.
-4. **Pre-register** — record the outcome expected of each candidate **before the first run**. A prediction written after the measurement is a regression gate, not a prediction.
+4. **Pre-register** — record the outcome expected of each candidate **before the first run**. A prediction written after the measurement is a regression gate, not a prediction. **Before the run, an independent seat reads the plan against the hypothesis** — is the hypothesis falsifiable by the named predicate, is the axis the one it turns on, is every expectation recorded first, what does the plan leave unmeasured — and the plan and its review are committed together. `worklog/parallel-plan-review/` (a plan, a protocol, three seats, an adjudication per round) is the worked instance; a plan no predicate can falsify is cheaper to fix before the run than after it.
 5. **Run**, then **evaluate**: what measured, which candidate the measurement selects, what it leaves unmeasured, which expectations the run contradicted.
 6. **Predicate** — the committed commands this round runs (the corpus predicate, then its suite), each reporting an honest `complete` flag; one command per track, not one for all of them. A skip is not a pass.
 
