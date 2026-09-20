@@ -15,5 +15,12 @@ brief"*, the skill's own noun, and the control arm produced all nine elements an
 unaided, so the structural items passed for it too; the full arm was also 438 words longer with no
 mechanical warrant gain. The named follow-up is the trigger set's paraphrase, which states the need without
 the vocabulary. The `SKILL.md:102` boundary clause is **unpriced** (the ablation changed nothing, and the
-`closing_boundary_heading` probe was mis-specified for run-in bold), not proven decoration. The review trap
-is re-run on both routes to confirm the new clause. Details: `worklog/report-style-trials/round-1.md`.
+`closing_boundary_heading` probe was mis-specified for run-in bold), not proven decoration. Details:
+`worklog/report-style-trials/round-1.md`.
+
+**Confirmed 2026-09-20:** the review clause works — route 2, which fired `visflow-evaluate` before the
+edit, now returns `none`. **Still open:** `T2` (already-enumerated evidence) stays silent on route 1 but is
+attracted on route 2 by `visflow-records`, whose description positively claims *"adding a record to one"*.
+That is a **catalog collision on the word "record"**, not a defect in this skill's description — it names
+the exclusion and the model quotes it before routing away — so the fix, if any, belongs in
+`visflow-records`' entry surface.
