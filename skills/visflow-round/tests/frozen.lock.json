@@ -1,9 +1,10 @@
 {
  "files": {
+  "CHANGELOG.md": "f03f14f8fc7b5d30ee29dca728adc8702b81e849007144175179ac5ab5cb55af",
   "README.md": "43e5d9852b51abbc068e708634529835f4e50d6d4ee374bd7f6f17c01f09b82b",
-  "SKILL.md": "16ace7afa2c33b66184858406b88cf835cbc2d3519cb3aa211a5fd497cff4ba8",
+  "SKILL.md": "ff4aa876b9025e57f3d22c9912dd4381d51e01fa57a2c86dcdbdcad8a6b8aea6",
   "tests/cases/trigger.yaml": "8850e23385ea1a0d4b6926b96f6d374d0d41eb3ebcdbeef33f1d9d8061842a94",
-  "tests/rubric.yaml": "9ad83db1c057891a2a783231b9d30e4939b2528c0b19a7681f34f53e995f941b"
+  "tests/rubric.yaml": "ed31234878ac96d97dc0338eec9e3fd0105355ebea58c85f68e03c2e3f5fc881"
  },
  "skill": "visflow-round",
  "version": 1
