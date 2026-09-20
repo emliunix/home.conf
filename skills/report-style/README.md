@@ -44,6 +44,11 @@ boundary paragraph that is a summary; a diagram whose caption restates the adjac
 
 ## Maintenance
 
+The landing check is one command: **`python3 tests/l0.py`** — it parses the frontmatter, requires every
+rubric item to name the defect that flips it, requires every case to cite a real `SKILL.md` line, and
+confirms the pinned production sources exist. It is the smoke profile's first half and it must pass before
+any trial. It replaces the ad-hoc lint the first batch ran by hand.
+
 `tests/frozen.lock.json` pins the shipped material (`SKILL.md`, this file, `CHANGELOG.md`, the rubric and
 the case files). Regenerate it from the package root after any deliberate edit — it is a SHA-256 per file,
 so there is nothing to hand-edit:

@@ -1,0 +1,71 @@
+# report-style - rubrics by dimension
+# An item names the defect that must flip it; a property item says so.
+# The production oracle's judges, axes, order-swap, fence and pass bar are specified in DESIGN.md.
+skill: report-style
+dimensions:
+  trigger:
+    rubrics:
+      - id: selection
+        arms: [entry-only]
+        control_substitutes: [distractor_set, excluded_shapes]
+        pass_bar: fires on both report shapes; silent on prose polish, review, and already-enumerated evidence
+        items:
+          - {id: T-SELECT, claim: a request to write a brief or a record selects this surface, red_when: a distractor is selected instead}
+          - {id: T-SILENT, claim: the excluded shapes stay silent, red_when: any surface fires on prose polish or on a record whose evidence is already enumerated}
+          - {id: T-VARIANT, claim: a brief request selects the skill even when the word "report" is absent, red_when: only the record vocabulary fires}
+      - id: generalisation
+        arms: [entry-only]
+        pass_bar: the trap and the paraphrase score alike
+        items:
+          - {id: T-TRAP, claim: the review case dressed in this skill's vocabulary stays silent, red_when: the surface fires on "write up what is wrong with this report"}
+          - {id: T-PARA, claim: the same situation without the vocabulary stays silent, red_when: silence depends on the clause wording appearing in the task}
+  procedure:
+    rubrics:
+      - id: record
+        arms: [full]
+        pass_bar: the record's order holds, its legend has three tables, every key resolves
+        items:
+          - {id: P-RECORD-ORDER, claim: the abstract is written last and the reading frame precedes the decompose, red_when: the abstract opens the draft or the frame is missing}
+          - {id: P-RECORD-KEY, claim: every fact carries a source key and every key resolves in the legend's source-keys table, red_when: a fact appears with no key, or a key with no legend row}
+      - id: brief
+        arms: [full]
+        pass_bar: the nine elements appear in order and the closing paragraph is a boundary
+        items:
+          - {id: P-BRIEF-ELEMENTS, claim: premise, claim, object, mechanism, accounting, obligations, contrasts, boundary, evidence, in that order, red_when: an element is missing or reordered}
+          - {id: P-BRIEF-BOUNDARY, claim: the closing paragraph splits measured / by design / unmeasured / not claimed, red_when: it summarises what was just said}
+      - id: subtraction
+        arms: [full]
+        pass_bar: each element carries a distinct job
+        items:
+          - {id: P-SUBTRACT, claim: an element that restates its neighbour is cut, red_when: a restating element survives}
+  comprehension:
+    rubrics:
+      - id: warrant
+        arms: [full]
+        pass_bar: the printed rule shows in the output, mechanically
+        items:
+          - {id: C-WARRANT, claim: every assertion in the produced piece carries a derived / measured / open tag (SKILL.md:20-21), red_when: a load-bearing claim has no tag}
+          - {id: C-VARIANT, claim: a reader picks the shape the task needs, red_when: a durable, source-keyed deliverable is written as a brief}
+  production:
+    rubrics:
+      - id: acceptance
+        arms: [control, full, full-minus-boundary]
+        pass_bar: the produced brief carries a status tag per claim, a contrast pair and a closing boundary; the record's keys resolve
+        items:
+          - {id: R-BRIEF, claim: a brief over the pinned set carries a status tag per claim, a contrast pair, and a closing boundary paragraph, red_when: any of the three is absent}
+          - {id: R-RECORD, claim: a record's keys all resolve in its legend, red_when: a key does not resolve}
+  induction:
+    rubrics:
+      - id: cost
+        arms: [control, full, full-minus-boundary]
+        pass_bar: full is shorter and more warrant-visible for the same material
+        items:
+          - {id: I-COST, claim: the full arm's brief is no longer than the control's and carries more visible warrant, red_when: it is longer with no gain in warrant (word count mechanical; the transfer judgment is the judges')}
+  ablation:
+    rubrics:
+      - id: brief-elements
+        arms: [full, full-minus-one-element]
+        pass_bar: each element either degrades the produced brief or is deleted
+        items:
+          - {id: A-ELEMENT, claim: an element whose removal changes nothing on a trial that exercised it is decoration, red_when: it survives a fair test}
+          - {id: A-UNPRICED, claim: an element the trial never exercised is recorded unpriced, red_when: it is deleted on that evidence}
