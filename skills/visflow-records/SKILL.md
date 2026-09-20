@@ -26,11 +26,14 @@ description: >-
 - **A new record** is `worklog/{YYYY-MM-DD}-{slug}.md` — the date is the day the record's subject was
   fixed, and a frontmatter `created:` must agree with it.
 - **Living documents keep stable names**, because canon and the spine point at them: `next.md` (named by
-  four canon frontmatters as their open list), `experiment-manifest.md`, `experiments-and-lessons.md`,
+  the canon frontmatters as their open list), `experiment-manifest.md`, `experiments-and-lessons.md`,
   `project-understanding.md`, `pstack-decision-log.tsv`. Adding a name to this list is a deliberate act,
   recorded in a decision row.
 - **A round home is a directory** named for the topic (`dryrun-walk/`, `canon-check/`,
-  `parallel-plan-review/`); files inside are named for their role — `{seat}.md`,
+  `parallel-plan-review/`); files inside are named for their role — `{seat}-r{n}.md` (the round number
+  belongs in the name: three rounds over the same seats otherwise collide on a bare `{seat}.md`, and
+  `parallel-plan-review/` shows the drift — `kimi-k3.md` for round 1 beside `kimi-k3-r2.md` and
+  `kimi-k3-r3.md`; the bare first-round names predate this and keep theirs, as forward-only requires),
   `round-{n}-adjudication.md` — not dated, because the round's own record carries the dates.
 - **Forward-only.** The 38 top-level files created before 2026-09-19 keep their names: they used 38
   different names, and renaming them would break citations across the repository for no gain. The
