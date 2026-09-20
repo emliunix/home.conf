@@ -112,8 +112,10 @@ polish stayed silent on both routes, so the flag is not needed for `T1`; the rev
 `visflow-evaluate` on route 2 and stayed silent on route 1**, so the description gained the explicit clause
 *"not for reviewing someone else's report"* rather than the surface being hidden. **No flag is added** — the
 defect was a missing exclusion, not excessive visibility, and hiding the surface would have removed the six
-must-fire tasks that passed on both routes. The review trap is re-run on both routes after this clause
-lands, as the confirmation.
+must-fire tasks that passed on both routes. The review trap was re-run on both routes after the clause
+landed, **and it now returns `none` on the route that had fired** (`round-1.md`, *Confirmation results*).
+One item remains route-dependent for a different reason — `T2` is contested on route 2 by `visflow-records`'
+positively-claimed "record", which is a catalog collision rather than a defect in this description.
 
 ## Review dispositions (r1 → r2)
 
