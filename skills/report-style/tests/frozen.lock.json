@@ -1,0 +1,12 @@
+{
+ "files": {
+  "CHANGELOG.md": "6b5bda05993d21f4094cfed7ea9bd27e0c57041496f2c9195346ee9ed38fb407",
+  "README.md": "59c06fa5570e9c9fc6178863f2228e0d3e60373d80c6cd3bccd85821fed299e5",
+  "SKILL.md": "36b8560b6da2c3cb744cc3ea829c2d9ed2ce8b26cddd5786cde1cdaafbc90c5a",
+  "tests/cases/production.yaml": "8a24d1d087224a1b273063609fff2a14bd8ba0c2ee153abc5ba906d9d41bada5",
+  "tests/cases/trigger.yaml": "9647a58274a7e6e20a101fedff08b808cc0d34bbdc746fe7d6ff86b5b21bb8ec",
+  "tests/rubric.yaml": "20e1535db10348c491c4ba4d36a45f1581aaad4044d90f0fdb6a3eb3852148dc"
+ },
+ "skill": "report-style",
+ "version": 1
+}

@@ -1,0 +1,65 @@
+# report-style - production cases: the artifact the skill must produce, scored
+# The material is the visflow tree at the pinned revision. Each element names the file that carries it;
+# an element with no carrier is not in this case (DESIGN.md, "The pinned source material").
+skill: report-style
+dimension: production
+pins:
+  - graph-ir-v3.md
+  - theory.md
+  - architecture.md
+  - taskboard-v3/src/taskboard_v3/runner.py
+  - taskboard-v3/evaluate/parallelism-1.md
+  - taskboard-v3/evaluate/parallelism-2.md
+  - taskboard-v3/evaluate/parallelism-3.md
+  - taskboard-v3/evaluate/parallelism-4.md
+triplets:
+  - behavior: a brief over the pinned set
+    canonical:
+      prompt: "Using only the pinned set, write the brief: how taskboard-v3 achieves true parallelism. A peer knows Temporal, not this work."
+      expected: [report-style]
+      cites: "SKILL.md:88-98 - the nine elements, in order"
+    trap:
+      prompt: "Summarise the pinned set and close by restating the main point."
+      expected: []
+      cites: "SKILL.md:100-103 - the closing paragraph is a boundary, not a summary"
+    paraphrase:
+      prompt: "Explain to a Temporal engineer who has never seen this repo how the runner gets independent work in flight at once, and be explicit about what you have not shown."
+      expected: [report-style]
+      cites: "SKILL.md:82-98 - the brief shape without the word brief"
+  - behavior: a record over the same set
+    canonical:
+      prompt: "Write the durable record of the parallelism work: reading frame, layers, diagrams, legend, abstract last."
+      expected: [report-style]
+      cites: "SKILL.md:23-42 - the record's order, legend and rules"
+    trap:
+      prompt: "Write the record, and in the abstract give the conclusion the description has not reached."
+      expected: []
+      cites: "SKILL.md:32 - the abstract introduces no claim the description does not expand"
+    paraphrase:
+      prompt: "Make the vault version of this work - every fact tied to the artifact it came from, links checked against the filesystem."
+      expected: [report-style]
+      cites: "SKILL.md:38-42 - one key per fact, keys resolving, links verified"
+patterns:
+  # Mechanical half: script-checkable over the produced text. A tag is derived | measured | open.
+  status_tag_per_claim: "(?m)^.*\\b(derived|measured|open)\\b"
+  contrast_pair: "(?m)\\b(semantics|scheduling|not|rather than)\\b.*\\b(not|rather than)\\b"
+  closing_boundary_heading: "(?m)^#{1,3}\\s*(Boundary|Claim boundary|What this does not)"
+  boundary_classes: ["measured", "by design", "unmeasured", "not claimed"]
+  record_key_resolution: "each key in the text has a row in the legend's source-keys table"
+  forbidden: ["motivational framing", "restating the previous paragraph", "a caption that restates the adjacent paragraph"]
+oracle:
+  mechanical: the patterns above, plus a word count recorded for the induction arm
+  judged:
+    judges: 2, blinded, arms anonymised and order swapped between them
+    axes: [warrant visibility, contrast usefulness, boundary honesty]
+    choice: per axis, forced A better / tie / B worse
+    rubric: pre-registered in DESIGN.md before any arm runs
+    fence: covers greps - a judge holding the answer key is not a judge
+  aggregation: full must be strictly better on >=2 of 3 axes and never worse on any; a tie is decoration
+  factual_disagreement: goes to the lead to reproduce, never averaged
+  no_self_grading: a subject that writes and scores its own text measures nothing
+  arms: [control, full, full-minus-boundary]
+run_notes:
+  - "The pinned elements and their carriers are tabulated in DESIGN.md; 'does a region fork the world' is not citable from the tree and is not tested."
+  - "R-BRIEF, R-RECORD, I-COST, A-ELEMENT, A-UNPRICED are the scored items; A-ELEMENT needs the ablation arms."
+  - "The material is read-only to every arm; a subject that edits the pinned set is voided, as the naming trial's control was."

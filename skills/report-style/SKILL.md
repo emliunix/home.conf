@@ -5,8 +5,8 @@ description: >-
   source-keyed, built from abstract, description, diagrams and legend - or a **brief** -
   a one-sitting transfer of a design to a peer who knows the field but not this work,
   built from a premise, the machine, the mechanism, obligations, contrasts and a claim
-  boundary. Not for prose polish, and not for a record whose evidence is already
-  enumerated elsewhere.
+  boundary. Not for prose polish, not for reviewing someone else's report, and not
+  for a record whose evidence is already enumerated elsewhere.
 ---
 
 # Report style
