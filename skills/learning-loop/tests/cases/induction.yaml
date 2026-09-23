@@ -1,0 +1,12 @@
+skill: learning-loop
+dimension: induction
+fixture: tests/fixtures/taskboard-retro.md
+task: >-
+  A fresh maintainer must find why the 302-second run happened, which verification gaps remain, and
+  what mechanism owns each follow-up. Compare the control and full procedure outputs without access
+  to the answer key.
+arms: [control-output, full-output]
+metrics: [correct_answers, source_hops, dead_ends, unresolved_ownership, reading_words]
+pass_bar: >-
+  At equal correctness, the full output requires fewer source hops or resolves more owners; its
+  production cost plus measured reader cost must not exceed control without a transfer gain.

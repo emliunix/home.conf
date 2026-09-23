@@ -27,7 +27,7 @@ The design file is **canon**: intact current machine, direct speech. Grill ledge
 
 | Place | Owns |
 | --- | --- |
-| Design **User inputs** | Optional. Owner asks, verbatim, when present. A goal-file draft may copy these into the frozen root (`goal-file`). After that freeze, the goal file is the root. |
+| Design **User inputs** | Optional. Owner words in `>` blockquotes, accompanied by context and analysis in normal prose and grouped under meaningful headings (`flow-common` User inputs in context). `goal-file` owns the freeze; agent prose is not owner requirements. After freeze, the goal file is the root. |
 | Design **Goal** | Path to `goals/*.md` (administrative source). Omit only when no goal file exists. |
 | Design **Review** | One backlink to `worklog/NN-<same-topic>.md` |
 | Design **Status** | `draft` → `reviewed` when the review gate completes; `reviewed` → `pending-retro` when the implementation gate completes |
@@ -51,7 +51,7 @@ Every design file must open with **the three heads**, in order (this skill does 
 | **Scope — what we touch** | Explicit list of the surfaces/components this design may modify, plus non-goals (what we will NOT touch). | Reviewers reject out-of-scope findings cheaply; implementer knows its boundaries; users can verify no silent scope creep. |
 | **Rationale** | Why this machine is shaped this way, stated positively (observed facts + the mechanism). Alternatives considered and why they lost belong in the worklog. | Parties evaluate the reasoning; the worklog holds the tradeoff transcript so the design stays intact current speech. |
 
-**User inputs** (optional, before the three heads when present): owner asks, verbatim. A goal-file draft may vendor these into the frozen root. Absence means a goal-file draft takes the Problem statement as already user-confirmed (`goal-file` freeze table). After freeze, do not treat this section as a second root.
+**User inputs** (optional, before the three heads when present): follow `flow-common` **User inputs in context**. Put coherent verbatim excerpts in `>` blockquotes, with context and analysis in adjacent normal prose. Use headings to group related inputs and make clarifications or corrections clear. Necessary intent analysis belongs here; detailed design deliberation belongs in the worklog. A goal-file draft vendors the owner text into the frozen root and carries the accompanying prose alongside it under `goal-file`'s freeze rules. Absence means a goal-file draft takes the Problem statement as already user-confirmed (`goal-file` freeze table). After freeze, do not treat this section as a second root.
 
 Everything after the three heads is the **intact design body**. Direct speech: types, verbs, tables, wires, verification. No negative comparison to a discarded tree, no “rejected: …”, no epoch vocabulary of a past matcher. The only fixed tail on the design is **Goal** (admin source), **Review** (worklog backlink), and **Status**.
 
@@ -90,7 +90,9 @@ Angles must be concrete, evidence-seeking, and tied to the project/user outcome.
 - **Scope** — is the boundary drawn at the true operational edge: not padded with speculative surfaces, not clipped to avoid the hard part?
 - **Rationale** — is the mechanism stated positively and does it follow from observed facts? Rejected alternatives (in the worklog) must match reality (no strawmen).
 
-A defective head is a blocker: the whole design inherits it.
+A defective head is a blocker: the whole design inherits it. Check the heads
+against the relevant owner inputs together with their inline context and
+analysis; literal quote fidelity alone does not establish intent fidelity.
 
 **P1 angles when a goal file exists** (skip with a one-line reason only when there is no goal file):
 
@@ -140,7 +142,7 @@ Pick the scenario(s) the draft actually touches. A design that is both schema an
 
 Use a **single independent reviewer seat / subagent** (`flow-common` Roles) that batches all planned attack angles into one brief. Do not spawn multiple parallel subagents per angle — the context warm-up cost is expensive and unnecessary. The single reviewer evaluates all angles in one turn, keeping angles distinct in its report. Reviewers do not edit the design, adjudicate, or implement.
 
-Give the reviewer the draft path, all planned angles, relevant source paths, **the three heads excerpted into the brief (they review these, not just read them)**, the frozen root rows this design **Covers** when a goal file exists, and the user goal. Every reviewed angle must emit one entry with exactly one reviewer verdict from this list:
+Give the reviewer the draft path, all planned angles, relevant source paths, **the three heads excerpted into the brief (they review these, not just read them)**, the frozen root rows this design **Covers** when a goal file exists, and the user goal. Include relevant quotes with their context, analysis, and qualification/correction links (`flow-common`); without a goal, use the design's annotated User inputs when present. Every reviewed angle must emit one entry with exactly one reviewer verdict from this list:
 
 - **`PASS`** — the supplied artifact and evidence satisfy this angle;
 - **`NEEDS-FIX`** — an evidenced defect, mismatch, or insufficiency exists; or

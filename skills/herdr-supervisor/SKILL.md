@@ -1,6 +1,6 @@
 ---
 name: herdr-supervisor
-description: Run the Herdr terminal-multiplexer supervisor protocol from the p1 seat — maintain the bookkeeping ledger + per-pane name map, arm and run the recurring herdr-agents-check cron loop with DM-on-pending, and apply the workspace conventions (bypass perms, delegated agents get their own tab, never report on p1, focus-based DM-skip, anti-spam re-DM). Use when seated as the Herdr supervisor (pane <workspace>:p1) and you need to run, re-arm, or recall the supervisor protocol — the files (/tmp/bookkeeping.md, /tmp/logs/agent-states.json, /tmp/logs/p1-supervisor.md), the check loop, and the conventions. Triggers on "herdr supervisor", "run the herdr check loop", "arm the agents-check cron", "be the supervisor", "resume supervisor protocol", "what's the supervisor protocol".
+description: Run the Herdr terminal-multiplexer supervisor protocol from the p1 seat — maintain the bookkeeping ledger + per-pane name map, arm and run the recurring herdr-agents-check cron loop with DM-on-pending, and apply the workspace conventions (bypass perms, delegated agents get their own tab, never report on p1, focus-based DM-skip, anti-spam re-DM). Use when seated as the Herdr supervisor (workspace pane p1) and you need to run, re-arm, or recall the supervisor protocol — the files (/tmp/bookkeeping.md, /tmp/logs/agent-states.json, /tmp/logs/p1-supervisor.md), the check loop, and the conventions. Triggers on "herdr supervisor", "run the herdr check loop", "arm the agents-check cron", "be the supervisor", "resume supervisor protocol", "what's the supervisor protocol".
 ---
 
 # Herdr Supervisor
@@ -27,7 +27,16 @@ The official `herdr` skill documents full CLI syntax; these two mechanics are ke
 - **Read source while `working`.** `herdr agent read <pane> --source <src>`: `visible` = the live rendered viewport; `recent`/`recent-unwrapped` = host scrollback (`recent-unwrapped` joins soft wraps). A `working` agent runs on the terminal's alternate screen, so rows that leave the viewport never enter host scrollback — `recent`/`recent-unwrapped` then can't satisfy `--lines` and error (`cannot read N lines while … is working`). Read a `working` peer with `--source visible`; use `recent`/`recent-unwrapped` only once it is idle/done.
 
 ## Files you maintain
-- **`/tmp/bookkeeping.md`** — the ledger. Sections: header (workspace + last-updated + bypass-perms note), **Pane name map** (pane → descriptive name; the single source of pane identity AND the definition of *managed panes* — the set of panes the loop watches; kept here, NOT as herdr tab labels), Pane/Agent Ledger (snapshot table), Heartbeat/Cron driver, Open Threads. Keep it lean; push per-agent detail into logs.
+- **`assets/bookkeeping-template.md`** — the reusable source template. At the
+  start of a supervision session, instantiate `/tmp/bookkeeping.md` from this
+  template and replace its placeholders. If a ledger already exists, preserve
+  its live entries and add any newly required sections instead of overwriting
+  it.
+- **`/tmp/bookkeeping.md`** — the live ledger. Every managed peer reads it before
+  starting work and again when the supervisor announces a coordination change.
+  Its Pane name map is the single source of pane identity and the definition of
+  *managed panes*. Only the supervisor edits the ledger so peer writes cannot
+  race. Keep it lean; push per-agent detail into logs.
 - **`/tmp/logs/agent-states.json`** — the check loop's baseline (the one state file; also called "the baseline"): per-pane `{status, screen_fingerprint, stall_ticks}` for every managed pane EXCEPT p1, plus `idle_streak` and (when the P0 extension is armed) `p0_scan_agent`, `p0_scan_in_flight`, `last_head`. Rewritten each tick.
 - **`/tmp/logs/p1-supervisor.md`** — chronological supervisor log (your actions/decisions), newest at bottom. Reference it from bookkeeping.
 - **`~/.claude/skills/dm-user/scripts/dm-user.sh`** — the DM sender. `dm-user.sh "<msg>" [open_id]` (omit `open_id` → DM yourself, the user). Sends as the bot via lark-cli; reads your cached open_id from `~/.config/lark-cli/identity.json`.
@@ -35,6 +44,23 @@ The official `herdr` skill documents full CLI syntax; these two mechanics are ke
 ## Conventions
 - **Never report on or DM about your own pane (`:p1`)** — it is your own pane and always reads `working` during a check (expected, not an alert).
 - **Reference panes by descriptive name** (from the bookkeeping Pane name map) alongside the pane_id in every report/DM, e.g. `pN (cwd-basename / short-task)`. Do NOT rename herdr tabs for naming — names live in bookkeeping.
+- **Identify every cross-pane message.** Every message sent by an agent begins
+  with `[from:<agent_name>]`, using the exact name in the ledger. This applies
+  to completion, blocker, review, correction, status, and peer-to-peer messages.
+  Include this rule in every initial delegation prompt. If a message arrives
+  without the prefix, resolve its sender from Herdr metadata and immediately
+  remind that same seat; do not silently normalize the convention away.
+- **Peers communicate directly.** Agents may message the relevant peer without
+  routing routine questions, file-boundary coordination, or handoffs through
+  the supervisor. Use the Pane name map to address the correct reusable seat.
+- **The lead sees major decisions.** A peer may develop or discuss a decision
+  directly with another peer, but any conclusion that changes domain meaning,
+  public contracts, scope, ownership, dependencies, migration behavior, or an
+  acceptance criterion must also be sent to `lead` as
+  `[from:<agent_name>] DECISION: ...` before implementation relies on it. The
+  message states the decision, rationale, affected artifacts, and whether it
+  needs owner adjudication. This is visibility, not a requirement to relay all
+  peer conversation through `lead`.
 - **Delegated agents get their OWN tab** — never split a delegated agent into the supervisor's tab.
 - **Dispatch fire-and-forget** — when delegating a task to a managed peer, `herdr agent prompt <pane> "<task>"` with NO `--wait`. `--wait` blocks the supervisor's own turn and times out when the work outlasts `--timeout`; the peer's completion surfaces as a turn on its pane and the check loop catches the `working→idle/done` transition anyway, so waiting adds nothing. Reserve `--wait` for a quick synchronous result you need before proceeding.
 - **Read working peers with `--source visible`** — `recent` and `recent-unwrapped` draw from host scrollback; while a peer is `working` it runs on the terminal's alternate screen, so rows that leave the viewport never enter scrollback and those sources cannot satisfy a `--lines` request — they error (`cannot read N lines while … is working`). Use `herdr agent read <pane> --source visible` (the live viewport) to read a working peer; reach for `recent`/`recent-unwrapped` once it is idle/done.

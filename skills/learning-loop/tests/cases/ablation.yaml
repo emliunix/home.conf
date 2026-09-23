@@ -1,0 +1,16 @@
+skill: learning-loop
+dimension: ablation
+fixture: tests/fixtures/taskboard-retro.md
+task: "Produce the same retrospective disposition report from each supplied variant."
+arms:
+  - full
+  - full-minus-concern-catalog
+  - full-minus-routing
+  - full-minus-structural-check
+  - full-minus-transfer-check
+parts:
+  concern-catalog: "priced by explicit, scenario-specific concern selection"
+  routing: "priced by destination quality and absence of generic lessons files"
+  structural-check: "priced by whether recurring detectable failures become mechanisms"
+  transfer-check: "priced by whether future-agent-facing changes receive a proportional check"
+pass_bar: "Keep a part only when removal degrades a rubric item; record an unexercised part as unpriced."

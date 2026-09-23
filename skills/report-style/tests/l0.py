@@ -9,7 +9,8 @@ Checks:
   1. SKILL.md's frontmatter parses and carries a `name` and a `description`.
   2. Every rubric item names the defect that flips it (`red_when`).
   3. Every case cites a real `SKILL.md` line.
-  4. The pinned production sources exist (skipped, not failed, when the visflow tree is absent).
+  4. Every linked report-kind reference exists and carries its four routing sections.
+  5. The pinned production sources exist (skipped, not failed, when the visflow tree is absent).
 
 Usage:  python3 tests/l0.py          (exit 0 = lint clean, 1 = a defect)
 Dependency-free apart from PyYAML; run from the package root.
@@ -81,6 +82,30 @@ def check_cases() -> int:
     return n
 
 
+def check_references() -> int:
+    references = ROOT / "references"
+    catalog = references / "catalog.md"
+    if not catalog.is_file():
+        failures.append("references/catalog.md: missing report-kind catalog")
+        return 0
+
+    skill_text = (ROOT / "SKILL.md").read_text()
+    if "references/catalog.md" not in skill_text:
+        failures.append("SKILL.md: does not route through references/catalog.md")
+
+    catalog_text = catalog.read_text()
+    paths = sorted(references.glob("*-report.md"))
+    required_headings = ("## Use when", "## Aspects", "## Chronology", "## Common failures")
+    for path in paths:
+        if f"({path.name})" not in catalog_text:
+            failures.append(f"references/catalog.md: no link to {path.name}")
+        text = path.read_text()
+        for heading in required_headings:
+            if heading not in text:
+                failures.append(f"{path.relative_to(ROOT)}: missing `{heading}`")
+    return len(paths)
+
+
 def check_pins() -> str:
     prod = ROOT / "tests" / "cases" / "production.yaml"
     pins = (yaml.safe_load(prod.read_text()) or {}).get("pins", [])
@@ -96,8 +121,12 @@ def main() -> int:
     check_frontmatter()
     items = check_rubric()
     cases = check_cases()
+    references = check_references()
     pins = check_pins()
-    print(f"frontmatter: parsed | rubric items: {items} | cited cases: {cases} | pins: {pins}")
+    print(
+        f"frontmatter: parsed | rubric items: {items} | cited cases: {cases} | "
+        f"report kinds: {references} | pins: {pins}"
+    )
     if failures:
         print(f"L0 FAIL - {len(failures)} defect(s):")
         for f in failures:

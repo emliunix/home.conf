@@ -1,51 +1,61 @@
 # report-style - trigger cases, as canonical / trap / paraphrase triplets
 # Each case cites the SKILL.md line that makes its expectation correct.
-# The paraphrase is the same situation as its canonical without this skill's vocabulary: if only the
-# canonical fires, the surface is reading words, not the shape.
 skill: report-style
 dimension: trigger
 triplets:
-  - behavior: a brief is wanted - a peer transfer of a design
+  - behavior: a report brief is wanted
     canonical:
-      prompt: "Write a brief for a colleague who knows Temporal but not this work: how does taskboard-v3 actually achieve parallelism? Keep it to one sitting."
+      prompt: "Write a brief for a colleague who knows Temporal but not this work: how does taskboard-v3 achieve parallelism?"
       expected: [report-style]
-      cites: "SKILL.md:3-7 - the Use clause names the brief and its reader"
+      cites: "SKILL.md:4-8 - the entry surface names concise report briefs"
     trap:
       prompt: "Polish this paragraph for me and cut the AI tells."
       expected: []
-      cites: "SKILL.md:8 - not for prose polish"
+      cites: "SKILL.md:6-8 - prose polish is excluded"
     paraphrase:
-      prompt: "Turn my notes on the frontier into a write-up someone can follow without the repo open."
+      prompt: "Turn my notes on the frontier into a write-up someone can understand in one sitting."
       expected: [report-style]
-      cites: "SKILL.md:3-7 - the brief shape without the word brief or report"
-  - behavior: a record is wanted - durable and source-keyed
+      cites: "SKILL.md:29-31 - the brief shape without the word report"
+  - behavior: a durable report record is wanted
     canonical:
-      prompt: "Write the record for this round from the decisions log, with the source keys resolving in the legend."
+      prompt: "Write a durable report from these source artifacts, with every factual claim keyed and resolved in the legend."
       expected: [report-style]
-      cites: "SKILL.md:4-5 - the record is built from abstract, description, diagrams and legend"
+      cites: "SKILL.md:69-90 - the durable record contract"
     trap:
-      prompt: "The evidence is already enumerated in decisions.tsv - write me a record of it."
+      prompt: "The existing structured record already answers the question; reproduce it as another report."
       expected: []
-      cites: "SKILL.md:8-9 - not for a record whose evidence is already enumerated elsewhere"
+      cites: "SKILL.md:137-141 - duplicate source-of-truth reports are excluded"
     paraphrase:
-      prompt: "The round is over; make the durable version, every fact keyed to its artifact."
+      prompt: "Make the version a reader can open in six months without this conversation; preserve where every fact came from."
       expected: [report-style]
-      cites: "SKILL.md:4-5 - durable and source-keyed, without the word record"
-  - behavior: the shape must be chosen before writing
+      cites: "SKILL.md:29-34 - a record survives the conversation and carries source machinery"
+  - behavior: a report kind is selected from the reader's question
     canonical:
-      prompt: "We need to hand this design to a peer tomorrow and also keep an auditable version in the vault - what do I write?"
+      prompt: "Write a self-contained report of the domain-model and policy changes. Explain before and after, not the implementation diary."
       expected: [report-style]
-      cites: "SKILL.md:14-18 - pick one before writing; the two shapes are stated there"
+      cites: "SKILL.md:18-28 - select the dominant report kind instead of one universal outline"
     trap:
-      prompt: "Review this report and tell me what is wrong with it."
+      prompt: "List the commands, files edited, and agent messages in chronological order."
       expected: []
-      cites: "SKILL.md:8 - not for reviewing someone else's report (clause added after the trigger trial: route 2 fired visflow-evaluate without it, route 1 stayed silent)"
+      cites: "SKILL.md:36-49 - bare work history is excluded when it is not evidence for a report question"
     paraphrase:
-      prompt: "Same material, two readers: one tomorrow in chat, one in six months who was not here."
+      prompt: "I need to know what callers can do differently and which rules changed; how the team got there is not important."
       expected: [report-style]
-      cites: "SKILL.md:16-18 - a record survives the conversation, a brief may assume it"
+      cites: "SKILL.md:18-28 - the reader's question selects the report kind without catalog vocabulary"
+  - behavior: report writing is separate from the underlying method
+    canonical:
+      prompt: "The review is complete. Turn its verified findings into the durable review output."
+      expected: [report-style]
+      cites: "SKILL.md:135-140 - the skill may communicate a completed method's result"
+    trap:
+      prompt: "Review this report and find its defects."
+      expected: []
+      cites: "SKILL.md:6-8 - performing a review is excluded"
+    paraphrase:
+      prompt: "The analysis is done; package the verdict, evidence, recommendations, and unverified boundary for the owner."
+      expected: [report-style]
+      cites: "SKILL.md:137-140 - the skill shapes the result after the method"
 run_notes:
-  - "Arms: entry-only over the full catalog; control substitutes for the degenerate control are the distractor set and the excluded shapes above."
-  - "Distractor probe (not scored here): 'teach me how the frontier works' and 'unslop this' belong to teach/technical-writing/unslop, which live at pstack/pstack/skills/ and carry disable-model-invocation - the probe tests other surfaces' territory, not this skill's exclusions."
-  - "Scored items: T-SELECT, T-SILENT, T-VARIANT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss."
-  - "If the review trap fires, the fix is a description edit recorded in CHANGELOG.md, not a rubric change."
+  - "Arms: entry-only over the full catalog. Ambiguity is a finding, never a miss."
+  - "The kind-routing triplet is new in v2 and must be run before the frozen lock is refreshed."
+  - "A diary request is silent because it asks for a bare activity log, not because chronology is universally forbidden."

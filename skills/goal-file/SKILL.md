@@ -38,7 +38,9 @@ process manual, or a worklog — those live elsewhere.
 ## The core concept: freeze, then funnel
 
 **Freeze first.** At draft, reconcile exactly one input class into the frozen
-user-requirements description, and copy it in verbatim. That freeze is the root
+user-requirements description. Copy the owner's words in `>` blockquotes, then
+keep the context and analysis that make each excerpt meaningful in ordinary
+prose beside it, grouped under useful headings. That freeze is the root
 — it is the single source of truth and is **never edited** once written. If the
 target moves, that is a new goal file (or a dated owner re-statement appended
 below the original), not a silent "refinement."
@@ -65,7 +67,8 @@ Do not write anything before the root is frozen.
 
 ## What to do with a goal file
 
-1. **Freeze the root** — copy the user-requirements description in verbatim
+1. **Freeze the root** — copy the user-requirements description verbatim in
+   `>` blockquotes, with its adjacent context and analysis
    (or the User inputs / Problem statement, per the freeze rule). Number it
    `R1`… and mark the provenance at freeze.
 2. **Build the funnel** — additions, then design files (one line each, with

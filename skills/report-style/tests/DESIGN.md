@@ -1,32 +1,31 @@
-# report-style — furniture design, r2 (2026-09-20)
+# report-style - package test design, r3 (2026-09-23)
 
-**What this is.** The package `report-style` is a `SKILL.md` and nothing else. This design gives it the
-furniture the eleven `visflow-*` packages carry, per `flow-skills-eval/design/03-skill-package-format.md`.
-**r2 is the round-1 review's output**: two seats, ten findings, every one reproduced by the lead
-(`worklog/report-style-review/{kimi-k3,glm-5.3,round-1-adjudication}.md`). A design is the cheap place to
-lose an unscoreable trial; two of the ten would have done exactly that.
+**What this is.** `report-style` now has two axes: a report kind selected from the reader's question and a
+record/brief shape selected from the artifact's lifetime. `SKILL.md` routes; `references/` holds one aspect
+set per kind; this design states how the package is checked. r2 remains the measured baseline. r3 adds
+smoke-checkable routing and chronology cases; their production effect is open until a new blinded trial.
 
 ## Why this skill is not the same as the eleven
 
-The `visflow-*` skills produce **records**: files whose acceptance is structural (a path, a row, a cell).
-`report-style` produces **prose in two shapes** — a `record` and a `brief` — so its hardest problem is the
-**production oracle**: what counts as a written artifact being *accepted*, when a checklist over prose is
-close to self-grading.
+The `visflow-*` skills produce records whose acceptance is structural. `report-style` produces prose in
+seven kinds and two shapes, so its hardest problem is still the **production oracle**: what counts as an
+accepted written artifact when a checklist over prose is close to self-grading.
 
-## What gets added
+## Package
 
 ```
 skills/report-style/
-  SKILL.md            # exists (two variants, one rule); unchanged
-  README.md           # NEW - philosophy + the dimensions this skill is tested on + maintenance
-  CHANGELOG.md        # NEW - one row per change, with the finding behind it
+  SKILL.md            # route by kind, then choose record or brief
+  references/         # catalog plus one aspect file per report kind
+  README.md           # philosophy + measured dimensions + maintenance
+  CHANGELOG.md        # one row per change, with the finding behind it
   tests/
     DESIGN.md         # this file
-    rubric.yaml       # NEW - dimensions -> rubrics -> items, each naming its flipping defect
+    rubric.yaml       # dimensions -> rubrics -> items, each naming its flipping defect
     cases/
       trigger.yaml    # NEW - canonical / trap / paraphrase triplets, each citing a SKILL.md line
       production.yaml # NEW - the brief and record tasks as triplets, with the oracle's patterns
-    frozen.lock.json  # NEW - SHA-256 of SKILL.md, README.md, CHANGELOG.md and every case file
+    frozen.lock.json  # SHA-256 of the last behaviorally evaluated package surface
 ```
 
 **Mode 644 on every file**, `tests/DESIGN.md` included (it shipped 600; the same class `5e6e296` fixed for
@@ -34,8 +33,9 @@ skills/report-style/
 
 ## Profiles (from the spec)
 
-- **smoke — L0 + trigger.** L0 is the lint, one command: `python3 tests/l0.py` (the frontmatter parses;
-  every rubric item names a flipping defect; every case cites a `SKILL.md` line; the pinned sources exist).
+- **smoke — L0 + trigger.** L0 is the lint, one command: `uv run --with pyyaml python tests/l0.py` (the
+  frontmatter parses; every rubric item names a flipping defect; every case cites a `SKILL.md` line; every
+  linked report-kind reference exists; the pinned sources exist).
   Then the trigger triplets. Runs on any edit to the package.
 - **full — all dimensions**, all triplets, plus the frozen-lock assertion and the production case.
 
@@ -60,12 +60,12 @@ carries which element; an element with no home is **cut from the rubric**, not a
 **Not in the set, and therefore not tested**: the conversation-level framing *"does a region fork the
 world?"* — it is not citable from the tree, so no rubric item turns on it.
 
-## The production oracle — r2, specified
+## The production oracle - r2 baseline, retained for the system-report case
 
 - **The mechanical half** is scored by a script over the produced text (`production.yaml` names the
-  patterns): a status tag per claim, a contrast pair, a closing **boundary** paragraph, the nine elements in
-  order, and for the record resolving keys. A **word count** is recorded here too (the induction arm reads
-  it) rather than scored as transfer.
+  patterns): a status tag per claim, a contrast pair, a closing **boundary** paragraph, the system-report
+  brief's aspect spine, and for the record resolving keys. A **word count** is recorded here too (the
+  induction arm reads it) rather than scored as transfer.
 - **The prose half** is scored by **two blinded judges**, each seeing the two arms anonymised and order
   **swapped** between them, with a **pre-registered** rubric (per axis: *A better / tie / B worse* — three
   axes: warrant visibility, contrast usefulness, boundary honesty). The fence covers greps: a judge given
@@ -75,31 +75,33 @@ world?"* — it is not citable from the tree, so no rubric item turns on it.
   (**never averaged**, the `visflow-evaluate` rule).
 - **No self-grading**: a subject that writes and scores its own brief measures nothing.
 
-## Items — r2
+## Items - r3
 
 | dimension | rubric | arms | items (id — the defect that flips it) |
 |---|---|---|---|
 | **trigger** | selection | entry-only | `T-SELECT` (a distractor is selected instead); `T-SILENT` (an excluded shape fires); `T-VARIANT` (a **brief** request fails to select the skill because the vocabulary says "report") |
 | **trigger** | generalisation | entry-only | `T-TRAP` (the *review* case dressed in this skill's vocabulary fires); `T-PARA` (the same case without the vocabulary stays silent — **red when silence depends on the clause wording appearing in the task**) |
+| **procedure** | routing | full | `P-KIND` (one universal outline or all templates replace a primary reader question); `P-CHRONOLOGY` (a system/change report becomes a work diary) |
 | **procedure** | record | full | `P-RECORD-ORDER` (abstract written last; description keyed; legend's three tables; links verified); `P-RECORD-KEY` (a fact without a resolving key) |
-| **procedure** | brief | full | `P-BRIEF-ELEMENTS` (the nine elements in order); `P-BRIEF-BOUNDARY` (the closing paragraph is a summary, not a boundary) |
+| **procedure** | brief | full | `P-BRIEF-ELEMENTS` (the pinned system brief omits an aspect exercised by its source set); `P-BRIEF-BOUNDARY` (the closing paragraph is a summary, not a boundary) |
 | **procedure** | subtraction | full | `P-SUBTRACT` (an element that restates a neighbour survives) |
 | **comprehension** | warrant | full | `C-WARRANT` (**mechanical**: the full arm's output carries a status tag for every claim — a rule the skill prints, so it is checked on the output, not re-taught); `C-VARIANT` (a reader picks the wrong shape for a task) |
 | **production** | brief / record acceptance | control, full, full-minus-boundary | `R-BRIEF` (a brief from the pinned set lacks a status tag, a contrast pair, or a boundary paragraph); `R-RECORD` (a record whose keys do not resolve) |
 | **induction** | cost | control, full, full-minus-boundary | `I-COST` (the full arm produces no shorter, no more warrant-visible brief for the same material — the word count is mechanical, the transfer judgment is the judges') |
 | **ablation** | brief elements | full, full-minus-one-element | `A-ELEMENT` (an element whose removal changes nothing is decoration and is deleted); `A-UNPRICED` (an element the trial never exercised is recorded unpriced, not deleted) |
 
-## Trigger cases — r2
+## Trigger cases - r3
 
 | kind | task | expected | cites |
 |---|---|---|---|
-| canonical | write a peer brief explaining how parallelism is achieved in `taskboard-v3` | fires | `SKILL.md:3-7` (the Use clause names both shapes) |
-| canonical | write the record for this round from the decisions log | fires | `SKILL.md:4-5` |
-| trap | *"polish this paragraph for me and cut the AI tells"* | silent | `SKILL.md:8` (*"Not for prose polish"*) |
-| trap | *"review this report and tell me what is wrong with it"* | silent | `SKILL.md:8` — the clause *"not for reviewing someone else's report"* was **added after the trigger trial**, where route 2 fired `visflow-evaluate` and route 1 stayed silent; the exclusion is now explicit rather than incidental |
-| trap | *"the evidence is already in `decisions.tsv` — write me a record of it"* | silent | `SKILL.md:8-9` (*"not for a record whose evidence is already enumerated elsewhere"*) |
-| paraphrase | *"turn my notes into a write-up a colleague can follow"* | fires | `SKILL.md:3-7` without the vocabulary |
-| distractor probe | *"teach me how the frontier works"* / *"unslop this"* | those skills, not this one | — (moved out of the trap set: they test other surfaces' territory, not this skill's exclusions) |
+| canonical | write a peer brief explaining how parallelism is achieved in `taskboard-v3` | fires | `SKILL.md:4-8` |
+| canonical | write a durable source-keyed report | fires | `SKILL.md:69-90` |
+| canonical | report domain-model and policy changes without an implementation diary | fires as change report | `SKILL.md:18-49` |
+| canonical | package an already-completed review's findings | fires as review output | `SKILL.md:135-140` |
+| trap | *"polish this paragraph for me"* | silent | `SKILL.md:6-8` |
+| trap | *"review this report and find its defects"* | silent | `SKILL.md:6-8` |
+| trap | *"list commands, files, and agent messages in order"* | silent | `SKILL.md:36-49` |
+| trap | duplicate an existing structured source record | silent | `SKILL.md:137-141` |
 
 ## Flag decision (settled by the trial)
 

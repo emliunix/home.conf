@@ -1,0 +1,57 @@
+skill: learning-loop
+dimensions:
+  trigger:
+    rubrics:
+      - id: selection
+        arms: [entry-only]
+        control_substitutes: [distractor_set, negative_tasks, route_repetition]
+        pass_bar: "all positive routes select learning-loop and all ordinary work stays silent"
+        items:
+          - {id: T-POSITIVE, claim: explicit and paraphrased completed-work learning requests select the skill, red_when: any positive misses}
+          - {id: T-NEGATIVE, claim: implementation review and status tasks stay silent, red_when: any negative selects the skill}
+          - {id: T-ROUTE, claim: equivalent requests classify the same without relying on the skill name, red_when: only canonical wording fires}
+  procedure:
+    rubrics:
+      - id: evidence-to-disposition
+        arms: [control, entry-only, full]
+        pass_bar: "full scores at least 7 of 8 and beats control on at least 3 items without losing any"
+        items:
+          - {id: P-EVIDENCE, claim: the output cites transcript or artifact evidence before inference, red_when: a causal claim has no evidence reference}
+          - {id: P-SELECT, claim: one to four applicable concerns are named and irrelevant concerns are omitted, red_when: a universal checklist is run or no selection is stated}
+          - {id: P-SCHEMA, claim: accepted lessons distinguish observation inference lesson destination mechanism and freshness, red_when: any accepted lesson collapses those fields}
+          - {id: P-COST, claim: time cost uses measured durations and separates test defects from product defects, red_when: time is guessed or the defects are conflated}
+          - {id: P-ROUTE, claim: each lesson reaches an established strongest owner or marks the exact route blocked without inventing a file, red_when: a generic lessons file or unsupported exact path is proposed}
+          - {id: P-STRUCTURE, claim: recurring detectable failures route to a mechanical check, red_when: they route only to prose}
+          - {id: P-PROVENANCE, claim: each saved point retains source and scope, red_when: a durable rule loses its supporting reference}
+          - {id: P-SUBTRACT, claim: the output rejects unsupported promotion and permits no durable change, red_when: the low-learning fixture creates project policy}
+  induction:
+    rubrics:
+      - id: future-reader-cost
+        arms: [control-output, full-output]
+        pass_bar: "equal or better correctness with lower total source hops or resolved ownership that offsets added production cost"
+        items:
+          - {id: I-ANSWER, claim: the future reader identifies the shutdown cause and remaining verification gaps, red_when: either answer is wrong}
+          - {id: I-OWNER, claim: the future reader can name the owner or explicit governance gap for each follow-up, red_when: ownership remains implicit}
+          - {id: I-COST, claim: any added production cost buys a measured transfer gain, red_when: the full output costs more and ties control}
+  ablation:
+    rubrics:
+      - id: component-value
+        arms: [full, full-minus-one-part]
+        pass_bar: "each exercised part degrades at least one named item when removed; otherwise delete it"
+        items:
+          - {id: A-CONCERNS, claim: the catalog changes P-SELECT, red_when: removal leaves selection unchanged on an exercised fixture}
+          - {id: A-ROUTING, claim: routing changes P-ROUTE, red_when: removal leaves destination quality unchanged}
+          - {id: A-STRUCTURE, claim: the structural check changes P-STRUCTURE, red_when: removal leaves mechanism choice unchanged}
+          - {id: A-TRANSFER, claim: transfer guidance changes the proposed verification, red_when: removal leaves it unchanged}
+  walk:
+    rubrics:
+      - id: executability
+        arms: [read-only]
+        pass_bar: "all paths resolve or return a concrete BLOCKED result"
+        items:
+          - {id: W-PATH, claim: every named path resolves, red_when: an absent path is treated as present}
+          - {id: W-EXEC, claim: every step ends in a command or artifact, red_when: a step cannot be performed}
+          - {id: W-SUFFICIENT, claim: external facts carry a citation, red_when: a required fact has no source}
+          - {id: W-CONSISTENT, claim: tree contradictions are reported, red_when: the walk ignores one}
+          - {id: W-BLOCKER, claim: blocked steps name the missing thing, red_when: blocked is unexplained}
+          - {id: W-CHECKABLE, claim: verification commands state expected outcomes, red_when: success cannot be checked}
