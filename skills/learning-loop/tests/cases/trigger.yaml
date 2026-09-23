@@ -1,0 +1,45 @@
+skill: learning-loop
+dimension: trigger
+triplets:
+  - behavior: explicit project learning request
+    canonical:
+      prompt: "Run the learning loop on the work we just completed and route the durable lessons."
+      expected: [learning-loop]
+      cites: "SKILL.md:3-8 - explicit learning-loop requests trigger"
+    trap:
+      prompt: "Implement the retry fix, run its tests, and summarize the change."
+      expected: []
+      cites: "SKILL.md:9-10 - ordinary implementation and status summaries do not trigger"
+    paraphrase:
+      prompt: "The work is done. Mine what actually happened for reusable project knowledge, put each useful point in its proper owner, and check that the next agent can use it."
+      expected: [learning-loop]
+      cites: "SKILL.md:3-8 - completed-work learning without the skill's name"
+  - behavior: process retrospective request
+    canonical:
+      prompt: "Do a process retrospective with time costs, unnecessary work, and trap paths."
+      expected: [learning-loop]
+      cites: "SKILL.md:4-7 - process retrospective is an explicit trigger"
+    trap:
+      prompt: "Review this pull request for bugs, regressions, and missing tests."
+      expected: []
+      cites: "SKILL.md:9-10 - code review is excluded"
+    paraphrase:
+      prompt: "Now that the migration is complete, determine what slowed us down and what should change before the next one."
+      expected: [learning-loop]
+      cites: "SKILL.md:4-8 - completed-work learning request"
+  - behavior: lessons learned request
+    canonical:
+      prompt: "Extract lessons learned from this completed incident response."
+      expected: [learning-loop]
+      cites: "SKILL.md:5-8 - extract lessons learned is an explicit trigger"
+    trap:
+      prompt: "What is the current incident status and who owns the next action?"
+      expected: []
+      cites: "SKILL.md:9-10 - status summaries do not trigger"
+    paraphrase:
+      prompt: "Read the finished incident transcript, preserve only reusable findings, and encode any recurring detectable failure."
+      expected: [learning-loop]
+      cites: "SKILL.md:3-8 - preserve project learning from completed work"
+run_notes:
+  - "One subject classifies every prompt against the full skill-description catalog and executes none."
+  - "The distractor set and negative tasks replace the degenerate control."

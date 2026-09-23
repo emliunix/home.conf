@@ -1,5 +1,13 @@
 # <goal> — OPEN|BLOCKED|CLOSED-GREEN (<date>)
 
+> **How to work with this file: check the `goal-file` skill first.** This is a
+> goal file — the administrative source for a sprint, not a design doc, worklog,
+> or process manual. Before reading further or editing any section, load the
+> skill: `goal-file/SKILL.md` for what a goal file is and the freeze-then-funnel
+> order, `goal-file/goal-authoring.md` for the required section order, DAG rules,
+> workflow slots, and the edge-label vocabulary. Keep this pointer in place when
+> you copy the template — every agent that resumes this goal needs it.
+
 > **Standing law (compiled from the project's working principles, vendor not
 > duplicate).** *Process is recommendation, not ceremony.* Steps may be skipped,
 > simplified, merged, fast-pathed, or extended when the change serves the target.
@@ -12,12 +20,18 @@
 
 ## Goal
 
-The owner's words, verbatim. **NO EDIT once written.** If the target moves, that
-is a new goal file, or a dated owner re-state appended below the original.
+> The owner's words, verbatim.
+
+Context and analysis explaining what each excerpt means or responds to go beside
+the blockquote in normal prose. Group related excerpts under meaningful headings.
+**NO EDIT once written.** If the target moves, that is a new goal file, or a
+dated owner re-state appended below the original.
 
 ## User requirements — frozen root
 
-The vendored description from the freeze table. **NO EDIT once frozen.** One-line
+The vendored owner excerpts from the freeze table, in `>` blockquotes, with
+context and analysis in adjacent normal prose. **NO EDIT once frozen.** That
+prose is annotation and is not an additional owner requirement. One-line
 provenance at freeze (`frozen from: direct | design/NN User inputs |
 design/NN Problem statement`). Numbered `R1`… rows partition the freeze for
 covering and checkboxes; they do not rewrite it. Checkbox law: the goal is DONE

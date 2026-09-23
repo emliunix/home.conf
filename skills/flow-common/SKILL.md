@@ -3,7 +3,7 @@ name: flow-common
 description: >-
   Use as the shared home for the flow lifecycle: the four-word design status
   vocabulary, role-to-impl mapping, the implementation gate (round budget,
-  verification, commits, stop condition), and the dispatch notes.
+  verification, commits, stop condition), user-input context, and dispatch notes.
   `flow-grill-review` and `flow-retro` reference this skill instead of restating it.
 ---
 
@@ -12,6 +12,41 @@ description: >-
 > **Process is recommendation, not ceremony.** `flow-*` is a toolbox, not rigid enforcement. Weigh each step against the frozen requirements and current architecture. Skip any step that does not change the outcome. Completing a skill checklist is not success. Do not write designs, grills, or receipts whose only job is to bless work already specified.
 
 **One job:** Host the machinery every flow shares — the design status lifecycle, role-to-impl mapping, the implementation gate, wrong-machine supersession, and **breakout adjudication**. `flow-grill-review` (review gate) and `flow-retro` (loop closing) reference this skill; the goal-file workstream plan and the `flow:impl NN` / `flow:retro NN` phrases dispatch through it. Do not restate this skill's internals in the other flows. The goal file (`goal-file`) is the administrative source (frozen root + funnel). This skill runs those slots.
+
+## User inputs in context
+
+Put the owner's exact words in Markdown `>` blockquotes. Accompany each coherent
+excerpt with normal prose explaining its context and meaning: what it responds
+to, what references such as "this" denote, and what it requires, qualifies, or
+corrects. The blockquote distinguishes the user's words from agent analysis;
+no mandatory annotation labels or per-excerpt metadata template are needed.
+
+Group related excerpts and their analysis under meaningful headings, with
+subheadings only when useful. Preserve message boundaries and make the order of
+clarifications clear. Keep conditions and examples with the claims they qualify;
+do not turn an exploratory example into a commitment or invent missing context.
+
+For example (illustrative exchange):
+
+```markdown
+### Preview scope
+
+> Only for the preview. Keep the export as it is.
+
+This responds to the proposal to add a confidence column to both the preview
+and the exported file. It limits the addition to the preview and preserves
+the export columns.
+```
+
+`goal-file` owns the freeze. Carry the excerpts' context and analysis alongside
+the root, without treating agent prose as owner requirements. Existing frozen
+text, handles, and partitions stay unchanged; annotations may be added or
+amended alongside them. Later owner changes follow the addition/restatement
+rules rather than silently rewriting an earlier excerpt.
+
+Read and relay relevant excerpts with their accompanying prose during re-warm,
+review, dispatch, and acceptance. Necessary intent analysis stays inline;
+detailed design deliberation and execution history stay in the worklog.
 
 ## Lifecycle
 
@@ -93,7 +128,8 @@ implementer = any agent the manager assigns.
 adjudication, arbitration, promotion, or completion decisions, the manager
 re-reads the goal file's **frozen root**, live additions, funnel edges, and this
 design's **Covers** path. Residual session memory is not a substitute. If no
-goal file exists, re-read the design heads.
+goal file exists, re-read the design heads and any User inputs. Read relevant
+excerpts with their accompanying context and analysis as defined above.
 
 Review-gate finding defense stays in `flow-grill-review` §3. Breakout adjudication is this skill.
 
@@ -130,7 +166,7 @@ The inner loop on one design is gated by the AC check along that design's **Cove
 
 ### Before dispatch
 
-The implementer reads, in order: the goal file's frozen root + live additions, this design's **Covers** path, administrative requirements on the goal file, Prep skills, then the design body. They do not start the work until the manager resumes them onto this design.
+The implementer reads, in order: the goal file's frozen root + live additions with their inline context and analysis, this design's **Covers** path, administrative requirements on the goal file, Prep skills, then the design body. With no goal file, read the design's heads and any annotated User inputs. They do not start the work until the manager resumes them onto this design.
 
 ### After the slice
 

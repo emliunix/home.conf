@@ -15,7 +15,11 @@ Use for a project goal/sprint file: `goals/*.md`.
 
 A goal file is the **administrative source** for a sprint. At draft, **reconcile one of three inputs into a frozen user-requirements description — that freeze is the root.** Then construct the funnel.
 
-**Freeze (exactly one input class):**
+**Freeze (exactly one input class):** Copy the owner's words exactly in `>`
+blockquotes. Group related excerpts under meaningful headings and put the
+context and analysis needed to understand each excerpt in normal prose beside
+it. This accompanying prose preserves meaning but is agent annotation, not a
+new owner requirement.
 
 | Input at draft | What is copied into this file |
 | --- | --- |
@@ -38,8 +42,13 @@ The discipline rule: **the goal file tracks, the design file decides, the worklo
 Section order is fixed. **Freeze, then funnel.** Do not write additions, scoped designs, workstreams, phases, or workflows before the root is frozen. Keep every section small and factual.
 
 1. **Title / status** — `# <goal> — OPEN|BLOCKED|CLOSED-GREEN (date)`.
-2. **Goal** — the owner's words, verbatim. **NO EDIT once written.** If the target moves, that is a new goal file, or a dated owner re-state appended below the original. Never silently "refine" it.
-3. **User requirements (frozen root)** — the vendored description from the freeze table. **NO EDIT once frozen.** One-line provenance at freeze (`frozen from: direct | design/NN User inputs | design/NN Problem statement`) is a label, not a live citation. Numbered `R1`… rows partition that freeze for covering and checkboxes; they do not rewrite it. Handles are never reused. Checkbox law: the goal is DONE exactly when every live root box is checked with an evidence line, not narration. Dual-gate: a scoped design names the rows it covers (design gate); the final review re-walks the same rows with live evidence (final gate). Optional sub-parts:
+2. **Goal** — the owner's words, verbatim in `>` blockquotes, grouped under
+   useful headings when there are several related excerpts. Keep context and
+   analysis in adjacent normal prose so the relationship between chunks is
+   recoverable. **NO EDIT once written.** If the target moves, that is a new goal
+   file, or a dated owner re-state appended below the original. Never silently
+   "refine" it.
+3. **User requirements (frozen root)** — the vendored owner excerpts from the freeze table, in `>` blockquotes with their accompanying context and analysis. **NO EDIT once frozen.** The prose is annotation and never silently becomes an owner requirement. One-line provenance at freeze (`frozen from: direct | design/NN User inputs | design/NN Problem statement`) is a label, not a live citation. Numbered `R1`… rows partition that freeze for covering and checkboxes; they do not rewrite it. Handles are never reused. Checkbox law: the goal is DONE exactly when every live root box is checked with an evidence line, not narration. Dual-gate: a scoped design names the rows it covers (design gate); the final review re-walks the same rows with live evidence (final gate). Optional sub-parts:
    - *Analysis* — working read of the frozen root. **Append-and-amend.**
    - *Working background* — fact map (paths, seams, designs in force, live-world facts). **Kept current.**
 

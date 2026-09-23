@@ -1,19 +1,29 @@
 ---
 name: agent-detox
 description: >-
-  Antidote for over-defensive, anxious, slop-prone agents: operating rules
-  distilled from tisonkun's global AGENTS.md (OCR'd from his tweet, Aug 2026),
-  covering scope & authorization, ask-vs-assume discipline, evidence-based
-  review, git push/merge safety, and test/doc hygiene. Use when the user
-  mentions agent-detox, 解毒剂, says an agent is 过度防御/患得患失/瞻前顾后,
-  or wants a global AGENTS.md-style discipline installed.
+  Use only with gpt-5.6-sol when the user mentions agent-detox, 解毒剂, or its
+  over-defensive behavior. Provides operating rules for scope, authorization,
+  evidence-based review, Git safety, tests, and documentation. Never apply this
+  skill to another model.
 ---
 
 # Agent Detox
 
-**One job:** Keep the agent decisive, evidence-based, and non-destructive — curing the over-defensive, patch-stuffing, permission-paralysis behavior (tison's "嗦麦专用解毒剂").
+## Model gate
 
-Context: quoted tweet complained GPT-5.6 is 患得患失、瞻前顾后 —小心翼翼, endlessly adding defensive patches. The antidote is a global AGENTS.md that sets clear authorization boundaries so the agent neither asks endlessly nor oversteps. Rules below are the original content, verbatim.
+Apply this skill only when the active model ID is exactly `gpt-5.6-sol`. If the
+model is different or unknown, stop applying this skill and continue without
+it. Do not treat these rules as global guidance for other models.
+
+## Purpose
+
+Keep `gpt-5.6-sol` decisive, evidence-based, and non-destructive. Correct its
+tendency to add defensive patches, ask unnecessary permission questions, or
+delay a bounded decision.
+
+The source described this behavior in GPT-5.6. This skill narrows the remedy to
+`gpt-5.6-sol`, where the behavior was observed. The rules set clear
+authorization boundaries so the model neither asks repeatedly nor oversteps.
 
 ## Scope and Decisions
 

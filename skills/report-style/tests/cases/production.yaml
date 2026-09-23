@@ -13,35 +13,35 @@ pins:
   - taskboard-v3/evaluate/parallelism-3.md
   - taskboard-v3/evaluate/parallelism-4.md
 triplets:
-  - behavior: a brief over the pinned set
+  - behavior: a system brief over the pinned set
     canonical:
       prompt: "Using only the pinned set, write the brief: how taskboard-v3 achieves true parallelism. A peer knows Temporal, not this work."
       expected: [report-style]
-      cites: "SKILL.md:88-98 - the nine elements, in order"
+      cites: "SKILL.md:24-31 - select the system kind and the brief shape; the system reference supplies its aspect spine"
     trap:
       prompt: "Summarise the pinned set and close by restating the main point."
       expected: []
-      cites: "SKILL.md:100-103 - the closing paragraph is a boundary, not a summary"
+      cites: "SKILL.md:125-133 - the brief closes with a claim boundary, not a summary"
     paraphrase:
       prompt: "Explain to a Temporal engineer who has never seen this repo how the runner gets independent work in flight at once, and be explicit about what you have not shown."
       expected: [report-style]
-      cites: "SKILL.md:82-98 - the brief shape without the word brief"
+      cites: "SKILL.md:122-133 - the brief carries the smallest sufficient argument and explicit boundary"
   - behavior: a record over the same set
     canonical:
       prompt: "Write the durable record of the parallelism work: reading frame, layers, diagrams, legend, abstract last."
       expected: [report-style]
-      cites: "SKILL.md:23-42 - the record's order, legend and rules"
+      cites: "SKILL.md:69-90 - the record's order, legend and rules"
     trap:
       prompt: "Write the record, and in the abstract give the conclusion the description has not reached."
       expected: []
-      cites: "SKILL.md:32 - the abstract introduces no claim the description does not expand"
+      cites: "SKILL.md:74-80 - the abstract introduces no claim the description does not expand"
     paraphrase:
       prompt: "Make the vault version of this work - every fact tied to the artifact it came from, links checked against the filesystem."
       expected: [report-style]
-      cites: "SKILL.md:38-42 - one key per fact, keys resolving, links verified"
+      cites: "SKILL.md:82-90 - factual claims are keyed and local links are verified"
 patterns:
-  # Mechanical half: script-checkable over the produced text. A tag is derived | measured | open.
-  status_tag_per_claim: "(?m)^.*\\b(derived|measured|open)\\b"
+  # Mechanical half: script-checkable over the produced text.
+  status_tag_per_claim: "(?m)^.*\\b(source-backed|derived|measured|open)\\b"
   contrast_pair: "(?m)\\b(semantics|scheduling|not|rather than)\\b.*\\b(not|rather than)\\b"
   closing_boundary_heading: "(?m)^#{1,3}\\s*(Boundary|Claim boundary|What this does not)"
   boundary_classes: ["measured", "by design", "unmeasured", "not claimed"]

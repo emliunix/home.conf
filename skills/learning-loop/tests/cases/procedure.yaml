@@ -1,0 +1,10 @@
+skill: learning-loop
+dimension: procedure
+fixture: tests/fixtures/taskboard-retro.md
+task: >-
+  Run the requested retrospective over this frozen fixture. Produce the disposition report, but do
+  not edit the source project. Proposed edits must name exact destinations and mechanisms.
+arms: [control, entry-only, full]
+held_constant: [fixture_bytes, task, model_family, effort, tools, no_source_project_edits]
+expected_concerns: [outcome.frozen-intent, verification.false-green, process.time-cost, process.trap-path]
+rubric_items: [P-EVIDENCE, P-SELECT, P-SCHEMA, P-COST, P-ROUTE, P-STRUCTURE, P-PROVENANCE, P-SUBTRACT]

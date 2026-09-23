@@ -1,123 +1,141 @@
 ---
 name: report-style
 description: >-
-  Use when writing a report in either of two shapes: a **record** - durable and
-  source-keyed, built from abstract, description, diagrams and legend - or a **brief** -
-  a one-sitting transfer of a design to a peer who knows the field but not this work,
-  built from a premise, the machine, the mechanism, obligations, contrasts and a claim
-  boundary. Not for prose polish, not for reviewing someone else's report, and not
-  for a record whose evidence is already enumerated elsewhere.
+  Use when writing a durable, source-keyed report or a concise report brief. Route
+  first by the reader's question - system, change, status, decision, review output,
+  research, or retrospective - and then by the report's lifetime. Not for prose
+  polish, performing a review, a bare activity log, or duplicating an existing
+  structured record.
 ---
 
 # Report style
 
-A report has two shapes. Pick one before writing, because they argue differently:
+A report has two independent dimensions:
 
-- a **record** survives the conversation — durable, self-contained, every fact keyed;
-- a **brief** transfers a design to a peer — usually ephemeral chat, and it may assume
-  the conversation.
+- its **kind** answers the reader's question;
+- its **shape** decides how long the answer must survive.
 
-Both obey one rule: **every assertion carries its warrant** — derived, measured, or
-marked open. Everything below is required unless marked optional.
+Do not use one universal report outline. A feature inventory may suit a change report;
+it does not suit every report. Likewise, the steps taken to produce the work are rarely
+the subject.
 
-## Variant A — the record
+## Route the report
 
-Order: capture → reading frame (the one distinction the subject hangs on) → decompose
-(layer → object → operation → lifecycle → extension point) → find the non-obvious
-constraint or absence → description → diagrams → legend → abstract. Written last:
-abstract.
+1. Read [references/catalog.md](references/catalog.md) and select the one dominant
+   report kind.
+2. Read only that kind's reference. If the request genuinely spans two questions,
+   choose a primary kind and borrow only the necessary aspects from one secondary kind;
+   do not concatenate templates.
+3. Choose the shape:
+   - a **record** survives the conversation: durable, self-contained, source-keyed;
+   - a **brief** transfers the answer in one sitting and may assume shared context.
+
+The kind controls **what must be explained**. The shape controls **how much context and
+source machinery must travel with it**.
+
+## Keep process in its place
+
+Distinguish three different things that are often all called "steps":
+
+- **domain or runtime flow** explains how the subject behaves and is included when it
+  answers the reader's question;
+- **change order** explains before/after, migration, or supersession and is included
+  only when order changes the meaning or safety of the result;
+- **work history** recounts commands, edits, review rounds, or agent activity and is
+  omitted unless the process itself is the subject, a blocker depends on it, or it is
+  needed to establish cause.
+
+Before/after comparison is not an implementation timeline. Do not replace an account of
+changed behavior with a list of tasks that happened.
+
+## Shared discipline
+
+- State the reader's question and answer it early.
+- Anchor scope: subject, relevant version or state, and capture date when facts can
+  change.
+- Keep observed facts, source-backed design, analysis, and open questions visibly
+  distinct.
+- Preserve the source's vocabulary. Define overloaded terms instead of silently
+  paraphrasing them.
+- Give every load-bearing assertion a warrant: measured, derived, source-backed, or
+  explicitly open.
+- End at an honest claim boundary: what is established, designed but not observed,
+  unresolved, and deliberately not claimed.
+- Use a diagram only when it carries a relationship, boundary, flow, or comparison that
+  prose would make harder to inspect.
+- Subtract before adding. Cut repeated summaries, process narration, and decorative
+  sections.
+
+## Shape A - the record
+
+Write in this order: capture sources -> select kind and reading frame -> write the
+description -> add useful diagrams -> resolve the legend -> write the abstract last.
 
 | Element | Optional | Description |
 | --- | --- | --- |
-| Abstract | no | One page: subject, load-bearing findings, consequence for the reader. Introduces no claim the description does not expand. |
-| Description | no | Numbered claim-bearing sections. Inventories — layers, objects, operations, lifecycle, extension points — as tables. Every fact carries a source key. Conclusions sit in sections headed "our analysis". |
-| Diagrams | yes | 3–6 when present. Mermaid; one claim each; a caption and a name (`D1`…`Dn`). If a caption only restates the adjacent paragraph, cut the diagram. |
-| Legend | no | Exactly three tables: Notation (marks actually used), Source keys (key → artifact with branch/date/pin → digest note), Terms (glossary of the names the source overloads). |
-| Open capture list | yes | Unreachable primaries: source, blocker, intended capture method. Never reconstruct one from memory or a secondary source. |
+| Abstract | no | One page or less: the question, load-bearing answer, and consequence for the reader. Introduces no claim the description does not expand. |
+| Description | no | Numbered, claim-bearing sections selected from the chosen kind's aspects. Inventories use tables when comparison matters. |
+| Diagrams | yes | Mermaid; one claim per diagram, with a name and caption. Cut any diagram that only repeats adjacent prose. |
+| Legend | no | Exactly three tables: Notation, Source keys, and Terms. Include only marks and terms actually used. |
+| Open capture list | yes | Unreachable primary sources, the blocker, and the intended capture method. Never reconstruct an unavailable primary from memory. |
 
-Rules of the record: one source key per fact, every key resolving in the Legend; capture
-scope per source (artifact, branch/tag, date, pinned or not); digest and interpretation in
-different notes — the report links, never restates; in a vault the artifact is `report.md`
-under the topic, linked from `index.md` as "start here", digests in `sources/`; verify links
-against the filesystem before finishing.
+Record rules:
 
-````markdown
+- Every factual claim carries a source key, and every key resolves in the Source keys
+  table.
+- Record capture scope per source: artifact, branch or tag when relevant, capture date,
+  and whether it is pinned.
+- Keep source digest and interpretation separate. The report may link a digest; it does
+  not impersonate one.
+- Verify local links against the filesystem before finishing.
+
+```markdown
 ---
-title: <Subject> — Report
+title: <Subject> - Report
 tags:
   - <topic>
   - report
 created: YYYY-MM-DD
 ---
 
-# <Subject> — Report
+# <Subject> - Report
 
-Sources: <artifacts> | Captured YYYY-MM-DD | <pinned or not> | Source keys resolve in Legend.
+Sources: <artifacts> | Captured YYYY-MM-DD | <pinned or not> | Keys resolve in Legend.
 
 ## Abstract
 
 ## Description
 
-### 1. <reading frame>
-### 2. <layer map>
+### 1. <the chosen kind's reading frame>
 
 ## Diagrams
-
-### D1 — <claim>
-
-```mermaid
-graph TB
-  subgraph OWNER["<boundary>"]
-    N1["<object>"]
-  end
-```
 
 ## Legend
 
 ### Notation
 ### Source keys
 ### Terms
-````
-
-## Variant B — the brief
-
-The reader is fluent in the field and new to this work: no scaffolding, no signposting,
-and the notation is introduced inline and used immediately. The elements run in this
-order, and each one earns its place:
-
-| # | Element | What it does | Failure if dropped |
-| --- | --- | --- | --- |
-| 1 | Premise correction | restates the question's assumption and fixes it if it is wrong | the reader keeps the wrong frame and reads every detail through it |
-| 2 | The one claim | the load-bearing statement, once, in domain vocabulary | the piece becomes an inventory with no thesis |
-| 3 | The formal object | the machine or definition inline, only the parts that matter | the mechanism reads as folklore |
-| 4 | The mechanism, as steps | enable → issue → land → join, each step a state transition | narrative replaces operational detail |
-| 5 | Local vs shared accounting | what is per-X, what is global, and why that split | the design's actual choice is invisible |
-| 6 | Obligations | each invariant attached to the failure it prevents | soundness claims look like taste |
-| 7 | Contrast set | the nearest designs and the exact difference from each | the design seems invented rather than positioned |
-| 8 | Claim boundary | measured / by design / unmeasured / deliberately not claimed, with each residual where it lives | over-claim; the reader trusts more than was shown |
-| 9 | Evidence anchor *(optional)* | the numbers and the one command that reproduces them | a transfer with no ground truth |
-
-Rules of the brief: status tags on assertions; contrast pairs instead of adjectives
-("semantics, not scheduling"); second person only for the reader's likely misconception;
-the closing paragraph is a **boundary, not a summary**; no motivational framing and no
-restatement of what was just said.
-
-```
-1  The frame: restate the premise; correct it if it is wrong.
-2  The claim: one sentence, domain terms.
-3  The object: the machine/definition, inline, minimal.
-4  The mechanism: numbered operational steps, each a transition.
-5  Accounting: what is local to X, what is shared — and why that split.
-6  Obligations: invariant → the failure it prevents.
-7  Contrasts: nearest designs, and the exact difference.
-8  Boundary: measured | by design | unmeasured | not claimed, with where each lives.
-9  (optional) The evidence: the numbers, and the one command that reproduces them.
 ```
 
-## Rules for both
+## Shape B - the brief
 
-- Never state what you did not read.
-- Keep the source's vocabulary, and flag every name it overloads — a paraphrase diverges
-  silently, a link is a claim about a version.
-- Subtract before you add: an element that restates its neighbour (an order section that
-  repeats the skeleton, a checklist that repeats the elements) is cut, not kept.
+A brief is not a compressed record. It carries the smallest argument that lets its
+reader understand or decide:
+
+1. correct the reader's frame when necessary;
+2. state the answer once in the subject's vocabulary;
+3. include only the selected kind's load-bearing aspects;
+4. connect evidence to consequence;
+5. close with the claim boundary, not another summary.
+
+Use inline source anchors or status labels when the brief mixes measured, designed,
+inferred, and open claims. Do not add record furniture solely to make a brief look
+formal.
+
+## Boundary
+
+This skill shapes a report; it does not perform the underlying review, research,
+incident response, or retrospective method. Use the applicable method first, then use
+the corresponding report-kind reference to communicate its result. A structured source
+record that already answers the same reader question should be linked or summarized,
+not rewritten as a second source of truth.

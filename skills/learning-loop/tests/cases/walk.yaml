@@ -1,0 +1,11 @@
+skill: learning-loop
+dimension: walk
+scenarios:
+  - id: taskboard-routing
+    fixture: tests/fixtures/taskboard-retro.md
+    task: "Resolve every proposed destination and verification command against the fixture's source repository."
+  - id: package-transfer
+    fixture: tests/fixtures/docs-transfer.md
+    task: "Resolve the concern catalog, routing guide, transfer levels, package lint, and pinned fixture paths."
+rubric_items: [W-PATH, W-EXEC, W-SUFFICIENT, W-CONSISTENT, W-BLOCKER, W-CHECKABLE]
+rule: "Read-only. A concrete BLOCKED result passes when it names the missing file, tool, or owner."

@@ -40,7 +40,7 @@ Compare the design with built artifacts, representative source data, diffs, and 
 
 Every retro — even a light one — answers this pass; a retro without it does not count:
 
-1. **Re-derive from the Problem statement alone** (the design's head, re-read fresh, not from memory of what got built) the minimal architecture that solves it given TODAY's observed reality.
+1. **Re-derive from the stated user problem** (the design's Problem statement, re-read fresh and checked against the frozen root or User inputs with their inline context and analysis, per `flow-common`) the minimal architecture that solves it given TODAY's observed reality. Derive from that grounded problem, not from memory of what got built; an isolated quote or an agent interpretation does not replace the owner's intent.
 2. **Diff that derivation against the as-built system.** Classify every divergence:
    - **(a) constraint-justified** — a spec/runtime constraint still in force demands it; name the constraint.
    - **(b) known debt** — a pragmatic shortcut taken knowingly; name the removal path and condition.

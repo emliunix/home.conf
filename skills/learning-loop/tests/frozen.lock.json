@@ -1,0 +1,22 @@
+{
+ "files": {
+  "CHANGELOG.md": "8695a32d7cf4d81cc1952ea34300b3a7bc2a53de1f95643234cc84edb530ef2f",
+  "README.md": "e94cd9d4799549159f30cf8e4f3d158bc64e104d90d8eef9a8ea9339d3192f91",
+  "SKILL.md": "647960242c64e2b83d32edaf705b2aeb9ecc23eb8f154138fc06fc59879f58e4",
+  "references/concern-catalog.md": "41b0c65c323b66ae8c8fe2d2d7393de3bbd2e8fb83e87f0d5b04b7e9109f8a37",
+  "references/routing.md": "82a5717498fb17ef8a070ec246db4f1fa2e9b470433443fcd48f5aca8323da59",
+  "references/transfer-checks.md": "5e89b657153d04020bfb9543d41cc4e9496424ca259f1d81f54a04fc15df4768",
+  "tests/cases/ablation.yaml": "9ec0ac45536d09590964e69cef8dc531d9789a854c80c471f0fc3572ab01bdfc",
+  "tests/cases/induction.yaml": "18c133a9e22b539d6bd7536fc7716c1f47078df3e646f7a1554bbb971b221980",
+  "tests/cases/procedure.yaml": "bcce91783a138cac2f070ba09a8f3d2aad7131e316fea94ff6ee31472b4f3a07",
+  "tests/cases/trigger.yaml": "1a84952d3b4f3f78b7159de3508faf4f337d6113b7d1d4a537cc6e2dac2b6f48",
+  "tests/cases/walk.yaml": "06dafbbe47c4125aba458d35a2eba518882cb1d7b689f46e9eaea5c4f80b8216",
+  "tests/fixtures/docs-transfer.md": "a0d5f239d4e630e91037731ecc9e88f165070d0a3926dbfa1b14a12336ecfdd1",
+  "tests/fixtures/low-learning.md": "414b458712bf14b682604c92ab020d5ea423274a1478524bb814de56cbf400aa",
+  "tests/fixtures/taskboard-retro.md": "8a907245e301f6810d74f1ce4c669a8c5c30c7159af507188a59012ea77261da",
+  "tests/l0.py": "796bdf9644c835d0126f78aa7bf3ffd11677ef65edfc6e711226c4305a55f3b3",
+  "tests/rubric.yaml": "bb5482932eefcf8bf1a94f2b36683cd0f24695649adff966f92d49ce7563275f"
+ },
+ "skill": "learning-loop",
+ "version": 1
+}
