@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      - id: document-contracts
+        name: document contracts
+        language: system
+        entry: npm exec doc-verify -- check --staged --profile auto --format text
+        pass_filenames: false
+        always_run: true
+        require_serial: true

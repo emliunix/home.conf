@@ -21,6 +21,7 @@ Default trigger: the owner says "you supervise + review", "@X drive the projects
 - **`flow-common` (Implementation gate)** — implementation workflow and gate (`flow:impl`); invoked after a design reaches `reviewed` (step 3→4 boundary).
 - **`flow-retro`** — retrospective after completion; run when a project or phase closes.
 - **`goal-file`** — the funnel this skill supervises: frozen root + live additions, the workstream/phase structure, the per-design workflow slots and AC coverage matrix. The design-file inventory of §2 is the goal file's funnel, referenced not restated.
+- **`verification`** — the shared practice library and evidence levels used to check implementation claims without duplicating test policy here.
 
 This skill is the administrative shell: it routes to sub-skills and supervises their outputs; their content does not live here. It reconciles toward `goal-file` for the funnel structure and toward `flow-common` for the lifecycle/status vocabulary.
 
@@ -33,6 +34,9 @@ This skill is the administrative shell: it routes to sub-skills and supervises t
 - **No LGTM.** "Looks good" is never a verdict. Every bug report and every "done" claim is checked against the architecture and the project goal before it is accepted.
 - **Architecture-anchored decisions.** Reviewer and implementer alike must relate every single issue and decision to the full architecture — cite the governing `design/N` section, or add one before proceeding. No casual, thread-only, or ad-hoc calls.
 - **Verify the real artifact directly.** Review the actual product surface yourself — open the live web page, hit the endpoint, query the DB. Never verify against a proxy, a "spot check", or a secondhand report.
+- **Track affected evidence.** When a project provides a document verifier, run
+  its changed-file closure and surface stale, blocked, or unresolved
+  attestations. Use a full audit for setup, not on every edit.
 - **Experiments and self-defined quality.** Drive by experiments and metrics of quality the team defines; there are no human acceptance gates — own the definition of "good".
 - **Design is the source of truth.** Behavior should match the original design intent; divergence is a finding to resolve, not to accept.
 

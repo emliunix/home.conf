@@ -1,0 +1,103 @@
+import { z } from "zod";
+
+export const verdictSchema = z.enum(["PASS", "NO-GO", "NEEDS-REVIEW", "BLOCKED"]);
+export type Verdict = z.infer<typeof verdictSchema>;
+
+export const profileSchema = z.enum(["draft", "promotion", "auto"]);
+export type Profile = z.infer<typeof profileSchema>;
+
+export type RepoPath = string & { readonly __brand: "RepoPath" };
+export type SectionId = string & { readonly __brand: "SectionId" };
+
+export interface Section {
+  id: SectionId;
+  heading: string;
+  depth: number;
+  startLine: number;
+  endLine: number;
+  startByte: number;
+  endByte: number;
+  content: string;
+  contentHash: string;
+}
+
+export interface TextBlob {
+  path: RepoPath;
+  content: string;
+  hash: string;
+}
+
+export interface Tombstone {
+  path: RepoPath;
+  deleted: true;
+}
+
+export type SnapshotEntry = TextBlob | Tombstone;
+
+export interface Snapshot {
+  id: string;
+  label: string;
+  entries: ReadonlyMap<RepoPath, SnapshotEntry>;
+}
+
+export interface Finding {
+  path: RepoPath;
+  line: number;
+  sectionId: SectionId;
+  ruleId: string;
+  verdict: Exclude<Verdict, "PASS">;
+  message: string;
+  evidenceId: string;
+}
+
+export interface RuleTrace {
+  ruleId: string;
+  verdict: Verdict;
+  facts: string[];
+}
+
+export interface ArtifactReport {
+  path: RepoPath;
+  artifactKind: string;
+  profile: Exclude<Profile, "auto">;
+  sections: Array<Omit<Section, "content">>;
+  rubricChain: Array<{ path: RepoPath; fragment: string; hash: string }>;
+  semanticRequestId?: string;
+  semanticCalls: number;
+  cacheHits: number;
+  findings: Finding[];
+  trace: RuleTrace[];
+  verdict: Verdict;
+}
+
+export interface VerificationReport {
+  schemaVersion: 1;
+  invocation: string;
+  requestedProfile: Profile;
+  baselineId: string;
+  candidateId: string;
+  policyVersion: number;
+  changedRoots: RepoPath[];
+  affectedArtifacts: RepoPath[];
+  artifacts: ArtifactReport[];
+  semanticCalls: number;
+  cacheHits: number;
+  verdict: Verdict;
+  timingMs: number;
+}
+
+export class UsageError extends Error {
+  readonly exitCode = 64;
+}
+
+export class BlockedError extends Error {
+  readonly verdict = "BLOCKED" as const;
+}
+
+export function repoPath(value: string): RepoPath {
+  return value as RepoPath;
+}
+
+export function sectionId(value: string): SectionId {
+  return value as SectionId;
+}

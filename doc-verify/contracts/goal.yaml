@@ -1,0 +1,19 @@
+schema_version: 1
+rubrics:
+  threshold: 0.8
+  items:
+    - id: goal.coverage_complete
+      artifact_kinds: [goal]
+      applies_to:
+        sections: [user-requirements-frozen-root, ac-coverage]
+        scope: combined
+      evidence:
+        source: section_body
+        max_bytes: 12000
+      question:
+        kind: choose
+        instruction: Does the coverage table account for every live frozen requirement and addition?
+        options: [supported, refuted, unknown]
+      critical: true
+      weight: 1
+      scores: {supported: 1, refuted: 0, unknown: 0}

@@ -35,6 +35,10 @@ A sprint needs one place that answers, administratively:
 The goal file answers all of that in one view. It is **not** a design doc, a
 process manual, or a worklog — those live elsewhere.
 
+Use the `verification` skill to choose evidence for coverage rows. Keep
+reusable rubrics in their shared owner and reference them from adjacent metadata
+when the repository supports document-contract checks.
+
 ## The core concept: freeze, then funnel
 
 **Freeze first.** At draft, reconcile exactly one input class into the frozen
