@@ -14,6 +14,7 @@ description: >-
 This skill **composes** other skills — read and follow them; do not restate their internals:
 
 - `flow-common` — the lifecycle vocabulary (four-word status table, supersession rule, only-route-back rule)
+- `verification` — evidence levels, freshness, and the shared practice library
 
 Does not run the full impl cycle or grill a brand-new draft (use `flow-grill-review` for that).
 
@@ -35,6 +36,10 @@ Additionally, this flow is the **closing stage of every execution**: the impleme
 ### 1. Gather concrete evidence
 
 Compare the design with built artifacts, representative source data, diffs, and test results. Identify the exact mismatch and distinguish design error from implementation defect. Check the true operational and failure/atomicity boundary, minimum end-to-end path, existing architecture reuse, and whether compatibility/scale assumptions were evidenced or speculative.
+
+Recheck the selected `verification` practices. Reject evidence that is stale,
+does not include the claimed boundary, or comes from a gate with no demonstrated
+failure witness.
 
 ### 2. First-principles bottom line (mandatory, non-waivable)
 

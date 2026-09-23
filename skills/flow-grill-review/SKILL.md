@@ -16,6 +16,7 @@ This skill **composes** other skills — read and follow them; do not restate th
 - `flow-common` — the lifecycle vocabulary, role-to-impl mapping, and the implementation gate (round budget, verification, commits, stop condition, dispatch notes)
 - `goal-file` — the frozen root + funnel the review reconciles against (Covers rows, AC coverage, workstreams/phases). This skill consults it; it does not restate the funnel vocabulary.
 - `flow-retro` — closes the loop at `pending-retro` → `landed`
+- `verification` — the shared evidence levels and risk-selected practice library. Select from it; do not copy its catalog here.
 
 Design path convention: `design/NN-<topic>.md`, where `NN` is the lowest unused zero-padded sequential number (the folder's own `design/00-design-file-guide.md` documents the contract and the `NN`/`ref-` distinction from goal files in `goals/NN-<topic>.md`). Do not renumber existing files — numbers are stable handles. If the caller gives a different path, use it, but flag the deviation.
 
@@ -76,6 +77,12 @@ Write a **small set of high-value angles** into the **worklog** (`worklog/NN-<sa
 **Exceptions are allowed.** Skip a suggested row when it does not apply; record a one-line reason in the worklog (e.g. “observability N/A — no new writer”). Skipping without a reason is not an exception — it is an omitted check.
 
 Angles must be concrete, evidence-seeking, and tied to the project/user outcome. Prioritize correctness boundaries, observed source behavior, minimum end-to-end path, scope, and verification. Add compatibility, migration, scale, or performance angles only when current evidence requires them—never for hypothetical future formats.
+
+Use `verification` to map each load-bearing property to the lowest evidence
+level that can observe it. Require a failure witness for every gate the design
+will trust. When the repository provides `.doc-verify.yaml`, run affected
+structural checks first and an explicit `--profile promotion` check before the
+review gate; its result is evidence for the reviewer, not the verdict itself.
 
 **Practice lessons (kept from earlier refinement — apply, don't re-learn):**
 

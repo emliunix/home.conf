@@ -3,3 +3,7 @@
 .DS_Store
 target
 .opencode
+node_modules/
+doc-verify/dist/
+.doc-verify-cache/
+doc-verify-report.json

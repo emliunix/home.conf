@@ -1,0 +1,31 @@
+name: document-contract
+
+on:
+  pull_request:
+    paths:
+      - ".doc-verify.yaml"
+      - "doc-verify/**"
+      - "design/**"
+      - "goals/**"
+      - "skills/**"
+      - ".pre-commit-hooks.yaml"
+      - ".github/workflows/document-contract.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm exec doc-verify -- check --range "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" --profile auto --format json --output doc-verify-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: document-contract-report
+          path: doc-verify-report.json

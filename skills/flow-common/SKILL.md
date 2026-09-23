@@ -13,6 +13,10 @@ description: >-
 
 **One job:** Host the machinery every flow shares — the design status lifecycle, role-to-impl mapping, the implementation gate, wrong-machine supersession, and **breakout adjudication**. `flow-grill-review` (review gate) and `flow-retro` (loop closing) reference this skill; the goal-file workstream plan and the `flow:impl NN` / `flow:retro NN` phrases dispatch through it. Do not restate this skill's internals in the other flows. The goal file (`goal-file`) is the administrative source (frozen root + funnel). This skill runs those slots.
 
+Use the `verification` skill for evidence levels and practice selection. This
+skill owns when implementation evidence is required, not the reusable practice
+catalog.
+
 ## User inputs in context
 
 Put the owner's exact words in Markdown `>` blockquotes. Accompany each coherent
@@ -183,6 +187,10 @@ A **round** is one implementer dispatch → report → first-party grade cycle o
 ### Verify the user outcome
 
 Run verification proportional to risk, starting with the reviewed criteria and representative real data, then relevant regression coverage. A check counts only if it proves part of the user outcome or a necessary boundary; passing incidental tests is not closure.
+
+Apply the practices selected from `verification`, record the lowest proved
+evidence level, and run a relevant semantic or structural mutation for every
+gate relied on to advance the lifecycle.
 
 - **Pass:** covered AC rows (path to root) prove the outcome and no blocking mismatch remains → set `Status: pending-retro` and hand to `flow-retro`.
 - **Implementation defect:** remediate within the reviewed design, then rerun affected verification.

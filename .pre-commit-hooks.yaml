@@ -1,0 +1,7 @@
+- id: document-contracts
+  name: document contracts
+  language: node
+  entry: doc-verify check --staged --profile auto --format text
+  pass_filenames: false
+  always_run: true
+  require_serial: true

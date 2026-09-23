@@ -1,0 +1,34 @@
+schema_version: 1
+documents:
+  - pattern: design/{0[1-9],[1-9][0-9]}-*.md
+    artifact_kind: design
+    rubric: doc-verify/contracts/design.yaml#rubrics
+    required_sections: [problem-statement, rationale, review, status]
+    semantic_profile: promotion
+  - pattern: goals/01-document-verification-and-skill-transfer.md
+    artifact_kind: goal
+    rubric: doc-verify/contracts/goal.yaml#rubrics
+    required_sections: [user-requirements-frozen-root, design-files, worklog]
+    semantic_profile: draft
+  - pattern: goals/*.md
+    artifact_kind: goal
+    rubric: doc-verify/contracts/goal.yaml#rubrics
+    required_sections: []
+    semantic_profile: draft
+invalidation_patterns:
+  - .doc-verify.yaml
+  - doc-verify/**
+  - skills/verification/**
+  - skills/flow-common/**
+  - skills/flow-grill-review/**
+  - skills/flow-retro/**
+  - skills/flow-supervise/**
+  - skills/goal-file/**
+judge:
+  model: jev-1.13.0
+  client_sha256: ce983f8de97d5b30d527a7116f0c49ad3d17e098d2c3f17c9600041260c65dcb
+  attestation_max_age_seconds: 86400
+policy:
+  version: 1
+  max_evidence_bytes: 24000
+  forbidden_literals: []
