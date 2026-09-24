@@ -1,5 +1,6 @@
 schema_version: 1
 rubrics:
+  kind: jev
   threshold: 0.8
   items:
     - id: design.problem_resolved

@@ -50,21 +50,40 @@ export interface Finding {
   evidenceId: string;
 }
 
+export interface WarningDiagnostic {
+  path: RepoPath;
+  line: number;
+  sectionId: SectionId;
+  ruleId: string;
+  message: string;
+}
+
 export interface RuleTrace {
   ruleId: string;
   verdict: Verdict;
   facts: string[];
 }
 
+export interface EvaluationDetail {
+  questionId: string;
+  sectionIds: SectionId[];
+  answer?: "supported" | "refuted" | "unknown";
+}
+
 export interface ArtifactReport {
   path: RepoPath;
   artifactKind: string;
   profile: Exclude<Profile, "auto">;
+  impactPath: RepoPath[];
+  requiredSections: string[];
   sections: Array<Omit<Section, "content">>;
+  strategyChain: Array<{ path: RepoPath; fragment: string }>;
   rubricChain: Array<{ path: RepoPath; fragment: string; hash: string }>;
+  evaluations: EvaluationDetail[];
   semanticRequestId?: string;
   semanticCalls: number;
   cacheHits: number;
+  warnings: WarningDiagnostic[];
   findings: Finding[];
   trace: RuleTrace[];
   verdict: Verdict;
@@ -80,6 +99,7 @@ export interface VerificationReport {
   changedRoots: RepoPath[];
   affectedArtifacts: RepoPath[];
   artifacts: ArtifactReport[];
+  warningCount: number;
   semanticCalls: number;
   cacheHits: number;
   verdict: Verdict;

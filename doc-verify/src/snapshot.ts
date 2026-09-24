@@ -23,8 +23,14 @@ export interface SnapshotPair {
   baseline: Snapshot;
   candidate: Snapshot;
   changedRoots: RepoPath[];
+  impactPaths: ReadonlyMap<RepoPath, RepoPath[]>;
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
   candidatePaths: RepoPath[];
+}
+
+export interface DocumentReferenceRule {
+  pattern: string;
+  verification: string;
 }
 
 export async function captureSnapshots(input: {
@@ -32,6 +38,7 @@ export async function captureSnapshots(input: {
   mode: SnapshotMode;
   documentPatterns: string[];
   invalidationPatterns: string[];
+  documentRules?: DocumentReferenceRule[];
 }): Promise<SnapshotPair> {
   const allTracked = gitLines(input.root, ["ls-files", "--cached"]);
   const workingFiles = await fg(input.documentPatterns, {
@@ -65,6 +72,7 @@ export async function captureSnapshots(input: {
       candidateInputPaths: inputPaths(candidateInventory, candidatePaths),
       changed,
       invalidationPatterns: input.invalidationPatterns,
+      documentRules: input.documentRules ?? [],
       readBaseline: (file) => readGitBlob(input.root, base, file),
       readCandidate: (file) => readGitBlob(input.root, head, file),
     });
@@ -92,6 +100,7 @@ export async function captureSnapshots(input: {
       candidateInputPaths: inputPaths(allTracked, candidatePaths),
       changed,
       invalidationPatterns: input.invalidationPatterns,
+      documentRules: input.documentRules ?? [],
       readBaseline,
       readCandidate: (file) => readGitBlob(input.root, ":", file),
     });
@@ -110,6 +119,7 @@ export async function captureSnapshots(input: {
     candidateInputPaths: inputPaths(workingInventory, candidatePaths),
     changed,
     invalidationPatterns: input.invalidationPatterns,
+    documentRules: input.documentRules ?? [],
     readBaseline,
     readCandidate: (file) => readWorkingBlob(input.root, file),
   });
@@ -122,8 +132,27 @@ export function affectedClosure(input: {
   allDocuments: RepoPath[];
   invalidatesAll: boolean;
 }): RepoPath[] {
+  return affectedSelection(input).artifacts;
+}
+
+function affectedSelection(input: {
+  changed: RepoPath[];
+  baselineLinks: ReadonlyMap<RepoPath, RepoPath[]>;
+  candidateLinks: ReadonlyMap<RepoPath, RepoPath[]>;
+  allDocuments: RepoPath[];
+  invalidatesAll: boolean;
+}): { artifacts: RepoPath[]; impactPaths: Map<RepoPath, RepoPath[]> } {
+  const roots = [...new Set(input.changed)].sort();
   if (input.invalidatesAll) {
-    return [...input.allDocuments].sort();
+    const artifacts = [...input.allDocuments].sort();
+    const invalidator = roots[0];
+    return {
+      artifacts,
+      impactPaths: new Map(artifacts.map((artifact) => [
+        artifact,
+        invalidator === undefined || invalidator === artifact ? [artifact] : [invalidator, artifact],
+      ])),
+    };
   }
   const documents = new Set(input.allDocuments);
   const reverse = new Map<RepoPath, Set<RepoPath>>();
@@ -136,21 +165,32 @@ export function affectedClosure(input: {
       }
     }
   }
-  const queue = input.changed.filter((file) => documents.has(file));
-  const affected = new Set(queue);
+  const queue = [...roots];
+  const visited = new Set(queue);
+  const paths = new Map<RepoPath, RepoPath[]>(roots.map((root) => [root, [root]]));
+  const affected = new Set(queue.filter((file) => documents.has(file)));
   while (queue.length > 0) {
     const current = queue.shift();
     if (current === undefined) {
       break;
     }
-    for (const dependent of reverse.get(current) ?? []) {
-      if (!affected.has(dependent)) {
-        affected.add(dependent);
+    const currentPath = paths.get(current) ?? [current];
+    for (const dependent of [...(reverse.get(current) ?? [])].sort()) {
+      if (!visited.has(dependent)) {
+        visited.add(dependent);
+        paths.set(dependent, [...currentPath, dependent]);
         queue.push(dependent);
+        if (documents.has(dependent)) {
+          affected.add(dependent);
+        }
       }
     }
   }
-  return [...affected].sort();
+  const artifacts = [...affected].sort();
+  return {
+    artifacts,
+    impactPaths: new Map(artifacts.map((artifact) => [artifact, paths.get(artifact) ?? [artifact]])),
+  };
 }
 
 export function extractMarkdownLinks(sourcePath: RepoPath, markdown: string): RepoPath[] {
@@ -183,6 +223,7 @@ async function buildPair(input: {
   candidateInputPaths: RepoPath[];
   changed: Array<string | RepoPath>;
   invalidationPatterns: string[];
+  documentRules: DocumentReferenceRule[];
   readBaseline: (path: RepoPath) => Promise<TextBlob>;
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
 }): Promise<SnapshotPair> {
@@ -190,28 +231,19 @@ async function buildPair(input: {
     capture(input.baselineLabel, input.baselineInputPaths, input.readBaseline),
     capture(input.candidateLabel, input.candidateInputPaths, input.readCandidate),
   ]);
-  const baselineLinks = linkGraph(baseline, input.baselinePaths);
-  const candidateLinks = linkGraph(candidate, input.candidatePaths);
+  const baselineLinks = linkGraph(baseline, input.baselinePaths, input.documentRules);
+  const candidateLinks = linkGraph(candidate, input.candidatePaths, input.documentRules);
   const changedRoots = input.changed.map((file) => normalizeRepoPath(input.root, file));
   const allDocuments = [...new Set([...input.baselinePaths, ...input.candidatePaths])].sort();
   const invalidatesAll = changedRoots.some((file) => input.invalidationPatterns.some((pattern) => minimatch(file, pattern, { dot: true })));
-  const documentChanges = changedRoots.flatMap((file) => {
-    if (allDocuments.includes(file)) {
-      return [file];
-    }
-    if (file.endsWith(".yaml") || file.endsWith(".yml")) {
-      const markdown = repoPath(file.replace(/\.ya?ml$/i, ".md"));
-      return allDocuments.includes(markdown) ? [markdown] : [];
-    }
-    return [];
-  });
-  const affectedArtifacts = affectedClosure({ changed: documentChanges, baselineLinks, candidateLinks, allDocuments, invalidatesAll });
+  const affected = affectedSelection({ changed: changedRoots, baselineLinks, candidateLinks, allDocuments, invalidatesAll });
   return {
     baseline,
     candidate,
     changedRoots,
+    impactPaths: affected.impactPaths,
     readCandidate: input.readCandidate,
-    candidatePaths: affectedArtifacts,
+    candidatePaths: affected.artifacts,
   };
 }
 
@@ -234,8 +266,17 @@ async function capture(label: string, paths: RepoPath[], reader: (path: RepoPath
   return { id: sha256(canonicalJson(identity)), label, entries };
 }
 
-function linkGraph(snapshot: Snapshot, documentPaths: RepoPath[]): Map<RepoPath, RepoPath[]> {
+function linkGraph(
+  snapshot: Snapshot,
+  documentPaths: RepoPath[],
+  documentRules: DocumentReferenceRule[],
+): Map<RepoPath, RepoPath[]> {
   const graph = new Map<RepoPath, RepoPath[]>();
+  for (const [file, entry] of snapshot.entries) {
+    if ((file.endsWith(".yaml") || file.endsWith(".yml")) && !("deleted" in entry)) {
+      graph.set(file, extractYamlLinks(file, entry.content));
+    }
+  }
   for (const file of documentPaths) {
     const entry = snapshot.entries.get(file);
     if (entry === undefined || "deleted" in entry) {
@@ -244,8 +285,14 @@ function linkGraph(snapshot: Snapshot, documentPaths: RepoPath[]): Map<RepoPath,
     }
     const companionPath = repoPath(file.replace(/\.md$/i, ".yaml"));
     const companion = snapshot.entries.get(companionPath);
-    const declared = companion === undefined || "deleted" in companion ? [] : extractCompanionLinks(companion.content);
-    graph.set(file, [...new Set([...extractMarkdownLinks(file, entry.content), ...declared])].sort());
+    const rule = documentRules.find((candidate) => minimatch(file, candidate.pattern, { dot: true }));
+    const defaultVerification = rule === undefined ? [] : referencePath(repoPath("."), rule.verification);
+    graph.set(file, [...new Set([
+      ...extractMarkdownLinks(file, entry.content),
+      companionPath,
+      ...defaultVerification,
+      ...(companion === undefined || "deleted" in companion ? [] : extractCompanionDependencies(companion.content)),
+    ])].sort());
   }
   return graph;
 }
@@ -309,14 +356,73 @@ function inputPaths(inventory: string[], documents: RepoPath[]): RepoPath[] {
   return [...new Set([...documents, ...yaml, ...companions])].sort();
 }
 
-function extractCompanionLinks(content: string): RepoPath[] {
-  const parsed = z.object({ depends_on: z.array(z.string()).optional() }).loose().safeParse(YAML.parse(content));
-  if (!parsed.success || parsed.data.depends_on === undefined) {
+function extractCompanionDependencies(content: string): RepoPath[] {
+  try {
+    const parsed = z.object({
+      document: z.object({ depends_on: z.array(z.string()).optional() }).loose(),
+    }).loose().safeParse(YAML.parse(content));
+    if (!parsed.success || parsed.data.document.depends_on === undefined) {
+      return [];
+    }
+    return parsed.data.document.depends_on
+      .filter((value) => !path.posix.isAbsolute(value) && !value.startsWith("../"))
+      .map((value) => repoPath(path.posix.normalize(value)));
+  } catch {
     return [];
   }
-  return parsed.data.depends_on
-    .filter((value) => !path.posix.isAbsolute(value) && !value.startsWith("../"))
-    .map((value) => repoPath(path.posix.normalize(value)));
+}
+
+function extractYamlLinks(sourcePath: RepoPath, content: string): RepoPath[] {
+  let value: unknown;
+  try {
+    value = YAML.parse(content);
+  } catch {
+    return [];
+  }
+  const parsed = z.object({
+    rubrics: z.object({
+      inherits: z.union([z.string(), z.array(z.string())]).optional(),
+    }).loose().optional(),
+    verification: z.object({
+      inherits: z.string().optional(),
+      rubrics: z.object({
+        inherits: z.union([z.string(), z.array(z.string())]).optional(),
+      }).loose().optional(),
+      profiles: z.object({
+        draft: z.object({ rubric: z.string().optional() }).loose().optional(),
+        promotion: z.object({ rubric: z.string().optional() }).loose().optional(),
+      }).loose().optional(),
+    }).loose().optional(),
+  }).loose().safeParse(value);
+  if (!parsed.success) {
+    return [];
+  }
+  const inherited = parsed.data.rubrics?.inherits;
+  const strategyInherited = parsed.data.verification?.inherits;
+  const strategyRubrics = parsed.data.verification?.rubrics?.inherits;
+  const references = [
+    ...(inherited === undefined ? [] : typeof inherited === "string" ? [inherited] : inherited),
+    ...(strategyInherited === undefined ? [] : [strategyInherited]),
+    ...(strategyRubrics === undefined ? [] : typeof strategyRubrics === "string" ? [strategyRubrics] : strategyRubrics),
+  ];
+  const profileReferences = [
+    parsed.data.verification?.profiles?.draft?.rubric,
+    parsed.data.verification?.profiles?.promotion?.rubric,
+  ].filter((reference): reference is string => reference !== undefined);
+  return [...new Set([
+    ...references.flatMap((reference) => referencePath(sourcePath, reference)),
+    ...profileReferences.flatMap((reference) => referencePath(repoPath("."), reference)),
+  ])].sort();
+}
+
+function referencePath(sourcePath: RepoPath, reference: string): RepoPath[] {
+  const filePart = reference.split("#", 1)[0];
+  if (filePart === undefined || filePart.length === 0 || path.posix.isAbsolute(filePart)) {
+    return [];
+  }
+  const base = sourcePath === "." ? "" : path.posix.dirname(sourcePath);
+  const normalized = path.posix.normalize(path.posix.join(base, filePart));
+  return normalized === ".." || normalized.startsWith("../") ? [] : [repoPath(normalized)];
 }
 
 function gitLines(root: string, args: string[]): string[] {

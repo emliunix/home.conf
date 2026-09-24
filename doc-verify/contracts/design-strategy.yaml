@@ -1,0 +1,15 @@
+schema_version: 1
+kind: verification-strategy
+verification:
+  kind: jev-prolog
+  rubrics:
+    kind: jev
+    inherits: design.yaml#rubrics
+  default_profile: promotion
+  profiles:
+    draft:
+      sections: [problem-statement, rationale]
+      cache: reuse
+    promotion:
+      sections: [problem-statement, scope---what-we-touch, rationale, verification-design]
+      cache: refresh

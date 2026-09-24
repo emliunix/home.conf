@@ -1,7 +1,7 @@
 - id: document-contracts
   name: document contracts
   language: node
-  entry: doc-verify check --staged --profile auto --format text
+  entry: doc-verify check --staged --profile auto --format text --verbose
   pass_filenames: false
-  always_run: true
+  files: '(^|/).+\.(md|ya?ml)$'
   require_serial: true

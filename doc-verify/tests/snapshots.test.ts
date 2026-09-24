@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -37,6 +37,41 @@ describe("snapshot and graph behavior", () => {
       allDocuments: [a, b, c],
       invalidatesAll: false,
     })).toEqual([a, b]);
+  });
+
+  it("follows shared rubric references to only their document consumers", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "doc-verify-rubric-graph-"));
+    await mkdir(path.join(root, "docs"), { recursive: true });
+    await mkdir(path.join(root, "rubrics"), { recursive: true });
+    await mkdir(path.join(root, "strategies"), { recursive: true });
+    await writeFile(path.join(root, "docs/a.md"), "# A\n");
+    await writeFile(path.join(root, "docs/a.yaml"), "schema_version: 1\nverification:\n  inherits: ../strategies/a.yaml#verification\n");
+    await writeFile(path.join(root, "docs/b.md"), "# B\n");
+    await writeFile(path.join(root, "docs/b.yaml"), "schema_version: 1\nverification:\n  inherits: ../strategies/b.yaml#verification\n");
+    await writeFile(path.join(root, "rubrics/base.yaml"), "schema_version: 1\nrubrics:\n  kind: jev\n  items: []\n");
+    await writeFile(path.join(root, "strategies/a.yaml"), "schema_version: 1\nverification:\n  rubrics:\n    kind: jev\n    inherits: ../rubrics/base.yaml#rubrics\n");
+    await writeFile(path.join(root, "strategies/b.yaml"), "schema_version: 1\nverification:\n  rubrics:\n    kind: jev\n    items: []\n");
+    git(root, ["init"]);
+    git(root, ["config", "user.email", "test@example.invalid"]);
+    git(root, ["config", "user.name", "Test"]);
+    git(root, ["add", "."]);
+    git(root, ["commit", "-m", "base"]);
+    await writeFile(path.join(root, "rubrics/base.yaml"), "schema_version: 1\nrubrics:\n  kind: jev\n  threshold: 1\n  items: []\n");
+    git(root, ["add", "rubrics/base.yaml"]);
+
+    const pair = await captureSnapshots({
+      root,
+      mode: { kind: "staged" },
+      documentPatterns: ["docs/*.md"],
+      documentRules: [{ pattern: "docs/a.md", verification: "strategies/a.yaml#verification" }, { pattern: "docs/b.md", verification: "strategies/b.yaml#verification" }],
+      invalidationPatterns: [],
+    });
+    expect(pair.candidatePaths).toEqual([repoPath("docs/a.md")]);
+    expect(pair.impactPaths.get(repoPath("docs/a.md"))).toEqual([
+      repoPath("rubrics/base.yaml"),
+      repoPath("strategies/a.yaml"),
+      repoPath("docs/a.md"),
+    ]);
   });
 });
 
