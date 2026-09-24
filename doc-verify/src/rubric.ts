@@ -13,11 +13,11 @@ const itemSchema = z.object({
   applies_to: z.object({
     sections: z.array(z.string().min(1)).min(1),
     scope: z.enum(["each", "combined"]),
-  }),
+  }).strict(),
   evidence: z.object({
     source: z.literal("section_body"),
     max_bytes: z.number().int().positive(),
-  }),
+  }).strict(),
   question: z.object({
     kind: z.literal("choose"),
     instruction: z.string().min(1),
@@ -26,23 +26,24 @@ const itemSchema = z.object({
       z.literal("refuted"),
       z.literal("unknown"),
     ]),
-  }),
+  }).strict(),
   critical: z.boolean(),
   weight: z.number().positive(),
   scores: z.object({
     supported: z.number().min(0).max(1),
     refuted: z.number().min(0).max(1),
     unknown: z.number().min(0).max(1),
-  }),
-});
+  }).strict(),
+}).strict();
 
 export type RubricItem = z.infer<typeof itemSchema>;
 
-const rubricSchema = z.object({
+export const rubricBlockSchema = z.object({
+  kind: z.literal("jev"),
   inherits: z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]).optional(),
   threshold: z.number().min(0).max(1).optional(),
   items: z.array(itemSchema).default([]),
-});
+}).strict();
 
 const fileSchema = z.object({
   schema_version: z.literal(1),
@@ -75,6 +76,21 @@ export async function resolveRubric(input: {
   readBlob: BlobReader;
   declaringPath?: RepoPath;
 }): Promise<ResolvedRubric> {
+  return resolveRubrics({
+    root: input.root,
+    roots: [{
+      reference: input.reference,
+      ...(input.declaringPath === undefined ? {} : { declaringPath: input.declaringPath }),
+    }],
+    readBlob: input.readBlob,
+  });
+}
+
+export async function resolveRubrics(input: {
+  root: string;
+  roots: Array<{ reference: string; declaringPath?: RepoPath }>;
+  readBlob: BlobReader;
+}): Promise<ResolvedRubric> {
   const active = new Set<string>();
   const seenIds = new Set<string>();
   const chain: RubricSource[] = [];
@@ -90,7 +106,7 @@ export async function resolveRubric(input: {
     active.add(key);
     const blob = await input.readBlob(parsed.path);
     const document = fileSchema.parse(YAML.parse(blob.content));
-    const block = rubricSchema.parse(resolveFragment(document, parsed.fragment));
+    const block = rubricBlockSchema.parse(resolveFragment(document, parsed.fragment));
     const parents = block.inherits === undefined
       ? []
       : typeof block.inherits === "string"
@@ -116,7 +132,9 @@ export async function resolveRubric(input: {
     active.delete(key);
   };
 
-  await walk(input.reference, input.declaringPath);
+  for (const root of input.roots) {
+    await walk(root.reference, root.declaringPath);
+  }
   if (items.length === 0) {
     throw new UsageError("resolved rubric has no items");
   }

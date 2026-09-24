@@ -34,6 +34,27 @@ describe("semantic mutations", () => {
       backend: createMockJevJudgeBackend({ answers }), useCache: false,
     });
     expect(result.outcome.verdict).toBe("NEEDS-REVIEW");
-    expect(result.outcome.ruleId).toBe("noncritical.threshold");
+    expect(result.outcome.ruleId).toBe("weighted.threshold");
+  });
+
+  it("counts supported critical weight in the overall threshold", async () => {
+    const critical = item("critical", true, 95);
+    const hygiene = item("hygiene", false, 5);
+    const questions: ExpandedQuestion[] = [critical, hygiene].map((entry) => ({
+      id: entry.id, item: entry, sectionIds: [sectionId(entry.id)], evidence: entry.id,
+    }));
+    const rubric: ResolvedRubric = { threshold: 0.85, items: [critical, hygiene], chain: [] };
+    const answers: JudgeAnswer[] = [
+      { id: "q1", kind: "choose", value: "supported", confidence: 1, distribution: [1, 0, 0], basis: "calibrated" },
+      { id: "q2", kind: "choose", value: "refuted", confidence: 1, distribution: [0, 1, 0], basis: "calibrated" },
+    ];
+    const result = await evaluateSemantic({
+      root: process.cwd(), artifactKind: "design", questions, rubric,
+      model: "jev-1.13.0", policyVersion: 1, maxEvidenceBytes: 1000,
+      forbiddenLiterals: [], maxAgeSeconds: 3600,
+      backend: createMockJevJudgeBackend({ answers }), useCache: false,
+    });
+    expect(result.outcome.verdict).toBe("PASS");
+    expect(result.outcome.ruleId).toBe("all.required.facts");
   });
 });

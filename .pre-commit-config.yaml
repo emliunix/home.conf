@@ -6,5 +6,5 @@ repos:
         language: system
         entry: npm exec doc-verify -- check --staged --profile auto --format text
         pass_filenames: false
-        always_run: true
+        files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$'
         require_serial: true

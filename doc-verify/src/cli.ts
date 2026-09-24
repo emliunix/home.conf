@@ -60,6 +60,7 @@ async function runCheck(argv: string[]): Promise<number> {
       format: { type: "string", default: "text" },
       output: { type: "string" },
       refresh: { type: "boolean" },
+      verbose: { type: "boolean" },
     },
   });
   const pathValues = parsed.values.paths === undefined
@@ -94,7 +95,12 @@ async function runCheck(argv: string[]): Promise<number> {
   if (format !== "text" && format !== "json") {
     throw new UsageError("--format must be text or json");
   }
-  const rendered = format === "json" ? `${JSON.stringify(report, null, 2)}\n` : renderText(report);
+  if (parsed.values.verbose === true && format !== "text") {
+    throw new UsageError("--verbose requires --format text");
+  }
+  const rendered = format === "json"
+    ? `${JSON.stringify(report, null, 2)}\n`
+    : renderText(report, { verbose: parsed.values.verbose === true });
   if (parsed.values.output !== undefined) {
     await writeFile(parsed.values.output, rendered, "utf8");
   } else {

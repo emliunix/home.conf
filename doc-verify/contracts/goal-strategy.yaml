@@ -1,0 +1,13 @@
+schema_version: 1
+kind: verification-strategy
+verification:
+  kind: jev-prolog
+  rubrics:
+    kind: jev
+    inherits: goal.yaml#rubrics
+  default_profile: draft
+  profiles:
+    draft:
+      cache: reuse
+    promotion:
+      cache: refresh

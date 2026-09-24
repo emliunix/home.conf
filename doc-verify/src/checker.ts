@@ -4,9 +4,10 @@ import { minimatch } from "minimatch";
 
 import { CompanionMetadata, DocVerifyConfig, DocumentRule, parseCompanion, parseConfig, resolveProfile } from "./config.js";
 import { evaluateSemantic, PolicyViolationError } from "./semantic.js";
-import { EvidenceBudgetError, MissingCriticalSectionError, expandRubric, resolveRubric } from "./rubric.js";
+import { EvidenceBudgetError, MissingCriticalSectionError, expandRubric, resolveRubrics } from "./rubric.js";
 import { segmentMarkdown } from "./segments.js";
 import { SnapshotMode, captureSnapshots } from "./snapshot.js";
+import { resolveVerificationStrategy } from "./strategy.js";
 import {
   ArtifactReport,
   BlockedError,
@@ -19,6 +20,7 @@ import {
   UsageError,
   VerificationReport,
   Verdict,
+  WarningDiagnostic,
   repoPath,
   sectionId,
 } from "./types.js";
@@ -50,6 +52,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
     mode: options.mode,
     documentPatterns: config.documents.map((document) => document.pattern),
     invalidationPatterns: config.invalidation_patterns,
+    documentRules: config.documents.map(({ pattern, verification }) => ({ pattern, verification })),
   });
   const selectedIds = options.sections?.map(sectionId);
   const artifacts: ArtifactReport[] = [];
@@ -59,8 +62,9 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
       continue;
     }
     const entry = pair.candidate.entries.get(file);
+    const impactPath = pair.impactPaths.get(file) ?? [file];
     if (entry === undefined || "deleted" in entry) {
-      artifacts.push(deletedReport(file, rule));
+      artifacts.push(deletedReport(file, rule, impactPath));
       continue;
     }
     artifacts.push(await checkArtifact({
@@ -69,6 +73,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
       blob: entry,
       rule,
       config,
+      impactPath,
       readCandidate: pair.readCandidate,
       requestedProfile: options.profile,
       ...(selectedIds === undefined ? {} : { selectedIds }),
@@ -88,6 +93,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
     changedRoots: pair.changedRoots,
     affectedArtifacts: pair.candidatePaths,
     artifacts,
+    warningCount: artifacts.reduce((sum, artifact) => sum + artifact.warnings.length, 0),
     semanticCalls: artifacts.reduce((sum, artifact) => sum + artifact.semanticCalls, 0),
     cacheHits: artifacts.reduce((sum, artifact) => sum + artifact.cacheHits, 0),
     verdict,
@@ -101,6 +107,7 @@ async function checkArtifact(input: {
   blob: TextBlob;
   rule: DocumentRule;
   config: DocVerifyConfig;
+  impactPath: RepoPath[];
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
   requestedProfile: Profile;
   selectedIds?: SectionId[];
@@ -110,35 +117,55 @@ async function checkArtifact(input: {
 }): Promise<ArtifactReport> {
   const sections = segmentMarkdown(input.blob.content);
   const findings: Finding[] = [];
+  const warnings: WarningDiagnostic[] = [];
   for (const required of input.rule.required_sections) {
     if (!sections.some((section) => section.id === required)) {
       findings.push(finding(input.file, sections[0], "structure.required-section", "NO-GO", `missing required section ${required}`));
     }
   }
-  const status = sectionBody(sections.find((section) => section.id === "status"));
-  const profile = resolveProfile({ requested: input.requestedProfile, configured: input.rule.semantic_profile, ...(status === undefined ? {} : { status }) });
   const companionPath = repoPath(input.file.replace(/\.md$/i, ".yaml"));
   const companion = await optionalCompanion(input.readCandidate, companionPath);
-  const reference = input.rubricOverride ?? companion?.rubrics?.inherits ?? input.rule.rubric;
-  const rubric = await resolveRubric({
+  if (companion === undefined) {
+    warnings.push(warning(input.file, "metadata.missing-companion", "no adjacent companion; using repository defaults"));
+  } else if (companion.document.kind !== input.rule.artifact_kind) {
+    throw new UsageError(`invalid ${companionPath}: document.kind must be ${input.rule.artifact_kind}`);
+  }
+  const strategy = await resolveVerificationStrategy({
     root: input.root,
-    reference,
     readBlob: input.readCandidate,
-    ...(input.rubricOverride === undefined && companion?.rubrics !== undefined ? { declaringPath: companionPath } : {}),
+    source: companion === undefined
+      ? { kind: "reference", reference: input.rule.verification }
+      : { kind: "inline", strategy: companion.verification, declaringPath: companionPath },
+  });
+  const status = sectionBody(sections.find((section) => section.id === "status")) ?? companion?.document.status;
+  const profile = resolveProfile({ requested: input.requestedProfile, configured: strategy.defaultProfile, ...(status === undefined ? {} : { status }) });
+  const companionProfile = strategy.profiles[profile];
+  const selectedIds = input.selectedIds ?? companionProfile.sections?.map(sectionId);
+  const roots = input.rubricOverride !== undefined
+    ? [{ reference: input.rubricOverride }]
+    : companionProfile.rubric !== undefined
+      ? [{ reference: companionProfile.rubric }]
+      : strategy.rubricRoots;
+  const rubric = await resolveRubrics({
+    root: input.root,
+    roots,
+    readBlob: input.readCandidate,
   });
   let semanticRequestId: string | undefined;
   let semanticCalls = 0;
   let cacheHits = 0;
+  let evaluations: ArtifactReport["evaluations"] = [];
   const trace = [];
 
-  if (findings.length === 0 && (profile === "promotion" || input.selectedIds !== undefined)) {
+  if (findings.length === 0 && (profile === "promotion" || selectedIds !== undefined)) {
     try {
       const questions = expandRubric({
         rubric,
         artifactKind: input.rule.artifact_kind,
         sections,
-        ...(input.selectedIds === undefined ? {} : { selectedIds: input.selectedIds }),
+        ...(selectedIds === undefined ? {} : { selectedIds }),
       });
+      evaluations = questions.map((question) => ({ questionId: question.id, sectionIds: question.sectionIds }));
       if (profile === "promotion") {
         const semantic = await evaluateSemantic({
           root: input.root,
@@ -151,11 +178,20 @@ async function checkArtifact(input: {
           forbiddenLiterals: input.config.policy.forbidden_literals,
           maxAgeSeconds: input.config.judge.attestation_max_age_seconds,
           ...(input.backend === undefined ? {} : { backend: input.backend }),
-          ...(input.useCache === undefined ? {} : { useCache: input.useCache }),
+          ...(input.useCache !== undefined
+            ? { useCache: input.useCache }
+            : companionProfile.cache === "refresh"
+              ? { useCache: false }
+              : {}),
         });
         semanticRequestId = semantic.requestId;
         semanticCalls = semantic.calls;
         cacheHits = semantic.cacheHits;
+        evaluations = questions.map((question, index) => ({
+          questionId: question.id,
+          sectionIds: question.sectionIds,
+          ...(semantic.outcome.answers[index] === undefined ? {} : { answer: semantic.outcome.answers[index] }),
+        }));
         trace.push({ ruleId: semantic.outcome.ruleId, verdict: semantic.outcome.verdict, facts: semantic.outcome.answers });
         if (semantic.outcome.verdict !== "PASS") {
           const first = questions[0];
@@ -186,27 +222,37 @@ async function checkArtifact(input: {
     path: input.file,
     artifactKind: input.rule.artifact_kind,
     profile,
+    impactPath: input.impactPath,
+    requiredSections: input.rule.required_sections,
     sections: sections.map(({ content: _content, ...section }) => section),
+    strategyChain: strategy.chain,
     rubricChain: rubric.chain,
+    evaluations,
     ...(semanticRequestId === undefined ? {} : { semanticRequestId }),
     semanticCalls,
     cacheHits,
+    warnings,
     findings,
     trace,
     verdict,
   };
 }
 
-function deletedReport(file: RepoPath, rule: DocumentRule): ArtifactReport {
+function deletedReport(file: RepoPath, rule: DocumentRule, impactPath: RepoPath[]): ArtifactReport {
   const item = finding(file, undefined, "structure.deleted", "NO-GO", "configured document was deleted");
   return {
     path: file,
     artifactKind: rule.artifact_kind,
     profile: "draft",
+    impactPath,
+    requiredSections: rule.required_sections,
     sections: [],
+    strategyChain: [],
     rubricChain: [],
+    evaluations: [],
     semanticCalls: 0,
     cacheHits: 0,
+    warnings: [],
     findings: [item],
     trace: [],
     verdict: "NO-GO",
@@ -222,6 +268,16 @@ function finding(pathValue: RepoPath, section: Section | undefined, ruleId: stri
     verdict,
     message,
     evidenceId: section?.contentHash ?? "tombstone",
+  };
+}
+
+function warning(pathValue: RepoPath, ruleId: string, message: string): WarningDiagnostic {
+  return {
+    path: pathValue,
+    line: 1,
+    sectionId: sectionId("@document"),
+    ruleId,
+    message,
   };
 }
 

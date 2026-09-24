@@ -42,8 +42,8 @@ const item = `
 describe("rubric resolution", () => {
   it("resolves parent first and raises but never lowers a threshold", async () => {
     const files = await fixture({
-      "base.yaml": `schema_version: 1\nrubrics:\n  threshold: 0.7\n  items:${item}`,
-      "nested/child.yaml": `schema_version: 1\nrubrics:\n  inherits: ../base.yaml#rubrics\n  threshold: 0.9\n  items: []\n`,
+      "base.yaml": `schema_version: 1\nrubrics:\n  kind: jev\n  threshold: 0.7\n  items:${item}`,
+      "nested/child.yaml": `schema_version: 1\nrubrics:\n  kind: jev\n  inherits: ../base.yaml#rubrics\n  threshold: 0.9\n  items: []\n`,
     });
     const rubric = await resolveRubric({ root: files.root, reference: "nested/child.yaml#/rubrics", readBlob: files.readBlob });
     expect(rubric.threshold).toBe(0.9);
@@ -53,9 +53,9 @@ describe("rubric resolution", () => {
 
   it("rejects cycles, duplicate ids, escapes, and lower thresholds", async () => {
     const files = await fixture({
-      "a.yaml": `schema_version: 1\nrubrics:\n  inherits: b.yaml#rubrics\n  threshold: 0.8\n  items:${item}`,
-      "b.yaml": "schema_version: 1\nrubrics:\n  inherits: a.yaml#rubrics\n  items: []\n",
-      "low.yaml": "schema_version: 1\nrubrics:\n  inherits: a.yaml#rubrics\n  threshold: 0.1\n  items: []\n",
+      "a.yaml": `schema_version: 1\nrubrics:\n  kind: jev\n  inherits: b.yaml#rubrics\n  threshold: 0.8\n  items:${item}`,
+      "b.yaml": "schema_version: 1\nrubrics:\n  kind: jev\n  inherits: a.yaml#rubrics\n  items: []\n",
+      "low.yaml": "schema_version: 1\nrubrics:\n  kind: jev\n  inherits: a.yaml#rubrics\n  threshold: 0.1\n  items: []\n",
     });
     await expect(resolveRubric({ root: files.root, reference: "a.yaml#rubrics", readBlob: files.readBlob })).rejects.toThrow("cycle");
     await expect(resolveRubric({ root: files.root, reference: "../a.yaml#rubrics", readBlob: files.readBlob })).rejects.toThrow("escapes");
@@ -63,7 +63,7 @@ describe("rubric resolution", () => {
   });
 
   it("intersects explicit sections and refuses an empty evaluation", async () => {
-    const files = await fixture({ "base.yaml": `schema_version: 1\nrubrics:\n  threshold: 0.8\n  items:${item}` });
+    const files = await fixture({ "base.yaml": `schema_version: 1\nrubrics:\n  kind: jev\n  threshold: 0.8\n  items:${item}` });
     const rubric = await resolveRubric({ root: files.root, reference: "base.yaml#rubrics", readBlob: files.readBlob });
     const sections = segmentMarkdown("# T\n## Problem\ntext\n## Other\nother\n");
     const problem = sections[1];

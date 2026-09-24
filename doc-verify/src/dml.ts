@@ -39,17 +39,16 @@ export function buildDml(input: { state: unknown; questions: ExpandedQuestion[];
       clauses.push(`decide(${args}, 'NEEDS-REVIEW', ${quote(`${question.id}.unknown`)}) :- ${variableAt(variables, index)} == unknown.`);
     }
   }
-  const noncritical = input.questions
-    .map((question, index) => ({ question, variable: variableAt(variables, index) }))
-    .filter(({ question }) => !question.item.critical);
-  if (noncritical.length > 0) {
-    const terms = noncritical.map(({ question, variable }, index) => {
+  const scored = input.questions
+    .map((question, index) => ({ question, variable: variableAt(variables, index) }));
+  if (scored.length > 0) {
+    const terms = scored.map(({ question, variable }, index) => {
       const scoreVar = `S${String(index)}`;
       return { scoreVar, goal: `answer_score(${variable}, ${scoreVar})`, weighted: `${scoreVar} * ${String(question.item.weight)}` };
     });
-    const totalWeight = noncritical.reduce((sum, { question }) => sum + question.item.weight, 0);
+    const totalWeight = scored.reduce((sum, { question }) => sum + question.item.weight, 0);
     clauses.push(
-      `decide(${args}, 'NEEDS-REVIEW', 'noncritical.threshold') :- ` +
+      `decide(${args}, 'NEEDS-REVIEW', 'weighted.threshold') :- ` +
       `${terms.map(({ goal }) => goal).join(", ")}, Score is (${terms.map(({ weighted }) => weighted).join(" + ")}) / ${String(totalWeight)}, Score < ${String(input.threshold)}.`,
     );
   }
