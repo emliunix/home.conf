@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { parseConfig } from "./config.js";
 import { sha256 } from "./hash.js";
+import { loadDocVerifyEnv } from "./local-env.js";
 import { repoPath } from "./types.js";
 
 const localResponseSchema = z.object({
@@ -17,6 +18,7 @@ const localResponseSchema = z.object({
 
 async function main(): Promise<void> {
   const root = execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" }).trim();
+  loadDocVerifyEnv(root);
   const configText = await readFile(`${root}/.doc-verify.yaml`, "utf8");
   const config = parseConfig({ path: repoPath(".doc-verify.yaml"), content: configText, hash: sha256(configText) });
   const clientPath = process.env.JEV_PROMPTS_CLIENT?.trim();

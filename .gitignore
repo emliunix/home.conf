@@ -1,4 +1,5 @@
 .env
+.env.doc-verify
 *.swp
 .DS_Store
 target

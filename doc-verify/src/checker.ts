@@ -4,6 +4,7 @@ import { createMockJevJudgeBackend, type JudgeBackend } from "deepclause-sdk";
 import { minimatch } from "minimatch";
 
 import { CompanionMetadata, DocVerifyConfig, DocumentRule, parseCompanion, parseConfig, resolveProfile } from "./config.js";
+import { loadDocVerifyEnv } from "./local-env.js";
 import { evaluateSemantic, PolicyViolationError } from "./semantic.js";
 import { EvidenceBudgetError, MissingCriticalSectionError, expandRubric, resolveRubrics } from "./rubric.js";
 import { segmentMarkdown } from "./segments.js";
@@ -43,6 +44,7 @@ export interface CheckOptions {
 export async function checkDocuments(options: CheckOptions): Promise<VerificationReport> {
   const started = performance.now();
   const root = options.root ?? gitRoot(process.cwd());
+  loadDocVerifyEnv(root);
   const bootstrap = await captureSnapshots({
     root,
     mode: options.mode,
