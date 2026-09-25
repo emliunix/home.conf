@@ -77,4 +77,15 @@ describe("rubric resolution", () => {
     expect(() => expandRubric({ rubric, artifactKind: "design", sections, selectedIds: [other.id] })).toThrow("no applicable");
     expect(() => expandRubric({ rubric, artifactKind: "design", sections: segmentMarkdown("# T\n## Other\nx\n") })).toThrow(MissingCriticalSectionError);
   });
+
+  it("sends a nested section once in combined evidence", async () => {
+    const selected = item.replace("sections: [problem]", "sections: ['@selected']");
+    const files = await fixture({ "base.yaml": `schema_version: 1\nrubrics:\n  kind: jev\n  threshold: 0.8\n  items:${selected}` });
+    const rubric = await resolveRubric({ root: files.root, reference: "base.yaml#rubrics", readBlob: files.readBlob });
+    const sections = segmentMarkdown("# T\nintro\n## Problem\ntext\n## Other\nother\n");
+    const [question] = expandRubric({ rubric, artifactKind: "design", sections });
+    expect(question?.sectionIds).toHaveLength(3);
+    expect(question?.evidence.split("## Problem")).toHaveLength(2);
+    expect(question?.evidence.split("other")).toHaveLength(2);
+  });
 });
