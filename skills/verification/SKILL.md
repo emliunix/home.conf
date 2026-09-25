@@ -59,6 +59,26 @@ When the repository has `.doc-verify.yaml`, use its `doc-verify` executable.
 - Treat `NO-GO`, `BLOCKED`, and `NEEDS-REVIEW` as distinct outcomes. Never turn
   model confidence into `PASS`.
 
+### Bringing a repository under contract
+
+Setup, not invocation, is where adoption fails. Do these in order; details and
+failure signs are in [doc-verify setup](references/doc-verify-setup.md).
+
+1. Credential: link the protected local judge-key file as the gitignored
+   `.env.doc-verify` at the repository root. The tool reads `API_KEY` from it,
+   and an exported key takes precedence. With neither, every non-draft
+   document reports `BLOCKED`. Never commit the file or copy the key.
+2. Configuration: pin the provider hook to a revision that is published on its
+   remote. Convert each companion of a configured document to the current
+   `document-contract` shape first, because one old-shape companion aborts the
+   whole run.
+3. Baseline: run `check --all`, structure-only first, then with the judge.
+   Get a ruling on every failure before installing the hook. Otherwise the
+   setup commit, which touches the invalidation files, blocks itself.
+4. Hook: install it with a persistently installed `prek`, then confirm that
+   `.git/hooks/pre-commit` exists and runs. A `.pre-commit-config.yaml` alone
+   runs nothing.
+
 Rubric YAML is reusable policy. Artifact Markdown owns artifact-specific
 decisions. Adjacent metadata references a rubric and records commands or
 freshness; it does not duplicate the document.
