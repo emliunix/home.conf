@@ -28,18 +28,12 @@ def test_only_self():
         plan(Message("alice", ("alice",), "hi"), MEMBERS)
 
 
-def test_caller_identity_fills_and_guards_from():
-    assert resolve_sender(Message(None, None, "hi"), MEMBERS, "bob").sender == "bob"
-    with pytest.raises(FormatError, match="does not match"):
-        resolve_sender(Message("alice", None, "hi"), MEMBERS, "bob")
-
-
 def test_self_declared_sender_must_be_member_or_user():
-    assert resolve_sender(Message("user", None, "hi"), MEMBERS, None).sender == "user"
+    assert resolve_sender(Message("user", None, "hi"), MEMBERS).sender == "user"
     with pytest.raises(FormatError, match="missing from"):
-        resolve_sender(Message(None, None, "hi"), MEMBERS, None)
+        resolve_sender(Message(None, None, "hi"), MEMBERS)
     with pytest.raises(FormatError, match="not a group member"):
-        resolve_sender(Message("zed", None, "hi"), MEMBERS, None)
+        resolve_sender(Message("zed", None, "hi"), MEMBERS)
 
 
 def test_broadcast_skips_muted_but_direct_reaches_them():

@@ -28,7 +28,7 @@ non-trivial answers in `/tmp/logs/p1-supervisor.md`.
 2. Organization: is every open Goal checklist row owned by a named seat or by
    `lead`, with its dependencies met and no two owners on one file? Is any row
    ready but unassigned?
-3. Peers: what has each seat done since the last tick (screen, group history,
+3. Peers: what has each seat done since the last tick (screen, group log,
    working tree)? Does any peer need help: stalled, blocked, looping, going off
    scope, or waiting on an answer from `lead`? Help now.
 4. Evidence: did any row gain fresh evidence? Tick it, record it, and start the
@@ -57,21 +57,22 @@ keep working on whatever else can progress.
 
 - Read this file before starting work and whenever `lead` announces a
   coordination change.
-- The team is a group chat led by `lead`. Send every cross-pane message
-  through the group seat, never with `herdr agent prompt <peer>`:
-  - direct: `uv run ~/.claude/skills/herdr-supervisor/scripts/group.py send --to <name>[,<name>...] "<message>"`
-  - everyone: the same command without `--to` (to_all). Every idle member
-    takes a turn, so broadcast only announcements and coordination changes.
-  - The sender is taken from your pane, so do not write `from:`. A non-zero
-    exit prints why the message was not delivered.
-  - `... group.py mute` stops `to_all` broadcasts reaching you (for long
-    heads-down work); `... group.py unmute` restores them. Direct messages
+- The team is a group chat led by `lead`. Post every cross-pane message to
+  the `group` seat with Herdr, never with `herdr agent prompt <peer>`:
+  - direct: `herdr agent prompt group "[from:<you>; to:<name>[,<name>...]] <message>"`
+  - everyone: `herdr agent prompt group "[from:<you>; to_all] <message>"`.
+    Every idle member takes a turn, so broadcast only announcements and
+    coordination changes.
+  - `from:` is required and must be your own agent name. If the seat rejects
+    the message or a delivery fails, it tells you in a new turn from `group`.
+  - `[from:<you>; mute]` stops `to_all` broadcasts reaching you (for long
+    heads-down work); `[from:<you>; unmute]` restores them. Direct messages
     always arrive.
 - Messages reach you as `[from:<name>; to:<names>|to_all] <message>`, each as
-  a new turn. Reply with `send --to <name>`. To wait for a reply, end your
-  turn; never poll the history or sleep in a loop, because messages queue
+  a new turn. Reply to the sender through the seat. To wait for a reply, end
+  your turn; never poll the history or sleep in a loop, because messages queue
   behind a running turn.
-- Read the group history with `... group.py history -n 50`.
+- Read the conversation with `herdr agent read group --source recent-unwrapped --lines 80`.
 - Address agents by the exact name in the Pane name map.
 - Peers may message one another directly. Routine coordination does not need
   to pass through `lead`. Only `lead` assigns work or starts agents.

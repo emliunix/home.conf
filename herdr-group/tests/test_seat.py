@@ -60,29 +60,25 @@ def seat(monkeypatch, tmp_path):
     return lambda herdr: Seat(herdr, "group", "maki", False, io.StringIO())
 
 
-def test_client_broadcast_uses_pane_identity(seat):
+def test_prompted_broadcast_routes_to_members(seat):
     herdr = FakeHerdr(AGENTS)
-    response = seat(herdr).handle_client({"pane_id": "w1:p2", "text": "hello"})
-    assert response["ok"] and response["delivered"] == ["bob"]
+    outcome = seat(herdr).route("[from:alice] hello")
+    assert outcome.delivered == ("bob",)
     assert herdr.prompts == [("bob", "[from:alice; to_all] hello")]
     assert herdr.states == ["working", "idle"]
 
 
-def test_client_spoofed_from_rejected(seat):
-    herdr = FakeHerdr(AGENTS)
-    response = seat(herdr).handle_client({"pane_id": "w1:p2", "text": "[from:bob] hi"})
-    assert not response["ok"] and "does not match" in response["error"]
-    assert herdr.prompts == []
+def test_blocked_recipient_reported_back_to_sender(seat):
+    herdr = FakeHerdr(AGENTS, blocked={"bob"})
+    seat(herdr).handle_typed("[from:alice; to:bob] hi")
+    assert herdr.prompts[0][0] == "alice"
+    assert "bob (agent_blocked)" in herdr.prompts[0][1]
 
 
-def test_client_unnamed_pane_told_how_to_fix(seat):
-    response = seat(FakeHerdr(AGENTS)).handle_client({"pane_id": "w1:p4", "text": "hi"})
-    assert "herdr agent rename w1:p4" in response["error"]
-
-
-def test_client_blocked_recipient_reported(seat):
-    response = seat(FakeHerdr(AGENTS, blocked={"bob"})).handle_client({"pane_id": "w1:p2", "text": "[to:bob] hi"})
-    assert response["failed"] == {"bob": "agent_blocked"}
+def test_second_seat_with_same_name_refused(seat):
+    s = seat(FakeHerdr(AGENTS + [Agent("w1:p9", "w1", "group", "maki", "idle")]))
+    with pytest.raises(SystemExit, match="already serving on w1:p9"):
+        s.run()
 
 
 def test_typed_bad_format_fed_back_to_declared_sender(seat):
@@ -107,7 +103,7 @@ def test_other_workspace_not_member(seat):
 
 
 def test_messages_logged(seat, tmp_path):
-    seat(FakeHerdr(AGENTS)).handle_client({"pane_id": "w1:p3", "text": "[to:alice] yo"})
+    seat(FakeHerdr(AGENTS)).route("[from:bob; to:alice] yo")
     log = (tmp_path / "herdr-group" / "w1" / "group.jsonl").read_text()
     assert '"from": "bob"' in log and '"body": "yo"' in log
 
@@ -115,21 +111,21 @@ def test_messages_logged(seat, tmp_path):
 def test_mute_skips_broadcasts_and_persists(seat):
     herdr = FakeHerdr(AGENTS)
     s = seat(herdr)
-    assert s.handle_client({"pane_id": "w1:p3", "text": "[mute]"})["sent"] == "[from:bob; mute]"
-    response = s.handle_client({"pane_id": "w1:p2", "text": "everyone"})
-    assert response["delivered"] == [] and response["skipped"] == ["bob"]
-    s.handle_client({"pane_id": "w1:p2", "text": "[to:bob] direct"})
+    assert s.route("[from:bob; mute]").message.render() == "[from:bob; mute]"
+    outcome = s.route("[from:alice] everyone")
+    assert outcome.delivered == () and outcome.skipped == ("bob",)
+    s.route("[from:alice; to:bob] direct")
     assert herdr.prompts == [("bob", "[from:alice; to:bob] direct")]
     assert seat(herdr).muted == {"bob"}  # a restarted seat remembers
-    seat(herdr).handle_client({"pane_id": "w1:p3", "text": "[unmute]"})
+    seat(herdr).route("[from:bob; unmute]")
     assert seat(herdr).muted == set()
 
 
 def test_mute_dropped_when_member_leaves(seat):
     s = seat(FakeHerdr(AGENTS))
-    s.handle_client({"pane_id": "w1:p3", "text": "[mute]"})
+    s.route("[from:bob; mute]")
     s.herdr = FakeHerdr([a for a in AGENTS if a.name != "bob"])
-    s.handle_client({"pane_id": "w1:p2", "text": "hi"})
+    s.route("[from:alice] hi")
     assert s.muted == set()
 
 

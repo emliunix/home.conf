@@ -8,27 +8,24 @@
 """Herdr group chat: a pane Herdr treats as an agent, routing messages between peers.
 
   group.py serve [--group NAME] [--kind KIND] [--all-workspaces]   run the seat in this pane
-  group.py send [--group NAME] [--to a,b] <text>                  post as the agent in this pane
-  group.py mute | unmute [--group NAME]                            opt out of / back into to_all
-  group.py members | history [-n N]
+
+Peers post with Herdr itself: ``herdr agent prompt group "<message>"``. The seat
+reads its terminal, routes each message with ``herdr agent prompt`` to the
+recipients, prints it once on screen, and appends it to
+``$XDG_STATE_HOME/herdr-group/<workspace>/<group>.jsonl``.
 
 Message grammar: ``[from:<name>; to:<name>[,<name>...]] <body>`` or
 ``[from:<name>; to_all] <body>``; fields may also be separated by commas or spaces.
 ``[from:<name>; mute]`` (no body) opts the sender out of to_all broadcasts;
-``unmute`` opts back in. Direct messages always arrive. ``from`` is optional where the sender is known
-(``send``); a header without ``to:`` also broadcasts to every member except the
-sender. ``to:all`` is an error: broadcast is only the bare ``to_all`` flag, and
-agents named ``all``/``to_all``/``user``/``mute``/``unmute`` are never members. A leading ``[...]``
-without ``from:``/``to:``/``to_all`` is ordinary body text (e.g. ``[WIP] ...``).
+``unmute`` opts back in. Direct messages always arrive. A header without ``to:``
+also broadcasts to every member except the sender. ``to:all`` is an error:
+broadcast is only the bare ``to_all`` flag, and agents named
+``all``/``to_all``/``user``/``mute``/``unmute`` are never members. A leading
+``[...]`` without ``from:``/``to:``/``to_all`` is ordinary body text (e.g. ``[WIP] ...``).
 
-Two inputs feed the same router:
-
-* the pane's terminal — ``herdr agent prompt <group> "<text>"`` from any agent,
-  or a human typing into the pane. Herdr does not tell a terminal who wrote to
-  it, so these messages must self-declare ``from:``.
-* a Unix socket served for ``send`` — the client passes its ``HERDR_PANE_ID``,
-  so the sender is resolved from Herdr's agent list and errors are answered
-  synchronously to the caller.
+Herdr does not tell a terminal who wrote to it, so every message self-declares
+``from:``, which must name a live member or ``user``. A rejected message, and a
+delivery that failed, is sent back to the declared sender when it is a member.
 
 ``agent prompt`` only targets a pane whose foreground process Herdr identifies
 as a built-in agent kind; ``HERDR_AGENT=<kind>`` in the process environment is
@@ -55,8 +52,6 @@ from typing import Annotated, Any, TextIO
 
 import typer
 
-# How peers invoke this script; shown in the seat banner and error hints.
-COMMAND = "uv run " + os.path.abspath(__file__).replace(str(Path.home()), "~", 1)
 
 # ---------------------------------------------------------------- protocol
 
@@ -182,17 +177,8 @@ class Route:
     skipped: tuple[str, ...] = ()
 
 
-def resolve_sender(message: Message, members: frozenset[str], caller: str | None) -> Message:
-    """Fix the sender of ``message``.
-
-    ``caller`` is the sender's name as proven by Herdr pane identity (the
-    ``send`` path). Without it (the typed/``agent prompt`` path) the header's
-    self-declared ``from:`` is all there is, so it must name a member or the user.
-    """
-    if caller is not None:
-        if message.sender is not None and message.sender != caller:
-            raise FormatError(f"from:{message.sender} does not match your seat {caller!r}; omit from: or use from:{caller}")
-        return replace(message, sender=caller)
+def resolve_sender(message: Message, members: frozenset[str]) -> Message:
+    """Check the self-declared sender: it must name a member or the user."""
     if message.sender is None:
         raise FormatError(f"missing from:; {USAGE}")
     if message.sender != USER and message.sender not in members:
@@ -321,10 +307,6 @@ def state_dir(workspace_id: str) -> Path:
     return base / "herdr-group" / workspace_id
 
 
-def socket_path(workspace_id: str, name: str) -> Path:
-    return state_dir(workspace_id) / f"{name}.sock"
-
-
 def log_path(workspace_id: str, name: str) -> Path:
     return state_dir(workspace_id) / f"{name}.jsonl"
 
@@ -430,23 +412,12 @@ class Seat:
             and (self.all_workspaces or a.workspace_id == self.workspace_id)
         }
 
-    def caller_name(self, pane_id: str) -> str:
-        for agent in self.herdr.agents():
-            if agent.pane_id == pane_id:
-                if agent.name:
-                    return agent.name
-                raise FormatError(
-                    f"your pane {pane_id} hosts an unnamed {agent.kind} agent; "
-                    f"name it with `herdr agent rename {pane_id} <name>`"
-                )
-        raise FormatError(f"no agent is running in your pane {pane_id}")
-
     # -- routing ----------------------------------------------------------
 
-    def route(self, text: str, caller: str | None) -> Outcome:
+    def route(self, text: str) -> Outcome:
         members = self.members()
         self._set_muted(self.muted & members.keys())
-        message = resolve_sender(parse(text), frozenset(members), caller)
+        message = resolve_sender(parse(text), frozenset(members))
         if message.control is not None:
             return self._control(message)
         route = plan(message, frozenset(members), frozenset(self.muted))
@@ -488,35 +459,15 @@ class Seat:
             self.mute_file.write_text(json.dumps(sorted(muted)))
 
     def handle_typed(self, text: str) -> None:
-        """A submission from the terminal: sender is self-declared."""
+        """A message typed or prompted into the seat; the sender is self-declared."""
         try:
-            outcome = self.route(text, caller=None)
+            outcome = self.route(text)
         except FormatError as err:
             self._error(text, str(err))
             self._feedback(text, str(err))
             return
         if outcome.failed:
             self._notify(outcome.message.sender, _failure_text(outcome))
-
-    def handle_client(self, request: dict[str, Any]) -> dict[str, Any]:
-        """A request from ``send``: sender is proven by pane identity."""
-        if request.get("op") == "members":
-            return {"ok": True, "members": sorted(self.members()), "muted": sorted(self.muted)}
-        text = str(request.get("text", ""))
-        try:
-            caller = self.caller_name(str(request.get("pane_id", "")))
-            outcome = self.route(text, caller=caller)
-        except FormatError as err:
-            self._error(text, str(err))
-            return {"ok": False, "error": str(err)}
-        return {
-            "ok": not outcome.failed,
-            "sent": outcome.message.render(),
-            "delivered": list(outcome.delivered),
-            "failed": outcome.failed,
-            "skipped": list(outcome.skipped),
-            "control": outcome.message.control is not None,
-        }
 
     def _feedback(self, text: str, error: str) -> None:
         """Tell a self-declared sender their message was rejected, if we can tell who they are."""
@@ -587,13 +538,10 @@ class Seat:
     # -- lifecycle --------------------------------------------------------
 
     def run(self) -> None:
-        sock_path = socket_path(self.workspace_id, self.name)
-        sock_path.parent.mkdir(parents=True, exist_ok=True)
-        _claim_socket_path(sock_path)
-        server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        server.bind(str(sock_path))
-        server.listen()
-
+        self.log.parent.mkdir(parents=True, exist_ok=True)
+        taken = [a.pane_id for a in self.herdr.agents() if a.name == self.name and a.pane_id != self.pane_id]
+        if taken:
+            raise SystemExit(f"a group seat named {self.name!r} is already serving on {taken[0]}")
         self._register()
         self.herdr.report_display(self.pane_id, SOURCE + "-display", "group", f"group chat · {self.name}")
 
@@ -603,30 +551,25 @@ class Seat:
         signal.signal(signal.SIGHUP, _raise_exit)
         selector = selectors.DefaultSelector()
         selector.register(stdin_fd, selectors.EVENT_READ, "tty")
-        selector.register(server, selectors.EVENT_READ, "socket")
         self.out.write(PASTE_ON)
         self._line(
             f"{DIM}herdr-group seat '{self.name}' on {self.pane_id} · members: "
             f"{', '.join(sorted(self.members())) or '(none yet)'}\n"
-            f"  post: herdr agent prompt {self.name} \"[from:<you>; to:<name>|to_all] <msg>\"  or  {COMMAND} send --to <name> \"<msg>\"\n"
+            f"  post: herdr agent prompt {self.name} \"[from:<you>; to:<name>|to_all] <msg>\"\n"
             f"  {USAGE}\n  log: {self.log}"
             + (f"\n  muted: {', '.join(sorted(self.muted))}" if self.muted else "")
             + RESET
         )
         try:
             while True:
-                for key, _ in selector.select():
-                    if key.data == "tty":
-                        data = os.read(stdin_fd, 65536)
-                        if not data:
-                            return
-                        for line in self.input.feed(data):
-                            self.handle_typed(line)
-                        self.out.write(f"\r\x1b[K{self._prompt()}")
-                        self.out.flush()
-                    else:
-                        conn, _ = server.accept()
-                        self._serve_client(conn)
+                for _ in selector.select():
+                    data = os.read(stdin_fd, 65536)
+                    if not data:
+                        return
+                    for line in self.input.feed(data):
+                        self.handle_typed(line)
+                    self.out.write(f"\r\x1b[K{self._prompt()}")
+                    self.out.flush()
         except KeyboardInterrupt:
             pass
         finally:
@@ -634,8 +577,6 @@ class Seat:
             self.out.flush()
             if saved_tty is not None:
                 termios.tcsetattr(stdin_fd, termios.TCSADRAIN, saved_tty)
-            server.close()
-            sock_path.unlink(missing_ok=True)
             try:
                 self.herdr.release_agent(self.pane_id, SOURCE, self.kind)
             except (HerdrError, OSError):
@@ -656,42 +597,9 @@ class Seat:
                     raise
             time.sleep(0.5)
 
-    def _serve_client(self, conn: socket.socket) -> None:
-        with conn:
-            conn.settimeout(5)
-            try:
-                buf = b""
-                while not buf.endswith(b"\n"):
-                    chunk = conn.recv(65536)
-                    if not chunk:
-                        break
-                    buf += chunk
-                response = self.handle_client(json.loads(buf))
-            except (OSError, ValueError) as err:
-                response = {"ok": False, "error": f"bad request: {err}"}
-            try:
-                conn.sendall((json.dumps(response, ensure_ascii=False) + "\n").encode())
-            except OSError:
-                pass
-
-
 def _failure_text(outcome: Outcome) -> str:
     failures = ", ".join(f"{name} ({code})" for name, code in outcome.failed.items())
     return f"not delivered to: {failures}"
-
-
-def _claim_socket_path(path: Path) -> None:
-    if not path.exists():
-        return
-    probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    try:
-        probe.connect(str(path))
-    except OSError:
-        path.unlink()  # Left behind by a seat that died.
-        return
-    finally:
-        probe.close()
-    raise SystemExit(f"a group seat is already serving {path}")
 
 
 def _enter_raw(fd: int) -> list[Any] | None:
@@ -725,6 +633,11 @@ app = typer.Typer(help="Herdr group chat: route [from: to:] messages between age
 GroupOption = Annotated[str, typer.Option("--group", help="seat name")]
 
 
+@app.callback()
+def main() -> None:
+    """Keep `serve` a named subcommand even though it is the only one."""
+
+
 def _workspace(group: str) -> str:
     if not NAME_RE.match(group) or group in RESERVED:
         raise typer.BadParameter(f"invalid seat name {group!r}", param_hint="--group")
@@ -750,99 +663,6 @@ def serve(
         env = {**os.environ, "HERDR_AGENT": kind}
         os.execvpe(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]], env)
     Seat(Herdr(), group, kind, all_workspaces, sys.stdout).run()
-
-
-@app.command()
-def send(
-    text: Annotated[list[str], typer.Argument(help="message, optionally starting with a [to:...] header")],
-    to: Annotated[str | None, typer.Option(help="comma-separated recipients (default: all)")] = None,
-    group: GroupOption = "group",
-) -> None:
-    """Post a message as the agent in this pane."""
-    workspace = _workspace(group)
-    message = " ".join(text)
-    if to:
-        if message.lstrip().startswith("[") and "to:" in message.split("]", 1)[0]:
-            raise typer.BadParameter("give recipients either with --to or in the [to:...] header, not both")
-        message = f"[to:{to}] {message}"
-    response = _request(socket_path(workspace, group), {"pane_id": os.environ["HERDR_PANE_ID"], "text": message})
-    if "error" in response:
-        raise typer.Exit(_fail(response["error"]))
-    _report_sent(response)
-
-
-def _report_sent(response: dict) -> None:
-    typer.echo(response["sent"])
-    if response["control"]:
-        return
-    typer.echo("delivered: " + (", ".join(response["delivered"]) or "(nobody)"))
-    if response["skipped"]:
-        typer.echo("muted, not delivered: " + ", ".join(response["skipped"]))
-    for name, code in response["failed"].items():
-        typer.echo(f"failed: {name} ({code})", err=True)
-    if not response["ok"]:
-        raise typer.Exit(1)
-
-
-def _post_control(control: Control, group: str) -> None:
-    workspace = _workspace(group)
-    response = _request(socket_path(workspace, group), {"pane_id": os.environ["HERDR_PANE_ID"], "text": f"[{control.value}]"})
-    if "error" in response:
-        raise typer.Exit(_fail(response["error"]))
-    _report_sent(response)
-
-
-@app.command()
-def mute(group: GroupOption = "group") -> None:
-    """Stop receiving to_all broadcasts; direct messages still arrive."""
-    _post_control(Control.MUTE, group)
-
-
-@app.command()
-def unmute(group: GroupOption = "group") -> None:
-    """Receive to_all broadcasts again."""
-    _post_control(Control.UNMUTE, group)
-
-
-@app.command()
-def members(group: GroupOption = "group") -> None:
-    """List group members."""
-    response = _request(socket_path(_workspace(group), group), {"op": "members"})
-    if "error" in response:
-        raise typer.Exit(_fail(response["error"]))
-    muted = set(response["muted"])
-    typer.echo("\n".join(f"{name} (muted)" if name in muted else name for name in response["members"]))
-
-
-@app.command()
-def history(
-    n: Annotated[int, typer.Option("-n", help="number of messages")] = 20,
-    group: GroupOption = "group",
-) -> None:
-    """Print recent messages."""
-    path = log_path(_workspace(group), group)
-    if not path.exists():
-        raise typer.Exit(_fail(f"no history at {path}"))
-    for line in path.read_text(encoding="utf-8").splitlines()[-n:]:
-        record = json.loads(line)
-        typer.echo(f"{record['ts']} {record['line']}")
-
-
-def _request(path: Path, payload: dict[str, str]) -> dict:
-    try:
-        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
-            sock.settimeout(30)
-            sock.connect(str(path))
-            sock.sendall((json.dumps(payload) + "\n").encode())
-            buf = b""
-            while not buf.endswith(b"\n"):
-                chunk = sock.recv(65536)
-                if not chunk:
-                    break
-                buf += chunk
-    except OSError as err:
-        return {"ok": False, "error": f"group seat not reachable at {path}: {err}"}
-    return json.loads(buf)
 
 
 if __name__ == "__main__":
