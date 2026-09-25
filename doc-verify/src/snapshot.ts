@@ -430,7 +430,7 @@ function gitLines(root: string, args: string[]): string[] {
 }
 
 function gitText(root: string, args: string[]): string {
-  return execFileSync("git", args, { cwd: root, encoding: "utf8" });
+  return execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
 }
 
 function hasHead(root: string): boolean {
@@ -467,4 +467,4 @@ function normalizeLink(sourcePath: RepoPath, link: Link): RepoPath | undefined {
   return normalized.startsWith("../") ? undefined : repoPath(normalized);
 }
 
-class MissingBlobError extends Error {}
+export class MissingBlobError extends Error {}
