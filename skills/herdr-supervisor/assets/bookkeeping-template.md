@@ -16,6 +16,9 @@
     takes a turn, so broadcast only announcements and coordination changes.
   - The sender is taken from your pane, so do not write `from:`. A non-zero
     exit prints why the message was not delivered.
+  - `... group.py mute` stops `to_all` broadcasts reaching you (for long
+    heads-down work); `... group.py unmute` restores them. Direct messages
+    always arrive.
 - Messages reach you as `[from:<name>; to:<names>|to_all] <message>`, each as
   a new turn. Reply with `send --to <name>`. To wait for a reply, end your
   turn; never poll the history or sleep in a loop, because messages queue

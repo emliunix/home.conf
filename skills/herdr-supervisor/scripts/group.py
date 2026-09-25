@@ -9,13 +9,16 @@
 
   group.py serve [--group NAME] [--kind KIND] [--all-workspaces]   run the seat in this pane
   group.py send [--group NAME] [--to a,b] <text>                  post as the agent in this pane
+  group.py mute | unmute [--group NAME]                            opt out of / back into to_all
   group.py members | history [-n N]
 
 Message grammar: ``[from:<name>; to:<name>[,<name>...]] <body>`` or
-``[from:<name>; to_all] <body>``; fields may also be separated by commas or spaces. ``from`` is optional where the sender is known
+``[from:<name>; to_all] <body>``; fields may also be separated by commas or spaces.
+``[from:<name>; mute]`` (no body) opts the sender out of to_all broadcasts;
+``unmute`` opts back in. Direct messages always arrive. ``from`` is optional where the sender is known
 (``send``); a header without ``to:`` also broadcasts to every member except the
 sender. ``to:all`` is an error: broadcast is only the bare ``to_all`` flag, and
-agents named ``all``/``to_all``/``user`` are never members. A leading ``[...]``
+agents named ``all``/``to_all``/``user``/``mute``/``unmute`` are never members. A leading ``[...]``
 without ``from:``/``to:``/``to_all`` is ordinary body text (e.g. ``[WIP] ...``).
 
 Two inputs feed the same router:
@@ -39,6 +42,7 @@ import json
 import os
 import re
 import selectors
+import shutil
 import signal
 import socket
 import sys
@@ -46,6 +50,7 @@ import termios
 import time
 from dataclasses import dataclass, replace
 from pathlib import Path
+from enum import Enum
 from typing import Annotated, Any, TextIO
 
 import typer
@@ -61,16 +66,27 @@ TO_ALL = "to_all"
 # The human at the keyboard. Not an agent seat: messages to it are only echoed
 # on the group screen, and it can only post by typing into the group pane.
 USER = "user"
+
+
+class Control(Enum):
+    """Bodiless header flags that change the sender's own membership."""
+
+    # Opt out of to_all broadcasts; direct messages still arrive.
+    MUTE = "mute"
+    UNMUTE = "unmute"
+
+
 # Agents with these names are not group members; they would read as keywords.
-RESERVED = frozenset({"all", TO_ALL, USER})
+RESERVED = frozenset({"all", TO_ALL, USER, *(c.value for c in Control)})
 
 USAGE = (
     "format: [from:<your-name>; to:<name>[,<name>...]] <message>  "
-    "or [from:<your-name>; to_all] <message>  (no to: also broadcasts to every member except you)"
+    "or [from:<your-name>; to_all] <message>  (no to: also broadcasts to every member except you)  "
+    "or [from:<your-name>; mute|unmute] to opt out of / back into to_all"
 )
 
 _HEADER_RE = re.compile(r"^\s*\[([^\]]*)\]\s*(.*)\Z", re.DOTALL)
-_KEY_RE = re.compile(r"\b(from\s*:|to\s*:|to_all\b)", re.IGNORECASE)
+_KEY_RE = re.compile(r"\b(from\s*:|to\s*:|to_all\b|mute\b|unmute\b)", re.IGNORECASE)
 
 
 class FormatError(ValueError):
@@ -83,8 +99,12 @@ class Message:
     # None means broadcast.
     recipients: tuple[str, ...] | None
     body: str
+    # A control message has no recipients and an empty body.
+    control: Control | None = None
 
     def render(self) -> str:
+        if self.control is not None:
+            return f"[from:{self.sender}; {self.control.value}]"
         to = TO_ALL if self.recipients is None else "to:" + ",".join(self.recipients)
         return f"[from:{self.sender}; {to}] {self.body}"
 
@@ -107,6 +127,7 @@ def parse(text: str) -> Message:
 
     sender: str | None = None
     recipients: tuple[str, ...] | None = None
+    control: Control | None = None
     if header:
         parts = _KEY_RE.split(header)
         if parts[0].strip(" ,;"):
@@ -117,9 +138,11 @@ def parse(text: str) -> Message:
             if key in seen:
                 raise FormatError(f"duplicate {key} in header; {USAGE}")
             seen.add(key)
-            if key == TO_ALL:
+            if key in (TO_ALL, *(c.value for c in Control)):
                 if raw.strip(" ,;"):
-                    raise FormatError(f"to_all takes no names; {USAGE}")
+                    raise FormatError(f"{key} takes no names; {USAGE}")
+                if key != TO_ALL:
+                    control = Control(key)
                 continue
             names = _names(raw, key)
             if key == "from":
@@ -132,8 +155,16 @@ def parse(text: str) -> Message:
                 recipients = tuple(dict.fromkeys(names))
         if "to" in seen and TO_ALL in seen:
             raise FormatError(f"use either to: or to_all, not both; {USAGE}")
+        if Control.MUTE.value in seen and Control.UNMUTE.value in seen:
+            raise FormatError(f"use either mute or unmute, not both; {USAGE}")
+        if control is not None and ("to" in seen or TO_ALL in seen):
+            raise FormatError(f"{control.value} goes to the group itself; drop to:/to_all")
 
     body = body.strip()
+    if control is not None:
+        if body:
+            raise FormatError(f"{control.value} takes no message; send it on its own")
+        return Message(sender=sender, recipients=None, body="", control=control)
     if not body:
         raise FormatError(f"empty message; {USAGE}")
     return Message(sender=sender, recipients=recipients, body=body)
@@ -147,6 +178,8 @@ class Route:
     message: Message
     # Agent names to prompt.
     targets: tuple[str, ...]
+    # Muted members a broadcast passed over.
+    skipped: tuple[str, ...] = ()
 
 
 def resolve_sender(message: Message, members: frozenset[str], caller: str | None) -> Message:
@@ -167,10 +200,15 @@ def resolve_sender(message: Message, members: frozenset[str], caller: str | None
     return message
 
 
-def plan(message: Message, members: frozenset[str]) -> Route:
+def plan(message: Message, members: frozenset[str], muted: frozenset[str] = frozenset()) -> Route:
     sender = message.sender
     if message.recipients is None:
-        return Route(message=message, targets=tuple(sorted(members - {sender})))
+        audience = members - {sender}
+        return Route(
+            message=message,
+            targets=tuple(sorted(audience - muted)),
+            skipped=tuple(sorted(audience & muted)),
+        )
     unknown = [name for name in message.recipients if name != USER and name not in members]
     if unknown:
         raise FormatError(f"unknown recipient(s) {', '.join(unknown)}; members: {_listing(members)}")
@@ -291,6 +329,10 @@ def log_path(workspace_id: str, name: str) -> Path:
     return state_dir(workspace_id) / f"{name}.jsonl"
 
 
+def mute_path(workspace_id: str, name: str) -> Path:
+    return state_dir(workspace_id) / f"{name}.muted.json"
+
+
 class LineInput:
     """Turns terminal bytes into submitted lines.
 
@@ -357,6 +399,7 @@ class Outcome:
     message: Message
     delivered: tuple[str, ...]
     failed: dict[str, str]
+    skipped: tuple[str, ...] = ()
 
 
 class Seat:
@@ -370,6 +413,9 @@ class Seat:
         self.workspace_id = os.environ["HERDR_WORKSPACE_ID"]
         self.input = LineInput()
         self.log = log_path(self.workspace_id, name)
+        self.mute_file = mute_path(self.workspace_id, name)
+        # Survives a seat restart; a name that leaves the group is dropped.
+        self.muted: set[str] = set(json.loads(self.mute_file.read_text())) if self.mute_file.exists() else set()
 
     # -- membership -------------------------------------------------------
 
@@ -399,8 +445,11 @@ class Seat:
 
     def route(self, text: str, caller: str | None) -> Outcome:
         members = self.members()
+        self._set_muted(self.muted & members.keys())
         message = resolve_sender(parse(text), frozenset(members), caller)
-        route = plan(message, frozenset(members))
+        if message.control is not None:
+            return self._control(message)
+        route = plan(message, frozenset(members), frozenset(self.muted))
         self._report("working")
         delivered: list[str] = []
         failed: dict[str, str] = {}
@@ -414,10 +463,29 @@ class Seat:
                     failed[target] = err.code
         finally:
             self._report("idle")
-        outcome = Outcome(route.message, tuple(delivered), failed)
+        outcome = Outcome(route.message, tuple(delivered), failed, route.skipped)
         self._echo(outcome)
         self._append_log(outcome)
         return outcome
+
+    def _control(self, message: Message) -> Outcome:
+        sender = message.sender
+        if sender == USER:
+            raise FormatError(f"{message.control.value} is for agent seats; user reads the group screen")
+        match message.control:
+            case Control.MUTE:
+                self._set_muted(self.muted | {sender})
+            case Control.UNMUTE:
+                self._set_muted(self.muted - {sender})
+        outcome = Outcome(message, (), {})
+        self._echo(outcome)
+        self._append_log(outcome)
+        return outcome
+
+    def _set_muted(self, muted: set[str]) -> None:
+        if muted != self.muted:
+            self.muted = muted
+            self.mute_file.write_text(json.dumps(sorted(muted)))
 
     def handle_typed(self, text: str) -> None:
         """A submission from the terminal: sender is self-declared."""
@@ -433,7 +501,7 @@ class Seat:
     def handle_client(self, request: dict[str, Any]) -> dict[str, Any]:
         """A request from ``send``: sender is proven by pane identity."""
         if request.get("op") == "members":
-            return {"ok": True, "members": sorted(self.members())}
+            return {"ok": True, "members": sorted(self.members()), "muted": sorted(self.muted)}
         text = str(request.get("text", ""))
         try:
             caller = self.caller_name(str(request.get("pane_id", "")))
@@ -446,6 +514,8 @@ class Seat:
             "sent": outcome.message.render(),
             "delivered": list(outcome.delivered),
             "failed": outcome.failed,
+            "skipped": list(outcome.skipped),
+            "control": outcome.message.control is not None,
         }
 
     def _feedback(self, text: str, error: str) -> None:
@@ -475,6 +545,8 @@ class Seat:
         if outcome.delivered:
             status.append("✓ " + " ".join(outcome.delivered))
         status.extend(f"✗ {name} ({code})" for name, code in outcome.failed.items())
+        if outcome.skipped:
+            status.append("muted " + " ".join(outcome.skipped))
         if status:
             lines.append(f"{DIM}         {'  '.join(status)}{RESET}")
         self._line("\n".join(lines))
@@ -491,16 +563,20 @@ class Seat:
 
     def _prompt(self) -> str:
         # One screen line only, so "\r\x1b[K" can always erase it.
-        return "» " + self.input.buffer.replace("\n", " ⏎ ")[-100:]
+        width = shutil.get_terminal_size().columns - 3
+        return "» " + self.input.buffer.replace("\n", " ⏎ ")[-width:]
 
     def _append_log(self, outcome: Outcome) -> None:
         record = {
             "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+            "line": outcome.message.render(),
             "from": outcome.message.sender,
             "to": list(outcome.message.recipients) if outcome.message.recipients else TO_ALL,
+            "control": outcome.message.control.value if outcome.message.control else None,
             "body": outcome.message.body,
             "delivered": list(outcome.delivered),
             "failed": outcome.failed,
+            "skipped": list(outcome.skipped),
         }
         with self.log.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -533,7 +609,9 @@ class Seat:
             f"{DIM}herdr-group seat '{self.name}' on {self.pane_id} · members: "
             f"{', '.join(sorted(self.members())) or '(none yet)'}\n"
             f"  post: herdr agent prompt {self.name} \"[from:<you>; to:<name>|to_all] <msg>\"  or  {COMMAND} send --to <name> \"<msg>\"\n"
-            f"  {USAGE}\n  log: {self.log}{RESET}"
+            f"  {USAGE}\n  log: {self.log}"
+            + (f"\n  muted: {', '.join(sorted(self.muted))}" if self.muted else "")
+            + RESET
         )
         try:
             while True:
@@ -690,12 +768,40 @@ def send(
     response = _request(socket_path(workspace, group), {"pane_id": os.environ["HERDR_PANE_ID"], "text": message})
     if "error" in response:
         raise typer.Exit(_fail(response["error"]))
+    _report_sent(response)
+
+
+def _report_sent(response: dict) -> None:
     typer.echo(response["sent"])
+    if response["control"]:
+        return
     typer.echo("delivered: " + (", ".join(response["delivered"]) or "(nobody)"))
+    if response["skipped"]:
+        typer.echo("muted, not delivered: " + ", ".join(response["skipped"]))
     for name, code in response["failed"].items():
         typer.echo(f"failed: {name} ({code})", err=True)
     if not response["ok"]:
         raise typer.Exit(1)
+
+
+def _post_control(control: Control, group: str) -> None:
+    workspace = _workspace(group)
+    response = _request(socket_path(workspace, group), {"pane_id": os.environ["HERDR_PANE_ID"], "text": f"[{control.value}]"})
+    if "error" in response:
+        raise typer.Exit(_fail(response["error"]))
+    _report_sent(response)
+
+
+@app.command()
+def mute(group: GroupOption = "group") -> None:
+    """Stop receiving to_all broadcasts; direct messages still arrive."""
+    _post_control(Control.MUTE, group)
+
+
+@app.command()
+def unmute(group: GroupOption = "group") -> None:
+    """Receive to_all broadcasts again."""
+    _post_control(Control.UNMUTE, group)
 
 
 @app.command()
@@ -704,7 +810,8 @@ def members(group: GroupOption = "group") -> None:
     response = _request(socket_path(_workspace(group), group), {"op": "members"})
     if "error" in response:
         raise typer.Exit(_fail(response["error"]))
-    typer.echo("\n".join(response["members"]))
+    muted = set(response["muted"])
+    typer.echo("\n".join(f"{name} (muted)" if name in muted else name for name in response["members"]))
 
 
 @app.command()
@@ -718,8 +825,7 @@ def history(
         raise typer.Exit(_fail(f"no history at {path}"))
     for line in path.read_text(encoding="utf-8").splitlines()[-n:]:
         record = json.loads(line)
-        to = TO_ALL if record["to"] == TO_ALL else "to:" + ",".join(record["to"])
-        typer.echo(f"{record['ts']} [from:{record['from']}; {to}] {record['body']}")
+        typer.echo(f"{record['ts']} {record['line']}")
 
 
 def _request(path: Path, payload: dict[str, str]) -> dict:
