@@ -1,7 +1,7 @@
 ---
 name: goal-file
 description: >
-  Orient on a project sprint goal file: what it is, the frozen-root + funnel
+  Orient on a project sprint goal file: what it is, the anchored-root + funnel
   concepts, and what to do with one. Points to the authoring spec
   (goal-authoring.md) for the full shape rules and to template-goal.md for the
   copyable start.
@@ -10,7 +10,7 @@ description: >
 # Goal file
 
 A goal file is the **administrative source** for a project sprint: a compact
-`goals/*.md` that freezes a user-requirements description as the root, then
+`goals/*.md` that anchors a user-requirements description as the root, then
 constructs the funnel on top of it.
 
 This skill is the **orientation layer** — it tells you what a goal file is and
@@ -23,7 +23,7 @@ shape, templates, DAG rules, and workflow slots, and start from the copyable
 
 A sprint needs one place that answers, administratively:
 
-- What is the frozen user requirement (**the root**), and which later additions
+- What is the anchored user requirement (**the root**), and which later additions
   still bind to it?
 - Which well-scoped **designs** exist to satisfy which rows, and how do they
   **depend**?
@@ -39,20 +39,19 @@ Use the `verification` skill to choose evidence for coverage rows. Keep
 reusable rubrics in their shared owner and reference them from adjacent metadata
 when the repository supports document-contract checks.
 
-## The core concept: freeze, then funnel
+## The core concept: anchor, then funnel
 
-**Freeze first.** At draft, reconcile exactly one input class into the frozen
+**Anchor first.** At draft, reconcile exactly one input class into the
 user-requirements description. Copy the owner's words in `>` blockquotes, then
 keep the context and analysis that make each excerpt meaningful in ordinary
-prose beside it, grouped under useful headings. That freeze is the root
-— it is the single source of truth and is **never edited** once written. If the
-target moves, that is a new goal file (or a dated owner re-statement appended
-below the original), not a silent "refinement."
+prose beside it, grouped under useful headings. Once the owner confirms it,
+that description is the root and the single source of truth.
+**Anchored:** owner-confirmed intent. Change it only by a dated re-anchor entry that says what changed and why. Never refine it silently.
 
-**Then construct the funnel.** On top of the frozen root, build, in order:
+**Then construct the funnel.** On top of the anchored root, build, in order:
 additions, scoped designs, dependencies, workstreams, phases, per-design
 workflows, AC coverage matrix, rulings, review outcome, open threads, worklog.
-Do not write anything before the root is frozen.
+Do not write anything before the root is anchored.
 
 ## The discipline rules
 
@@ -71,10 +70,10 @@ Do not write anything before the root is frozen.
 
 ## What to do with a goal file
 
-1. **Freeze the root** — copy the user-requirements description verbatim in
+1. **Anchor the root** — copy the user-requirements description verbatim in
    `>` blockquotes, with its adjacent context and analysis
-   (or the User inputs / Problem statement, per the freeze rule). Number it
-   `R1`… and mark the provenance at freeze.
+   (or the User inputs / Problem statement, per the anchor rule). Number it
+   `R1`… and mark the provenance at anchoring.
 2. **Build the funnel** — additions, then design files (one line each, with
    their `covers` and admin source), then dependencies (scope analysis first,
    then edges), then workstreams + phases, then per-design workflow slots, then

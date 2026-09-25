@@ -1,7 +1,7 @@
 ---
 name: goal-authoring
 description: >
-  The full author definition for a goal file: freeze the user-requirements
+  The full author definition for a goal file: anchor the user-requirements
   description as the root, then construct the funnel — additions, scoped
   designs, dependencies, workstreams, phases, per-design workflows. The
   orientation-layer SKILL.md points here for the shape rules.
@@ -13,9 +13,9 @@ Use for a project goal/sprint file: `goals/*.md`.
 
 ## Purpose
 
-A goal file is the **administrative source** for a sprint. At draft, **reconcile one of three inputs into a frozen user-requirements description — that freeze is the root.** Then construct the funnel.
+A goal file is the **administrative source** for a sprint. At draft, **reconcile one of three inputs into an anchored user-requirements description — that anchor is the root.** Then construct the funnel.
 
-**Freeze (exactly one input class):** Copy the owner's words exactly in `>`
+**Anchor (exactly one input class):** Copy the owner's words exactly in `>`
 blockquotes. Group related excerpts under meaningful headings and put the
 context and analysis needed to understand each excerpt in normal prose beside
 it. This accompanying prose preserves meaning but is agent annotation, not a
@@ -27,9 +27,9 @@ new owner requirement.
 | A set of design files **with** User inputs | Those User inputs, copied verbatim. |
 | A set of design files **without** User inputs | Those Problem statements (treated as already user-confirmed). |
 
-Do not mix a direct description with a design-file set. If a design set is mixed (some files have User inputs, some do not), copy User inputs where present and Problem statements where not — still one freeze. After freeze, this file is the root; do not re-read the source designs as the root.
+Do not mix a direct description with a design-file set. If a design set is mixed (some files have User inputs, some do not), copy User inputs where present and Problem statements where not — still one anchor. After anchoring, this file is the root; do not re-read the source designs as the root.
 
-Then it answers: what is the frozen root (and which later additions still bind); which well-scoped designs exist to satisfy which rows, and how they depend; how those designs group into **workstreams** (structural/scope cohesion) and **phases** (spec-readiness); which design is being populated right now; what is complete, open, or blocked. A copyable starting point with opinionated presets lives in `template-goal.md`.
+Then it answers: what is the anchored root (and which later additions still bind); which well-scoped designs exist to satisfy which rows, and how they depend; how those designs group into **workstreams** (structural/scope cohesion) and **phases** (spec-readiness); which design is being populated right now; what is complete, open, or blocked. A copyable starting point with opinionated presets lives in `template-goal.md`.
 
 The discipline rule: **the goal file tracks, the design file decides, the worklog tells.** A status change never requires editing prose; a ruling never lives only here (it dies when the goal closes).
 
@@ -39,17 +39,17 @@ The discipline rule: **the goal file tracks, the design file decides, the worklo
 
 ## Required shape
 
-Section order is fixed. **Freeze, then funnel.** Do not write additions, scoped designs, workstreams, phases, or workflows before the root is frozen. Keep every section small and factual.
+Section order is fixed. **Anchor, then funnel.** Do not write additions, scoped designs, workstreams, phases, or workflows before the root is anchored. Keep every section small and factual.
 
 1. **Title / status** — `# <goal> — OPEN|BLOCKED|CLOSED-GREEN (date)`.
 2. **Goal** — the owner's words, verbatim in `>` blockquotes, grouped under
    useful headings when there are several related excerpts. Keep context and
    analysis in adjacent normal prose so the relationship between chunks is
-   recoverable. **NO EDIT once written.** If the target moves, that is a new goal
-   file, or a dated owner re-state appended below the original. Never silently
-   "refine" it.
-3. **User requirements (frozen root)** — the vendored owner excerpts from the freeze table, in `>` blockquotes with their accompanying context and analysis. **NO EDIT once frozen.** The prose is annotation and never silently becomes an owner requirement. One-line provenance at freeze (`frozen from: direct | design/NN User inputs | design/NN Problem statement`) is a label, not a live citation. Numbered `R1`… rows partition that freeze for covering and checkboxes; they do not rewrite it. Handles are never reused. Checkbox law: the goal is DONE exactly when every live root box is checked with an evidence line, not narration. Dual-gate: a scoped design names the rows it covers (design gate); the final review re-walks the same rows with live evidence (final gate). Optional sub-parts:
-   - *Analysis* — working read of the frozen root. **Append-and-amend.**
+   recoverable. Quotes are never rewritten. If the target moves, append a dated owner
+   restatement below the original and record it with a re-anchor entry, or open
+   a new goal file.
+3. **User requirements (anchored root)** — the vendored owner excerpts from the anchor table, in `>` blockquotes with their accompanying context and analysis. **Anchored:** owner-confirmed intent. Change it only by a dated re-anchor entry that says what changed and why. The entry names the affected rows and designs. The prose is annotation and never silently becomes an owner requirement. One-line provenance at anchoring (`anchored from: direct | design/NN User inputs | design/NN Problem statement`) is a label, not a live citation. Numbered `R1`… rows partition that anchor for covering and checkboxes; they do not rewrite it. Handles are never reused. Checkbox law: the goal is DONE exactly when every live root box is checked with an evidence line, not narration. Dual-gate: a scoped design names the rows it covers (design gate); the final review re-walks the same rows with live evidence (final gate). Optional sub-parts:
+   - *Analysis* — working read of the anchored root. **Append-and-amend.**
    - *Working background* — fact map (paths, seams, designs in force, live-world facts). **Kept current.**
 
 Then construct the **funnel**, in this order:
@@ -98,7 +98,7 @@ A workstream is **well-formed iff all its designs share one phase.** Merge by sc
 
 An edge is **generative** when the downstream design's body cannot be written truthfully until the upstream produces a fact. This is the **only** rule that moves a design between phases.
 
-- **Interface dependency** (not generative): downstream consumes the upstream's *declared contract* — names, types, wire shape, object-model identity. If that contract is frozen in the root, or stated non-volatile in the upstream, the design is specifiable now against the contract.
+- **Interface dependency** (not generative): downstream consumes the upstream's *declared contract* — names, types, wire shape, object-model identity. If that contract is anchored in the root, or stated non-volatile in the upstream, the design is specifiable now against the contract.
 - **Realization dependency** (generative): downstream consumes a *fact the upstream produces* — the actual semantics, a concrete algorithm's behavior, a downstream artifact it emits, a measured value on real data.
 
 Volatility rubric — mark generative if **any** is true:
@@ -200,7 +200,7 @@ The copyable full-document template (with the phase-DAG mermaid, presets, and ev
 - **Scope:** core-schema | module:<name> | ui-ux | <named> | design-time (not an impl scope)
 - **Depends on:** design/MM | none
 - **Loop:** `flow-grill-review` → `flow:impl` (`flow-common`) → `flow-retro`
-- **Gate:** AC check along **Covers** to the frozen root; a green design that does not move those rows is not done
+- **Gate:** AC check along **Covers** to the anchored root; a green design that does not move those rows is not done
 - **Exit:** impl-loop breakout → `flow-common` breakout adjudication (architecture, upward, root unchanged, status revert of impacted files). Proved wrong machine → supersede this file, do not revert it.
 ```
 
@@ -237,8 +237,8 @@ Phases, workstream DAGs, and the parallelizability partition come into play only
 - Receipts shrink to one headline line (`DONE (sha, deploy-id)`); full receipts live in the worklog.
 - No "Next action" section — Open threads + the active phase answer it structurally.
 - Do not add role definitions, process manuals, review transcripts, or historical narrative.
-- Use design-file links as the task source of truth; do not duplicate design contents. The frozen root is the vendored copy; after freeze, source designs are not the root.
-- Vendored law carries `vendored from: <path> (date, ref)` — and **re-compiles** on project-law change (it is not freeze-able). User requirements freeze; principles re-compile.
+- Use design-file links as the task source of truth; do not duplicate design contents. The anchored root is the vendored copy; after anchoring, source designs are not the root.
+- Vendored law carries `vendored from: <path> (date, ref)` — and **re-compiles** on project-law change (it is not anchored). User requirements anchor; principles re-compile.
 
 ## Completion language
 
