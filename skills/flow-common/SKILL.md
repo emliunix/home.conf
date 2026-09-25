@@ -9,9 +9,9 @@ description: >-
 
 # Flow: Common — lifecycle + implementation machinery
 
-> **Process is recommendation, not ceremony.** `flow-*` is a toolbox, not rigid enforcement. Weigh each step against the frozen requirements and current architecture. Skip any step that does not change the outcome. Completing a skill checklist is not success. Do not write designs, grills, or receipts whose only job is to bless work already specified.
+> **Process is recommendation, not ceremony.** `flow-*` is a toolbox, not rigid enforcement. Weigh each step against the anchored requirements and current architecture. Skip any step that does not change the outcome. Completing a skill checklist is not success. Do not write designs, grills, or receipts whose only job is to bless work already specified.
 
-**One job:** Host the machinery every flow shares — the design status lifecycle, role-to-impl mapping, the implementation gate, wrong-machine supersession, and **breakout adjudication**. `flow-grill-review` (review gate) and `flow-retro` (loop closing) reference this skill; the goal-file workstream plan and the `flow:impl NN` / `flow:retro NN` phrases dispatch through it. Do not restate this skill's internals in the other flows. The goal file (`goal-file`) is the administrative source (frozen root + funnel). This skill runs those slots.
+**One job:** Host the machinery every flow shares — the design status lifecycle, role-to-impl mapping, the implementation gate, wrong-machine supersession, and **breakout adjudication**. `flow-grill-review` (review gate) and `flow-retro` (loop closing) reference this skill; the goal-file workstream plan and the `flow:impl NN` / `flow:retro NN` phrases dispatch through it. Do not restate this skill's internals in the other flows. The goal file (`goal-file`) is the administrative source (anchored root + funnel). This skill runs those slots.
 
 Use the `verification` skill for evidence levels and practice selection. This
 skill owns when implementation evidence is required, not the reusable practice
@@ -42,11 +42,11 @@ and the exported file. It limits the addition to the preview and preserves
 the export columns.
 ```
 
-`goal-file` owns the freeze. Carry the excerpts' context and analysis alongside
-the root, without treating agent prose as owner requirements. Existing frozen
+`goal-file` owns the anchor. Carry the excerpts' context and analysis alongside
+the root, without treating agent prose as owner requirements. Existing anchored
 text, handles, and partitions stay unchanged; annotations may be added or
 amended alongside them. Later owner changes follow the addition/restatement
-rules rather than silently rewriting an earlier excerpt.
+rules or a dated re-anchor entry rather than silently rewriting an earlier excerpt.
 
 Read and relay relevant excerpts with their accompanying prose during re-warm,
 review, dispatch, and acceptance. Necessary intent analysis stays inline;
@@ -67,13 +67,13 @@ The design file's `## Status` line is one word, set by exactly one owner:
 - A superseded file keeps its last status and gains the `Superseded by:` line; a file superseded before its loop completed never lands.
 - Sweep files (`Status: draft-followup`) are not lifecycle states.
 - **`flow-retro` is the only route back out of `pending-retro` for impl defects and light closes.** An implementer never silently restarts implementation, and never invents a second status setter.
-- **Wrong-machine outer loop:** stop. Obsolete the failed design (`Superseded by:`). Discard the source it introduced. Open a new `design/NN` from the goal file (frozen root + live additions). Lessons in the worklog. Do not revert status on the failed file.
-- **Breakout adjudication** (architecture redesign): the other exit of a failed inner impl loop — when/how below. This path **may revert** impacted designs to `draft`. Inner-loop AC checks still align to **Covers** → frozen root.
+- **Wrong-machine outer loop:** stop. Obsolete the failed design (`Superseded by:`). Discard the source it introduced. Open a new `design/NN` from the goal file (anchored root + live additions). Lessons in the worklog. Do not revert status on the failed file.
+- **Breakout adjudication** (architecture redesign): the other exit of a failed inner impl loop — when/how below. This path **may revert** impacted designs to `draft`. Inner-loop AC checks still align to **Covers** → anchored root.
 
 ## Roles
 
 **Manager is the primary role.** The manager's main responsibility and success
-criterion is to deliver the frozen root requirements as a complete, coherent,
+criterion is to deliver the anchored root requirements as a complete, coherent,
 current-model product with sensible architecture and proportionate time cost.
 Designs, code, tests, reviews, compiler output, and runtime observations are
 evidence toward that outcome; completing process steps or delegated tasks is
@@ -114,7 +114,7 @@ required reviewer.
 | **Manager** | yes — primarily accountable for the complete root-defined product and its sensible time/architecture cost; combines supervisor/orchestrator, architect/defender, and outcome-verifier duties; gates every direction and promotion | this session | delegated reviewer or implementer |
 | **Supervisor / orchestrator duty** | yes — sequences angles, dispatch, worklog, Status; resumes the implementer after Prep; gates after review before `flow:impl` | manager | reviewer impls (they must not adjudicate or set Status) |
 | **Architect / defender duty** | yes — authors and defends the design, rejects unjustified machinery, adjudicates, rewrites accepted P1s | manager (default); peer agent only when explicitly designer of record | a reviewer on the same run |
-| **Outcome verifier duty** | yes — checks the complete product and evidence against the frozen root before completion | manager | a reviewer whose evidence is the sole basis for self-acceptance |
+| **Outcome verifier duty** | yes — checks the complete product and evidence against the anchored root before completion | manager | a reviewer whose evidence is the sole basis for self-acceptance |
 | **Reviewer** | yes — bounded `PASS` / `NEEDS-FIX` / `NOT-REVIEWABLE` review result; no adjudication, edit, promotion, or impl **in the review turn** (a later impl seat is open to them) | subagent (default), forked agent, peer agent | manager on the same artifact |
 | **Implementer** | only when the implementation gate runs | any agent | — |
 | **Owner** | gate, not worker — commits, scope expansion, round-5 halt | owner | stalling grill waiting for them to review |
@@ -130,7 +130,7 @@ implementer = any agent the manager assigns.
 
 **Manager re-warm:** before architecture, review-gate defense, breakout
 adjudication, arbitration, promotion, or completion decisions, the manager
-re-reads the goal file's **frozen root**, live additions, funnel edges, and this
+re-reads the goal file's **anchored root**, live additions, funnel edges, and this
 design's **Covers** path. Residual session memory is not a substitute. If no
 goal file exists, re-read the design heads and any User inputs. Read relevant
 excerpts with their accompanying context and analysis as defined above.
@@ -158,8 +158,8 @@ adjudicate; implementer does not set Status.
 
 1. **Halt.** Name the failing design and the structural cause in its worklog. Do not start another impl round.
 2. **Start at the failing design.** Smallest architecture correction that would unstick the halt, as current speech (design-time).
-3. **Propagate up.** Walk `goal-file` (6) **against** landing order (ui-ux → module → core-schema). At each upstream design: does the correction still compose? If yes and no body change, record `holds` and continue. If a fold is required, name the file **impacted**. Stop walking when the next step would be the frozen root.
-4. **Validate against the frozen root.** The proposed fold must still satisfy the frozen user-requirements description. **The root does not change.** If the fold would need a root edit: stop this path. That is a new goal (or a dated owner restatement), not architecture redesign.
+3. **Propagate up.** Walk `goal-file` (6) **against** landing order (ui-ux → module → core-schema). At each upstream design: does the correction still compose? If yes and no body change, record `holds` and continue. If a fold is required, name the file **impacted**. Stop walking when the next step would be the anchored root.
+4. **Validate against the anchored root.** The proposed fold must still satisfy the anchored user-requirements description. **Architecture redesign does not change the root.** If the fold would need a root change: stop this path and take it to the owner as a re-anchor (dated entry: what changed and why) or a new goal.
 5. **Wrong-machine check.** If even after the upward walk the failing design cannot deliver its **Covers** rows, switch to the wrong-machine outer loop. Do not revert that file.
 6. **Status revert (impacted only).** Each impacted design (including the failing one if it still holds as the machine): fold the architecture into the body as current speech; set `Status: draft`; update the goal-file Design files / Workflows lines. Record the revert (from-status, why, files) in each worklog. Implementer never does this.
 7. **Re-enter.** Impacted designs re-enter `flow-grill-review` then impl, in (6) landing order. Unimpacted `landed` files stay landed.
@@ -170,7 +170,9 @@ The inner loop on one design is gated by the AC check along that design's **Cove
 
 ### Before dispatch
 
-The implementer reads, in order: the goal file's frozen root + live additions with their inline context and analysis, this design's **Covers** path, administrative requirements on the goal file, Prep skills, then the design body. With no goal file, read the design's heads and any annotated User inputs. They do not start the work until the manager resumes them onto this design.
+The implementer reads, in order: the goal file's anchored root + live additions with their inline context and analysis, this design's **Covers** path, administrative requirements on the goal file, Prep skills, then the design body. With no goal file, read the design's heads and any annotated User inputs. They do not start the work until the manager resumes them onto this design.
+
+When the manager (or another agent) edits the same checkout while the implementer runs, the dispatch brief partitions ownership by directory or file. The manager defers its edits inside the implementer's partition, such as design references to code the slice removes, until the implementer reports done.
 
 ### After the slice
 
@@ -192,7 +194,9 @@ Apply the practices selected from `verification`, record the lowest proved
 evidence level, and run a relevant semantic or structural mutation for every
 gate relied on to advance the lifecycle.
 
-- **Pass:** covered AC rows (path to root) prove the outcome and no blocking mismatch remains → set `Status: pending-retro` and hand to `flow-retro`.
+A deployed acceptance run that writes runs once, with every flag and argument checked against the tool's help first. Later checks are read-only, and the writes it made are audited before acceptance is declared.
+
+- **Pass:** every covered AC row (path to root) maps to a check that ran and proves it (`verification` step 1), and no blocking mismatch remains → set `Status: pending-retro` and hand to `flow-retro`. A green run over a subset of the rows is not a pass.
 - **Implementation defect:** remediate within the reviewed design, then rerun affected verification.
 - **Design mismatch / architecture failure:** stop. **Breakout adjudication** (above).
 - **Wrong machine** (proved at or after the upward walk): wrong-machine outer loop — do not silently restart impl, do not revert that file.
@@ -205,7 +209,7 @@ Commits follow explicit user authorization and meaningful artifact boundaries—
 
 ### Stop condition
 
-The implementation stage ends when the reviewed current-scope outcome is demonstrated by fresh evidence, accepted blockers are resolved, and no authorized work remains — with the loop still open at `Status: pending-retro`. Do not continue into optional hardening, future compatibility, or reimplementation.
+The implementation stage ends when the reviewed current-scope outcome is demonstrated by fresh evidence, accepted blockers are resolved, and no authorized work remains — with the loop still open at `Status: pending-retro`. Do not continue into optional hardening, future compatibility, or reimplementation. A hazard found in a sibling or shared repository is recorded as an open item in that repository's worklog before the stage ends; recording it does not put fixing it in scope.
 
 ## User reporting convention
 
@@ -241,6 +245,7 @@ flowchart LR
 
 - `flow:impl NN` — the caller dispatches the implementation seat to this skill's Implementation gate **after** the supervisor gate (review passed + re-warm). The goal-file workstream plan names the seat's work (Prep, gates, Covers path). Where no goal file exists, the same request that invoked grill names the implementation section. The phrase never implies a separate skill file.
 - `flow:retro NN` — dispatch to `flow-retro` (closing pass).
+- A timed fallback wake-up set while waiting on a dispatched agent carries a status-check prompt, never an irreversible command (commit, deploy, cutover). Cancel it when the primary completion notice arrives, where the harness allows.
 
 ## Done checklist (implementation gate)
 
@@ -248,6 +253,7 @@ flowchart LR
 - [ ] Round budget respected (count stated per bounce; >5 halted as structural, not retried)
 - [ ] Smallest real-data-first vertical slice implemented without scope expansion
 - [ ] Implementer Prep-read + manager resume happened before work; post-slice self-review against covered AC / path-to-root exists
-- [ ] Fresh criteria prove the covered AC rows (path to root) and required boundaries
+- [ ] Fresh criteria prove every covered AC row (path to root) and required boundaries
+- [ ] Hazards found in sibling or shared repositories are open items in those repositories' worklogs
 - [ ] `Status: pending-retro` set; loop handed to `flow-retro`
 - [ ] Commits, if any, were authorized and match meaningful artifacts

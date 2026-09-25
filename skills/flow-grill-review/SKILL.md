@@ -2,19 +2,20 @@
 name: flow-grill-review
 description: >-
   Use when the user says flow:grill-review or flow:impl, asks to grill/review/defend
-  a design, or needs to take a draft through review and implement it to pending-retro.
+  a design, spawns an independent reviewer on a design (rematches included), or
+  needs to take a draft through review and implement it to pending-retro.
 ---
 
 # Flow: Grill Review → Defend → Implement
 
-> **Process is recommendation, not ceremony.** `flow-*` is a toolbox, not rigid enforcement. Weigh each step against the frozen requirements and current architecture. Skip any step that does not change the outcome. Completing a skill checklist is not success. Do not write designs, grills, or receipts whose only job is to bless work already specified.
+> **Process is recommendation, not ceremony.** `flow-*` is a toolbox, not rigid enforcement. Weigh each step against the anchored requirements and current architecture. Skip any step that does not change the outcome. Completing a skill checklist is not success. Do not write designs, grills, or receipts whose only job is to bless work already specified.
 
 **One job:** Turn an existing design draft into a **reviewed** design, then implement the reviewed design to `pending-retro`. Does not write the initial draft, does not commit, and does not close the loop (`flow-retro` does that).
 
 This skill **composes** other skills — read and follow them; do not restate their internals:
 
 - `flow-common` — the lifecycle vocabulary, role-to-impl mapping, and the implementation gate (round budget, verification, commits, stop condition, dispatch notes)
-- `goal-file` — the frozen root + funnel the review reconciles against (Covers rows, AC coverage, workstreams/phases). This skill consults it; it does not restate the funnel vocabulary.
+- `goal-file` — the anchored root + funnel the review reconciles against (Covers rows, AC coverage, workstreams/phases). This skill consults it; it does not restate the funnel vocabulary.
 - `flow-retro` — closes the loop at `pending-retro` → `landed`
 - `verification` — the shared evidence levels and risk-selected practice library. Select from it; do not copy its catalog here.
 
@@ -28,7 +29,7 @@ The design file is **canon**: intact current machine, direct speech. Grill ledge
 
 | Place | Owns |
 | --- | --- |
-| Design **User inputs** | Optional. Owner words in `>` blockquotes, accompanied by context and analysis in normal prose and grouped under meaningful headings (`flow-common` User inputs in context). `goal-file` owns the freeze; agent prose is not owner requirements. After freeze, the goal file is the root. |
+| Design **User inputs** | Optional. Owner words in `>` blockquotes, accompanied by context and analysis in normal prose and grouped under meaningful headings (`flow-common` User inputs in context). `goal-file` owns the anchor; agent prose is not owner requirements. After anchoring, the goal file is the root. |
 | Design **Goal** | Path to `goals/*.md` (administrative source). Omit only when no goal file exists. |
 | Design **Review** | One backlink to `worklog/NN-<same-topic>.md` |
 | Design **Status** | `draft` → `reviewed` when the review gate completes; `reviewed` → `pending-retro` when the implementation gate completes |
@@ -52,7 +53,7 @@ Every design file must open with **the three heads**, in order (this skill does 
 | **Scope — what we touch** | Explicit list of the surfaces/components this design may modify, plus non-goals (what we will NOT touch). | Reviewers reject out-of-scope findings cheaply; implementer knows its boundaries; users can verify no silent scope creep. |
 | **Rationale** | Why this machine is shaped this way, stated positively (observed facts + the mechanism). Alternatives considered and why they lost belong in the worklog. | Parties evaluate the reasoning; the worklog holds the tradeoff transcript so the design stays intact current speech. |
 
-**User inputs** (optional, before the three heads when present): follow `flow-common` **User inputs in context**. Put coherent verbatim excerpts in `>` blockquotes, with context and analysis in adjacent normal prose. Use headings to group related inputs and make clarifications or corrections clear. Necessary intent analysis belongs here; detailed design deliberation belongs in the worklog. A goal-file draft vendors the owner text into the frozen root and carries the accompanying prose alongside it under `goal-file`'s freeze rules. Absence means a goal-file draft takes the Problem statement as already user-confirmed (`goal-file` freeze table). After freeze, do not treat this section as a second root.
+**User inputs** (optional, before the three heads when present): follow `flow-common` **User inputs in context**. Put coherent verbatim excerpts in `>` blockquotes, with context and analysis in adjacent normal prose. Use headings to group related inputs and make clarifications or corrections clear. Necessary intent analysis belongs here; detailed design deliberation belongs in the worklog. A goal-file draft vendors the owner text into the anchored root and carries the accompanying prose alongside it under `goal-file`'s anchor rules. Absence means a goal-file draft takes the Problem statement as already user-confirmed (`goal-file` anchor table). After anchoring, do not treat this section as a second root.
 
 Everything after the three heads is the **intact design body**. Direct speech: types, verbs, tables, wires, verification. No negative comparison to a discarded tree, no “rejected: …”, no epoch vocabulary of a past matcher. The only fixed tail on the design is **Goal** (admin source), **Review** (worklog backlink), and **Status**.
 
@@ -103,8 +104,8 @@ analysis; literal quote fidelity alone does not establish intent fidelity.
 
 **P1 angles when a goal file exists** (skip with a one-line reason only when there is no goal file):
 
-- **Design acceptance criteria** — the frozen-root rows this design claims to cover (`goal-file` **Covers**): would a pass deliver those rows? Are they named, falsifiable, and the dual-gate match (design gate vs live evidence)?
-- **Requirements hierarchy** — valid path from those rows to the **frozen** root (live additions only; obsoleted additions do not bind). A design that satisfies a dangling or obsoleted addition and misses the frozen root is a blocker. After freeze, do not re-open the source User inputs / Problem statements as a second root.
+- **Design acceptance criteria** — the anchored-root rows this design claims to cover (`goal-file` **Covers**): would a pass deliver those rows? Are they named, falsifiable, and the dual-gate match (design gate vs live evidence)?
+- **Requirements hierarchy** — valid path from those rows to the **anchored** root (live additions only; obsoleted additions do not bind). A design that satisfies a dangling or obsoleted addition and misses the anchored root is a blocker. After anchoring, do not re-open the source User inputs / Problem statements as a second root.
 
 These two are gate-blocking when they hit. They are not optional hardening.
 
@@ -149,7 +150,7 @@ Pick the scenario(s) the draft actually touches. A design that is both schema an
 
 Use a **single independent reviewer seat / subagent** (`flow-common` Roles) that batches all planned attack angles into one brief. Do not spawn multiple parallel subagents per angle — the context warm-up cost is expensive and unnecessary. The single reviewer evaluates all angles in one turn, keeping angles distinct in its report. Reviewers do not edit the design, adjudicate, or implement.
 
-Give the reviewer the draft path, all planned angles, relevant source paths, **the three heads excerpted into the brief (they review these, not just read them)**, the frozen root rows this design **Covers** when a goal file exists, and the user goal. Include relevant quotes with their context, analysis, and qualification/correction links (`flow-common`); without a goal, use the design's annotated User inputs when present. Every reviewed angle must emit one entry with exactly one reviewer verdict from this list:
+Give the reviewer the draft path, all planned angles, relevant source paths, **the three heads excerpted into the brief (they review these, not just read them)**, the anchored root rows this design **Covers** when a goal file exists, and the user goal. Include relevant quotes with their context, analysis, and qualification/correction links (`flow-common`); without a goal, use the design's annotated User inputs when present. Every reviewed angle must emit one entry with exactly one reviewer verdict from this list:
 
 - **`PASS`** — the supplied artifact and evidence satisfy this angle;
 - **`NEEDS-FIX`** — an evidenced defect, mismatch, or insufficiency exists; or

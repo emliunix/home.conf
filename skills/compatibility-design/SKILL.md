@@ -2,8 +2,10 @@
 name: compatibility-design
 description: >-
   Use when a design or implementation proposes compatibility, fallback, dual-world,
-  migration, or history-gated shape selection. Reject compat/fallback; pick the
-  current matching inventory choice, or stop and request a gated design.
+  migration, or history-gated shape selection, including phrasings like "tolerate
+  a missing key/field", "additive decoding", "older records/receipts still decode",
+  or "optional for existing rows". Reject compat/fallback; pick the current
+  matching inventory choice, or stop and request a gated design.
 ---
 
 # Compatibility Design
