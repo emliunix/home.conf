@@ -4,7 +4,7 @@ Tests and research for the Herdr group-chat seat. The script itself ships
 inside the `herdr-supervisor` skill as a single-file uv script (PEP 723
 inline deps): [`../skills/herdr-supervisor/scripts/group.py`](../skills/herdr-supervisor/scripts/group.py).
 The skill's SKILL.md is the usage doc (the lead runs the seat; every agent
-posts with `group.py send`). The tests load that script by its path in this
+posts with `herdr agent prompt group "[from:<you>; to:<name>] ..."`). The tests load that script by its path in this
 repo:
 
 ```bash
@@ -30,17 +30,17 @@ the seat screen only.
 Herdr writes the text into the target's terminal as bracketed paste followed by
 Enter, and the server log records the method but not the caller. So a message
 typed or prompted into the seat is only as trustworthy as its self-declared
-`from:`. The seat handles this in two ways:
+`from:`. The seat therefore requires `from:` to name a live member (or `user`). If the
+message is malformed or a delivery fails and `from:` names a member, the seat
+sends the reason back to that member with `agent prompt`. If `from:` is missing
+or unparseable, the sender cannot be known, so the error is only shown on
+screen.
 
-- Typed or prompted input: `from:` is required and must be a live member (or `user`).
-  If the message is malformed but `from:` names a member, the seat sends the
-  error back to that member with `agent prompt`. If `from:` is missing or
-  unparseable, the sender cannot be known, so the error is only shown on screen.
-- `group.py send`: the client passes its `HERDR_PANE_ID`, and the seat resolves the
-  name from `agent.list`. The sender therefore comes from Herdr, a mismatched
-  `from:` is rejected, and every error is returned synchronously to the caller.
-  This path is the one to give agents. It trusts the environment (cooperative
-  agents); it does not verify the peer process.
+An earlier version also served a Unix socket for a `group.py send` client that
+proved the sender from `HERDR_PANE_ID` and answered errors synchronously. It
+was removed (2026-09-26) to reuse Herdr as much as possible: agents post with
+`herdr agent prompt group`, and the seat is the only script command. The team
+is cooperative, so a self-declared `from:` is enough.
 
 **2. Becoming a seat that `herdr agent prompt` accepts.** Two conditions, both
 visible in `src/app/api/agents.rs`:
@@ -88,8 +88,8 @@ research/     herdr 0.9.1 docs, API schema, the first probe
 - Two opencode agents, briefed only through the group: alice asked bob
   `17*23`, bob answered alice, alice reported `391` to `user`.
 - `to_all` broadcast delivered to every member but the sender; `to:all`
-  rejected with the `to_all` hint; a forged `from:` via `send` rejected.
-- Mute: an opencode agent ran `group.py mute`; the next `to_all` reached
+  rejected with the `to_all` hint.
+- Mute: an opencode agent posted `[from:bob; mute]`; the next `to_all` reached
   only the other agent (`✓ alice  muted bob`), and the mute survived a seat
   restart.
 - An agent that polls `history` in a loop while waiting leaves the awaited
