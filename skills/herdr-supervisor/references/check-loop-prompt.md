@@ -1,26 +1,44 @@
 # Base heartbeat prompt (template — the cron delivers this verbatim as a recurring user turn)
 
+Fill `<workspace>` from `HERDR_WORKSPACE_ID` and `<goal>` with the goal source (for example a goal file path). The Goal checklist, Supervisor checklist, and Exit condition live in the ledger (`assets/bookkeeping-template.md`); the prompt points at them so they can be edited without re-arming.
+
 ```
-You are the Herdr supervisor `lead` on pane <workspace>:p1. One check tick, nothing else. Work through the numbered steps and finish your turn. G = `uv run ~/.claude/skills/herdr-supervisor/scripts/group.py`.
+You are the Herdr supervisor `lead` on pane <workspace>:p1, driving <goal> to its outcome. One check tick. G = `~/.claude/skills/herdr-supervisor/scripts/group.py` (executable with a uv shebang; call the path directly).
 
-1. `herdr agent list`. Capture every managed pane EXCEPT p1: pane_id, name, agent_status, focused. Managed = the panes listed in /tmp/bookkeeping.md's Pane name map; ignore orphan/foreign panes.
-   Group seat: if no agent is named `group`, restart it in its pane from the ledger's Heartbeat section (`herdr pane run <seat-pane> "$G serve"`) and note it in the report. The seat is never diffed or DMed about.
-2. Read /tmp/logs/agent-states.json (the baseline). If it is MISSING: this is the first tick — write current statuses (excl p1), give a one-line in-terminal report, and STOP. No DMs on the first tick.
-3. For each managed pane, diff current vs baseline:
-   - New status transition (working→idle/done, idle→working, →blocked): note it for the in-terminal report (no DM). Read the peer's visible screen (`--source visible`) only if it looks actionable.
-   - STALLED `working`: status is `working` AND the visible screen (`--source visible`) is byte-identical across 3 consecutive ticks (≈15 min) — the agent is hung, not progressing. Increment the per-pane `stall_ticks` counter in the baseline when `working` AND the screen fingerprint is unchanged; reset to 0 on any screen change or status transition. Ladder: at 3 ticks, nudge once through the group (`$G send --to <name> "are you stuck? show last action"`); if the screen still does not change by the next tick, DM ONCE: `herdr: <pane> <agent> (<task>) stuck working N min; needs: check the pane`; one stronger nudge after ~25 min if still stuck. Do not re-DM every tick. Persist a screen fingerprint (hash of `--source visible`) per pane in the baseline.
-   - Persistently `blocked` AND user not `focused` on that pane: DM ONCE (anti-spam), one line, then follow up after ~25 min.
-   - Routine `working→idle/done` NEVER DMs. If user is `focused:true` on a pane, skip its DM entirely.
-4. Write current statuses (excl p1) + screen fingerprints + stall_ticks back to the baseline.
-5. Sustained-idle self-exit: if ALL managed agents are idle/done (none working/blocked) AND no transition fired this tick, increment idle_streak in the baseline; otherwise reset to 0. When idle_streak reaches 3 (≈15 min quiet): summarize goal/ledger state, `CronDelete` this job, report `DONE — loop self-cancelled (sustained all-idle ×3)`, stop. No DM on self-exit unless the user asked to be pinged.
-6. In-terminal report: transitions (excl p1) + idle_streak=N/3. If none and all idle: one line `all managed agents idle (no change); idle_streak=N/3`.
+A. Mechanics
+1. `herdr agent list`. Capture every managed pane EXCEPT p1 (managed = the Pane name map in /tmp/bookkeeping.md; ignore foreign panes). If no agent is named `group`, restart it from the ledger's Heartbeat section (`herdr pane run <seat-pane> "$G serve"`) and note it.
+2. Read /tmp/logs/agent-states.json. If it is MISSING, write the current statuses (excl p1) and skip the stall checks this tick; the checklist still runs.
+3. For each managed pane, diff against the baseline:
+   - Transitions: note them for the report; read the peer's screen (`--source visible`) only if actionable.
+   - Stall: `working` with a byte-identical visible-screen fingerprint for 3 consecutive ticks (per-pane `stall_ticks`, reset on any screen change or transition). At 3, `$G send --to <name> "are you stuck? show last action"`; still frozen next tick, DM once `herdr: <pane> <agent> (<task>) stuck working N min; needs: check the pane`; one stronger follow-up after ~25 min.
+   - Persistently `blocked` and the user not focused on it: DM once, follow up after ~25 min.
+   - Routine working->idle/done never DMs.
+4. Write statuses, fingerprints, and stall_ticks back to the baseline.
+5. Read `$G history -n 30` for DONE/BLOCKED/DECISION/REVIEW messages since the last tick.
 
-Never report on or DM about your own pane. Message peers only through the group. Never touch `herdr server`, panes, tabs, or workspaces you didn't create. Confirm DM recipient + content before sending.
+B. Supervisor checklist (the ledger's "Supervisor checklist"; act on every "no")
+0. Confidence: skip any question you are confident about because nothing bearing on it changed since the last tick; answer only the rest.
+1. Understanding: do I understand the goal, and does the current work serve its requirements and rulings? Re-read the goal source when unsure.
+2. Organization: is every open Goal checklist row owned by a named seat or by lead, dependency-ready, and free of file-ownership overlap? Assign any ready, unowned row.
+3. Peers: what did each seat do since the last tick; does anyone need help (stalled, blocked, looping, off scope, waiting on lead)? Help now through the group.
+4. Evidence: did a row gain fresh evidence? Tick it, record the evidence, start the next row.
+5. Decisions: adjudicate pending DECISIONs; DM the owner once for owner-only questions.
+6. Hygiene: work committed at meaningful boundaries (explicit paths); ledger, baseline, and group seat current; dependent services healthy.
+7. Progress: did anything move since the last tick? If nothing moved and no one is working, do the next thing yourself.
+
+C. Exit condition (the ledger's "Exit condition")
+- Completed: every Goal checklist row is ticked with evidence -> write the closing summary to /tmp/logs/p1-supervisor.md, CronDelete this job, report `DONE - <goal> complete, loop cancelled`.
+- Truly blocked: neither any seat nor lead can progress any row, because every remaining row waits on the owner or an external dependency the team cannot resolve -> DM the owner one line naming each blocker and its need, record the state in the supervisor log, CronDelete this job, report `STOPPED - blocked on owner`.
+- Otherwise continue. Idleness, one failure, or one blocked row is never an exit: route around it.
+
+D. In-terminal report: transitions, checklist questions answered "no" with the action taken, and `next row: <row> - <state>`. A quiet tick is one line.
+
+Never report on or DM about your own pane. Message peers only through the group. Never touch `herdr server` or panes, tabs, or workspaces you didn't create.
 ```
 
 ## Loop extension: project P0 delta scan (documented convention)
 
-When a project orders a continuous P0 review of deltas, the tick drives ONE long-lived READ-ONLY subagent (reused across deltas — spawn once, record its agent id in the baseline JSON as `p0_scan_agent`, then activate it per delta by SendMessage with the range). Single-flight law: `p0_scan_in_flight` holds the sha being scanned; never send a new range while airborne; file the verdict when its completion notification arrives (project log lane, e.g. worklog), then clear the field. Cursor: `last_head` advances to the scanned HEAD. A scanning tick is NOT idle — it resets `idle_streak`. The scanner reports back to the supervisor session, never to panes, and never edits anything.
+When a project orders a continuous P0 review of deltas, the tick drives ONE long-lived READ-ONLY subagent (reused across deltas — spawn once, record its agent id in the baseline JSON as `p0_scan_agent`, then activate it per delta by SendMessage with the range). Single-flight law: `p0_scan_in_flight` holds the sha being scanned; never send a new range while airborne; file the verdict when its completion notification arrives (project log lane, e.g. worklog), then clear the field. Cursor: `last_head` advances to the scanned HEAD. A scanning tick counts as progress. The scanner reports back to the supervisor session, never to panes, and never edits anything.
 
 Suggested criteria template (the project owns its actual P0 law — never hardcode project criteria into the prompt; reference the project's homes): zero-compat posture = scan for era/transition vocabulary in identifiers+comments+tests+docs, history-predicated shape selection (positive contract-match-or-refuse is the lawful class), and structurally compat arms: dual-arm paths reachable only by old-era data, optionals existing only for history-absent fields, alias exports bridging old names to new implementations, tolerant parses of retired payloads or enum members, two-implementation abstractions with one dead-era impl. Hits in production-rolled code paths escalate in-terminal + ledger; DM only when structural AND already rolled shipping.
 

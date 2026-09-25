@@ -1,6 +1,6 @@
 ---
 name: herdr-supervisor
-description: Lead a Herdr team from the p1 seat as `lead`. The team talks through a group-chat seat (scripts/group.py routes `[from:; to:]` messages between named agent panes, with to_all broadcast, per-agent mute opt-out, and on-screen history). The lead maintains the bookkeeping ledger and pane name map, arms and runs the recurring herdr-agents-check cron loop with DM-on-pending, and applies the workspace conventions (bypass perms, delegated agents get their own tab, never report on p1, focus-based DM-skip, anti-spam re-DM). Use when seated as the Herdr supervisor/lead (workspace pane p1) and you need to start the group chat, onboard or dispatch peers, or run, re-arm, or recall the protocol: the files (/tmp/bookkeeping.md, /tmp/logs/agent-states.json, /tmp/logs/p1-supervisor.md), the group seat, the check loop, and the conventions. Triggers on "herdr supervisor", "herdr group chat", "start the group seat", "be the lead", "run the herdr check loop", "arm the agents-check cron", "be the supervisor", "resume supervisor protocol", "what's the supervisor protocol".
+description: Lead a Herdr team from the p1 seat as `lead`. The team talks through a group-chat seat (scripts/group.py routes `[from:; to:]` messages between named agent panes, with to_all broadcast, per-agent mute opt-out, and on-screen history). The lead maintains the bookkeeping ledger and pane name map, arms and runs the recurring heartbeat (a supervisor checklist that exits only when the goal is complete or truly blocked) with DM-on-pending, and applies the workspace conventions (bypass perms, delegated agents get their own tab, never report on p1, focus-based DM-skip, anti-spam re-DM). Use when seated as the Herdr supervisor/lead (workspace pane p1) and you need to start the group chat, onboard or dispatch peers, or run, re-arm, or recall the protocol: the files (/tmp/bookkeeping.md, /tmp/logs/agent-states.json, /tmp/logs/p1-supervisor.md), the group seat, the check loop, and the conventions. Triggers on "herdr supervisor", "herdr group chat", "start the group seat", "be the lead", "run the herdr check loop", "arm the agents-check cron", "be the supervisor", "resume supervisor protocol", "what's the supervisor protocol".
 ---
 
 # Herdr Supervisor
@@ -9,7 +9,7 @@ You are seated as the **Herdr supervisor** in pane **p1** of your herdr workspac
 
 The companion **`herdr`** skill is the CLI reference (command syntax, IDs, lifecycle states). This skill is the *operational protocol*: the role, the group chat, files, conventions, and the loop.
 
-The recurring **check-loop cron prompt is the heartbeat of this role**: every fire re-delivers it as a user turn and re-anchors you on the core focus — *monitor the other panes' agents, keep the group seat alive, DM the user when one goes pending, keep the baseline + ledger current.* It is the single most important artifact in this skill; the verbatim copy lives in [check-loop-prompt.md](references/check-loop-prompt.md).
+The recurring **check-loop cron prompt is the heartbeat of this role**: every fire re-delivers it as a user turn and re-anchors you on the core focus — *monitor the other panes' agents, keep the group seat alive, answer the supervisor checklist (understand the goal, keep work organized and owned, help peers, record evidence, decide, keep hygiene, make progress), DM the user only when needed, keep the baseline + ledger current, and stop only when the goal is complete or truly blocked.* It is the single most important artifact in this skill; the verbatim copy lives in [check-loop-prompt.md](references/check-loop-prompt.md).
 
 ## Verify setup at session start
 - **Bypass perms ON** (`--dangerously-skip-permissions`; the permissions classifier is skipped entirely).
@@ -33,8 +33,10 @@ The official `herdr` skill documents full CLI syntax; these two mechanics are ke
 [scripts/group.py](scripts/group.py) is a single-file uv script (PEP 723 inline dependencies). Below, `G` stands for:
 
 ```bash
-G="uv run ~/.claude/skills/herdr-supervisor/scripts/group.py"
+G=~/.claude/skills/herdr-supervisor/scripts/group.py
 ```
+
+The script is executable with a `uv run --script` shebang, so call the path directly. Do not set `G="uv run …"`: zsh does not word-split an unquoted variable, so `$G send` fails as a single command name.
 
 **Start the seat** (the lead does this once per workspace, in its own tab):
 
@@ -93,7 +95,7 @@ $G send "<message>"                    # to_all
   *managed panes*; its agent names are the herdr agent names, and therefore
   the group addresses. Only the lead edits the ledger so peer writes cannot
   race. Keep it lean; push per-agent detail into logs.
-- **`/tmp/logs/agent-states.json`** — the check loop's baseline (the one state file; also called "the baseline"): per-pane `{status, screen_fingerprint, stall_ticks}` for every managed pane EXCEPT p1, plus `idle_streak` and (when the P0 extension is armed) `p0_scan_agent`, `p0_scan_in_flight`, `last_head`. Rewritten each tick.
+- **`/tmp/logs/agent-states.json`** — the check loop's baseline (the one state file; also called "the baseline"): per-pane `{status, screen_fingerprint, stall_ticks}` for every managed pane EXCEPT p1, plus (when the P0 extension is armed) `p0_scan_agent`, `p0_scan_in_flight`, `last_head`. Rewritten each tick.
 - **`/tmp/logs/p1-supervisor.md`** — chronological supervisor log (your actions/decisions), newest at bottom. Reference it from bookkeeping.
 - **`~/.local/state/herdr-group/<workspace>/group.jsonl`** — the group's message log, written by the seat. Read it with `$G history`; do not edit it.
 - **`~/.claude/skills/dm-user/scripts/dm-user.sh`** — the DM sender. `dm-user.sh "<msg>" [open_id]` (omit `open_id` → DM yourself, the user). Sends as the bot via lark-cli; reads your cached open_id from `~/.config/lark-cli/identity.json`.
@@ -127,17 +129,26 @@ $G send "<message>"                    # to_all
 - **DMs**: confirm recipient + content before sending (the loop's DMs are pre-approved by the loop design).
 
 ## The check loop
-A 5-min cron (`2-57/5 * * * *` — offset to dodge the :00/:30 fleet-collision marks) fires the check prompt as a recurring user turn — the supervisor heartbeat (the base template is [check-loop-prompt.md](references/check-loop-prompt.md); substitute `<workspace>` with your `WORKSPACE_ID` when arming). Each tick:
-1. `herdr agent list`.
-2. **Group seat alive**: an agent named `group` is present. If not, restart it in its tab (`herdr pane run <seat-pane> "$G serve"`), note it in the report and the supervisor log. The seat is never a managed agent and never diffed.
-3. Read `/tmp/logs/agent-states.json`. If MISSING → first tick: write current statuses (excl p1), report, STOP (no DM on the first tick).
-4. For each agent EXCEPT p1 in the **managed set** (the panes listed in the bookkeeping Pane name map — the loop watches only those; orphan/foreign panes are ignored), diff current vs baseline:
-   - Any transition: note for the in-terminal report (no DM). Read the peer's visible screen (`--source visible`) only if it looks actionable.
-   - **Stall exit**: `working` AND the visible screen (`--source visible`) content is **byte-identical across 3 consecutive ticks** (≈15 min) — the agent's status says busy but its screen is frozen, i.e. hung (stuck tool call, waiting prompt not surfaced, no-output loop). Herdr encodes activity in status, so `working` with a moving screen is fine; `working` with a still screen is the hang. **Counter**: the baseline keeps a per-pane `stall_ticks`; increment when `working` AND the screen fingerprint is unchanged, reset to 0 on any screen change or status transition. **Ladder**: at 3 ticks, nudge once through the group (`$G send --to <name> "are you stuck? show last action"`; a fresh prompt can break a hung wait without discarding work); if the screen still does not change by the next tick, treat as pending-on-user and DM ONCE (`stuck working N min; needs: check the pane`); one stronger nudge after ~25 min if still stuck, never per-tick. Persist the screen fingerprint (hash of `--source visible`) per pane in the baseline for comparison.
-   - **DM ONLY when absolutely necessary** (user directive: "loop means only ping me when absolute necessary") — a peer is persistently `blocked` or stalled awaiting a human decision the supervisor cannot self-resolve, AND the user is not focused on that pane. Routine `working→idle/done` never DMs. When you do DM: one line, `herdr: <pane> <agent> (<task>) <situation>; needs: <what you need from the human>`. DM once; follow-up nudge after ~25 min.
-5. Write current statuses (excl p1) back to the baseline: per-pane `screen_fingerprint` and `stall_ticks`, plus `idle_streak`.
-6. **Sustained-idle self-exit**: if ALL managed agents are idle/done (none `working`/`blocked`) AND no transition fired this tick, increment `idle_streak` (persisted in the baseline file); otherwise reset it to 0. When `idle_streak` reaches **3** (≈15 min of clean quiet), the work is done: summarize the goal/ledger state, `CronDelete` your own job id, report `DONE — loop self-cancelled (sustained all-idle ×3)`, and stop. No DM on self-exit unless the user asked to be pinged. p1 may always cancel sooner by hand. The group seat keeps running; stop it only when the user ends the team.
-7. In-terminal: report transitions (excl p1) + `idle_streak=N/3`. If none and all managed agents idle → one line: `all managed agents idle (no change); idle_streak=N/3`.
+A 5-min cron (`2-57/5 * * * *` — offset to dodge the :00/:30 fleet-collision marks) fires the heartbeat prompt as a recurring user turn (template: [check-loop-prompt.md](references/check-loop-prompt.md); fill `<workspace>` from `HERDR_WORKSPACE_ID` and `<goal>` with the goal source). The heartbeat is a checklist, not a status diff: every tick the lead answers the same questions and acts on each "no". Each tick:
+
+1. **Mechanics.** `herdr agent list`; keep the group seat alive (restart it with `herdr pane run <seat-pane> "$G serve"` if no agent is named `group`); diff each managed pane EXCEPT p1 against `/tmp/logs/agent-states.json` (managed = the Pane name map; foreign panes are ignored); read the group history for `DONE`/`BLOCKED`/`DECISION`/`REVIEW` since the last tick. A missing baseline is written fresh and the stall checks skip that tick.
+   - **Stall**: `working` AND the visible screen (`--source visible`) is **byte-identical across 3 consecutive ticks** (≈15 min) — the status says busy but the screen is frozen (stuck tool call, unsurfaced prompt, no-output loop). The baseline keeps a per-pane `screen_fingerprint` and `stall_ticks`, reset on any screen change or transition. Ladder: at 3 ticks, nudge once through the group (`$G send --to <name> "are you stuck? show last action"`); if still frozen next tick, DM ONCE (`stuck working N min; needs: check the pane`); one stronger nudge after ~25 min, never per-tick.
+   - **DM ONLY when absolutely necessary** (user directive: "loop means only ping me when absolute necessary") — a peer persistently `blocked` or stalled on a human decision the lead cannot resolve, AND the user is not focused on that pane; or an owner-only question from the checklist. Routine `working→idle/done` never DMs. One line, `herdr: <pane> <agent> (<task>) <situation>; needs: <what you need from the human>`; DM once, follow up after ~25 min.
+2. **Supervisor checklist** (the ledger's section of that name; answer all, act on every "no"):
+   0. *Confidence* — skip any question you are confident about because nothing bearing on it changed since the last tick; answer only the rest. This keeps a quiet tick cheap: it may skip them all.
+   1. *Understanding* — do I understand the goal, and does current work serve its requirements and rulings? Re-read the goal source when unsure (the loop outlives context summaries).
+   2. *Organization* — is every open Goal checklist row owned (a named seat or `lead`), dependency-ready, and free of file-ownership overlap? Assign ready, unowned rows.
+   3. *Peers* — what did each seat do since the last tick; does anyone need help (stalled, blocked, looping, off scope, waiting on `lead`)? Help now through the group.
+   4. *Evidence* — did a row gain fresh evidence? Tick it, record it, start the next row.
+   5. *Decisions* — adjudicate pending `DECISION`s; DM the owner once for owner-only questions.
+   6. *Hygiene* — commits at meaningful boundaries; ledger, baseline, and group seat current; dependent services healthy.
+   7. *Progress* — did anything move? If nothing moved and no one is working, the lead owes the next step: do it.
+3. **Exit condition** (the ledger's section of that name). The loop cancels itself in exactly two cases:
+   - **Completed** — every Goal checklist row is ticked with evidence: write the closing summary to the supervisor log, `CronDelete` the job, report `DONE - <goal> complete, loop cancelled`.
+   - **Truly blocked** — neither any seat nor `lead` can progress any row, because every remaining row waits on the owner or an external dependency the team cannot resolve: DM the owner one line naming each blocker and its need, log the state, `CronDelete` the job, report `STOPPED - blocked on owner`.
+
+   Idleness is never an exit: seats go idle exactly when the lead owes the next dispatch, review, or commit. One failure or one blocked row is not an exit either; route around it. p1 may always cancel by hand. The group seat keeps running; stop it only when the user ends the team.
+4. **Report** in-terminal: transitions (excl p1), checklist questions answered "no" with the action taken, and `next row: <row> - <state>`. A quiet tick is one line.
 
 **Cache note**: a tick's poll takes ~30s+ (several tool calls), refreshing the prompt cache near the poll's end → the 5-min cron gap is ~4.5 min < the 5-min cache TTL → cache stays warm. This is why a 5-min cron works despite the TTL.
 
@@ -153,9 +164,9 @@ When the user orders continuous P0/contract review of committed deltas, the loop
 2. **Single flight, always.** `p0_scan_in_flight` in the baseline json holds the sha under scan; never dispatch a new range while set — races produce contradictory verdicts on overlapping trees. A tick whose HEAD moved mid-flight notes pending and waits. The verdict lands via the agent's completion notification: file it to the project's log lane, then clear the field.
 3. **Report back to the supervisor session only.** Verdicts return to this session for ledgering/adjudication; the scanner never reports to managed panes or the group and never acts on its own findings.
 
-Cursor discipline: `last_head` primes silently on first tick and advances only to scanned HEADs. A scanning tick is never idle (resets `idle_streak`). The full step text and criteria plumbing live in [check-loop-prompt.md](references/check-loop-prompt.md).
+Cursor discipline: `last_head` primes silently on first tick and advances only to scanned HEADs. A scanning tick counts as progress. The full step text and criteria plumbing live in [check-loop-prompt.md](references/check-loop-prompt.md).
 
 ## Arm / disarm
-- **Arm**: `CronCreate({ cron: "2-57/5 * * * *", recurring: true, prompt: <base heartbeat prompt, <workspace> filled from your WORKSPACE_ID> })`. The prompt is the base block only — do not paste the markdown header or the P0-extension section. Append the P0-extension section verbatim to the prompt ONLY when the project has ordered continuous P0 delta review. Note the returned job ID. Tell the user it auto-expires in 7 days; cancel sooner with `CronDelete <id>` (find IDs via `CronList`).
+- **Arm**: `CronCreate({ cron: "2-57/5 * * * *", recurring: true, prompt: <base heartbeat prompt, <workspace> filled from your WORKSPACE_ID and <goal> from the goal source> })`. Before arming, fill the ledger's Goal checklist (the rows that define done), Supervisor checklist, and Exit condition from the template; the heartbeat reads them each tick, so edit the ledger rather than re-arming when they change. The prompt is the base block only — do not paste the markdown header or the P0-extension section. Append the P0-extension section verbatim to the prompt ONLY when the project has ordered continuous P0 delta review. Note the returned job ID. Tell the user it auto-expires in 7 days; cancel sooner with `CronDelete <id>` (find IDs via `CronList`).
 - **Disarm**: `CronDelete <job_id>`.
 - **Session-scoped**: the cron dies when this Claude session exits. Re-arm at the next session start if the supervisor role resumes. The group seat is a pane process and survives the lead's session; check it with `herdr agent get group`.

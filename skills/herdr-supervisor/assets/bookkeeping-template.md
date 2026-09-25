@@ -4,6 +4,54 @@
 - Supervisor: `lead` (`<workspace_id>:p1`)
 - Updated: `<timestamp>`
 - Permissions: `<mode>`
+- Goal: `<goal source, e.g. goals/NN-topic.md>`
+
+## Goal checklist
+
+The rows that define done for this team. The heartbeat reads them as the
+progress record. Tick a row only on fresh evidence, and name where the evidence
+is recorded. The first unticked row is the current work.
+
+- [ ] G1. `<outcome>` - owner `<agent or lead>` - evidence: `<test, review, run, or live check>`
+- [ ] G2. `<outcome>` - owner `<agent or lead>` - evidence: `<...>`
+
+## Supervisor checklist
+
+Every heartbeat tick works through this list, acts on every "no", and records
+non-trivial answers in `/tmp/logs/p1-supervisor.md`.
+
+0. Confidence: skip any question below you are confident about, because
+   nothing bearing on it changed since the last tick. Answer only the rest; a
+   quiet tick may skip them all.
+1. Understanding: do I understand the goal, and does the current work serve
+   its requirements and rulings? Re-read the goal source when unsure.
+2. Organization: is every open Goal checklist row owned by a named seat or by
+   `lead`, with its dependencies met and no two owners on one file? Is any row
+   ready but unassigned?
+3. Peers: what has each seat done since the last tick (screen, group history,
+   working tree)? Does any peer need help: stalled, blocked, looping, going off
+   scope, or waiting on an answer from `lead`? Help now.
+4. Evidence: did any row gain fresh evidence? Tick it, record it, and start the
+   next row.
+5. Decisions: is any `DECISION` pending adjudication, or any question only the
+   owner can answer? Adjudicate it, or DM the owner once.
+6. Hygiene: is work committed at meaningful boundaries? Are the ledger,
+   baseline, and group seat current? Are dependent services healthy?
+7. Progress: did anything move since the last tick? If nothing moved and no one
+   is working, what does `lead` do next? Do it.
+
+## Exit condition
+
+The heartbeat cancels itself in exactly two cases:
+
+- Completed: every Goal checklist row is ticked with evidence.
+- Truly blocked: no progress is possible for any seat or for `lead`, because
+  every remaining row waits on the owner or an external dependency the team
+  cannot resolve. Before exiting, DM the owner one line naming each blocker
+  and what it needs, and record the state in the supervisor log.
+
+Idleness, one failure, or one blocked row is not an exit: route around it and
+keep working on whatever else can progress.
 
 ## Collaboration contract
 
