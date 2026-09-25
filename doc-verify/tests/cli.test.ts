@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -56,6 +56,54 @@ describe("CLI", () => {
     expect(result.status).toBe(0);
     const report = JSON.parse(result.stdout) as { artifacts: Array<{ rubricChain: Array<{ path: string }> }> };
     expect(report.artifacts[0]?.rubricChain.map((entry) => entry.path)).toEqual(["rubrics/override.yaml"]);
+  });
+
+  it("reports a missing config with its expected path and a distinct exit", () => {
+    const root = mkdtempSync(path.join(tmpdir(), "doc-verify-cli-no-config-"));
+    execFileSync("git", ["init"], { cwd: root, stdio: "ignore" });
+    const result = spawnSync("node", [
+      path.resolve("doc-verify/dist/cli.js"), "check", "--all", "--profile", "draft",
+    ], { cwd: root, encoding: "utf8" });
+    expect(result.status).toBe(66);
+    expect(result.stderr).toContain("config .doc-verify.yaml not found");
+    expect(result.stderr).toContain(path.join(root, ".doc-verify.yaml"));
+  });
+
+  it("reports a config that is absent from the Git index with a distinct exit", () => {
+    const root = cliFixture();
+    execFileSync("git", ["add", "design/a.md", "design/a.yaml", "rubrics", "strategies"], { cwd: root });
+    execFileSync("git", ["-c", "user.email=test@example.invalid", "-c", "user.name=Doc Verify Test",
+      "commit", "-qm", "fixture"], { cwd: root });
+    const result = spawnSync("node", [
+      path.resolve("doc-verify/dist/cli.js"), "check", "--staged", "--profile", "draft",
+    ], { cwd: root, encoding: "utf8" });
+    expect(result.status).toBe(65);
+    expect(result.stderr).toContain("config .doc-verify.yaml is not in the Git index");
+  });
+
+  it("reports the underlying cause for an unexpected filesystem error", () => {
+    const root = cliFixture();
+    rmSync(path.join(root, ".doc-verify.yaml"));
+    mkdirSync(path.join(root, ".doc-verify.yaml"));
+    const result = spawnSync("node", [
+      path.resolve("doc-verify/dist/cli.js"), "check", "--all", "--profile", "draft",
+    ], { cwd: root, encoding: "utf8" });
+    expect(result.status).toBe(70);
+    expect(result.stderr).toContain("doc-verify: internal error");
+    expect(result.stderr).toMatch(/EISDIR|illegal operation on a directory/);
+  });
+
+  it("rejects --paths that select no configured document or dependency", () => {
+    const root = cliFixture();
+    const result = spawnSync("node", [
+      path.resolve("doc-verify/dist/cli.js"), "check",
+      "--paths", "design/a.md", "design/999-missing.md",
+      "--profile", "draft",
+    ], { cwd: root, encoding: "utf8" });
+    expect(result.status).toBe(64);
+    expect(result.stderr).toContain("design/999-missing.md");
+    expect(result.stderr).toContain("selected no configured document or dependency");
+    expect(result.stderr).not.toContain("design/a.md");
   });
 });
 

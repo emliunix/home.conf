@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import path from "node:path";
 import { createMockJevJudgeBackend, type JudgeBackend } from "deepclause-sdk";
 import { minimatch } from "minimatch";
 
@@ -6,11 +7,13 @@ import { CompanionMetadata, DocVerifyConfig, DocumentRule, parseCompanion, parse
 import { evaluateSemantic, PolicyViolationError } from "./semantic.js";
 import { EvidenceBudgetError, MissingCriticalSectionError, expandRubric, resolveRubrics } from "./rubric.js";
 import { segmentMarkdown } from "./segments.js";
-import { SnapshotMode, captureSnapshots } from "./snapshot.js";
+import { MissingBlobError, SnapshotMode, captureSnapshots } from "./snapshot.js";
 import { resolveVerificationStrategy } from "./strategy.js";
 import {
   ArtifactReport,
   BlockedError,
+  ConfigNotFoundError,
+  ConfigNotStagedError,
   Finding,
   Profile,
   RepoPath,
@@ -46,7 +49,23 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
     documentPatterns: bootstrapPatterns,
     invalidationPatterns: [".doc-verify.yaml"],
   });
-  const config = parseConfig(await bootstrap.readCandidate(repoPath(".doc-verify.yaml")));
+  let configBlob: TextBlob;
+  try {
+    configBlob = await bootstrap.readCandidate(repoPath(".doc-verify.yaml"));
+  } catch (error) {
+    if (!(error instanceof MissingBlobError)) {
+      throw error;
+    }
+    if (options.mode.kind === "staged") {
+      throw new ConfigNotStagedError(
+        "config .doc-verify.yaml is not in the Git index; run `git add .doc-verify.yaml` and retry",
+      );
+    }
+    throw new ConfigNotFoundError(
+      `config .doc-verify.yaml not found; expected ${path.join(root, ".doc-verify.yaml")}`,
+    );
+  }
+  const config = parseConfig(configBlob);
   const pair = await captureSnapshots({
     root,
     mode: options.mode,
@@ -54,6 +73,21 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
     invalidationPatterns: config.invalidation_patterns,
     documentRules: config.documents.map(({ pattern, verification }) => ({ pattern, verification })),
   });
+  if (options.mode.kind === "paths") {
+    const consumed = new Set<RepoPath>();
+    for (const [artifact, impact] of pair.impactPaths) {
+      consumed.add(artifact);
+      for (const entry of impact) {
+        consumed.add(entry);
+      }
+    }
+    const unmatched = pair.changedRoots.filter((file) => !consumed.has(file));
+    if (unmatched.length > 0) {
+      throw new UsageError(
+        `--paths selected no configured document or dependency: ${unmatched.join(", ")}`,
+      );
+    }
+  }
   const selectedIds = options.sections?.map(sectionId);
   const artifacts: ArtifactReport[] = [];
   for (const file of pair.candidatePaths) {

@@ -114,6 +114,16 @@ export class BlockedError extends Error {
   readonly verdict = "BLOCKED" as const;
 }
 
+/** The repository-level verifier configuration is absent. */
+export class ConfigNotFoundError extends Error {
+  readonly exitCode = 66;
+}
+
+/** A staged run cannot read the config because it is not in the Git index. */
+export class ConfigNotStagedError extends Error {
+  readonly exitCode = 65;
+}
+
 export function repoPath(value: string): RepoPath {
   return value as RepoPath;
 }

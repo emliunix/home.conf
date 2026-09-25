@@ -5,7 +5,13 @@ import { parseArgs } from "node:util";
 import { checkDocuments } from "./checker.js";
 import { renderText, exitCodeFor } from "./report.js";
 import { segmentMarkdown } from "./segments.js";
-import { BlockedError, UsageError, profileSchema } from "./types.js";
+import {
+  BlockedError,
+  ConfigNotFoundError,
+  ConfigNotStagedError,
+  UsageError,
+  profileSchema,
+} from "./types.js";
 import { readFile } from "node:fs/promises";
 
 async function main(argv: string[]): Promise<number> {
@@ -122,8 +128,27 @@ main(process.argv.slice(2)).then(
       process.exitCode = 3;
       return;
     }
+    if (error instanceof ConfigNotFoundError || error instanceof ConfigNotStagedError) {
+      process.stderr.write(`doc-verify: ${error.message}\n`);
+      process.exitCode = error.exitCode;
+      return;
+    }
     const name = error instanceof Error ? error.name : "UnknownError";
-    process.stderr.write(`doc-verify: internal error (${name})\n`);
+    const message = error instanceof Error ? error.message : String(error);
+    process.stderr.write(`doc-verify: internal error (${name}): ${message}\n`);
+    if (error instanceof Error) {
+      let cause: unknown = error.cause;
+      while (cause !== undefined && cause !== null) {
+        const causeMessage = cause instanceof Error
+          ? cause.message
+          : typeof cause === "string" ? cause : "non-Error cause";
+        process.stderr.write(`doc-verify: caused by: ${causeMessage}\n`);
+        cause = cause instanceof Error ? cause.cause : undefined;
+      }
+      if (process.env.DOC_VERIFY_DEBUG === "1" && error.stack !== undefined) {
+        process.stderr.write(`${error.stack}\n`);
+      }
+    }
     process.exitCode = 70;
   },
 );
