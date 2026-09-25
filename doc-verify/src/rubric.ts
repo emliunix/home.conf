@@ -203,7 +203,16 @@ function makeQuestion(item: RubricItem, sections: Section[]): ExpandedQuestion {
   if (firstSection === undefined) {
     throw new UsageError(`rubric item ${item.id} has no evidence section`);
   }
-  const evidence = sections.map((section) => section.content).join("\n");
+  // A heading section's content already includes its subsections, so a nested
+  // section is sent only through its outermost matched ancestor.
+  const outermost = sections.filter(
+    (section) =>
+      !sections.some(
+        (other) =>
+          other !== section && other.startByte <= section.startByte && section.endByte <= other.endByte,
+      ),
+  );
+  const evidence = outermost.map((section) => section.content).join("\n");
   if (Buffer.byteLength(evidence) > item.evidence.max_bytes) {
     throw new EvidenceBudgetError(item.id, item.evidence.max_bytes);
   }
