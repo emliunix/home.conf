@@ -3,7 +3,7 @@
 > **How to work with this file: check the `goal-file` skill first.** This is a
 > goal file — the administrative source for a sprint, not a design doc, worklog,
 > or process manual. Before reading further or editing any section, load the
-> skill: `goal-file/SKILL.md` for what a goal file is and the freeze-then-funnel
+> skill: `goal-file/SKILL.md` for what a goal file is and the anchor-then-funnel
 > order, `goal-file/goal-authoring.md` for the required section order, DAG rules,
 > workflow slots, and the edge-label vocabulary. Keep this pointer in place when
 > you copy the template — every agent that resumes this goal needs it.
@@ -24,23 +24,24 @@
 
 Context and analysis explaining what each excerpt means or responds to go beside
 the blockquote in normal prose. Group related excerpts under meaningful headings.
-**NO EDIT once written.** If the target moves, that is a new goal file, or a
-dated owner re-state appended below the original.
+Quotes are never rewritten. If the target moves, append a dated owner
+restatement below the original and record it with a re-anchor entry, or open a
+new goal file.
 
-## User requirements — frozen root
+## User requirements — anchored root
 
-The vendored owner excerpts from the freeze table, in `>` blockquotes, with
-context and analysis in adjacent normal prose. **NO EDIT once frozen.** That
+The vendored owner excerpts from the anchor table, in `>` blockquotes, with
+context and analysis in adjacent normal prose. **Anchored:** owner-confirmed intent. Change it only by a dated re-anchor entry that says what changed and why. That
 prose is annotation and is not an additional owner requirement. One-line
-provenance at freeze (`frozen from: direct | design/NN User inputs |
-design/NN Problem statement`). Numbered `R1`… rows partition the freeze for
+provenance at anchoring (`anchored from: direct | design/NN User inputs |
+design/NN Problem statement`). Numbered `R1`… rows partition the anchor for
 covering and checkboxes; they do not rewrite it. Checkbox law: the goal is DONE
 exactly when every live root box is checked with an evidence line.
 
 - [ ] **R1** — …
 - [ ] **R2** — …
 
-- *Analysis* — working read of the frozen root. **Append-and-amend.**
+- *Analysis* — working read of the anchored root. **Append-and-amend.**
 - *Working background* — fact map (paths, seams, designs in force, live-world
   facts). **Kept current.**
 
@@ -133,7 +134,7 @@ One slot per design in Design files. Inner loop and wrong-design exit are
 - **Scope:** core-schema | module:<name> | ui-ux | <named> | design-time
 - **Depends on:** design/MM | none
 - **Loop:** `flow-grill-review` → `flow:impl` (`flow-common`) → `flow-retro`
-- **Gate:** AC check along **Covers** to the frozen root
+- **Gate:** AC check along **Covers** to the anchored root
 - **Exit:** impl-loop breakout → `flow-common` breakout adjudication. Proved
   wrong machine → supersede this file, do not revert it.
 
