@@ -3,8 +3,9 @@
 Tests and research for the Herdr group-chat seat. The script itself ships
 inside the `herdr-supervisor` skill as a single-file uv script (PEP 723
 inline deps): [`../skills/herdr-supervisor/scripts/group.py`](../skills/herdr-supervisor/scripts/group.py).
-The skill's SKILL.md is the usage doc (the lead runs the seat; every agent
-posts with `herdr agent prompt group "[from:<you>; to:<name>] ..."`). The tests load that script by its path in this
+The skill's SKILL.md is the usage doc (the lead runs the seat; agents DM each
+other with `herdr agent prompt <peer> "[from:<you>; to:<peer>] ..."` and post
+to the team with `herdr agent prompt group "[from:<you>; to:<name>] ..."`). The tests load that script by its path in this
 repo:
 
 ```bash
@@ -14,14 +15,16 @@ uv run pytest
 Grammar, as the seat renders it:
 
 ```
-[from:<sender>; to:<name>[,<name>...]] <message>
-[from:<sender>; to_all] <message>          # also: no to: at all
-[from:<sender>; mute]                      # opt out of to_all; unmute opts back in
+[from:<sender>; to:<name>[,<name>...]; re:<topic>] <message>   # to: and re: optional
+[from:<sender>; mute]                                           # unmute opts back in
 ```
 
-Fields may be separated by `;`, `,` or spaces on input. `to:all` is an error.
-`all`, `to_all`, `user`, `mute` and `unmute` are reserved names; `user` is the human, shown on
-the seat screen only.
+Every group message reaches every member except the sender; `to:` names who is
+expected to act. A muted member receives only group messages that name it in
+`to:`. Fields may be separated by `;`, `,` or spaces on input. `to_all`,
+`to:all` and `to:user` are rejected with a hint. `all`, `to_all`, `user`,
+`mute` and `unmute` are reserved names; `user` is the human, who reads the seat
+screen and may type into it.
 
 ## Research findings (herdr 0.9.1)
 
@@ -69,12 +72,12 @@ prints each message once, with a timestamp and delivery status
 
 ## Delivery caveats
 
-- A recipient that is `blocked` (approval UI) is not written to. It is
-  reported as failed to the sender, and nothing is queued.
-- A recipient that is `working` still receives the text in its input. How it is
-  queued depends on that agent's CLI.
-- A delivered message arrives as a new user turn in the recipient, so a
-  broadcast interrupts every idle member.
+- Herdr refuses a `blocked` recipient (approval UI) with `agent_blocked` and
+  writes nothing. The seat reports it as failed to the sender.
+- A recipient that is `working` still receives the text in its input, so
+  "delivered" means queued. How it is queued depends on that agent's CLI.
+- A delivered message arrives as a new user turn in the recipient, so every
+  group message interrupts every unmuted idle member.
 
 ## Layout
 
@@ -95,3 +98,11 @@ research/     herdr 0.9.1 docs, API schema, the first probe
 - An agent that polls `history` in a loop while waiting leaves the awaited
   message `QUEUED` in its input until its turn ends. The skill tells
   agents to end their turn instead.
+
+## Live checks (2026-09-26, the DM plus group model)
+
+- Restarted the seat on a six-member workspace. `[from:lead; to:collab_taskboard; re:chat-test]`
+  and a plain `[from:lead]` message each reached all five other members; the log
+  recorded `to` as `["collab_taskboard"]` and `[]` and `re` as `"chat-test"` and `null`.
+- `[from:lead; mute]` and `unmute` logged as controls; `[from:lead; to_all]` was
+  rejected with the retirement hint.

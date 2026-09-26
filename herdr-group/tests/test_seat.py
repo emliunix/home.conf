@@ -1,4 +1,5 @@
 import io
+import json
 
 import pytest
 
@@ -60,11 +61,11 @@ def seat(monkeypatch, tmp_path):
     return lambda herdr: Seat(herdr, "group", "maki", False, io.StringIO())
 
 
-def test_prompted_broadcast_routes_to_members(seat):
+def test_prompted_message_routes_to_members(seat):
     herdr = FakeHerdr(AGENTS)
     outcome = seat(herdr).route("[from:alice] hello")
     assert outcome.delivered == ("bob",)
-    assert herdr.prompts == [("bob", "[from:alice; to_all] hello")]
+    assert herdr.prompts == [("bob", "[from:alice] hello")]
     assert herdr.states == ["working", "idle"]
 
 
@@ -103,19 +104,24 @@ def test_other_workspace_not_member(seat):
 
 
 def test_messages_logged(seat, tmp_path):
-    seat(FakeHerdr(AGENTS)).route("[from:bob; to:alice] yo")
-    log = (tmp_path / "herdr-group" / "w1" / "group.jsonl").read_text()
-    assert '"from": "bob"' in log and '"body": "yo"' in log
+    s = seat(FakeHerdr(AGENTS))
+    s.route("[from:bob; to:alice; re:d52] yo")
+    s.route("[from:bob] all")
+    lines = (tmp_path / "herdr-group" / "w1" / "group.jsonl").read_text().splitlines()
+    first, second = (json.loads(line) for line in lines)
+    assert first["from"] == "bob" and first["body"] == "yo"
+    assert first["to"] == ["alice"] and first["re"] == "d52"
+    assert second["to"] == [] and second["re"] is None
 
 
-def test_mute_skips_broadcasts_and_persists(seat):
+def test_mute_skips_group_messages_unless_named_and_persists(seat):
     herdr = FakeHerdr(AGENTS)
     s = seat(herdr)
     assert s.route("[from:bob; mute]").message.render() == "[from:bob; mute]"
     outcome = s.route("[from:alice] everyone")
     assert outcome.delivered == () and outcome.skipped == ("bob",)
-    s.route("[from:alice; to:bob] direct")
-    assert herdr.prompts == [("bob", "[from:alice; to:bob] direct")]
+    s.route("[from:alice; to:bob] act")
+    assert herdr.prompts == [("bob", "[from:alice; to:bob] act")]
     assert seat(herdr).muted == {"bob"}  # a restarted seat remembers
     seat(herdr).route("[from:bob; unmute]")
     assert seat(herdr).muted == set()
