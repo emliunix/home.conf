@@ -43,7 +43,7 @@ herdr agent get group        # agent kind "maki", display name "group"
 
 The seat shows up in `herdr agent list` as kind `maki` (see [How the seat works](#how-the-seat-works)). It is infrastructure, not a managed agent: it goes in the ledger's Heartbeat section, not the Pane name map.
 
-**Members** are the live agents in this workspace that have a herdr name (`herdr agent start <name> …` or `herdr agent rename <pane> <name>`). Unnamed agents cannot be addressed. `all`, `to_all`, `user`, `mute` and `unmute` are reserved and cannot be agent names. The human is not a member: they read the seat screen, and agents reach them with `dm-user.sh`, never `to:user`.
+**Members** are the live agents in this workspace that have a herdr name (`herdr agent start <name> …` or `herdr agent rename <pane> <name>`). Unnamed agents cannot be addressed. `all`, `user`, `mute` and `unmute` are reserved and cannot be agent names. The human is not a member: they read the seat screen, and agents reach them with `dm-user.sh`.
 
 **Two paths.** Every message carries the same header, whichever path it takes:
 
@@ -65,7 +65,7 @@ DM dispatches, nudges, answers, and review hand-offs. Use the group when other s
 - `from:` is required and must be your own herdr agent name. Herdr does not tell a recipient who prompted it, so `from:` is a routing hint, not proof: verify any claim that matters (DONE, a pushed commit, a green test) against its artifact.
 - `to:` names who is expected to act. Every other recipient reads the message as information and does not reply unless it blocks them.
 - `re:<topic>` is an optional short tag (letters, digits, `. _ / -`), e.g. `re:d52`, for filtering the log.
-- The seat rejects `to_all`, `to:all` and `to:user` with a hint. A leading `[...]` without these keys is ordinary body text.
+- `to:` names must be live members. A leading `[...]` without these keys is ordinary body text; any other header is rejected with the format.
 
 The `agent prompt` to the seat returns once the seat has the text. When the seat rejects a message or a delivery fails, it sends the reason back to the declared sender as a new turn (`[from:group; to:<you>] ...`). With no parseable `from:`, the error is only shown on the seat screen.
 
@@ -105,7 +105,7 @@ herdr pane run <seat-pane> ~/.claude/skills/herdr-supervisor/scripts/group.py se
 herdr agent get group        # repeat until it registers
 ```
 
-Then grep the skill files (SKILL.md, references/, assets/) for any grammar or command the change retired, and re-brief live peers whose briefs carried it.
+Keep SKILL.md, `references/` and `assets/` coherent with the script in the same change, and re-brief live peers whose brief shows a form the script no longer accepts.
 
 ## Files you maintain
 - **`assets/bookkeeping-template.md`** — the reusable source template. At the
@@ -163,7 +163,7 @@ Problems that came up in real sessions, and what helped. These are practices, no
 - **Chat threads that grow.** A discussion past a few messages is hard to follow in turns and lost on compaction. Move it into the unit's worklog or report file and send a pointer; `re:<topic>` is a free label that makes the log easy to filter.
 - **Trusting `from:` or a DONE.** `from:` is typed by the sender, and a DONE is a claim. Check the commit, test output, or report before ticking a row. A `REVIEW:` message is a pointer: read the report it names, and send `lead`'s own work through the review seat too.
 - **Silent log reads.** A `jq` filter with a wrong field name prints `null` and looks like a quiet tick. Use the documented fields, and treat `null` where records exist as a failed read.
-- **Stale seat and stale briefs.** After editing `group.py`, the running seat keeps the old code, and live briefs keep the old grammar. Restart the seat, grep the skill files for retired forms, and re-brief peers whose brief used them.
+- **Stale seat and stale briefs.** After editing `group.py`, the running seat keeps the old code, and live briefs keep the old grammar. Restart the seat, update the skill text in the same change, and re-brief peers whose brief shows a changed form.
 - **Typing into a busy pane.** `herdr pane run` and send-text type into whatever is in the foreground, including a hung server. Read the pane first and confirm a shell prompt; record owner-lent panes in the ledger so their reuse is on record.
 - **Stalls the screen check misses.** TUI agents redraw every tick, so an unchanged-screen fingerprint may never fire. Watch signals that do move, such as the peer's file changes and its last message, and ask when both stop.
 

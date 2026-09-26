@@ -21,10 +21,10 @@ Grammar, as the seat renders it:
 
 Every group message reaches every member except the sender; `to:` names who is
 expected to act. A muted member receives only group messages that name it in
-`to:`. Fields may be separated by `;`, `,` or spaces on input. `to_all`,
-`to:all` and `to:user` are rejected with a hint. `all`, `to_all`, `user`,
-`mute` and `unmute` are reserved names; `user` is the human, who reads the seat
-screen and may type into it.
+`to:`. Fields may be separated by `;`, `,` or spaces on input; `to:` names
+must be live members, and any other header is rejected with the format. `all`,
+`user`, `mute` and `unmute` are reserved names; `user` is the human, who reads
+the seat screen and may type into it.
 
 ## Research findings (herdr 0.9.1)
 
@@ -89,20 +89,14 @@ research/     herdr 0.9.1 docs, API schema, the first probe
 ## Live checks (2026-09-26, herdr 0.9.1, opencode 1.18.32)
 
 - Two opencode agents, briefed only through the group: alice asked bob
-  `17*23`, bob answered alice, alice reported `391` to `user`.
-- `to_all` broadcast delivered to every member but the sender; `to:all`
-  rejected with the `to_all` hint.
-- Mute: an opencode agent posted `[from:bob; mute]`; the next `to_all` reached
-  only the other agent (`✓ alice  muted bob`), and the mute survived a seat
-  restart.
-- An agent that polls `history` in a loop while waiting leaves the awaited
-  message `QUEUED` in its input until its turn ends. The skill tells
-  agents to end their turn instead.
-
-## Live checks (2026-09-26, the DM plus group model)
-
-- Restarted the seat on a six-member workspace. `[from:lead; to:collab_taskboard; re:chat-test]`
-  and a plain `[from:lead]` message each reached all five other members; the log
-  recorded `to` as `["collab_taskboard"]` and `[]` and `re` as `"chat-test"` and `null`.
-- `[from:lead; mute]` and `unmute` logged as controls; `[from:lead; to_all]` was
-  rejected with the retirement hint.
+  `17*23`, bob answered alice, alice reported `391`.
+- On a six-member workspace, `[from:lead; to:collab_taskboard; re:chat-test]`
+  and a plain `[from:lead]` message each reached all five other members; the
+  log recorded `to` as `["collab_taskboard"]` and `[]`, and `re` as
+  `"chat-test"` and `null`.
+- Mute: an opencode agent posted `[from:bob; mute]`; the next group message
+  reached only the other agent (`✓ alice  muted bob`), and the mute survived a
+  seat restart.
+- An agent that polls in a loop while waiting leaves the awaited message
+  `QUEUED` in its input until its turn ends. The skill tells agents to end
+  their turn instead.
