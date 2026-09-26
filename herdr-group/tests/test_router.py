@@ -19,9 +19,10 @@ def test_to_drops_self():
     assert route.targets == ("bob", "carol")
 
 
-def test_unknown_recipient():
+@pytest.mark.parametrize("name", ["zed", "all", "user"])
+def test_unknown_recipient(name):
     with pytest.raises(FormatError, match="unknown recipient"):
-        plan(Message("alice", ("zed",), "hi"), MEMBERS)
+        plan(Message("alice", (name,), "hi"), MEMBERS)
 
 
 def test_only_self():

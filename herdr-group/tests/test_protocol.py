@@ -43,13 +43,9 @@ def test_multiline_body_kept():
         "[from:alice,bob] hi",
         "[from:alice from:bob] hi",
         "[from:Alice! to:bob] hi",
-        "[from:alice to:all] hi",
-        "[from:alice to:to_all] hi",
         "[from:alice to:] hi",
-        "[from:alice to:user] hi",
-        "[from:alice, to_all] hi",
-        "[from:alice, to:bob, to_all] hi",
-        "[from:alice, to_all bob] hi",
+        "[from:alice, everyone] hi",
+        "[from:alice, to:bob; cc:carol] hi",
         "[from:alice; re:] hi",
         "[from:alice; re:two words] hi",
         "[from:alice; re:a; re:b] hi",
@@ -84,7 +80,7 @@ def test_mute_and_unmute_are_bodiless_controls():
 
 @pytest.mark.parametrize(
     "text",
-    ["[from:alice; mute] hi", "[mute; to:bob]", "[mute; re:x]", "[mute; to_all]", "[mute; unmute]", "[mute bob]"],
+    ["[from:alice; mute] hi", "[mute; to:bob]", "[mute; re:x]", "[mute; unmute]", "[mute bob]"],
 )
 def test_mute_rejects(text):
     with pytest.raises(FormatError):

@@ -21,9 +21,9 @@ spaces. Every member except the sender receives the message; ``to:`` names who
 is expected to act, and everyone else reads it as information. ``re:`` is a
 free topic tag. ``[from:<name>; mute]`` (no body) stops group messages reaching
 the sender, except those naming it in ``to:``; ``unmute`` restores them.
-``to_all`` and ``to:user`` are retired, and agents named
-``all``/``to_all``/``user``/``mute``/``unmute`` are never members. A leading
-``[...]`` without ``from:``/``to:``/``re:`` is ordinary body text (e.g. ``[WIP] ...``).
+``to:`` names must be members; agents named ``all``/``user``/``mute``/``unmute``
+are never members. A leading ``[...]`` without ``from:``/``to:``/``re:``/``mute``/``unmute``
+is ordinary body text (e.g. ``[WIP] ...``); any other header is rejected.
 
 Herdr does not tell a terminal who wrote to it, so every message self-declares
 ``from:``, which must name a live member or ``user``. A rejected message, and a
@@ -58,8 +58,6 @@ import typer
 # ---------------------------------------------------------------- protocol
 
 NAME_RE = re.compile(r"^[a-z][a-z0-9_-]{0,31}$")
-# Retired broadcast flag; recognised only to explain its replacement.
-TO_ALL = "to_all"
 # The human at the keyboard. Not an agent seat: it reads the group screen and
 # can only post by typing into the group pane.
 USER = "user"
@@ -74,8 +72,9 @@ class Control(Enum):
     UNMUTE = "unmute"
 
 
-# Agents with these names are not group members; they would read as keywords.
-RESERVED = frozenset({"all", TO_ALL, USER, *(c.value for c in Control)})
+# Agents with these names are not group members: they would read as keywords,
+# the human, or "everyone" in a to: list.
+RESERVED = frozenset({"all", USER, *(c.value for c in Control)})
 
 USAGE = (
     "format: [from:<your-name>; to:<name>[,<name>...]; re:<topic>] <message>  "
@@ -84,7 +83,7 @@ USAGE = (
 )
 
 _HEADER_RE = re.compile(r"^\s*\[([^\]]*)\]\s*(.*)\Z", re.DOTALL)
-_KEY_RE = re.compile(r"\b(from\s*:|to\s*:|re\s*:|to_all\b|mute\b|unmute\b)", re.IGNORECASE)
+_KEY_RE = re.compile(r"\b(from\s*:|to\s*:|re\s*:|mute\b|unmute\b)", re.IGNORECASE)
 
 
 class FormatError(ValueError):
@@ -116,10 +115,6 @@ class Message:
 def _names(raw: str, key: str) -> list[str]:
     names = [part.lower() for part in re.split(r"[,;\s]+", raw) if part]
     for name in names:
-        if name in ("all", TO_ALL) and key == "to":
-            raise FormatError(f"every member already receives group messages; drop to:{name}; {USAGE}")
-        if name == USER and key == "to":
-            raise FormatError("to:user is retired: the user reads the group screen; DM the owner with dm-user.sh")
         if not NAME_RE.match(name):
             raise FormatError(f"invalid {key} name {name!r}; {USAGE}")
     return names
@@ -145,8 +140,6 @@ def parse(text: str) -> Message:
             if key in seen:
                 raise FormatError(f"duplicate {key} in header; {USAGE}")
             seen.add(key)
-            if key == TO_ALL:
-                raise FormatError(f"to_all is retired: every member receives group messages; drop it; {USAGE}")
             if key in (c.value for c in Control):
                 if raw.strip(" ,;"):
                     raise FormatError(f"{key} takes no names; {USAGE}")
