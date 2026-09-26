@@ -1,9 +1,17 @@
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { createMockJevJudgeBackend, type JudgeBackend } from "deepclause-sdk";
-import { minimatch } from "minimatch";
 
-import { CompanionMetadata, DocVerifyConfig, DocumentRule, parseCompanion, parseConfig, resolveProfile } from "./config.js";
+import {
+  CompanionMetadata,
+  DocVerifyConfig,
+  DocumentIncludeRule,
+  documentRuleFor,
+  documentTraceFor,
+  parseCompanion,
+  parseConfig,
+  resolveProfile,
+} from "./config.js";
 import { loadDocVerifyEnv } from "./local-env.js";
 import { evaluateSemantic, PolicyViolationError } from "./semantic.js";
 import { EvidenceBudgetError, MissingCriticalSectionError, expandRubric, resolveRubrics } from "./rubric.js";
@@ -48,7 +56,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
   const bootstrap = await captureSnapshots({
     root,
     mode: options.mode,
-    documentPatterns: bootstrapPatterns,
+    documentRules: bootstrapPatterns.map((pattern) => ({ pattern })),
     invalidationPatterns: [".doc-verify.yaml"],
   });
   let configBlob: TextBlob;
@@ -71,9 +79,8 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
   const pair = await captureSnapshots({
     root,
     mode: options.mode,
-    documentPatterns: config.documents.map((document) => document.pattern),
+    documentRules: config.documents,
     invalidationPatterns: config.invalidation_patterns,
-    documentRules: config.documents.map(({ pattern, verification }) => ({ pattern, verification })),
   });
   if (options.mode.kind === "paths") {
     const consumed = new Set<RepoPath>();
@@ -100,7 +107,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
     const entry = pair.candidate.entries.get(file);
     const impactPath = pair.impactPaths.get(file) ?? [file];
     if (entry === undefined || "deleted" in entry) {
-      artifacts.push(deletedReport(file, rule, impactPath));
+      artifacts.push(deletedReport(file, rule, impactPath, documentTraceFor(config.documents, file)));
       continue;
     }
     artifacts.push(await checkArtifact({
@@ -110,6 +117,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
       rule,
       config,
       impactPath,
+      selectorTrace: documentTraceFor(config.documents, file),
       readCandidate: pair.readCandidate,
       requestedProfile: options.profile,
       ...(selectedIds === undefined ? {} : { selectedIds }),
@@ -141,9 +149,10 @@ async function checkArtifact(input: {
   root: string;
   file: RepoPath;
   blob: TextBlob;
-  rule: DocumentRule;
+  rule: DocumentIncludeRule;
   config: DocVerifyConfig;
   impactPath: RepoPath[];
+  selectorTrace: ArtifactReport["selectorTrace"];
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
   requestedProfile: Profile;
   selectedIds?: SectionId[];
@@ -259,6 +268,7 @@ async function checkArtifact(input: {
     artifactKind: input.rule.artifact_kind,
     profile,
     impactPath: input.impactPath,
+    selectorTrace: input.selectorTrace,
     requiredSections: input.rule.required_sections,
     sections: sections.map(({ content: _content, ...section }) => section),
     strategyChain: strategy.chain,
@@ -274,13 +284,19 @@ async function checkArtifact(input: {
   };
 }
 
-function deletedReport(file: RepoPath, rule: DocumentRule, impactPath: RepoPath[]): ArtifactReport {
+function deletedReport(
+  file: RepoPath,
+  rule: DocumentIncludeRule,
+  impactPath: RepoPath[],
+  selectorTrace: ArtifactReport["selectorTrace"],
+): ArtifactReport {
   const item = finding(file, undefined, "structure.deleted", "NO-GO", "configured document was deleted");
   return {
     path: file,
     artifactKind: rule.artifact_kind,
     profile: "draft",
     impactPath,
+    selectorTrace,
     requiredSections: rule.required_sections,
     sections: [],
     strategyChain: [],
@@ -328,8 +344,8 @@ async function optionalCompanion(reader: (path: RepoPath) => Promise<TextBlob>, 
   }
 }
 
-function findDocumentRule(config: DocVerifyConfig, file: RepoPath): DocumentRule | undefined {
-  return config.documents.find((rule) => minimatch(file, rule.pattern, { dot: true }));
+function findDocumentRule(config: DocVerifyConfig, file: RepoPath): DocumentIncludeRule | undefined {
+  return documentRuleFor(config.documents, file);
 }
 
 function sectionBody(section: Section | undefined): string | undefined {

@@ -11,6 +11,7 @@ import YAML from "yaml";
 import { z } from "zod";
 
 import { canonicalJson, sha256 } from "./hash.js";
+import { DocumentSelector, resolveDocumentSelector } from "./selection.js";
 import { RepoPath, Snapshot, SnapshotEntry, TextBlob, UsageError, repoPath } from "./types.js";
 
 export type SnapshotMode =
@@ -28,20 +29,21 @@ export interface SnapshotPair {
   candidatePaths: RepoPath[];
 }
 
-export interface DocumentReferenceRule {
-  pattern: string;
-  verification: string;
+export interface DocumentReferenceRule extends DocumentSelector {
+  verification?: string | undefined;
 }
 
 export async function captureSnapshots(input: {
   root: string;
   mode: SnapshotMode;
-  documentPatterns: string[];
+  documentRules: DocumentReferenceRule[];
   invalidationPatterns: string[];
-  documentRules?: DocumentReferenceRule[];
 }): Promise<SnapshotPair> {
   const allTracked = gitLines(input.root, ["ls-files", "--cached"]);
-  const workingFiles = await fg(input.documentPatterns, {
+  const includePatterns = input.documentRules
+    .filter((rule) => rule.exclude !== true)
+    .map((rule) => rule.pattern);
+  const workingFiles = await fg(includePatterns, {
     cwd: input.root,
     onlyFiles: true,
     followSymbolicLinks: false,
@@ -59,8 +61,8 @@ export async function captureSnapshots(input: {
     const head = gitText(input.root, ["rev-parse", headArg]).trim();
     const baselineInventory = gitLines(input.root, ["ls-tree", "-r", "--name-only", base]);
     const candidateInventory = gitLines(input.root, ["ls-tree", "-r", "--name-only", head]);
-    const baselinePaths = filterDocuments(baselineInventory, input.documentPatterns);
-    const candidatePaths = filterDocuments(candidateInventory, input.documentPatterns);
+    const baselinePaths = filterDocuments(baselineInventory, input.documentRules);
+    const candidatePaths = filterDocuments(candidateInventory, input.documentRules);
     const changed = gitLines(input.root, ["diff", "--name-only", "--diff-filter=ACDMRT", base, head]);
     return buildPair({
       root: input.root,
@@ -72,14 +74,14 @@ export async function captureSnapshots(input: {
       candidateInputPaths: inputPaths(candidateInventory, candidatePaths),
       changed,
       invalidationPatterns: input.invalidationPatterns,
-      documentRules: input.documentRules ?? [],
+      documentRules: input.documentRules,
       readBaseline: (file) => readGitBlob(input.root, base, file),
       readCandidate: (file) => readGitBlob(input.root, head, file),
     });
   }
 
   const headExists = hasHead(input.root);
-  const baselinePaths = headExists ? filterDocuments(allTracked, input.documentPatterns) : [];
+  const baselinePaths = headExists ? filterDocuments(allTracked, input.documentRules) : [];
   const readBaseline = (file: RepoPath): Promise<TextBlob> => {
     if (!headExists) {
       throw new UsageError(`no baseline blob for ${file}`);
@@ -88,7 +90,7 @@ export async function captureSnapshots(input: {
   };
 
   if (input.mode.kind === "staged") {
-    const candidatePaths = filterDocuments(allTracked, input.documentPatterns);
+    const candidatePaths = filterDocuments(allTracked, input.documentRules);
     const changed = gitLines(input.root, ["diff", "--cached", "--name-only", "--diff-filter=ACDMRT"]);
     return buildPair({
       root: input.root,
@@ -100,13 +102,13 @@ export async function captureSnapshots(input: {
       candidateInputPaths: inputPaths(allTracked, candidatePaths),
       changed,
       invalidationPatterns: input.invalidationPatterns,
-      documentRules: input.documentRules ?? [],
+      documentRules: input.documentRules,
       readBaseline,
       readCandidate: (file) => readGitBlob(input.root, ":", file),
     });
   }
 
-  const candidatePaths = [...new Set([...filterDocuments(allTracked, input.documentPatterns), ...workingFiles.map(repoPath)])].sort();
+  const candidatePaths = filterDocuments([...allTracked, ...workingFiles], input.documentRules);
   const workingInventory = [...new Set([...allTracked, ...workingFiles, ...workingYaml])];
   const changed = input.mode.kind === "all" ? candidatePaths : input.mode.paths.map((file) => normalizeRepoPath(input.root, file));
   return buildPair({
@@ -119,7 +121,7 @@ export async function captureSnapshots(input: {
     candidateInputPaths: inputPaths(workingInventory, candidatePaths),
     changed,
     invalidationPatterns: input.invalidationPatterns,
-    documentRules: input.documentRules ?? [],
+    documentRules: input.documentRules,
     readBaseline,
     readCandidate: (file) => readWorkingBlob(input.root, file),
   });
@@ -285,8 +287,10 @@ function linkGraph(
     }
     const companionPath = repoPath(file.replace(/\.md$/i, ".yaml"));
     const companion = snapshot.entries.get(companionPath);
-    const rule = documentRules.find((candidate) => minimatch(file, candidate.pattern, { dot: true }));
-    const defaultVerification = rule === undefined ? [] : referencePath(repoPath("."), rule.verification);
+    const rule = resolveDocumentSelector(documentRules, file);
+    const defaultVerification = rule?.verification === undefined
+      ? []
+      : referencePath(repoPath("."), rule.verification);
     graph.set(file, [...new Set([
       ...extractMarkdownLinks(file, entry.content),
       companionPath,
@@ -341,9 +345,9 @@ function ensureInside(root: string, absolute: string): void {
   }
 }
 
-function filterDocuments(paths: string[], patterns: string[]): RepoPath[] {
+function filterDocuments(paths: string[], rules: DocumentReferenceRule[]): RepoPath[] {
   return paths
-    .filter((file) => patterns.some((pattern) => minimatch(file, pattern, { dot: true })))
+    .filter((file) => resolveDocumentSelector(rules, repoPath(file)) !== undefined)
     .map(repoPath)
     .sort();
 }

@@ -2,14 +2,26 @@ import YAML from "yaml";
 import { z } from "zod";
 
 import { rubricBlockSchema } from "./rubric.js";
+import { documentSelectorTrace, resolveDocumentSelector } from "./selection.js";
 import { Profile, RepoPath, TextBlob, UsageError, repoPath } from "./types.js";
 
-const documentRuleSchema = z.object({
+const documentIncludeRuleSchema = z.object({
   pattern: z.string().min(1),
+  exclude: z.literal(false).optional(),
   artifact_kind: z.string().min(1),
   verification: z.string().min(1),
   required_sections: z.array(z.string().min(1)).default([]),
 }).strict();
+
+const documentExcludeRuleSchema = z.object({
+  pattern: z.string().min(1),
+  exclude: z.literal(true),
+}).strict();
+
+const documentRuleSchema = z.union([
+  documentIncludeRuleSchema,
+  documentExcludeRuleSchema,
+]);
 
 const configSchema = z.object({
   schema_version: z.literal(1),
@@ -32,6 +44,22 @@ const configSchema = z.object({
 
 export type DocVerifyConfig = z.infer<typeof configSchema>;
 export type DocumentRule = z.infer<typeof documentRuleSchema>;
+export type DocumentIncludeRule = z.infer<typeof documentIncludeRuleSchema>;
+
+export function documentRuleFor(
+  rules: readonly DocumentRule[],
+  file: RepoPath,
+): DocumentIncludeRule | undefined {
+  const selected = resolveDocumentSelector(rules, file);
+  return selected !== undefined && "artifact_kind" in selected ? selected : undefined;
+}
+
+export function documentTraceFor(
+  rules: readonly DocumentRule[],
+  file: RepoPath,
+): ReturnType<typeof documentSelectorTrace> {
+  return documentSelectorTrace(rules, file);
+}
 
 export function parseConfig(blob: TextBlob): DocVerifyConfig {
   const parsed = configSchema.safeParse(YAML.parse(blob.content));
