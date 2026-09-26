@@ -85,3 +85,49 @@ def test_mute_and_unmute_are_bodiless_controls():
 def test_mute_rejects(text):
     with pytest.raises(FormatError):
         parse(text)
+
+
+def test_query_is_a_control_with_terms_in_the_body():
+    from group import Control
+
+    message = parse("[from:alice; query] from:bob re:d52 deploy")
+    assert message.control is Control.QUERY and message.body == "from:bob re:d52 deploy"
+    assert message.render() == "[from:alice; query] from:bob re:d52 deploy"
+    assert parse("[from:alice; query]").body == ""
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "[from:alice; query; to:bob] x",
+        "[from:alice; query; mute]",
+        "[from:alice; query] since:10:00",
+        "[from:alice; query] last:0",
+        "[from:alice; query] last:many",
+        "[from:alice; query] from:bob from:carol",
+        "[from:alice; query] re:two/words/but:colon",
+    ],
+)
+def test_query_rejects(text):
+    with pytest.raises(FormatError):
+        parse(text)
+
+
+def test_query_filters_and_last():
+    from group import answer, parse_query
+
+    records = [
+        {"ts": "t1", "line": "[from:bob; to:lead; re:d52] DONE: deploy", "from": "bob", "to": ["lead"], "re": "d52", "control": None, "body": "DONE: deploy"},
+        {"ts": "t2", "line": "[from:bob; mute]", "from": "bob", "to": [], "re": None, "control": "mute", "body": ""},
+        {"ts": "t3", "line": "[from:carol] Deploy window moved", "from": "carol", "to": [], "re": None, "control": None, "body": "Deploy window moved"},
+        {"ts": "t4", "line": "[from:bob; to:carol] hi", "from": "bob", "to": ["carol"], "re": None, "control": None, "body": "hi"},
+    ]
+    assert parse_query("from:bob to:lead").matches(records[0])
+    assert not parse_query("from:bob").matches(records[1])  # controls never match
+    assert answer(parse_query("deploy"), records).splitlines() == [
+        "2 of 2 matches",
+        "t1 [from:bob; to:lead; re:d52] DONE: deploy",
+        "t3 [from:carol] Deploy window moved",
+    ]
+    assert answer(parse_query("last:1"), records).splitlines() == ["1 of 3 matches", "t4 [from:bob; to:carol] hi"]
+    assert answer(parse_query("re:zz"), records) == "0 of 0 matches"

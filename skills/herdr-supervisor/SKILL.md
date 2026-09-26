@@ -60,6 +60,7 @@ DM dispatches, nudges, answers, and review hand-offs. Use the group when other s
 [from:<sender>; to:<name>[,<name>...]; re:<topic>] <message>   to: and re: optional
 [from:<sender>; mute]                                           stop group messages (no body)
 [from:<sender>; unmute]                                         restore them
+[from:<sender>; query] <terms>                                  search the log (see Query)
 ```
 
 - `from:` is required and must be your own herdr agent name. Herdr does not tell a recipient who prompted it, so `from:` is a routing hint, not proof: verify any claim that matters (DONE, a pushed commit, a green test) against its artifact.
@@ -73,6 +74,18 @@ The `agent prompt` to the seat returns once the seat has the text. When the seat
 
 **Receive**: a message arrives as a new prompt turn `[from:alice; to:bob] …`. Reply only when you are named in `to:` or blocked, and reply with an intent tag (`DONE:`, `BLOCKED:`, `DECISION:`, `REVIEW:`); never send a bare ACK. Reply by DM unless others need the answer. To wait for a reply, end your turn (see [Field notes](#field-notes)).
 
+**Query**: `herdr agent prompt group "[from:<you>; query] <terms>"` searches the group log, and the seat answers you alone, as one turn `[from:group; to:<you>] N of M matches` followed by one line per message (`ts` and the rendered line, oldest first, long lines cut). Every term must match:
+
+| Term | Matches |
+| --- | --- |
+| `from:<name>` | messages that name sent |
+| `to:<name>` | messages naming it in `to:` |
+| `re:<topic>` | messages with that tag |
+| `<word>` | messages whose body contains it (case-insensitive) |
+| `last:<N>` | show only the newest N matches (default 20, at most 100) |
+
+`from:a to:b` is the pair's group exchange. DMs never pass through the seat, so a query only finds group messages. The human can type a query into the seat pane as `[from:user; query] …`; the answer prints on the seat screen.
+
 **History**: the seat prints each group message once, with a timestamp and delivery status (`✓ bob  ✗ carol (agent_blocked)  muted dave`); read it with `herdr agent read group --source recent-unwrapped --lines 80`. The machine-readable log is `~/.local/state/herdr-group/<workspace>/group.jsonl`, one record per group message or control:
 
 | Field | Meaning |
@@ -82,8 +95,8 @@ The `agent prompt` to the seat returns once the seat has the text. When the seat
 | `from` | declared sender |
 | `to` | list of names expected to act; `[]` when none |
 | `re` | topic tag or `null` |
-| `control` | `mute`, `unmute`, or `null` |
-| `body` | message text (`""` for a control) |
+| `control` | `mute`, `unmute`, `query`, or `null` |
+| `body` | message text (query terms for `query`, `""` for mute/unmute) |
 | `delivered` / `failed` / `skipped` | names prompted / `{name: error_code}` / muted names passed over |
 
 ```bash
