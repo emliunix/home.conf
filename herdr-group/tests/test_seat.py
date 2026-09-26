@@ -139,3 +139,27 @@ def test_user_cannot_mute(seat):
     s = seat(FakeHerdr(AGENTS))
     s.handle_typed("[from:user; mute]")
     assert "for agent seats" in s.out.getvalue()
+
+
+def test_query_answers_only_the_asker(seat):
+    herdr = FakeHerdr(AGENTS)
+    s = seat(herdr)
+    s.route("[from:bob; to:alice; re:d52] ready")
+    s.route("[from:alice] other")
+    herdr.prompts.clear()
+    outcome = s.route("[from:alice; query] re:d52")
+    assert outcome.delivered == ("alice",)
+    [(target, text)] = herdr.prompts
+    assert target == "alice"
+    assert text.startswith("[from:group; to:alice] 1 of 1 matches\n")
+    assert text.endswith("[from:bob; to:alice; re:d52] ready")
+
+
+def test_user_query_prints_on_screen(seat):
+    herdr = FakeHerdr(AGENTS)
+    s = seat(herdr)
+    s.route("[from:bob] hello there")
+    herdr.prompts.clear()
+    s.handle_typed("[from:user; query] hello")
+    assert herdr.prompts == []
+    assert "1 of 1 matches" in s.out.getvalue()

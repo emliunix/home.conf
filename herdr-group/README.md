@@ -17,6 +17,7 @@ Grammar, as the seat renders it:
 ```
 [from:<sender>; to:<name>[,<name>...]; re:<topic>] <message>   # to: and re: optional
 [from:<sender>; mute]                                           # unmute opts back in
+[from:<sender>; query] [from:<n>] [to:<n>] [re:<t>] [last:<N>] [<word>...]
 ```
 
 Every group message reaches every member except the sender; `to:` names who is
@@ -24,7 +25,8 @@ expected to act. A muted member receives only group messages that name it in
 `to:`. Fields may be separated by `;`, `,` or spaces on input; `to:` names
 must be live members, and any other header is rejected with the format. `all`,
 `user`, `mute` and `unmute` are reserved names; `user` is the human, who reads
-the seat screen and may type into it.
+the seat screen and may type into it. A query searches logged group messages
+and answers the asker alone (the human's answer prints on the seat screen).
 
 ## Research findings (herdr 0.9.1)
 

@@ -79,7 +79,9 @@ keep working on whatever else can progress.
   messages queue behind a running turn.
 - A discussion that runs past a few messages moves into your unit's worklog or
   report file; the chat carries a pointer.
-- Read the group conversation with `herdr agent read group --source recent-unwrapped --lines 80`.
+- Search the group conversation with `herdr agent prompt group "[from:<you>; query] <terms>"`
+  (terms: `from:<name>`, `to:<name>`, `re:<topic>`, `last:<N>`, and words in
+  the text); the seat answers you alone.
 - Address agents by the exact name in the Pane name map.
 - Ask the owner of a file or contract directly (see Ownership in the Pane name
   map), not `lead`. Only `lead` assigns work or starts agents.

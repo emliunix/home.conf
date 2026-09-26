@@ -21,6 +21,8 @@ spaces. Every member except the sender receives the message; ``to:`` names who
 is expected to act, and everyone else reads it as information. ``re:`` is a
 free topic tag. ``[from:<name>; mute]`` (no body) stops group messages reaching
 the sender, except those naming it in ``to:``; ``unmute`` restores them.
+``[from:<name>; query] [from:<n>] [to:<n>] [re:<topic>] [last:<N>] [<word>...]``
+searches the log and answers the asker alone with the matching group messages.
 ``to:`` names must be members; agents named ``all``/``user``/``mute``/``unmute``
 are never members. A leading ``[...]`` without ``from:``/``to:``/``re:``/``mute``/``unmute``
 is ordinary body text (e.g. ``[WIP] ...``); any other header is rejected.
@@ -65,11 +67,13 @@ TOPIC_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,47}$")
 
 
 class Control(Enum):
-    """Bodiless header flags that change the sender's own membership."""
+    """Header flags addressed to the seat itself; never delivered to members."""
 
     # Stop group messages arriving, except those naming the sender in to:.
     MUTE = "mute"
     UNMUTE = "unmute"
+    # Search the log; the body holds the query terms, the answer goes to the sender.
+    QUERY = "query"
 
 
 # Agents with these names are not group members: they would read as keywords,
@@ -79,11 +83,16 @@ RESERVED = frozenset({"all", USER, *(c.value for c in Control)})
 USAGE = (
     "format: [from:<your-name>; to:<name>[,<name>...]; re:<topic>] <message>  "
     "(to: and re: optional; every member except you receives it, to: names who acts)  "
-    "or [from:<your-name>; mute|unmute] to opt out of / back into group messages"
+    "or [from:<your-name>; mute|unmute] to opt out of / back into group messages  "
+    "or [from:<your-name>; query] <terms> to search the log"
 )
+QUERY_USAGE = "query terms: [from:<name>] [to:<name>] [re:<topic>] [last:<N>] [<word>...]"
+QUERY_LAST = 20
+QUERY_LAST_MAX = 100
+QUERY_LINE_CHARS = 240
 
 _HEADER_RE = re.compile(r"^\s*\[([^\]]*)\]\s*(.*)\Z", re.DOTALL)
-_KEY_RE = re.compile(r"\b(from\s*:|to\s*:|re\s*:|mute\b|unmute\b)", re.IGNORECASE)
+_KEY_RE = re.compile(r"\b(from\s*:|to\s*:|re\s*:|mute\b|unmute\b|query\b)", re.IGNORECASE)
 
 
 class FormatError(ValueError):
@@ -104,7 +113,8 @@ class Message:
     def render(self) -> str:
         fields = [f"from:{self.sender}"]
         if self.control is not None:
-            return f"[{fields[0]}; {self.control.value}]"
+            head = f"[{fields[0]}; {self.control.value}]"
+            return f"{head} {self.body}" if self.body else head
         if self.recipients:
             fields.append("to:" + ",".join(self.recipients))
         if self.topic:
@@ -159,12 +169,15 @@ def parse(text: str) -> Message:
                 if not names:
                     raise FormatError(f"to: needs at least one name (omit to: to address nobody in particular); {USAGE}")
                 recipients = tuple(dict.fromkeys(names))
-        if Control.MUTE.value in seen and Control.UNMUTE.value in seen:
-            raise FormatError(f"use either mute or unmute, not both; {USAGE}")
+        if len(seen & {c.value for c in Control}) > 1:
+            raise FormatError(f"use one of mute, unmute or query; {USAGE}")
         if control is not None and ("to" in seen or "re" in seen):
             raise FormatError(f"{control.value} goes to the group itself; drop to:/re:")
 
     body = body.strip()
+    if control is Control.QUERY:
+        parse_query(body)
+        return Message(sender=sender, recipients=(), body=body, control=control)
     if control is not None:
         if body:
             raise FormatError(f"{control.value} takes no message; send it on its own")
@@ -172,6 +185,71 @@ def parse(text: str) -> Message:
     if not body:
         raise FormatError(f"empty message; {USAGE}")
     return Message(sender=sender, recipients=recipients, body=body, topic=topic)
+
+
+@dataclass(frozen=True)
+class Query:
+    """Filters over logged group messages; every given filter must match."""
+
+    sender: str | None = None
+    recipient: str | None = None
+    topic: str | None = None
+    words: tuple[str, ...] = ()
+    last: int = QUERY_LAST
+
+    def matches(self, record: dict[str, Any]) -> bool:
+        if record.get("control") is not None:
+            return False
+        if self.sender and record.get("from") != self.sender:
+            return False
+        if self.recipient and self.recipient not in (record.get("to") or ()):
+            return False
+        if self.topic and record.get("re") != self.topic:
+            return False
+        body = str(record.get("body", "")).lower()
+        return all(word in body for word in self.words)
+
+
+def parse_query(text: str) -> Query:
+    fields: dict[str, Any] = {}
+    seen: set[str] = set()
+    words: list[str] = []
+    for term in text.split():
+        key, sep, value = term.partition(":")
+        if not sep:
+            words.append(term.lower())
+            continue
+        key = key.lower()
+        if key not in ("from", "to", "re", "last") or not value or key in seen:
+            raise FormatError(f"bad query term {term!r}; {QUERY_USAGE}")
+        seen.add(key)
+        if key == "re":
+            if not TOPIC_RE.match(value):
+                raise FormatError(f"bad query term {term!r}; {QUERY_USAGE}")
+            fields["topic"] = value
+        elif key == "last":
+            if not value.isdigit() or not 1 <= int(value) <= QUERY_LAST_MAX:
+                raise FormatError(f"last: takes 1..{QUERY_LAST_MAX}; {QUERY_USAGE}")
+            fields["last"] = int(value)
+        else:
+            name = value.lower()
+            if not NAME_RE.match(name):
+                raise FormatError(f"bad query term {term!r}; {QUERY_USAGE}")
+            fields["sender" if key == "from" else "recipient"] = name
+    return Query(words=tuple(words), **fields)
+
+
+def answer(query: Query, records: list[dict[str, Any]]) -> str:
+    """The reply text: a count line, then one line per match, oldest first."""
+    hits = [record for record in records if query.matches(record)]
+    shown = hits[-query.last:]
+    lines = [f"{len(shown)} of {len(hits)} matches"]
+    for record in shown:
+        line = f"{record.get('ts', '?')} {record.get('line', '')}".replace("\n", " ⏎ ")
+        if len(line) > QUERY_LINE_CHARS:
+            line = line[: QUERY_LINE_CHARS - 1] + "…"
+        lines.append(line)
+    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------- router
@@ -447,15 +525,30 @@ class Seat:
 
     def _control(self, message: Message) -> Outcome:
         sender = message.sender
-        if sender == USER:
+        if sender == USER and message.control is not Control.QUERY:
             raise FormatError(f"{message.control.value} is for agent seats; user reads the group screen")
+        delivered: tuple[str, ...] = ()
+        failed: dict[str, str] = {}
+        on_screen = ""
         match message.control:
             case Control.MUTE:
                 self._set_muted(self.muted | {sender})
             case Control.UNMUTE:
                 self._set_muted(self.muted - {sender})
-        outcome = Outcome(message, (), {})
+            case Control.QUERY:
+                reply = answer(parse_query(message.body), self._records())
+                if sender == USER:
+                    on_screen = reply
+                else:
+                    try:
+                        self.herdr.prompt(sender, f"[from:{self.name}; to:{sender}] {reply}")
+                        delivered = (sender,)
+                    except HerdrError as err:
+                        failed[sender] = err.code
+        outcome = Outcome(message, delivered, failed)
         self._echo(outcome)
+        if on_screen:
+            self._line(f"{DIM}{on_screen}{RESET}")
         self._append_log(outcome)
         return outcome
 
@@ -522,6 +615,17 @@ class Seat:
         # One screen line only, so "\r\x1b[K" can always erase it.
         width = shutil.get_terminal_size().columns - 3
         return "» " + self.input.buffer.replace("\n", " ⏎ ")[-width:]
+
+    def _records(self) -> list[dict[str, Any]]:
+        if not self.log.exists():
+            return []
+        records = []
+        for line in self.log.read_text(encoding="utf-8").splitlines():
+            try:
+                records.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+        return records
 
     def _append_log(self, outcome: Outcome) -> None:
         record = {
