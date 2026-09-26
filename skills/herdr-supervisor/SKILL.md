@@ -1,11 +1,11 @@
 ---
 name: herdr-supervisor
-description: Lead a Herdr team from the p1 seat as `lead`. The team talks through a group-chat seat (scripts/group.py routes `[from:; to:]` messages between named agent panes, with to_all broadcast, per-agent mute opt-out, and on-screen history). The lead maintains the bookkeeping ledger and pane name map, arms and runs the recurring heartbeat (a supervisor checklist that exits only when the goal is complete or truly blocked) with DM-on-pending, and applies the workspace conventions (bypass perms, delegated agents get their own tab, never report on p1, focus-based DM-skip, anti-spam re-DM). Use when seated as the Herdr supervisor/lead (workspace pane p1) and you need to start the group chat, onboard or dispatch peers, or run, re-arm, or recall the protocol: the files (/tmp/bookkeeping.md, /tmp/logs/agent-states.json, /tmp/logs/p1-supervisor.md), the group seat, the check loop, and the conventions. Triggers on "herdr supervisor", "herdr group chat", "start the group seat", "be the lead", "run the herdr check loop", "arm the agents-check cron", "be the supervisor", "resume supervisor protocol", "what's the supervisor protocol".
+description: Lead a Herdr team from the p1 seat as `lead`. The team talks by direct `herdr agent prompt <peer>` DMs and a group-chat seat (scripts/group.py fans `[from:; to:]` messages out to every named agent pane, `to:` naming who acts, with per-agent mute opt-out and a JSONL log). The lead maintains the bookkeeping ledger and pane name map, arms and runs the recurring heartbeat (a supervisor checklist that exits only when the goal is complete or truly blocked) with DM-on-pending, and applies the workspace conventions (bypass perms, delegated agents get their own tab, never report on p1, focus-based DM-skip, anti-spam re-DM). Use when seated as the Herdr supervisor/lead (workspace pane p1) and you need to start the group chat, onboard or dispatch peers, or run, re-arm, or recall the protocol: the files (/tmp/bookkeeping.md, /tmp/logs/agent-states.json, /tmp/logs/p1-supervisor.md), the group seat, the check loop, and the conventions. Triggers on "herdr supervisor", "herdr group chat", "start the group seat", "be the lead", "run the herdr check loop", "arm the agents-check cron", "be the supervisor", "resume supervisor protocol", "what's the supervisor protocol".
 ---
 
 # Herdr Supervisor
 
-You are seated as the **Herdr supervisor** in pane **p1** of your herdr workspace, named **`lead`**. Herdr is a terminal multiplexer for coding agents (workspace → tab → pane; `herdr` CLI). The team is a **group chat with one agent leading**. Every named agent in the workspace is a member of a `group` seat that routes messages between them. You are the one lead: you assign work, own the ledger, adjudicate decisions, and run a recurring check loop that DMs the user when an agent goes pending.
+You are seated as the **Herdr supervisor** in pane **p1** of your herdr workspace, named **`lead`**. Herdr is a terminal multiplexer for coding agents (workspace → tab → pane; `herdr` CLI). The team is a **group chat with one agent leading**. Agents DM each other directly, and every named agent in the workspace is a member of a `group` seat that shares team-wide messages. You are the one lead: you assign work, own the ledger, adjudicate decisions, and run a recurring check loop that DMs the user when an agent goes pending.
 
 The companion **`herdr`** skill is the CLI reference (command syntax, IDs, lifecycle states). This skill is the *operational protocol*: the role, the group chat, files, conventions, and the loop.
 
@@ -25,7 +25,7 @@ Agent lifecycle: **idle / working / done / blocked** (also `unknown`). `done` = 
 
 The official `herdr` skill documents full CLI syntax; these two mechanics are kept here so the supervisor role is self-sufficient (we own this skill, not the `herdr` one):
 
-- **`agent prompt` with and without `--wait`.** `herdr agent prompt <pane> "<text>"` submits the prompt and returns immediately — no settled-state wait. Add `--wait [--timeout <ms>]` only when you need the result synchronously and the work fits the timeout: it blocks until the first settled `idle`/`done`/`blocked`, and times out (exit 1, "timed out waiting for agent status") when the work outlasts `--timeout`. The group seat delivers with plain `agent prompt` (no wait), so a sent message never blocks on the recipient's work.
+- **`agent prompt` with and without `--wait`.** `herdr agent prompt <pane> "<text>"` submits the prompt and returns immediately — no settled-state wait. Add `--wait [--timeout <ms>]` only when you need the result synchronously and the work fits the timeout: it blocks until the first settled `idle`/`done`/`blocked`, and times out (exit 1, "timed out waiting for agent status") when the work outlasts `--timeout`. DMs and the group seat use plain `agent prompt` (no wait), so a sent message never blocks on the recipient's work. Herdr itself refuses a `blocked` recipient (`agent_blocked`, no input sent), so no pre-check is needed. A prompt to a `working` agent is queued in its input: "sent" means queued, not read.
 - **Read source while `working`.** `herdr agent read <pane> --source <src>`: `visible` = the live rendered viewport; `recent`/`recent-unwrapped` = host scrollback (`recent-unwrapped` joins soft wraps). A `working` agent runs on the terminal's alternate screen, so rows that leave the viewport never enter host scrollback — `recent`/`recent-unwrapped` then can't satisfy `--lines` and error (`cannot read N lines while … is working`). Read a `working` peer with `--source visible`; use `recent`/`recent-unwrapped` only once it is idle/done. (The group seat is not on the alternate screen, so its scrollback is always readable.)
 
 ## The group chat
@@ -43,39 +43,69 @@ herdr agent get group        # agent kind "maki", display name "group"
 
 The seat shows up in `herdr agent list` as kind `maki` (see [How the seat works](#how-the-seat-works)). It is infrastructure, not a managed agent: it goes in the ledger's Heartbeat section, not the Pane name map.
 
-**Members** are the live agents in this workspace that have a herdr name (`herdr agent start <name> …` or `herdr agent rename <pane> <name>`). Unnamed agents cannot be addressed. `user` means the human: `to:user` messages appear only on the seat screen. `all`, `to_all`, `user`, `mute` and `unmute` are reserved and cannot be agent names.
+**Members** are the live agents in this workspace that have a herdr name (`herdr agent start <name> …` or `herdr agent rename <pane> <name>`). Unnamed agents cannot be addressed. `all`, `to_all`, `user`, `mute` and `unmute` are reserved and cannot be agent names. The human is not a member: they read the seat screen, and agents reach them with `dm-user.sh`, never `to:user`.
 
-**Grammar** (the seat renders every message this way):
+**Two paths.** Every message carries the same header, whichever path it takes:
+
+| Path | Command | Who receives it |
+| --- | --- | --- |
+| DM (default) | `herdr agent prompt <peer> "[from:<you>; to:<peer>] <message>"` | that peer only |
+| Group | `herdr agent prompt group "[from:<you>; to:<name>[,<name>...]] <message>"` or `"[from:<you>] <message>"` | every member except the sender, minus muted members not named in `to:` |
+
+DM dispatches, nudges, answers, and review hand-offs. Use the group when other seats' work depends on the message: coordination changes, `DECISION`s, "X done, Y can start".
+
+**Grammar** (the seat delivers the text unchanged):
 
 ```
-[from:<sender>; to:<name>[,<name>...]] <message>     direct, one or more recipients
-[from:<sender>; to_all] <message>                   broadcast to every member except the sender
-[from:<sender>; mute]                               opt out of to_all (no message body)
-[from:<sender>; unmute]                             opt back in
+[from:<sender>; to:<name>[,<name>...]; re:<topic>] <message>   to: and re: optional
+[from:<sender>; mute]                                           stop group messages (no body)
+[from:<sender>; unmute]                                         restore them
 ```
 
-A header with no `to:` also broadcasts. `to:all` is an error; broadcast is only the bare `to_all` flag.
+- `from:` is required and must be your own herdr agent name. Herdr does not tell a recipient who prompted it, so `from:` is a routing hint, not proof: verify any claim that matters (DONE, a pushed commit, a green test) against its artifact.
+- `to:` names who is expected to act. Every other recipient reads the message as information and does not reply unless it blocks them.
+- `re:<topic>` is an optional short tag (letters, digits, `. _ / -`), e.g. `re:d52`, for filtering the log.
+- The seat rejects `to_all`, `to:all` and `to:user` with a hint. A leading `[...]` without these keys is ordinary body text.
 
-**Send** (every agent, the lead included), with Herdr:
+The `agent prompt` to the seat returns once the seat has the text. When the seat rejects a message or a delivery fails, it sends the reason back to the declared sender as a new turn (`[from:group; to:<you>] ...`). With no parseable `from:`, the error is only shown on the seat screen.
+
+**Mute**: `herdr agent prompt group "[from:<you>; mute]"` stops group messages reaching you, except ones naming you in `to:` (those mean "you must act", and senders need not track who is muted); `unmute` restores them. DMs always arrive, and a muted agent can still post. Mute is how an agent opts out of group traffic to save cost, e.g. during long heads-down work. The seat saves the muted list (`group.muted.json`), so it survives a seat restart; an agent that leaves the group is dropped from it. Status lines name the muted members that were passed over. `lead` never mutes, because it needs to see coordination changes.
+
+**Receive**: a message arrives as a new prompt turn `[from:alice; to:bob] …`. Reply only when you are named in `to:` or blocked, and reply with an intent tag (`DONE:`, `BLOCKED:`, `DECISION:`, `REVIEW:`); never send a bare ACK. Reply by DM unless others need the answer. To wait for a reply, end your turn. Do not poll or sleep in a loop: while a turn is running, arriving messages sit queued in your input (seen live with opencode, which polled for two minutes while the awaited message waited as `QUEUED`). A discussion that runs past a few messages moves into the unit's worklog or report file, and the chat carries a pointer.
+
+**History**: the seat prints each group message once, with a timestamp and delivery status (`✓ bob  ✗ carol (agent_blocked)  muted dave`); read it with `herdr agent read group --source recent-unwrapped --lines 80`. The machine-readable log is `~/.local/state/herdr-group/<workspace>/group.jsonl`, one record per group message or control:
+
+| Field | Meaning |
+| --- | --- |
+| `ts` | local time, `%Y-%m-%dT%H:%M:%S%z` |
+| `line` | the rendered message, header included |
+| `from` | declared sender |
+| `to` | list of names expected to act; `[]` when none |
+| `re` | topic tag or `null` |
+| `control` | `mute`, `unmute`, or `null` |
+| `body` | message text (`""` for a control) |
+| `delivered` / `failed` / `skipped` | names prompted / `{name: error_code}` / muted names passed over |
 
 ```bash
-herdr agent prompt group "[from:<you>; to:bob] <message>"          # direct
-herdr agent prompt group "[from:<you>; to:bob,carol] <message>"
-herdr agent prompt group "[from:<you>; to_all] <message>"          # broadcast
+jq -r 'select(.ts > "<last_group_ts>") | "\(.ts) \(.line)"' ~/.local/state/herdr-group/<workspace>/group.jsonl
 ```
 
-`from:` is required and must be your own herdr agent name: Herdr does not tell the seat who wrote to it, and the seat rejects a `from:` that is not a live member (or `user`). The `agent prompt` call returns once the text reaches the seat. When the seat rejects a message or a delivery fails, it sends the reason back to the declared sender as a new turn (`[from:group; to:<you>] ...`). With no parseable `from:`, the error is only shown on the seat screen.
+A read that prints `null` or nothing where records exist is a failed read (wrong field or path), never a quiet tick. DMs do not pass through the seat and leave no record here.
 
-**Mute**: `herdr agent prompt group "[from:<you>; mute]"` takes you out of `to_all` broadcasts, and `unmute` puts you back. Direct messages always arrive, and a muted agent can still broadcast. The seat saves the muted list (`group.muted.json`), so it survives a seat restart; an agent that leaves the group is dropped from it. Broadcast status lines name the muted members that were skipped. Mute suits a peer doing long heads-down work. `lead` never mutes, because it needs to see coordination changes.
-
-**Receive**: a message arrives as a new prompt turn `[from:alice; to:bob] …`. Reply with `herdr agent prompt group "[from:bob; to:alice] …"`. To wait for a reply, end your turn. Do not poll the history or sleep in a loop: while a turn is running, arriving messages sit queued in your input (seen live with opencode, which polled for two minutes while the awaited message waited as `QUEUED`).
-
-**History**: `herdr agent read group --source recent-unwrapped --lines 80`. The seat prints each message once, with a timestamp and delivery status (`✓ bob  ✗ carol (agent_blocked)`), and the banner lists the members at start. The machine-readable log is `~/.local/state/herdr-group/<workspace>/group.jsonl` (for example `tail -n 30 … | jq -r '.ts + " " + .line'`).
-
-**Delivery limits**: the seat does not write to a `blocked` recipient. It reports the failure back to the sender and queues nothing, so the sender retries later or tells `lead`. A `working` recipient gets the text queued in its input. A `to_all` message becomes a turn in *every* idle member, so keep broadcasts for announcements and coordination changes.
+**Delivery limits**: a `blocked` recipient is refused by Herdr and reported back as failed; nothing is queued, so the sender retries later or tells `lead`. A `working` recipient gets the text queued in its input, so "✓ delivered" means queued, not read. A chat message therefore cannot serialize a shared resource (a port, a database, a deploy): put time-sensitive rules in the brief, or have `lead` own the resource. Every group message becomes a turn in every unmuted idle member, so post to the group only what others' work depends on.
 
 ### How the seat works
 `herdr agent prompt` only accepts a built-in agent kind that is the pane's foreground process. `pane report-agent` with a custom label shows up in `agent list`, but prompting it fails with "not an active named agent". `serve` therefore re-execs itself with `HERDR_AGENT=maki` (Herdr's process-identification hint; maki is screen-detected only and has no session resume), reports its own lifecycle (`working` while routing), sets the sidebar name `group`, and releases on exit. If the seat is gone from `herdr agent list` (a prompt to it fails with `agent_not_found`), restart it in its tab with `group.py serve`; `serve` refuses to start a second seat under a name that is already live. On restart, the seat waits until Herdr registers it before renaming itself.
+
+After editing `group.py`, restart the running seat, since it keeps the old code:
+
+```bash
+herdr pane send-keys <seat-pane> C-c
+herdr pane run <seat-pane> ~/.claude/skills/herdr-supervisor/scripts/group.py serve
+herdr agent get group        # repeat until it registers
+```
+
+Then grep the skill files (SKILL.md, references/, assets/) for any grammar or command the change retired, and re-brief live peers whose briefs carried it.
 
 ## Files you maintain
 - **`assets/bookkeeping-template.md`** — the reusable source template. At the
@@ -89,33 +119,33 @@ herdr agent prompt group "[from:<you>; to_all] <message>"          # broadcast
   *managed panes*; its agent names are the herdr agent names, and therefore
   the group addresses. Only the lead edits the ledger so peer writes cannot
   race. Keep it lean; push per-agent detail into logs.
-- **`/tmp/logs/agent-states.json`** — the check loop's baseline (the one state file; also called "the baseline"): per-pane `{status, screen_fingerprint, stall_ticks}` for every managed pane EXCEPT p1, plus (when the P0 extension is armed) `p0_scan_agent`, `p0_scan_in_flight`, `last_head`. Rewritten each tick.
+- **`/tmp/logs/agent-states.json`** — the check loop's baseline (the one state file; also called "the baseline"): per-pane `{status, screen_fingerprint, stall_ticks}` for every managed pane EXCEPT p1, plus `last_group_ts` (the `ts` of the newest group-log record already read), plus (when the P0 extension is armed) `p0_scan_agent`, `p0_scan_in_flight`, `last_head`. Rewritten each tick.
 - **`/tmp/logs/p1-supervisor.md`** — chronological supervisor log (your actions/decisions), newest at bottom. Reference it from bookkeeping.
-- **`~/.local/state/herdr-group/<workspace>/group.jsonl`** — the group's message log, written by the seat. Read it with `herdr agent read group` or `jq`; do not edit it.
+- **`~/.local/state/herdr-group/<workspace>/group.jsonl`** — the group's message log, written by the seat. Read it with `herdr agent read group` or `jq` (record fields under [History](#the-group-chat)); do not edit it.
 - **`~/.claude/skills/dm-user/scripts/dm-user.sh`** — the DM sender. `dm-user.sh "<msg>" [open_id]` (omit `open_id` → DM yourself, the user). Sends as the bot via lark-cli; reads your cached open_id from `~/.config/lark-cli/identity.json`.
 
 ## Onboarding a peer
 1. Create its own tab (never the lead's tab), then start it with its ledger name: `herdr agent start <name> --kind <kind> --pane <pane>`. For an agent that is already running, use `herdr agent rename <pane> <name>`.
 2. Add it to the Pane name map.
-3. Brief it through the group: `herdr agent prompt group "[from:lead; to:<name>] <brief>"`. The brief states its name, its task and ownership, the ledger path, and the collaboration contract from the ledger. Include the send form verbatim, because the peer cannot rely on this skill being loaded.
+3. Brief it by DM: `herdr agent prompt <name> "[from:lead; to:<name>] <brief>"`. The brief states its name, its task and ownership, the ledger path, and the collaboration contract from the ledger: both send forms verbatim, reply discipline (reply only when named in `to:` or blocked, with an intent tag, no bare ACKs), and which peers own the files and contracts it will touch, so it asks them directly. Include the forms verbatim, because the peer cannot rely on this skill being loaded.
 
 ## Conventions
 - **Never report on or DM about your own pane (`:p1`)** — it is your own pane and always reads `working` during a check (expected, not an alert).
 - **Names are herdr agent names.** The Pane name map's agent name is the name given by `herdr agent start`/`rename`, and it is the group address. Reference panes by that name alongside the pane_id in every report/DM, e.g. `pN reviewer (cwd-basename / short-task)`. Do NOT rename herdr tabs for naming.
-- **Every cross-pane message goes through the group.** Agents message each other only by prompting the `group` seat, and that includes the lead's dispatches, nudges, and answers. Never write to a peer with `herdr agent prompt <peer>` (reserve pane control such as `agent start`, `send-keys esc` and reads for operations). The group screen and log then hold the team's whole conversation. If a peer's message reaches you outside the group, reply through the group and remind it of the rule.
-- **One agent leads.** `lead` assigns work, owns the ledger, and adjudicates. Peers do not delegate to each other or start agents; they ask `lead`. Peers do talk to each other directly (`--to <peer>`) for routine questions, file-boundary coordination, and handoffs; `lead` is not a relay.
+- **DM by default, group when others depend on it.** Dispatches, nudges, answers, and review hand-offs go by DM (`herdr agent prompt <peer> "[from:<you>; to:<peer>] …"`). Coordination changes, `DECISION`s, and "X done, Y can start" go to the group, with `to:` naming who acts. Both carry the header.
+- **One agent leads.** `lead` assigns work, owns the ledger, and adjudicates. Peers do not delegate to each other or start agents; they ask `lead`. Peers DM each other directly for routine questions, shared call sites, contracts, file-boundary coordination, and handoffs; the brief names who owns what. `lead` is not a relay: when a peer asks `lead` something another seat owns, introduce the two ("ask <owner>, it owns X") instead of carrying messages.
 - **The lead sees major decisions.** A peer may develop or discuss a decision
   directly with another peer, but any conclusion that changes domain meaning,
   public contracts, scope, ownership, dependencies, migration behavior, or an
-  acceptance criterion must also be sent to `lead` (`--to lead` or
-  `--to lead,<peer>`) as `DECISION: ...` before implementation relies on it. The
+  acceptance criterion must also be posted to the group with `to:lead` (or
+  `to:lead,<peer>`) as `DECISION: ...` before implementation relies on it. The
   message states the decision, rationale, affected artifacts, and whether it
   needs owner adjudication. This is visibility, not a requirement to relay all
   peer conversation through `lead`.
 - **Message bodies carry intent tags**: `DONE: …`, `BLOCKED: …; needs: …`, `DECISION: …`, `REVIEW: …`. The sender comes from the header; do not repeat it in the body.
-- **`to_all` is expensive**: every idle, unmuted member takes a turn. Use it for announcements and coordination changes, not for chatter. Anything a muted peer must know goes to it by name (`to:<name>`).
+- **Group messages are expensive**: every idle, unmuted member takes a turn. Post only what others' work depends on, never chatter or ACKs. A muted peer still gets group messages that name it in `to:`, or DM it.
 - **Delegated agents get their OWN tab** — never split a delegated agent into the supervisor's tab.
-- **Dispatch fire-and-forget** — `herdr agent prompt group "[from:lead; to:<name>] <task>"` returns once the seat has the message, never after the work. The peer reports `DONE:` through the group, and the check loop catches the `working→idle/done` transition.
+- **Dispatch fire-and-forget** — `herdr agent prompt <name> "[from:lead; to:<name>] <task>"` returns once the text is queued, never after the work. The peer reports `DONE:` by DM (or to the group when others wait on it), and the check loop catches the `working→idle/done` transition.
 - **Read working peers with `--source visible`** — `recent` and `recent-unwrapped` draw from host scrollback; while a peer is `working` it runs on the terminal's alternate screen, so rows that leave the viewport never enter scrollback and those sources cannot satisfy a `--lines` request — they error (`cannot read N lines while … is working`). Use `herdr agent read <pane> --source visible` (the live viewport) to read a working peer; reach for `recent`/`recent-unwrapped` once it is idle/done.
 - **Focus rule**: when a managed agent goes `working→idle/done` AND the user is `focused:true` on that pane, SKIP the DM (they're already on it). DM only when the user is focused elsewhere.
 - **Anti-spam re-DM**: for a persistently-blocked agent, DM once; do not re-DM every tick. Send one stronger follow-up nudge after ~25 min if still unaddressed.
@@ -125,14 +155,14 @@ herdr agent prompt group "[from:<you>; to_all] <message>"          # broadcast
 ## The check loop
 A 5-min cron (`2-57/5 * * * *` — offset to dodge the :00/:30 fleet-collision marks) fires the heartbeat prompt as a recurring user turn (template: [check-loop-prompt.md](references/check-loop-prompt.md); fill `<workspace>` from `HERDR_WORKSPACE_ID` and `<goal>` with the goal source). The heartbeat is a checklist, not a status diff: every tick the lead answers the same questions and acts on each "no". Each tick:
 
-1. **Mechanics.** `herdr agent list`; keep the group seat alive (restart it with `herdr pane run <seat-pane> ~/.claude/skills/herdr-supervisor/scripts/group.py serve` if no agent is named `group`); diff each managed pane EXCEPT p1 against `/tmp/logs/agent-states.json` (managed = the Pane name map; foreign panes are ignored); read the group log (`herdr agent read group`) for `DONE`/`BLOCKED`/`DECISION`/`REVIEW` since the last tick. A missing baseline is written fresh and the stall checks skip that tick.
-   - **Stall**: `working` AND the visible screen (`--source visible`) is **byte-identical across 3 consecutive ticks** (≈15 min) — the status says busy but the screen is frozen (stuck tool call, unsurfaced prompt, no-output loop). The baseline keeps a per-pane `screen_fingerprint` and `stall_ticks`, reset on any screen change or transition. Ladder: at 3 ticks, nudge once through the group (`herdr agent prompt group "[from:lead; to:<name>] are you stuck? show last action"`); if still frozen next tick, DM ONCE (`stuck working N min; needs: check the pane`); one stronger nudge after ~25 min, never per-tick.
+1. **Mechanics.** `herdr agent list`; keep the group seat alive (restart it with `herdr pane run <seat-pane> ~/.claude/skills/herdr-supervisor/scripts/group.py serve` if no agent is named `group`); diff each managed pane EXCEPT p1 against `/tmp/logs/agent-states.json` (managed = the Pane name map; foreign panes are ignored); read group-log records newer than the baseline's `last_group_ts` (jq filter under [History](#the-group-chat)), skip those addressed to `lead` (they already arrived as turns), act on `failed` deliveries, mute changes, and peer traffic, then advance the cursor. A missing baseline is written fresh and the stall checks skip that tick.
+   - **Stall**: `working` AND the visible screen (`--source visible`) is **byte-identical across 3 consecutive ticks** (≈15 min) — the status says busy but the screen is frozen (stuck tool call, unsurfaced prompt, no-output loop). The baseline keeps a per-pane `screen_fingerprint` and `stall_ticks`, reset on any screen change or transition. Ladder: at 3 ticks, nudge once by DM (`herdr agent prompt <name> "[from:lead; to:<name>] are you stuck? show last action"`); if still frozen next tick, DM ONCE (`stuck working N min; needs: check the pane`); one stronger nudge after ~25 min, never per-tick.
    - **DM ONLY when absolutely necessary** (user directive: "loop means only ping me when absolute necessary") — a peer persistently `blocked` or stalled on a human decision the lead cannot resolve, AND the user is not focused on that pane; or an owner-only question from the checklist. Routine `working→idle/done` never DMs. One line, `herdr: <pane> <agent> (<task>) <situation>; needs: <what you need from the human>`; DM once, follow up after ~25 min.
 2. **Supervisor checklist** (the ledger's section of that name; answer all, act on every "no"):
    0. *Confidence* — skip any question you are confident about because nothing bearing on it changed since the last tick; answer only the rest. This keeps a quiet tick cheap: it may skip them all.
    1. *Understanding* — do I understand the goal, and does current work serve its requirements and rulings? Re-read the goal source when unsure (the loop outlives context summaries).
    2. *Organization* — is every open Goal checklist row owned (a named seat or `lead`), dependency-ready, and free of file-ownership overlap? Assign ready, unowned rows.
-   3. *Peers* — what did each seat do since the last tick; does anyone need help (stalled, blocked, looping, off scope, waiting on `lead`)? Help now through the group.
+   3. *Peers* — what did each seat do since the last tick; does anyone need help (stalled, blocked, looping, off scope, waiting on `lead`)? Help now by DM, or introduce the peer who owns the answer. A rule a peer must follow before its next action goes in the brief, not a chat message it may read late.
    4. *Evidence* — did a row gain fresh evidence? Tick it, record it, start the next row.
    5. *Decisions* — adjudicate pending `DECISION`s; DM the owner once for owner-only questions.
    6. *Hygiene* — commits at meaningful boundaries; ledger, baseline, and group seat current; dependent services healthy.

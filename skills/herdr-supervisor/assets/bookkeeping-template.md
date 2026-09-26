@@ -57,28 +57,37 @@ keep working on whatever else can progress.
 
 - Read this file before starting work and whenever `lead` announces a
   coordination change.
-- The team is a group chat led by `lead`. Post every cross-pane message to
-  the `group` seat with Herdr, never with `herdr agent prompt <peer>`:
-  - direct: `herdr agent prompt group "[from:<you>; to:<name>[,<name>...]] <message>"`
-  - everyone: `herdr agent prompt group "[from:<you>; to_all] <message>"`.
-    Every idle member takes a turn, so broadcast only announcements and
-    coordination changes.
-  - `from:` is required and must be your own agent name. If the seat rejects
-    the message or a delivery fails, it tells you in a new turn from `group`.
-  - `[from:<you>; mute]` stops `to_all` broadcasts reaching you (for long
-    heads-down work); `[from:<you>; unmute]` restores them. Direct messages
-    always arrive.
-- Messages reach you as `[from:<name>; to:<names>|to_all] <message>`, each as
-  a new turn. Reply to the sender through the seat. To wait for a reply, end
-  your turn; never poll the history or sleep in a loop, because messages queue
-  behind a running turn.
-- Read the conversation with `herdr agent read group --source recent-unwrapped --lines 80`.
+- The team is led by `lead`. Every message carries the header
+  `[from:<you>; to:<name>[,<name>...]]`; `from:` is required and must be your
+  own agent name. There are two paths:
+  - DM (default): `herdr agent prompt <name> "[from:<you>; to:<name>] <message>"`
+    for questions, answers, hand-offs, and reports to one seat.
+  - Group: `herdr agent prompt group "[from:<you>; to:<name>] <message>"`, or
+    `"[from:<you>] <message>"` when no one in particular acts. Every member
+    except you receives it and `to:` names who acts. Use it only when others'
+    work depends on the message: coordination changes, DECISIONs, "X done, Y
+    can start". An optional `re:<topic>` tag (e.g. `re:d52`) labels the thread.
+  - If the seat rejects a message or a delivery fails, it tells you in a new
+    turn from `group`.
+  - `[from:<you>; mute]` to the group stops group messages reaching you, except
+    ones naming you in `to:`; `[from:<you>; unmute]` restores them. Mute during
+    long heads-down work to save turns. DMs always arrive.
+- Messages reach you as `[from:<name>; to:<names>] <message>`, each as a new
+  turn. Reply only when you are named in `to:` or blocked, with `DONE:`,
+  `BLOCKED:`, `DECISION:` or `REVIEW:`; never send a bare acknowledgement.
+  To wait for a reply, end your turn; never poll or sleep in a loop, because
+  messages queue behind a running turn.
+- A discussion that runs past a few messages moves into your unit's worklog or
+  report file; the chat carries a pointer.
+- Read the group conversation with `herdr agent read group --source recent-unwrapped --lines 80`.
 - Address agents by the exact name in the Pane name map.
-- Peers may message one another directly. Routine coordination does not need
-  to pass through `lead`. Only `lead` assigns work or starts agents.
+- Ask the owner of a file or contract directly (see Ownership in the Pane name
+  map), not `lead`. Only `lead` assigns work or starts agents.
+- A delivered message to a working peer is only queued. Never rely on a chat
+  message to serialize a shared resource; the brief or `lead` owns it.
 - Also notify `lead` of every decision that changes domain meaning, public
   contracts, scope, ownership, dependencies, migration behavior, or acceptance
-  criteria, with `--to lead` (or `--to lead,<peer>`):
+  criteria, on the group with `to:lead` (or `to:lead,<peer>`):
   `DECISION: <decision>; rationale: <why>; affects: <artifacts>; owner input: <needed|not needed>`.
 - Use `DONE: ...` for completion and `BLOCKED: ...; needs: ...` for a blocker.
 - Only `lead` edits this ledger. Peers report changes through messages.
@@ -118,7 +127,7 @@ group addresses.
 
 - Job ID: `<job_id or not armed>`
 - Cadence: `<cadence>`
-- Baseline: `/tmp/logs/agent-states.json`
+- Baseline: `/tmp/logs/agent-states.json` (includes the group-log cursor `last_group_ts`)
 - Supervisor log: `/tmp/logs/p1-supervisor.md`
 
 ## Open blockers
