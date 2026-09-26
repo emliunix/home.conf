@@ -5,23 +5,25 @@
 #     "typer>=0.27.2",
 # ]
 # ///
-"""Herdr group chat: a pane Herdr treats as an agent, routing messages between peers.
+"""Herdr group chat: a pane Herdr treats as an agent, fanning messages out to the team.
 
   group.py serve [--group NAME] [--kind KIND] [--all-workspaces]   run the seat in this pane
 
 Peers post with Herdr itself: ``herdr agent prompt group "<message>"``. The seat
-reads its terminal, routes each message with ``herdr agent prompt`` to the
-recipients, prints it once on screen, and appends it to
-``$XDG_STATE_HOME/herdr-group/<workspace>/<group>.jsonl``.
+reads its terminal, delivers each message unchanged with ``herdr agent prompt``
+to every member except the sender, prints it once on screen, and appends it to
+``$XDG_STATE_HOME/herdr-group/<workspace>/<group>.jsonl``. Direct messages do
+not pass through the seat: agents send them with ``herdr agent prompt <peer>``.
 
-Message grammar: ``[from:<name>; to:<name>[,<name>...]] <body>`` or
-``[from:<name>; to_all] <body>``; fields may also be separated by commas or spaces.
-``[from:<name>; mute]`` (no body) opts the sender out of to_all broadcasts;
-``unmute`` opts back in. Direct messages always arrive. A header without ``to:``
-also broadcasts to every member except the sender. ``to:all`` is an error:
-broadcast is only the bare ``to_all`` flag, and agents named
+Message grammar: ``[from:<name>; to:<name>[,<name>...]; re:<topic>] <body>``;
+``to:`` and ``re:`` are optional, and fields may also be separated by commas or
+spaces. Every member except the sender receives the message; ``to:`` names who
+is expected to act, and everyone else reads it as information. ``re:`` is a
+free topic tag. ``[from:<name>; mute]`` (no body) stops group messages reaching
+the sender, except those naming it in ``to:``; ``unmute`` restores them.
+``to_all`` and ``to:user`` are retired, and agents named
 ``all``/``to_all``/``user``/``mute``/``unmute`` are never members. A leading
-``[...]`` without ``from:``/``to:``/``to_all`` is ordinary body text (e.g. ``[WIP] ...``).
+``[...]`` without ``from:``/``to:``/``re:`` is ordinary body text (e.g. ``[WIP] ...``).
 
 Herdr does not tell a terminal who wrote to it, so every message self-declares
 ``from:``, which must name a live member or ``user``. A rejected message, and a
@@ -56,17 +58,18 @@ import typer
 # ---------------------------------------------------------------- protocol
 
 NAME_RE = re.compile(r"^[a-z][a-z0-9_-]{0,31}$")
-# Broadcast is a bare header flag, never a to: value.
+# Retired broadcast flag; recognised only to explain its replacement.
 TO_ALL = "to_all"
-# The human at the keyboard. Not an agent seat: messages to it are only echoed
-# on the group screen, and it can only post by typing into the group pane.
+# The human at the keyboard. Not an agent seat: it reads the group screen and
+# can only post by typing into the group pane.
 USER = "user"
+TOPIC_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,47}$")
 
 
 class Control(Enum):
     """Bodiless header flags that change the sender's own membership."""
 
-    # Opt out of to_all broadcasts; direct messages still arrive.
+    # Stop group messages arriving, except those naming the sender in to:.
     MUTE = "mute"
     UNMUTE = "unmute"
 
@@ -75,13 +78,13 @@ class Control(Enum):
 RESERVED = frozenset({"all", TO_ALL, USER, *(c.value for c in Control)})
 
 USAGE = (
-    "format: [from:<your-name>; to:<name>[,<name>...]] <message>  "
-    "or [from:<your-name>; to_all] <message>  (no to: also broadcasts to every member except you)  "
-    "or [from:<your-name>; mute|unmute] to opt out of / back into to_all"
+    "format: [from:<your-name>; to:<name>[,<name>...]; re:<topic>] <message>  "
+    "(to: and re: optional; every member except you receives it, to: names who acts)  "
+    "or [from:<your-name>; mute|unmute] to opt out of / back into group messages"
 )
 
 _HEADER_RE = re.compile(r"^\s*\[([^\]]*)\]\s*(.*)\Z", re.DOTALL)
-_KEY_RE = re.compile(r"\b(from\s*:|to\s*:|to_all\b|mute\b|unmute\b)", re.IGNORECASE)
+_KEY_RE = re.compile(r"\b(from\s*:|to\s*:|re\s*:|to_all\b|mute\b|unmute\b)", re.IGNORECASE)
 
 
 class FormatError(ValueError):
@@ -91,24 +94,32 @@ class FormatError(ValueError):
 @dataclass(frozen=True)
 class Message:
     sender: str | None
-    # None means broadcast.
-    recipients: tuple[str, ...] | None
+    # Who is expected to act; empty means nobody in particular. Every member
+    # except the sender receives the message either way.
+    recipients: tuple[str, ...]
     body: str
+    topic: str | None = None
     # A control message has no recipients and an empty body.
     control: Control | None = None
 
     def render(self) -> str:
+        fields = [f"from:{self.sender}"]
         if self.control is not None:
-            return f"[from:{self.sender}; {self.control.value}]"
-        to = TO_ALL if self.recipients is None else "to:" + ",".join(self.recipients)
-        return f"[from:{self.sender}; {to}] {self.body}"
+            return f"[{fields[0]}; {self.control.value}]"
+        if self.recipients:
+            fields.append("to:" + ",".join(self.recipients))
+        if self.topic:
+            fields.append(f"re:{self.topic}")
+        return f"[{'; '.join(fields)}] {self.body}"
 
 
 def _names(raw: str, key: str) -> list[str]:
     names = [part.lower() for part in re.split(r"[,;\s]+", raw) if part]
     for name in names:
         if name in ("all", TO_ALL) and key == "to":
-            raise FormatError(f"broadcast is the bare flag to_all, not to:{name}; {USAGE}")
+            raise FormatError(f"every member already receives group messages; drop to:{name}; {USAGE}")
+        if name == USER and key == "to":
+            raise FormatError("to:user is retired: the user reads the group screen; DM the owner with dm-user.sh")
         if not NAME_RE.match(name):
             raise FormatError(f"invalid {key} name {name!r}; {USAGE}")
     return names
@@ -121,7 +132,8 @@ def parse(text: str) -> Message:
         header, body = "", text
 
     sender: str | None = None
-    recipients: tuple[str, ...] | None = None
+    recipients: tuple[str, ...] = ()
+    topic: str | None = None
     control: Control | None = None
     if header:
         parts = _KEY_RE.split(header)
@@ -133,11 +145,17 @@ def parse(text: str) -> Message:
             if key in seen:
                 raise FormatError(f"duplicate {key} in header; {USAGE}")
             seen.add(key)
-            if key in (TO_ALL, *(c.value for c in Control)):
+            if key == TO_ALL:
+                raise FormatError(f"to_all is retired: every member receives group messages; drop it; {USAGE}")
+            if key in (c.value for c in Control):
                 if raw.strip(" ,;"):
                     raise FormatError(f"{key} takes no names; {USAGE}")
-                if key != TO_ALL:
-                    control = Control(key)
+                control = Control(key)
+                continue
+            if key == "re":
+                topic = raw.strip(" ,;")
+                if not TOPIC_RE.match(topic):
+                    raise FormatError(f"re: needs one short topic tag (letters, digits, . _ / -); {USAGE}")
                 continue
             names = _names(raw, key)
             if key == "from":
@@ -146,34 +164,32 @@ def parse(text: str) -> Message:
                 sender = names[0]
             else:
                 if not names:
-                    raise FormatError(f"to: needs at least one name (use to_all to broadcast); {USAGE}")
+                    raise FormatError(f"to: needs at least one name (omit to: to address nobody in particular); {USAGE}")
                 recipients = tuple(dict.fromkeys(names))
-        if "to" in seen and TO_ALL in seen:
-            raise FormatError(f"use either to: or to_all, not both; {USAGE}")
         if Control.MUTE.value in seen and Control.UNMUTE.value in seen:
             raise FormatError(f"use either mute or unmute, not both; {USAGE}")
-        if control is not None and ("to" in seen or TO_ALL in seen):
-            raise FormatError(f"{control.value} goes to the group itself; drop to:/to_all")
+        if control is not None and ("to" in seen or "re" in seen):
+            raise FormatError(f"{control.value} goes to the group itself; drop to:/re:")
 
     body = body.strip()
     if control is not None:
         if body:
             raise FormatError(f"{control.value} takes no message; send it on its own")
-        return Message(sender=sender, recipients=None, body="", control=control)
+        return Message(sender=sender, recipients=(), body="", control=control)
     if not body:
         raise FormatError(f"empty message; {USAGE}")
-    return Message(sender=sender, recipients=recipients, body=body)
+    return Message(sender=sender, recipients=recipients, body=body, topic=topic)
 
 
 # ---------------------------------------------------------------- router
 
 @dataclass(frozen=True)
 class Route:
-    # Sender and recipients are resolved; recipients None still means broadcast.
+    # Sender and recipients are resolved.
     message: Message
     # Agent names to prompt.
     targets: tuple[str, ...]
-    # Muted members a broadcast passed over.
+    # Muted members the message passed over.
     skipped: tuple[str, ...] = ()
 
 
@@ -187,23 +203,20 @@ def resolve_sender(message: Message, members: frozenset[str]) -> Message:
 
 
 def plan(message: Message, members: frozenset[str], muted: frozenset[str] = frozenset()) -> Route:
+    """Every member except the sender, minus muted members not named in to:."""
     sender = message.sender
-    if message.recipients is None:
-        audience = members - {sender}
-        return Route(
-            message=message,
-            targets=tuple(sorted(audience - muted)),
-            skipped=tuple(sorted(audience & muted)),
-        )
-    unknown = [name for name in message.recipients if name != USER and name not in members]
+    unknown = [name for name in message.recipients if name not in members]
     if unknown:
         raise FormatError(f"unknown recipient(s) {', '.join(unknown)}; members: {_listing(members)}")
     recipients = tuple(name for name in message.recipients if name != sender)
-    if not recipients:
+    if message.recipients and not recipients:
         raise FormatError("the only recipient is yourself")
+    audience = members - {sender}
+    passed_over = (audience & muted) - set(recipients)
     return Route(
         message=replace(message, recipients=recipients),
-        targets=tuple(name for name in recipients if name != USER),
+        targets=tuple(sorted(audience - passed_over)),
+        skipped=tuple(sorted(passed_over)),
     )
 
 
@@ -522,7 +535,8 @@ class Seat:
             "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
             "line": outcome.message.render(),
             "from": outcome.message.sender,
-            "to": list(outcome.message.recipients) if outcome.message.recipients else TO_ALL,
+            "to": list(outcome.message.recipients),
+            "re": outcome.message.topic,
             "control": outcome.message.control.value if outcome.message.control else None,
             "body": outcome.message.body,
             "delivered": list(outcome.delivered),
@@ -555,7 +569,7 @@ class Seat:
         self._line(
             f"{DIM}herdr-group seat '{self.name}' on {self.pane_id} · members: "
             f"{', '.join(sorted(self.members())) or '(none yet)'}\n"
-            f"  post: herdr agent prompt {self.name} \"[from:<you>; to:<name>|to_all] <msg>\"\n"
+            f"  post: herdr agent prompt {self.name} \"[from:<you>; to:<name>] <msg>\"  (direct: herdr agent prompt <peer>)\n"
             f"  {USAGE}\n  log: {self.log}"
             + (f"\n  muted: {', '.join(sorted(self.muted))}" if self.muted else "")
             + RESET
@@ -629,7 +643,7 @@ def _raise_exit(signum: int, frame: object) -> None:
 DEFAULT_KIND = "maki"
 
 
-app = typer.Typer(help="Herdr group chat: route [from: to:] messages between agent panes.", no_args_is_help=True, rich_markup_mode=None)
+app = typer.Typer(help="Herdr group chat: fan [from: to:] messages out to the team.", no_args_is_help=True, rich_markup_mode=None)
 GroupOption = Annotated[str, typer.Option("--group", help="seat name")]
 
 
