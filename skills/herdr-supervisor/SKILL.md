@@ -71,7 +71,7 @@ The `agent prompt` to the seat returns once the seat has the text. When the seat
 
 **Mute**: `herdr agent prompt group "[from:<you>; mute]"` stops group messages reaching you, except ones naming you in `to:` (those mean "you must act", and senders need not track who is muted); `unmute` restores them. DMs always arrive, and a muted agent can still post. Mute is how an agent opts out of group traffic to save cost, e.g. during long heads-down work. The seat saves the muted list (`group.muted.json`), so it survives a seat restart; an agent that leaves the group is dropped from it. Status lines name the muted members that were passed over. `lead` never mutes, because it needs to see coordination changes.
 
-**Receive**: a message arrives as a new prompt turn `[from:alice; to:bob] …`. Reply only when you are named in `to:` or blocked, and reply with an intent tag (`DONE:`, `BLOCKED:`, `DECISION:`, `REVIEW:`); never send a bare ACK. Reply by DM unless others need the answer. To wait for a reply, end your turn. Do not poll or sleep in a loop: while a turn is running, arriving messages sit queued in your input (seen live with opencode, which polled for two minutes while the awaited message waited as `QUEUED`). A discussion that runs past a few messages moves into the unit's worklog or report file, and the chat carries a pointer.
+**Receive**: a message arrives as a new prompt turn `[from:alice; to:bob] …`. Reply only when you are named in `to:` or blocked, and reply with an intent tag (`DONE:`, `BLOCKED:`, `DECISION:`, `REVIEW:`); never send a bare ACK. Reply by DM unless others need the answer. To wait for a reply, end your turn (see [Field notes](#field-notes)).
 
 **History**: the seat prints each group message once, with a timestamp and delivery status (`✓ bob  ✗ carol (agent_blocked)  muted dave`); read it with `herdr agent read group --source recent-unwrapped --lines 80`. The machine-readable log is `~/.local/state/herdr-group/<workspace>/group.jsonl`, one record per group message or control:
 
@@ -92,7 +92,7 @@ jq -r 'select(.ts > "<last_group_ts>") | "\(.ts) \(.line)"' ~/.local/state/herdr
 
 A read that prints `null` or nothing where records exist is a failed read (wrong field or path), never a quiet tick. DMs do not pass through the seat and leave no record here.
 
-**Delivery limits**: a `blocked` recipient is refused by Herdr and reported back as failed; nothing is queued, so the sender retries later or tells `lead`. A `working` recipient gets the text queued in its input, so "✓ delivered" means queued, not read. A chat message therefore cannot serialize a shared resource (a port, a database, a deploy): put time-sensitive rules in the brief, or have `lead` own the resource. Every group message becomes a turn in every unmuted idle member, so post to the group only what others' work depends on.
+**Delivery limits**: a `blocked` recipient is refused by Herdr and reported back as failed; nothing is queued, so the sender retries later or tells `lead`. A `working` recipient gets the text queued in its input, so "✓ delivered" means queued, not read. Every group message becomes a turn in every unmuted idle member, so post to the group only what others' work depends on.
 
 ### How the seat works
 `herdr agent prompt` only accepts a built-in agent kind that is the pane's foreground process. `pane report-agent` with a custom label shows up in `agent list`, but prompting it fails with "not an active named agent". `serve` therefore re-execs itself with `HERDR_AGENT=maki` (Herdr's process-identification hint; maki is screen-detected only and has no session resume), reports its own lifecycle (`working` while routing), sets the sidebar name `group`, and releases on exit. If the seat is gone from `herdr agent list` (a prompt to it fails with `agent_not_found`), restart it in its tab with `group.py serve`; `serve` refuses to start a second seat under a name that is already live. On restart, the seat waits until Herdr registers it before renaming itself.
@@ -151,6 +151,21 @@ Then grep the skill files (SKILL.md, references/, assets/) for any grammar or co
 - **Anti-spam re-DM**: for a persistently-blocked agent, DM once; do not re-DM every tick. Send one stronger follow-up nudge after ~25 min if still unaddressed.
 - **Never run `herdr server stop`** or kill the main Herdr process unless explicitly asked; don't close panes/tabs/workspaces you didn't create.
 - **DMs**: confirm recipient + content before sending (the loop's DMs are pre-approved by the loop design).
+
+## Field notes
+
+Problems that came up in real sessions, and what helped. These are practices, not rules: weigh them against the situation.
+
+- **"Delivered" is not "read".** A message to a `working` peer waits in its input until the turn ends, so a chat agreement cannot serialize a port, a database, or a deploy. Put anything a peer must follow before its next action in its brief, or have one seat (often `lead`) own the resource.
+- **Waiting by polling.** An agent that polls or sleeps while waiting for a reply keeps the reply queued behind its own turn (opencode polled for two minutes while the answer sat `QUEUED`). End the turn; the reply arrives as the next one.
+- **Acknowledgement noise.** Unprompted, peers ACK everything (9 of 28 peer messages in one session). Each ACK costs the receiver a turn. State reply discipline in the brief, and do not ACK from `lead` either.
+- **`lead` as a relay.** Peers ask `lead` what another seat knows, and `lead` passes facts back and forth. Name file and contract owners in the brief, and answer "ask <owner>, it owns X" instead of relaying.
+- **Chat threads that grow.** A discussion past a few messages is hard to follow in turns and lost on compaction. Move it into the unit's worklog or report file and send a pointer; `re:<topic>` is a free label that makes the log easy to filter.
+- **Trusting `from:` or a DONE.** `from:` is typed by the sender, and a DONE is a claim. Check the commit, test output, or report before ticking a row. A `REVIEW:` message is a pointer: read the report it names, and send `lead`'s own work through the review seat too.
+- **Silent log reads.** A `jq` filter with a wrong field name prints `null` and looks like a quiet tick. Use the documented fields, and treat `null` where records exist as a failed read.
+- **Stale seat and stale briefs.** After editing `group.py`, the running seat keeps the old code, and live briefs keep the old grammar. Restart the seat, grep the skill files for retired forms, and re-brief peers whose brief used them.
+- **Typing into a busy pane.** `herdr pane run` and send-text type into whatever is in the foreground, including a hung server. Read the pane first and confirm a shell prompt; record owner-lent panes in the ledger so their reuse is on record.
+- **Stalls the screen check misses.** TUI agents redraw every tick, so an unchanged-screen fingerprint may never fire. Watch signals that do move, such as the peer's file changes and its last message, and ask when both stop.
 
 ## The check loop
 A 5-min cron (`2-57/5 * * * *` — offset to dodge the :00/:30 fleet-collision marks) fires the heartbeat prompt as a recurring user turn (template: [check-loop-prompt.md](references/check-loop-prompt.md); fill `<workspace>` from `HERDR_WORKSPACE_ID` and `<goal>` with the goal source). The heartbeat is a checklist, not a status diff: every tick the lead answers the same questions and acts on each "no". Each tick:
