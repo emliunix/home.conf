@@ -57,6 +57,12 @@ changed behavior with a list of tasks that happened.
   distinct.
 - Preserve the source's vocabulary. Define overloaded terms instead of silently
   paraphrasing them.
+- When a report uses codes, abbreviations, symbols, or project shorthand, include a
+  **reader key** rather than making the reader look them up. Use the subheading that
+  names the content: **Glossary** for terms, **Codes, abbreviations, and acronyms**
+  for project shorthand, **Notation** for symbols, and **Source keys** for source
+  labels. A **legend** is the narrower term for a table that decodes marks, colors,
+  or symbols; it is not the default name for a list of project codes.
 - Give every load-bearing assertion a warrant: measured, derived, source-backed, or
   explicitly open.
 - End at an honest claim boundary: what is established, designed but not observed,
@@ -69,14 +75,14 @@ changed behavior with a list of tasks that happened.
 ## Shape A - the record
 
 Write in this order: capture sources -> select kind and reading frame -> write the
-description -> add useful diagrams -> resolve the legend -> write the abstract last.
+description -> add useful diagrams -> resolve the reader key -> write the abstract last.
 
 | Element | Optional | Description |
 | --- | --- | --- |
 | Abstract | no | One page or less: the question, load-bearing answer, and consequence for the reader. Introduces no claim the description does not expand. |
 | Description | no | Numbered, claim-bearing sections selected from the chosen kind's aspects. Inventories use tables when comparison matters. |
 | Diagrams | yes | Mermaid; one claim per diagram, with a name and caption. Cut any diagram that only repeats adjacent prose. |
-| Legend | no | Exactly three tables: Notation, Source keys, and Terms. Include only marks and terms actually used. |
+| Reader key | no | The report's decoding section. Use exactly the subsections the report needs: Notation, Source keys, Glossary, and/or Codes, abbreviations, and acronyms. Include only marks, codes, and terms actually used. |
 | Open capture list | yes | Unreachable primary sources, the blocker, and the intended capture method. Never reconstruct an unavailable primary from memory. |
 
 Record rules:
@@ -100,7 +106,7 @@ created: YYYY-MM-DD
 
 # <Subject> - Report
 
-Sources: <artifacts> | Captured YYYY-MM-DD | <pinned or not> | Keys resolve in Legend.
+Sources: <artifacts> | Captured YYYY-MM-DD | <pinned or not> | Keys resolve in Reader key.
 
 ## Abstract
 
@@ -110,11 +116,12 @@ Sources: <artifacts> | Captured YYYY-MM-DD | <pinned or not> | Keys resolve in L
 
 ## Diagrams
 
-## Legend
+## Reader key
 
 ### Notation
 ### Source keys
-### Terms
+### Glossary
+### Codes, abbreviations, and acronyms
 ```
 
 ## Shape B - the brief
@@ -131,6 +138,10 @@ reader understand or decide:
 Use inline source anchors or status labels when the brief mixes measured, designed,
 inferred, and open claims. Do not add record furniture solely to make a brief look
 formal.
+
+If the brief uses project codes, abbreviations, or symbols, include a compact reader
+key even when the surrounding document is informal. Put it where the reader meets the
+first code, or at the end when the code set is large enough to scan separately.
 
 ## Boundary
 
