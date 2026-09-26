@@ -20,6 +20,14 @@ contracts, in order. Each step says what failure looks like when it is skipped.
 - Pin the provider hook `rev` to a commit that is on the provider's remote.
   prek clones the remote, so a local-only commit does not resolve.
 - `judge.client_sha256` names the JEV client the tool uses.
+- `documents` is ordered and uses last-match-wins selection. An include entry is
+  the normal rule with `artifact_kind`, `verification`, and
+  `required_sections`; an exclusion is only
+  `{pattern: ..., exclude: true}`. Include then exclude removes matching paths;
+  exclude then include re-adds them and supplies the selected rule metadata.
+  Verbose output prints the matching `selector trace`, and JSON exposes it as
+  `selectorTrace`, so a test can assert the decision rather than infer it from
+  the final file list.
 - Every companion (`X.yaml` beside a configured `X.md`) must use the current
   shape: `schema_version: 1`, `kind: document-contract`,
   `document.{path, kind, status?, depends_on?}`, and `verification`. Project

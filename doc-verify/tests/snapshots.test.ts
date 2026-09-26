@@ -20,7 +20,7 @@ describe("snapshot and graph behavior", () => {
     await writeFile(path.join(root, "a.md"), "# A\nstaged\n");
     git(root, ["add", "a.md"]);
     await writeFile(path.join(root, "a.md"), "# A\nunstaged\n");
-    const pair = await captureSnapshots({ root, mode: { kind: "staged" }, documentPatterns: ["*.md"], invalidationPatterns: [] });
+    const pair = await captureSnapshots({ root, mode: { kind: "staged" }, documentRules: [{ pattern: "*.md" }], invalidationPatterns: [] });
     const entry = pair.candidate.entries.get(repoPath("a.md"));
     expect(entry !== undefined && !("deleted" in entry) ? entry.content : "").toContain("staged");
     expect(entry !== undefined && !("deleted" in entry) ? entry.content : "").not.toContain("unstaged");
@@ -62,7 +62,6 @@ describe("snapshot and graph behavior", () => {
     const pair = await captureSnapshots({
       root,
       mode: { kind: "staged" },
-      documentPatterns: ["docs/*.md"],
       documentRules: [{ pattern: "docs/a.md", verification: "strategies/a.yaml#verification" }, { pattern: "docs/b.md", verification: "strategies/b.yaml#verification" }],
       invalidationPatterns: [],
     });

@@ -45,6 +45,125 @@ describe("CLI", () => {
     expect(result.stdout).toContain("decision: none");
   });
 
+  it("applies ordered include and exclude selectors in the served CLI", () => {
+    const root = cliFixture();
+    const cli = path.resolve("doc-verify/dist/cli.js");
+    writeFileSync(path.join(root, ".doc-verify.yaml"), `schema_version: 1
+kind: document-verification
+documents:
+  - pattern: design/*.md
+    artifact_kind: design
+    verification: strategies/design.yaml#verification
+    required_sections: [problem]
+  - pattern: design/b.md
+    exclude: true
+invalidation_patterns: []
+judge:
+  kind: jev
+  model: jev-1.13.0
+  client_sha256: ce983f8de97d5b30d527a7116f0c49ad3d17e098d2c3f17c9600041260c65dcb
+  attestation_max_age_seconds: 3600
+policy:
+  kind: semantic-boundary
+  version: 1
+  max_evidence_bytes: 12000
+  forbidden_literals: []
+`);
+    writeFileSync(path.join(root, "design/b.md"), "# B\n## Problem\nB.\n");
+    writeFileSync(path.join(root, "design/b.yaml"), `schema_version: 1
+kind: document-contract
+document:
+  path: design/b.md
+  kind: design
+verification:
+  kind: jev-prolog
+  inherits: ../strategies/design.yaml#verification
+`);
+    const excluded = spawnSync("node", [
+      cli, "check", "--paths", "design/b.md",
+      "--profile", "draft", "--format", "text",
+    ], { cwd: root, encoding: "utf8" });
+    expect(excluded.status).toBe(64);
+    expect(excluded.stderr).toContain("selected no configured document or dependency");
+
+    writeFileSync(path.join(root, ".doc-verify.yaml"), `schema_version: 1
+kind: document-verification
+documents:
+  - pattern: design/*.md
+    exclude: true
+  - pattern: design/a.md
+    artifact_kind: design
+    verification: strategies/design.yaml#verification
+    required_sections: [problem]
+invalidation_patterns: []
+judge:
+  kind: jev
+  model: jev-1.13.0
+  client_sha256: ce983f8de97d5b30d527a7116f0c49ad3d17e098d2c3f17c9600041260c65dcb
+  attestation_max_age_seconds: 3600
+policy:
+  kind: semantic-boundary
+  version: 1
+  max_evidence_bytes: 12000
+  forbidden_literals: []
+`);
+    const reIncluded = spawnSync("node", [
+      cli, "check", "--paths", "design/a.md",
+      "--profile", "draft", "--format", "text", "--verbose",
+    ], { cwd: root, encoding: "utf8" });
+    expect(reIncluded.status).toBe(0);
+    expect(reIncluded.stdout).toContain("selector trace: exclude:design/*.md -> include:design/a.md");
+    expect(reIncluded.stdout).toContain("artifact design/a.md [design] PASS");
+  });
+
+  it("keeps an exclusion out of the affected closure", () => {
+    const root = cliFixture();
+    const cli = path.resolve("doc-verify/dist/cli.js");
+    writeFileSync(path.join(root, ".doc-verify.yaml"), `schema_version: 1
+kind: document-verification
+documents:
+  - pattern: design/*.md
+    artifact_kind: design
+    verification: strategies/design.yaml#verification
+    required_sections: [problem]
+  - pattern: design/b.md
+    exclude: true
+invalidation_patterns: []
+judge:
+  kind: jev
+  model: jev-1.13.0
+  client_sha256: ce983f8de97d5b30d527a7116f0c49ad3d17e098d2c3f17c9600041260c65dcb
+  attestation_max_age_seconds: 3600
+policy:
+  kind: semantic-boundary
+  version: 1
+  max_evidence_bytes: 12000
+  forbidden_literals: []
+`);
+    writeFileSync(path.join(root, "design/b.md"), "# B\n## Problem\nB.\n");
+    writeFileSync(path.join(root, "design/b.yaml"), `schema_version: 1
+kind: document-contract
+document:
+  path: design/b.md
+  kind: design
+verification:
+  kind: jev-prolog
+  inherits: ../strategies/design.yaml#verification
+`);
+    const result = spawnSync("node", [
+      cli, "check", "--paths", "design/a.md",
+      "--profile", "draft", "--format", "json",
+    ], { cwd: root, encoding: "utf8" });
+    expect(result.status).toBe(0);
+    const report = JSON.parse(result.stdout) as {
+      affectedArtifacts: string[];
+      artifacts: Array<{ path: string; selectorTrace: Array<{ pattern: string; action: string }> }>;
+    };
+    expect(report.affectedArtifacts).toEqual(["design/a.md"]);
+    expect(report.artifacts.map((artifact) => artifact.path)).toEqual(["design/a.md"]);
+    expect(report.artifacts[0]?.selectorTrace).toEqual([{ pattern: "design/*.md", action: "include" }]);
+  });
+
   it("lets CLI section and rubric arguments override the companion profile", () => {
     const root = cliFixture();
     const cli = path.resolve("doc-verify/dist/cli.js");

@@ -41,6 +41,7 @@ function renderVerboseText(report: VerificationReport): string {
     lines.push(
       `artifact ${artifact.path} [${artifact.artifactKind}] ${artifact.verdict} profile=${artifact.profile} sections=${String(artifact.sections.length)}`,
       `  impact: ${artifact.impactPath.join(" -> ")}`,
+      `  selector trace: ${artifact.selectorTrace.map((entry) => `${entry.action}:${entry.pattern}`).join(" -> ") || "none"}`,
       `  required sections (${String(artifact.requiredSections.length)}): ${artifact.requiredSections.join(",") || "none"}`,
       `  strategy (${String(artifact.strategyChain.length)}):`,
       ...artifact.strategyChain.map((source) => `    - ${source.path}#${source.fragment}`),

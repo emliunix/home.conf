@@ -75,6 +75,7 @@ export interface ArtifactReport {
   artifactKind: string;
   profile: Exclude<Profile, "auto">;
   impactPath: RepoPath[];
+  selectorTrace: Array<{ pattern: string; action: "include" | "exclude" }>;
   requiredSections: string[];
   sections: Array<Omit<Section, "content">>;
   strategyChain: Array<{ path: RepoPath; fragment: string }>;
