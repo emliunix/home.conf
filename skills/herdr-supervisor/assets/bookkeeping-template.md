@@ -60,25 +60,27 @@ keep working on whatever else can progress.
 - The team is led by `lead`. Every message carries the header
   `[from:<you>; to:<name>[,<name>...]]`; `from:` is required and must be your
   own agent name. There are two paths:
-  - DM (default): `herdr agent prompt <name> "[from:<you>; to:<name>] <message>"`
-    for questions, answers, hand-offs, and reports to one seat.
-  - Group: `herdr agent prompt group "[from:<you>; to:<name>] <message>"`, or
+  - Group (default): `herdr agent prompt group "[from:<you>; to:<name>] <message>"`, or
     `"[from:<you>] <message>"` when no one in particular acts. Every member
-    except you receives it and `to:` names who acts. Use it only when others'
-    work depends on the message: coordination changes, DECISIONs, "X done, Y
-    can start". An optional `re:<topic>` tag (e.g. `re:d52`) labels the thread.
+    except you receives it and `to:` names who acts. Every team message goes
+    here — questions, answers, hand-offs, reports, coordination changes,
+    DECISIONs, "X done, Y can start" — so the team's whole conversation is on
+    the group screen and log. An optional `re:<topic>` tag (e.g. `re:d52`)
+    labels the thread.
+  - DM (pane mechanics only): `herdr agent prompt <name> "[from:<you>; to:<name>] <message>"`,
+    a nudge or "your pane is blocked" that carries no team information.
   - If the seat rejects a message or a delivery fails, it tells you in a new
     turn from `group`.
   - `[from:<you>; mute]` to the group stops group messages reaching you, except
     ones naming you in `to:`; `[from:<you>; unmute]` restores them. Mute during
-    long heads-down work to save turns. DMs always arrive.
+    long heads-down work to save turns; a pane-mechanic DM always arrives.
 - Messages reach you as `[from:<name>; to:<names>] <message>`, each as a new
   turn. Reply only when you are named in `to:` or blocked, with `DONE:`,
   `BLOCKED:`, `DECISION:` or `REVIEW:`; never send a bare acknowledgement.
   To wait for a reply, end your turn; never poll or sleep in a loop, because
   messages queue behind a running turn.
-- A discussion that runs past a few messages moves into your unit's worklog or
-  report file; the chat carries a pointer.
+- A long brief or a discussion that runs past a few messages moves into your
+  unit's worklog or report file; the group message carries a pointer.
 - Search the group conversation with `herdr agent prompt group "[from:<you>; query] <terms>"`
   (terms: `from:<name>`, `to:<name>`, `re:<topic>`, `last:<N>`, and words in
   the text); the seat answers you alone.
