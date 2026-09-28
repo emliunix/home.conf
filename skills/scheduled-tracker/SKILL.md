@@ -42,6 +42,28 @@ Run these checks in order and keep notes brief:
    not fail on the defect it claims to catch. Record the smallest corrective
    action.
 
+## Per-seat checklists
+
+The five checks above are the general control loop. What each one means for a
+particular seat is a checklist in
+[`templates/`](templates/) — pick the one that matches the seat, do not invent a
+sixth:
+
+- [`templates/observer-pass.md`](templates/observer-pass.md) — a seat whose job is
+  watching. Expands the routine check into a nine-row pass, and names the two
+  things an observer must not do (land fixes in another seat's lane; report an
+  unfilled row as clean).
+- [`templates/implementer-wake.md`](templates/implementer-wake.md) — a seat that
+  lands work: one writer per tree, hand off by commit id, exit on evidence.
+- [`templates/tracker-wake.md`](templates/tracker-wake.md) — a seat that owns the
+  board: dispositions, ownership, reachability by tip, labels traceable to
+  measurements.
+
+A project that runs one of these seats usually keeps its own local extension — the
+same checklist with the *instances that earned each rule* attributed, plus that
+project's routing. Keep the general form here; keep the instances there, because an
+instance is evidence and evidence belongs to the project that paid for it.
+
 ## One-hour rethink
 
 If one work item has remained in the same state for more than one hour:
