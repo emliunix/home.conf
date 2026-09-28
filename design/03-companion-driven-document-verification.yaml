@@ -1,0 +1,33 @@
+schema_version: 1
+kind: document-contract
+document:
+  path: design/03-companion-driven-document-verification.md
+  kind: design
+  depends_on:
+    - goals/02-companion-driven-document-verification.md
+verification:
+  kind: jev-prolog
+  inherits: ../doc-verify/contracts/design-strategy.yaml#verification
+  rubrics:
+    kind: jev
+    threshold: 0.9
+    items:
+      - id: design.local_constraint
+        artifact_kinds: [design]
+        applies_to:
+          sections: [scope---what-we-touch]
+          scope: combined
+        evidence: {source: section_body, max_bytes: 4000}
+        question:
+          kind: choose
+          instruction: Is the document-specific scope explicit?
+          options: [supported, refuted, unknown]
+        critical: false
+        weight: 1
+        scores: {supported: 1, refuted: 0, unknown: 0}
+commands:
+  - npm test
+  - npm run typecheck
+  - npm run lint
+  - npm run check
+evidence_level: E2
