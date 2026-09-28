@@ -68,6 +68,13 @@ export interface EvaluationDetail {
   questionId: string;
   sectionIds: SectionId[];
   answer?: "supported" | "refuted" | "unknown";
+  /** The judge's confidence in its choice, when it reports one. */
+  confidence?: number;
+  /** Probability per option, in supported, refuted, unknown order. */
+  distribution?: number[];
+  /** Bytes of section text sent for this question, and the rubric budget. */
+  evidenceBytes: number;
+  evidenceBudget: number;
 }
 
 export interface ArtifactReport {
