@@ -210,7 +210,13 @@ async function checkArtifact(input: {
         sections,
         ...(selectedIds === undefined ? {} : { selectedIds }),
       });
-      evaluations = questions.map((question) => ({ questionId: question.id, sectionIds: question.sectionIds }));
+      const size = (question: (typeof questions)[number]) => ({
+        evidenceBytes: Buffer.byteLength(question.evidence),
+        evidenceBudget: question.item.evidence.max_bytes,
+      });
+      evaluations = questions.map((question) => ({
+        questionId: question.id, sectionIds: question.sectionIds, ...size(question),
+      }));
       if (profile === "promotion") {
         const semantic = await evaluateSemantic({
           root: input.root,
@@ -235,7 +241,9 @@ async function checkArtifact(input: {
         evaluations = questions.map((question, index) => ({
           questionId: question.id,
           sectionIds: question.sectionIds,
+          ...size(question),
           ...(semantic.outcome.answers[index] === undefined ? {} : { answer: semantic.outcome.answers[index] }),
+          ...semantic.details[index],
         }));
         trace.push({ ruleId: semantic.outcome.ruleId, verdict: semantic.outcome.verdict, facts: semantic.outcome.answers });
         if (semantic.outcome.verdict !== "PASS") {

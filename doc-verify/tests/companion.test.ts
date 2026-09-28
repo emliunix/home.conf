@@ -130,6 +130,10 @@ verification:
     expect(verbose).toContain("design.problem sections=problem@2:4 result=supported");
     expect(verbose).toContain("design.local sections=problem@2:4 result=supported");
     expect(verbose).toContain("decision: PASS via all.required.facts facts=supported,supported");
+    // Verbose shows how sure the judge was and how much evidence it saw.
+    expect(verbose).toMatch(
+      /design\.problem sections=problem@2:4 result=supported confidence=1\.00 distribution=supported:1\.00,refuted:0\.00,unknown:0\.00 evidence=\d+\/\d+B/,
+    );
 
     const repeated = await checkDocuments({
       root,

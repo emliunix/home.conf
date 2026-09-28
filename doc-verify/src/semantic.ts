@@ -26,7 +26,17 @@ const cacheSchema = z.object({
     ruleId: z.string(),
     answers: z.array(z.enum(["supported", "refuted", "unknown"])),
   }),
+  details: z.array(z.object({
+    confidence: z.number().optional(),
+    distribution: z.array(z.number()).optional(),
+  })).optional(),
 });
+
+/** The judge's own numbers for one answer; JEV returns no rationale text. */
+export interface AnswerDetail {
+  confidence?: number;
+  distribution?: number[];
+}
 
 export interface SemanticEvaluation {
   requestId: string;
@@ -35,6 +45,8 @@ export interface SemanticEvaluation {
   calls: number;
   cacheHits: number;
   rawAnswers: JudgeAnswer[];
+  /** Aligned to the questions; empty when a cached entry predates details. */
+  details: AnswerDetail[];
 }
 
 export async function evaluateSemantic(input: {
@@ -79,7 +91,10 @@ export async function evaluateSemantic(input: {
   if (input.useCache !== false) {
     const cached = await readCache(cachePath, requestId, input.maxAgeSeconds);
     if (cached !== undefined) {
-      return { requestId, dmlHash: program.hash, outcome: cached, calls: 0, cacheHits: 1, rawAnswers: [] };
+      return {
+        requestId, dmlHash: program.hash, outcome: cached.outcome,
+        calls: 0, cacheHits: 1, rawAnswers: [], details: cached.details,
+      };
     }
   }
 
@@ -125,13 +140,25 @@ export async function evaluateSemantic(input: {
   if (recording.responses.length !== 1) {
     throw new BlockedError(`expected one JEV call, observed ${String(recording.responses.length)}`);
   }
-  await mkdir(path.dirname(cachePath), { recursive: true });
-  await writeFile(cachePath, `${JSON.stringify({ schemaVersion: 1, requestId, dmlHash: program.hash, createdAt: Date.now(), outcome })}\n`, { mode: 0o600 });
   const response = recording.responses[0];
   if (response === undefined) {
     throw new BlockedError("JEV response is unavailable");
   }
-  return { requestId, dmlHash: program.hash, outcome, calls: 1, cacheHits: 0, rawAnswers: response.answers };
+  const details = answerDetails(response.answers, input.questions.length);
+  await mkdir(path.dirname(cachePath), { recursive: true });
+  await writeFile(cachePath, `${JSON.stringify({ schemaVersion: 1, requestId, dmlHash: program.hash, createdAt: Date.now(), outcome, details })}\n`, { mode: 0o600 });
+  return { requestId, dmlHash: program.hash, outcome, calls: 1, cacheHits: 0, rawAnswers: response.answers, details };
+}
+
+function answerDetails(answers: JudgeAnswer[], questionCount: number): AnswerDetail[] {
+  // The DML asks every question in one batch, so answers align by position.
+  if (answers.length !== questionCount) {
+    return [];
+  }
+  return answers.map((answer) => ({
+    ...(answer.confidence === undefined ? {} : { confidence: answer.confidence }),
+    ...(answer.distribution === undefined ? {} : { distribution: answer.distribution }),
+  }));
 }
 
 function productionBackend(model: string): JudgeBackend {
@@ -188,11 +215,18 @@ class RecordingBackend implements JudgeBackend {
   }
 }
 
-async function readCache(cachePath: string, requestId: string, maxAgeSeconds: number): Promise<DmlOutcome | undefined> {
+async function readCache(
+  cachePath: string,
+  requestId: string,
+  maxAgeSeconds: number,
+): Promise<{ outcome: DmlOutcome; details: AnswerDetail[] } | undefined> {
   try {
     const parsed = cacheSchema.safeParse(JSON.parse(await readFile(cachePath, "utf8")));
     const fresh = parsed.success && Date.now() - parsed.data.createdAt <= maxAgeSeconds * 1000;
-    return fresh && parsed.data.requestId === requestId ? parsed.data.outcome : undefined;
+    if (!fresh || parsed.data.requestId !== requestId) {
+      return undefined;
+    }
+    return { outcome: parsed.data.outcome, details: (parsed.data.details ?? []).map(stripUndefined) };
   } catch {
     return undefined;
   }
@@ -206,4 +240,11 @@ function classifyProviderError(error: unknown): string {
     return `JEV call failed: ${error.name}`;
   }
   return "JEV call failed";
+}
+
+function stripUndefined(detail: { confidence?: number | undefined; distribution?: number[] | undefined }): AnswerDetail {
+  return {
+    ...(detail.confidence === undefined ? {} : { confidence: detail.confidence }),
+    ...(detail.distribution === undefined ? {} : { distribution: detail.distribution }),
+  };
 }

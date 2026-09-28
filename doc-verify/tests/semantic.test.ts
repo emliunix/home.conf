@@ -1,3 +1,7 @@
+import { mkdtemp, rm } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+
 import { createMockJevJudgeBackend, type JudgeBackend } from "deepclause-sdk";
 import { describe, expect, it } from "vitest";
 
@@ -14,12 +18,12 @@ const item: RubricItem = {
 };
 const rubric: ResolvedRubric = { threshold: 1, items: [item], chain: [] };
 
-function evaluate(evidence: string, backend: JudgeBackend) {
+function evaluate(evidence: string, backend: JudgeBackend, root = process.cwd(), useCache = false) {
   const question: ExpandedQuestion = { id: "q", item, sectionIds: [sectionId("x")], evidence };
   return evaluateSemantic({
-    root: process.cwd(), artifactKind: "design", questions: [question], rubric,
+    root, artifactKind: "design", questions: [question], rubric,
     model: "jev-1.13.0", policyVersion: 1, maxEvidenceBytes: 1000,
-    forbiddenLiterals: ["private-canary"], maxAgeSeconds: 3600, backend, useCache: false,
+    forbiddenLiterals: ["private-canary"], maxAgeSeconds: 3600, backend, useCache,
   });
 }
 
@@ -41,5 +45,25 @@ describe("semantic boundary", () => {
     const first = await evaluate("one", backend);
     const second = await evaluate("two", backend);
     expect(first.requestId).not.toBe(second.requestId);
+  });
+
+  it("returns the judge's confidence and distribution, and keeps them through the cache", async () => {
+    const backend = createMockJevJudgeBackend({
+      answers: (request) => request.questions.map((question) => ({
+        id: question.id, kind: "choose", value: "refuted",
+        confidence: 0.62, distribution: [0.3, 0.62, 0.08], basis: "mock",
+      })),
+    });
+    const root = await mkdtemp(path.join(os.tmpdir(), "doc-verify-semantic-"));
+    try {
+      const fresh = await evaluate("text", backend, root, true);
+      expect(fresh.outcome.answers).toEqual(["refuted"]);
+      expect(fresh.details).toEqual([{ confidence: 0.62, distribution: [0.3, 0.62, 0.08] }]);
+      const cached = await evaluate("text", backend, root, true);
+      expect(cached.cacheHits).toBe(1);
+      expect(cached.details).toEqual(fresh.details);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });

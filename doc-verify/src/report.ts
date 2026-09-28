@@ -1,4 +1,4 @@
-import { VerificationReport, Verdict } from "./types.js";
+import { EvaluationDetail, VerificationReport, Verdict } from "./types.js";
 
 const exitCodes: Record<Verdict, number> = {
   PASS: 0,
@@ -54,7 +54,8 @@ function renderVerboseText(report: VerificationReport): string {
           const section = artifact.sections.find((candidate) => candidate.id === id);
           return section === undefined ? id : `${id}@${String(section.startLine)}:${String(section.endLine)}`;
         });
-        return `    - ${evaluation.questionId} sections=${sections.join(",")} result=${result}`;
+        return `    - ${evaluation.questionId} sections=${sections.join(",")} result=${result}${judgeNumbers(evaluation)}` +
+          ` evidence=${String(evaluation.evidenceBytes)}/${String(evaluation.evidenceBudget)}B`;
       }),
     );
     if (artifact.semanticRequestId === undefined) {
@@ -77,6 +78,23 @@ function renderVerboseText(report: VerificationReport): string {
   }
   lines.push(summary(report));
   return `${lines.join("\n")}\n`;
+}
+
+const OPTION_ORDER = ["supported", "refuted", "unknown"] as const;
+
+function judgeNumbers(evaluation: EvaluationDetail): string {
+  // JEV returns numbers, not a rationale: show how sure the judge was.
+  const parts = [];
+  if (evaluation.confidence !== undefined) {
+    parts.push(` confidence=${evaluation.confidence.toFixed(2)}`);
+  }
+  if (evaluation.distribution !== undefined && evaluation.distribution.length === OPTION_ORDER.length) {
+    const spread = evaluation.distribution
+      .map((probability, index) => `${OPTION_ORDER[index] ?? String(index)}:${probability.toFixed(2)}`)
+      .join(",");
+    parts.push(` distribution=${spread}`);
+  }
+  return parts.join("");
 }
 
 function listPaths(paths: string[]): string[] {
