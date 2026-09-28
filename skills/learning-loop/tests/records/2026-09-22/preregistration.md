@@ -78,7 +78,7 @@ an unexercised part remains unpriced.
 ## Walk prediction
 
 The package paths and checks resolve. The taskboard source repository should resolve at
-`/Users/ppio/Documents/visflow`; any missing open-work or authoring-skill owner must be reported
+`~/Documents/visflow`; any missing open-work or authoring-skill owner must be reported
 BLOCKED with the missing owner named. Every verification proposal must state a command or artifact
 and its expected result.
 
