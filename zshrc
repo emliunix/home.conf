@@ -4,8 +4,7 @@ ZSH_THEME="fino" # set by `omz`
 # No automatic oh-my-zsh update check: it does network I/O on a timer, which is
 # pointless in non-interactive/agent shells and a stall risk in any shell init
 # that gets captured. Update manually with `omz update` when you want to.
-zstyle ':omz:update' mode disabled   # modern omz
-export DISABLE_AUTO_UPDATE=true      # legacy omz
+zstyle ':omz:update' mode disabled
 
 plugins=(git dotenv)
 
