@@ -12,8 +12,8 @@
 Peers post with Herdr itself: ``herdr agent prompt group "<message>"``. The seat
 reads its terminal, delivers each message unchanged with ``herdr agent prompt``
 to every member except the sender, prints it once on screen, and appends it to
-``$XDG_STATE_HOME/herdr-group/<workspace>/<group>.jsonl``. Direct messages do
-not pass through the seat: agents send them with ``herdr agent prompt <peer>``.
+``$XDG_STATE_HOME/herdr-group/<workspace>/<group>.jsonl``. Only pane-mechanic
+messages bypass the seat: an agent sends those with ``herdr agent prompt <peer>``.
 
 Message grammar: ``[from:<name>; to:<name>[,<name>...]; re:<topic>] <body>``;
 ``to:`` and ``re:`` are optional, and fields may also be separated by commas or
@@ -126,8 +126,35 @@ def _names(raw: str, key: str) -> list[str]:
     names = [part.lower() for part in re.split(r"[,;\s]+", raw) if part]
     for name in names:
         if not NAME_RE.match(name):
+            if ":" in name:
+                raise FormatError(
+                    f"unknown key {name.split(':', 1)[0]}:; {USAGE}"
+                )
             raise FormatError(f"invalid {key} name {name!r}; {USAGE}")
     return names
+
+
+def _declared_sender(text: str) -> str | None:
+    """The ``from:`` value of a message whose header may fail the full parse.
+
+    The seat tells a rejected sender their message was not delivered, but the
+    rejection is often raised *by* ``parse``, so the sender must be recovered
+    without it. The header/key patterns are reused and the value is validated
+    with ``_names``; a malformed ``from:`` yields ``None``.
+    """
+    match = _HEADER_RE.match(text)
+    if not match or not _KEY_RE.search(match.group(1)):
+        return None
+    parts = _KEY_RE.split(match.group(1))[1:]
+    for key, raw in zip(parts[0::2], parts[1::2]):
+        if key.lower().replace(" ", "").rstrip(":") != "from":
+            continue
+        try:
+            names = _names(raw, "from")
+        except FormatError:
+            return None
+        return names[0] if names else None
+    return None
 
 
 def parse(text: str) -> Message:
@@ -570,10 +597,7 @@ class Seat:
 
     def _feedback(self, text: str, error: str) -> None:
         """Tell a self-declared sender their message was rejected, if we can tell who they are."""
-        try:
-            claimed = parse(text).sender
-        except FormatError:
-            return  # No parseable from: — the sender is unknowable; the screen is all we have.
+        claimed = _declared_sender(text)
         if claimed and claimed != USER and claimed in self.members():
             self._notify(claimed, f"your message was not delivered: {error}")
 
@@ -666,7 +690,7 @@ class Seat:
         self._line(
             f"{DIM}herdr-group seat '{self.name}' on {self.pane_id} · members: "
             f"{', '.join(sorted(self.members())) or '(none yet)'}\n"
-            f"  post: herdr agent prompt {self.name} \"[from:<you>; to:<name>] <msg>\"  (direct: herdr agent prompt <peer>)\n"
+            f"  post: herdr agent prompt {self.name} \"[from:<you>; to:<name>] <msg>\"  (team messages go here; DM only pane mechanics)\n"
             f"  {USAGE}\n  log: {self.log}"
             + (f"\n  muted: {', '.join(sorted(self.muted))}" if self.muted else "")
             + RESET
