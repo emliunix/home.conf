@@ -91,6 +91,7 @@ pass:
 | **Review ceremony feeds itself.** More reviewers, more receipts, or a longer checklist appear without changing the landing decision. | Cap at one decision-changing pass unless new evidence or dispute exists. Disclose overlap and cross-check instead of building a queue of one. |
 | **Write collision is mistaken for a seat shortage.** Several cards edit the same file, so more parallel workers make the problem worse. | Serialize by landing order for a write collision; spread only when the constraint is reviewer capacity. |
 | **Finished work stays parked.** A reviewed branch is neither merged nor explicitly held. | Merge it, or record the measured reason it cannot land and the owner of the lift condition. Remove the worktree once merged. |
+| **Ad-hoc probe has no claim.** A live service, database, credential, or machine-level surface is touched to answer a question nobody recorded. | Claim or post a one-line notice before the probe. Name the owning card or thread, the surface, and what the read can change. |
 | **Communication substitutes for disposition.** A long thread is mistaken for progress. | The tracker's deliverable is a changed board, tip, or explicit blocker; channel posts stay short and point to the owning artifact. |
 
 ## What this seat owes the record
