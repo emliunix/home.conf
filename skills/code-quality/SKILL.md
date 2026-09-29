@@ -11,7 +11,7 @@ description: >-
 
 # Code quality
 
-Standing quality law. Distinct from flow procedure (`flow-grill-review` / `flow-retro`). Project P0 current-model law, when legislated, lives in that repo's `AGENTS.md` and is the first check; this skill is the reusable quality machinery.
+Standing quality rules. Distinct from flow procedure (`flow-grill-review` / `flow-retro`). Project P0 current-model rule, when legislated, lives in that repo's `AGENTS.md` and is the first check; this skill is the reusable quality machinery.
 
 ## Standing gates
 
@@ -24,7 +24,7 @@ Quality checks, not flow procedure. Lifecycle lives in `flow-grill-review` / `fl
 
 ## Local-type
 
-Standing law for local (file/module) identity.
+Standing rule for local (file/module) identity.
 
 ### Three principles
 
@@ -34,7 +34,7 @@ Standing law for local (file/module) identity.
 
 ## Error-fidelity
 
-Standing law for local (file/module) error fidelity.
+Standing rule for local (file/module) error fidelity.
 
 ### Three principles
 
@@ -54,7 +54,7 @@ Standing law for local (file/module) error fidelity.
 - **Presence predicate** (`phase.kind === "loading"` to disable or mount) matches one arm. Keep.
 - **Per-arm map** (kind → copy or JSX / renderer) uses exhaustive `switch` / `match`. Convert.
 - Shape checks, display joins, and dialect text written onto the wire are not encodings of program state. Keep.
-- Catalog/default fallbacks named as architectural wire are not this law.
+- Catalog/default fallbacks named as architectural wire are not this rule.
 
 ## Fail classes
 
@@ -99,7 +99,7 @@ switch (focus.kind) {
 }
 ```
 
-`sameFocus` switches on `a.kind` and compares `b` on the same arm (a `kind !==` guard does not narrow both). Same law in rust: `enum` + `match`, not `starts_with` + `split`.
+`sameFocus` switches on `a.kind` and compares `b` on the same arm (a `kind !==` guard does not narrow both). Same rule in rust: `enum` + `match`, not `starts_with` + `split`.
 
 ## Red flags — STOP, return to the current pass
 
