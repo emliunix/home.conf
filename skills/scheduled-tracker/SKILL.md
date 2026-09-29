@@ -1,6 +1,6 @@
 ---
 name: scheduled-tracker
-description: Maintain a recurring 20-minute tracker for active project work. Use when the user asks to arm, run, or resume a scheduled work tracker, periodic project checkpoint, or recurring progress/defect review. The tracker keeps high-level project understanding, the current goal, work-item progress, and process defects aligned; requires a first-principles rethink after one hour in the same state; and ends every wake as done or blocked.
+description: Maintain a recurring 30-minute tracker for active project work. Use when the user asks to arm, run, or resume a scheduled work tracker, periodic project checkpoint, or recurring progress/defect review. The tracker keeps high-level project understanding, the current goal, work-item progress, and process defects aligned; guards against over-engineering and ceremonial over-review; requires a first-principles rethink after one hour in the same state; and ends every wake as done or blocked.
 ---
 
 # Scheduled Tracker
@@ -15,7 +15,7 @@ Anchor the reminder to the message or thread that owns the work:
 ```sh
 raft reminder schedule \
   --title "Scheduled tracker: <current work>" \
-  --repeat every:20m \
+  --repeat every:30m \
   --channel "<channel-or-thread>" \
   --message-id "<anchor-message-id>" \
   --tz Asia/Shanghai
@@ -40,7 +40,8 @@ Run these checks in order and keep notes brief:
 5. **Process defect review.** Look for drift, duplicated authority, unsupported
    status claims, unverifiable work, hidden compatibility, or a check that does
    not fail on the defect it claims to catch. Record the smallest corrective
-   action.
+   action. Run the lead template's over-engineering and over-review stop checks
+   before proposing more work, more review, or another check.
 
 ## Per-seat checklists
 
@@ -78,6 +79,31 @@ If one work item has remained in the same state for more than one hour:
 Do not treat elapsed time alone as proof of overengineering. The trigger opens a
 review; the evidence decides.
 
+## Scope, review, and task-track guards
+
+These are standing lead checks, not a second methodology:
+
+- **Over-engineering guard.** Before adding a component, layer, gate, migration,
+  compatibility path, or process step, name the current outcome, the smallest
+  change that reaches it, and the credible do-less alternative. If the addition
+  does not change a decision or observed result, do not add it. An explicit
+  owner requirement is a constraint, not something to vote away.
+- **Over-review guard.** One review pass per landing decision. Stop when further
+  reading cannot change that decision. A second pass needs new evidence, a
+  consequential unresolved disagreement, or a required independent seat; more
+  ceremony is not more confidence. A reader who touched the work discloses the
+  overlap instead of recusing, and the result is called a cross-check.
+- **Task-track guard.** Reconcile every active card against the tree and the goal
+  it serves. Finished and quality-met work is merged, and its worktree is removed
+  or its holder states why it cannot be. Unfinished work names its owner, next
+  observable result, and review condition. Blocked work names the blocker, owner,
+  and lift condition. Unowned work is assigned or escalated, never left as a
+  resting state.
+
+When either the engineering or review guard trips, the lead posts one short,
+specific reminder to the owning thread: the action being added, the outcome it
+does not change, and the smaller action to take instead.
+
 ## Exit condition
 
 Every wake ends with the tracked work either:
@@ -93,4 +119,6 @@ Do not leave an item indefinitely `in progress` without one of those outcomes.
 
 Post one short update in the owning channel or thread only when there is a
 material change, decision, blocker, or required review. Lead with the exit
-state, then the next owner and action. Do not paste routine command logs.
+state, then the next owner and action. Include the concrete task-track
+disposition when a card moved, stalled, landed, or became blocked. Do not paste
+routine command logs.
