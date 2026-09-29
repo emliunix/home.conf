@@ -35,7 +35,7 @@ The design file is **canon**: intact current machine, direct speech. Grill ledge
 | Design **Status** | `draft` → `reviewed` when the review gate completes; `reviewed` → `pending-retro` when the implementation gate completes |
 | Worklog `worklog/NN-<same-topic>.md` | Attack angles, findings, rejects, deferred items, exit outcomes, defense record, Simplicity delta, rematch, closing retro |
 
-If the worklog file does not exist, create it. Do not paste angles, findings, or defense into the design. Accepted P1s rewrite the design body as current law (no “we rejected X” / historical tradeoff prose in the design).
+If the worklog file does not exist, create it. Do not paste angles, findings, or defense into the design. Accepted P1s rewrite the design body as current truth (no “we rejected X” / historical tradeoff prose in the design).
 
 ## Preconditions
 
@@ -57,7 +57,7 @@ Every design file must open with **the three heads**, in order (this skill does 
 
 Everything after the three heads is the **intact design body**. Direct speech: types, verbs, tables, wires, verification. No negative comparison to a discarded tree, no “rejected: …”, no epoch vocabulary of a past matcher. The only fixed tail on the design is **Goal** (admin source), **Review** (worklog backlink), and **Status**.
 
-**The design file is the rulings home as current law** (the sentence that is true now). How that sentence was reached — grill, defense, rejected alternatives, RCA narrative — lives in the corresponding worklog. A ruling recorded only in a goal file dies when that goal closes. Goal files reference rulings by path (`design/NN §k`), never restate them.
+**The design file is the rulings home as current truth** (the sentence that is true now). How that sentence was reached — grill, defense, rejected alternatives, RCA narrative — lives in the corresponding worklog. A ruling recorded only in a goal file dies when that goal closes. Goal files reference rulings by path (`design/NN §k`), never restate them.
 
 Sizing: proportional to the problem. The contract is about PRESENCE of the three heads and orientation, not page count or fixed body structure. The heads exist so all parties focus on the major problem — a finding that touches neither Problem statement nor Scope is Reject/Defer by default, not a new work item.
 
@@ -67,13 +67,13 @@ Sizing: proportional to the problem. The contract is about PRESENCE of the three
 
 ### 0. P0 project-contract check (always the FIRST review item)
 
-Before any attack angle runs, test the draft's heads and body against the project's own declared P0 contract (its current-model law, banned classes, naming laws — whatever the project has legislated; if the project has none, skip this step). Suggested template when a project adopts a zero-compat posture: reject any second-world assumption, dual-world support (temporary included — violation at birth), epoch/transition vocabulary in code or docs vocabulary, shape-selection predicated on history rather than positive contract match, and structurally-compat arms — branches, history-only optionals, alias exports, tolerant parses of retired shapes, dead-era second implementations. Any hit = severity **blocker (P1)**, reviewed before all else — nothing below item 0 is weighed until it clears.
+Before any attack angle runs, test the draft's heads and body against the project's own declared P0 contract (its current-model rule, banned classes, naming rules — whatever the project has legislated; if the project has none, skip this step). Suggested template when a project adopts a zero-compat posture: reject any second-world assumption, dual-world support (temporary included — violation at birth), epoch/transition vocabulary in code or docs vocabulary, shape-selection predicated on history rather than positive contract match, and structurally-compat arms — branches, history-only optionals, alias exports, tolerant parses of retired shapes, dead-era second implementations. Any hit = severity **blocker (P1)**, reviewed before all else — nothing below item 0 is weighed until it clears.
 
 ### 1. Plan attack angles
 
 Write a **small set of high-value angles** into the **worklog** (`worklog/NN-<same-topic>.md`). Start from the scenario table that matches the draft (below). Default to 2–4 from that table; use fewer for a narrow design. Batch tightly related checks when one reviewer can evaluate them coherently. Process cost must not exceed task complexity.
 
-**The tables are suggestions, not a closed set.** Add any further angle the draft actually needs (a seam, a reset, a named failure class, a copy law — whatever the problem requires). Do not refuse an appropriate extra angle because the default count is 2–4. Do not run the whole catalog as padding.
+**The tables are suggestions, not a closed set.** Add any further angle the draft actually needs (a seam, a reset, a named failure class, a copy rule — whatever the problem requires). Do not refuse an appropriate extra angle because the default count is 2–4. Do not run the whole catalog as padding.
 
 **Exceptions are allowed.** Skip a suggested row when it does not apply; record a one-line reason in the worklog (e.g. “observability N/A — no new writer”). Skipping without a reason is not an exception — it is an omitted check.
 
@@ -132,7 +132,7 @@ Pick the scenario(s) the draft actually touches. A design that is both schema an
 | Semantics | Domain meaning of the field. Null / absent / invalid are named. |
 | Related operations | Every verb that creates, reads, freezes, or GC’s this object is in the design (or explicitly non-goal). Schema without ops is unfinished. |
 
-**UI** (console / pages / components). Check against `ux-ui-code` (quality review + component analysis + general UI laws). Do not duplicate that skill here. Workspace console law, when present, is the project UX file — not a second catalog in this flow.
+**UI** (console / pages / components). Check against `ux-ui-code` (quality review + component analysis + general UI rules). Do not duplicate that skill here. Workspace console rules, when present, is the project UX file — not a second catalog in this flow.
 
 | Angle | Ask (see `ux-ui-code`) |
 |---|---|
@@ -140,7 +140,7 @@ Pick the scenario(s) the draft actually touches. A design that is both schema an
 | Element / component | `element → component → input → states → wire arm`. No silent one-off. |
 | Semantics | User nouns/verbs; internal machinery quarantined; one meaning per word. |
 | Visual quality | Hierarchy, density, composition — not a wireframe dumped into kit classes. |
-| Constrained input | Enumeration → **selector**, not typed membership (`ux-ui-code` general UI law). Empty/floor of the selector is designed. |
+| Constrained input | Enumeration → **selector**, not typed membership (`ux-ui-code` general UI rule). Empty/floor of the selector is designed. |
 | Honest affordances | Unwired acts absent or typed; no disabled tease. |
 | State postures | Loading / empty / error / success / terminal each have a next step. |
 | Copy + first-time | Verbatim inventory; a first-time user can walk the flow. |

@@ -249,7 +249,7 @@ flowchart LR
 
 ## Done checklist (implementation gate)
 
-- [ ] **P0 project-contract cleared:** nothing the project law bans — second-world assumptions, dual-world support (temporary included), epoch vocabulary, history-predicated shape selection, structurally compat arms reachable only from past-era data; covers code/comments/fixtures/tests/docs
+- [ ] **P0 project-contract cleared:** nothing the project contract bans — second-world assumptions, dual-world support (temporary included), epoch vocabulary, history-predicated shape selection, structurally compat arms reachable only from past-era data; covers code/comments/fixtures/tests/docs
 - [ ] Round budget respected (count stated per bounce; >5 halted as structural, not retried)
 - [ ] Smallest real-data-first vertical slice implemented without scope expansion
 - [ ] Implementer Prep-read + manager resume happened before work; post-slice self-review against covered AC / path-to-root exists
