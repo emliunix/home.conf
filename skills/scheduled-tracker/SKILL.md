@@ -106,6 +106,37 @@ When either the engineering or review guard trips, the lead posts one short,
 specific reminder to the owning thread: the action being added, the outcome it
 does not change, and the smaller action to take instead.
 
+## Capture a failure pattern
+
+**A corrected failure that is not captured will be paid for again.** When a wake
+finds a real process failure — not a product bug, and not a one-off typo — preserve
+the primary transcript and describe it in the project's pattern directory:
+
+```
+~/Documents/process-failure-patterns/<project>/
+  README.md                     # index: one row per captured pattern
+  <date>-<short-name>/
+    metadata.md                 # the fields below
+    transcript.md               # the verbatim messages, with anchors
+```
+
+`metadata.md` names, at minimum: **pattern name**; **date and revision**; **where
+it happened** (channel, thread, cards, commits); **message-id locators**; **the
+seat**; **what was observed** (the messages or command output that show it,
+verbatim); **which instrument answered the wrong question**; **whether the
+instrument or the sentence was at fault**; **the class** it belongs to; **the
+disposition** (`fixed` / `recorded` / `open`); **the cost** (time, duplicate work,
+rework); **the corrective action taken in-process**; and **where that correction
+now lives** (skill, convention, check, or card). Copy messages verbatim; do not
+paraphrase the evidence. Keep the initial description short — this is an input for
+later analysis, not the analysis itself.
+
+The capture is the tracker's job when the tracker finds the pattern. The owning
+seat may add its own capture when it is closer to the evidence. The three
+obligations are joined: **find it, preserve it, correct the process.** A capture
+without the process correction is a museum; a correction without the capture
+cannot be evaluated later.
+
 ## Exit condition
 
 Every wake ends with the tracked work either:

@@ -94,6 +94,27 @@ pass:
 | **Ad-hoc probe has no claim.** A live service, database, credential, or machine-level surface is touched to answer a question nobody recorded. | Claim or post a one-line notice before the probe. Name the owning card or thread, the surface, and what the read can change. A probe that may produce a new locator is still a claim; only waiting is exempt when the intended read would merely confirm the live owner's already-running hypothesis. |
 | **Communication substitutes for disposition.** A long thread is mistaken for progress. | The tracker's deliverable is a changed board, tip, or explicit blocker; channel posts stay short and point to the owning artifact. |
 
+## Failure-pattern capture
+
+Finding a failure pattern is not finished by fixing the instance. Preserve the
+primary evidence and correct the process:
+
+1. **Capture** — copy the verbatim transcript into
+   `~/Documents/process-failure-patterns/<project>/<date>-<short-name>/` and write
+   `metadata.md` with: pattern name; date and revision; where it happened (channel,
+   thread, cards, commits); message-id locators; seat; the observed evidence
+   verbatim; which instrument answered the wrong question; whether the instrument
+   or the sentence was at fault; the failure class; the disposition; the cost; the
+   corrective action; and where that correction now lives. Update the directory
+   `README.md` index.
+2. **Correct** — make the process change in its owning surface (skill, convention,
+   check, or card). Name the surface in `metadata.md`.
+3. **Reuse** — the captures are inputs for later process refinement and evaluation
+   samples for the change, so link the capture id from the card that produced it.
+
+An instance fixed without a capture reproduces; a capture without a correction is
+a museum.
+
 ## What this seat owes the record
 
 - **Pointer, not claim set.** Hand a fresh reviewer *where to look*, never what it will find.
