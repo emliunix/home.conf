@@ -102,11 +102,14 @@ primary evidence and correct the process:
 1. **Capture** — copy the verbatim transcript into
    `~/Documents/process-failure-patterns/<project>/<date>-<short-name>/` and write
    `metadata.md` with: pattern name; date and revision; where it happened (channel,
-   thread, cards, commits); message-id locators; seat; the observed evidence
+   thread, cards); repo commit (exact, or the nearest commit if the exact one is
+   unrecoverable); message-id locators; seat; the observed evidence
    verbatim; which instrument answered the wrong question; whether the instrument
    or the sentence was at fault; the failure class; the disposition; the cost; the
    corrective action; and where that correction now lives. Update the directory
-   `README.md` index.
+   `README.md` index. Copy only the transcript segment that supports the capture,
+   not the whole thread; compress or reference an oversized source when the
+   relevant segment cannot be copied whole.
 2. **Correct** — make the process change in its owning surface (skill, convention,
    check, or card). Name the surface in `metadata.md`.
 3. **Reuse** — the captures are inputs for later process refinement and evaluation

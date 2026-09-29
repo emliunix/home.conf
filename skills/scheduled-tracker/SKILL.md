@@ -121,15 +121,18 @@ the primary transcript and describe it in the project's pattern directory:
 ```
 
 `metadata.md` names, at minimum: **pattern name**; **date and revision**; **where
-it happened** (channel, thread, cards, commits); **message-id locators**; **the
+it happened** (channel, thread, cards); **repo commit** (the exact commit, or the
+nearest commit reachable if the exact one cannot be identified); **message-id locators**; **the
 seat**; **what was observed** (the messages or command output that show it,
 verbatim); **which instrument answered the wrong question**; **whether the
 instrument or the sentence was at fault**; **the class** it belongs to; **the
 disposition** (`fixed` / `recorded` / `open`); **the cost** (time, duplicate work,
 rework); **the corrective action taken in-process**; and **where that correction
 now lives** (skill, convention, check, or card). Copy messages verbatim; do not
-paraphrase the evidence. Keep the initial description short — this is an input for
-later analysis, not the analysis itself.
+paraphrase the evidence. Copy only the transcript segment that supports the
+capture, not the whole thread; compress or reference an oversized source when
+the relevant segment cannot be copied whole. Keep the initial description short
+— this is an input for later analysis, not the analysis itself.
 
 The capture is the tracker's job when the tracker finds the pattern. The owning
 seat may add its own capture when it is closer to the evidence. The three
