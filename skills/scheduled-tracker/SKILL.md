@@ -98,7 +98,9 @@ These are standing lead checks, not a second methodology:
   or its holder states why it cannot be. Unfinished work names its owner, next
   observable result, and review condition. Blocked work names the blocker, owner,
   and lift condition. Unowned work is assigned or escalated, never left as a
-  resting state.
+  resting state. **Claim or notify before acting on a shared or live surface** —
+  a service probe, live database read, credential use, or machine-level operation
+  is work, and a one-line claim or notice goes out before it starts.
 
 When either the engineering or review guard trips, the lead posts one short,
 specific reminder to the owning thread: the action being added, the outcome it
