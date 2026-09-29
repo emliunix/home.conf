@@ -102,6 +102,10 @@ These are standing lead checks, not a second methodology:
   a service probe, live database read, credential use, or machine-level operation
   is work, and a one-line claim or notice goes out before it starts.
 
+  A branch is transit, not storage: `main` is the return point for finished
+  work, while a named release line holds only the commits awaiting its committed
+  replay.
+
 When either the engineering or review guard trips, the lead posts one short,
 specific reminder to the owning thread: the action being added, the outcome it
 does not change, and the smaller action to take instead.
