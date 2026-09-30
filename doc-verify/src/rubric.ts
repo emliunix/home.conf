@@ -1,4 +1,5 @@
 import path from "node:path";
+import { documentSectionsNote, explainSectionMatch, normalizeSectionId } from "./normalize.js";
 
 import YAML from "yaml";
 import { z } from "zod";
@@ -148,6 +149,10 @@ export function expandRubric(input: {
   selectedIds?: SectionId[];
 }): ExpandedQuestion[] {
   const available = new Map(input.sections.map((section) => [section.id, section]));
+  for (const section of input.sections) {
+    const normalized = normalizeSectionId(section.id);
+    if (!available.has(normalized)) available.set(normalized, section);
+  }
   const explicit = input.selectedIds;
   const scope = explicit === undefined
     ? input.sections
@@ -168,12 +173,12 @@ export function expandRubric(input: {
     const matched = item.applies_to.sections.includes("@selected")
       ? scope
       : item.applies_to.sections
-          .map((id) => available.get(sectionId(id)))
+          .map((id) => available.get(sectionId(id)) ?? available.get(normalizeSectionId(sectionId(id))))
           .filter((section): section is Section => section !== undefined)
           .filter((section) => scopeIds.has(section.id));
     if (matched.length === 0) {
       if (explicit === undefined && item.critical) {
-        throw new MissingCriticalSectionError(item.id, item.applies_to.sections);
+        throw new MissingCriticalSectionError(item.id, item.applies_to.sections, input.sections.map((s) => s.id));
       }
       continue;
     }
@@ -193,8 +198,15 @@ export function expandRubric(input: {
 }
 
 export class MissingCriticalSectionError extends Error {
-  constructor(readonly itemId: string, readonly expectedSections: string[]) {
-    super(`critical rubric item ${itemId} has no matching section`);
+  constructor(
+    readonly itemId: string,
+    readonly expectedSections: string[],
+    readonly documentSectionIds: readonly string[] = [],
+  ) {
+    const detail = expectedSections
+      .map((expected) => explainSectionMatch(expected, documentSectionIds))
+      .join("; ");
+    super(`critical rubric item ${itemId} has no matching section -- ${detail} [${documentSectionsNote(documentSectionIds)}]`);
   }
 }
 
@@ -213,8 +225,14 @@ function makeQuestion(item: RubricItem, sections: Section[]): ExpandedQuestion {
       ),
   );
   const evidence = outermost.map((section) => section.content).join("\n");
-  if (Buffer.byteLength(evidence) > item.evidence.max_bytes) {
-    throw new EvidenceBudgetError(item.id, item.evidence.max_bytes);
+  const evidenceBytes = Buffer.byteLength(evidence);
+  if (evidenceBytes > item.evidence.max_bytes) {
+    throw new EvidenceBudgetError(
+      item.id,
+      item.evidence.max_bytes,
+      evidenceBytes,
+      outermost.map((section) => `${section.id} (${Buffer.byteLength(section.content)} B)`),
+    );
   }
   return {
     id: item.applies_to.scope === "each" ? `${item.id}@${firstSection.id}` : item.id,
@@ -225,8 +243,18 @@ function makeQuestion(item: RubricItem, sections: Section[]): ExpandedQuestion {
 }
 
 export class EvidenceBudgetError extends Error {
-  constructor(readonly itemId: string, readonly maxBytes: number) {
-    super(`evidence for ${itemId} exceeds ${maxBytes} bytes`);
+  constructor(
+    readonly itemId: string,
+    readonly maxBytes: number,
+    readonly actualBytes = 0,
+    readonly contributors: readonly string[] = [],
+  ) {
+    // The budget is a function of the item's section set: a reader cannot choose a number without
+    // knowing which sections produced it, and a bare "exceeds" leaves them measuring by hand.
+    super(
+      `evidence for ${itemId} is ${actualBytes} bytes, over its ${maxBytes}-byte budget` +
+      (contributors.length === 0 ? "" : `; contributing sections: ${contributors.join(", ")}`),
+    );
   }
 }
 

@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { documentSectionsNote, explainSectionMatch, sectionIdMatches } from "./normalize.js";
 import path from "node:path";
 import { createMockJevJudgeBackend, type JudgeBackend } from "deepclause-sdk";
 
@@ -164,8 +165,9 @@ async function checkArtifact(input: {
   const findings: Finding[] = [];
   const warnings: WarningDiagnostic[] = [];
   for (const required of input.rule.required_sections) {
-    if (!sections.some((section) => section.id === required)) {
-      findings.push(finding(input.file, sections[0], "structure.required-section", "NO-GO", `missing required section ${required}`));
+    if (!sections.some((section) => sectionIdMatches(sectionId(required), section.id))) {
+      findings.push(finding(input.file, sections[0], "structure.required-section", "NO-GO",
+        `missing required section -- ${explainSectionMatch(required, sections.map((s) => s.id))} [${documentSectionsNote(sections.map((s) => s.id))}]`));
     }
   }
   const companionPath = repoPath(input.file.replace(/\.md$/i, ".yaml"));

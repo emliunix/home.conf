@@ -16,6 +16,8 @@ export interface StrategySource {
 }
 
 export interface EffectiveVerificationStrategy {
+  /** artifact kind -> checks the repository declares are not machine-checkable (merged across the chain) */
+  nonMachineCheckable: Record<string, string[]>;
   defaultProfile: "draft" | "promotion";
   profiles: {
     draft: CompanionProfile;
@@ -43,11 +45,16 @@ export async function resolveVerificationStrategy(input: {
   const active = new Set<string>();
   const rubricRoots: StrategyRubricRoot[] = [];
   const chain: StrategySource[] = [];
+  const nonMachineCheckable: Record<string, string[]> = {};
   let defaultProfile: "draft" | "promotion" | undefined;
   let draft: CompanionProfile = {};
   let promotion: CompanionProfile = {};
 
   const apply = async (strategy: VerificationStrategy, declaringPath: RepoPath, fragment: string): Promise<void> => {
+    for (const [kind, checks] of Object.entries(strategy.non_machine_checkable ?? {})) {
+      const existing = nonMachineCheckable[kind] ?? [];
+      nonMachineCheckable[kind] = [...new Set([...existing, ...checks])].sort();
+    }
     if (strategy.inherits !== undefined) {
       const target = parseReference(input.root, strategy.inherits, declaringPath);
       const key = `${target.path}#${target.fragment}`;
@@ -116,7 +123,7 @@ export async function resolveVerificationStrategy(input: {
   if (defaultProfile === undefined) {
     throw new UsageError("resolved verification strategy has no default_profile");
   }
-  return { defaultProfile, profiles: { draft, promotion }, rubricRoots, chain };
+  return { defaultProfile, nonMachineCheckable, profiles: { draft, promotion }, rubricRoots, chain };
 }
 
 function parseReference(root: string, reference: string, declaringPath?: RepoPath): {
