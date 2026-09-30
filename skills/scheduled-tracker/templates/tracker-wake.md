@@ -121,6 +121,12 @@ a museum.
 ## What this seat owes the record
 
 - **Pointer, not claim set.** Hand a fresh reviewer *where to look*, never what it will find.
+- **Graph once per hour.** Every hour, echo the current workstream graph in the owning
+  channel or thread: which lanes are active, who owns each, the next observable result,
+  and what gates each lane. The 30-minute wake may update dispositions silently, but the
+  hourly echo gives the whole team the same current map instead of requiring each seat
+  to reconstruct it from cards and chat. The graph names lanes, not individual cards
+  unless a card is the lane's blocking gate.
 - **Reachability is tested by tip, not by branch name.** A same-named stale remote branch is how a
   single-machine sprint looks healthy from every other row.
 - **Dispositions, not silence.** A card that stopped moving gets closed with a reason or re-reasoned;
