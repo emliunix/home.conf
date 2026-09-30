@@ -43,6 +43,14 @@ Run these checks in order and keep notes brief:
    action. Run the lead template's over-engineering and over-review stop checks
    before proposing more work, more review, or another check.
 
+**Hourly team-aware graph echo.** Once per hour, post the current workstream graph
+in the owning channel or thread: active lanes, each lane's owner, its next
+observable result, and its gate. This is a team-awareness surface, not a second
+status system: the 30-minute wakes keep card dispositions current, and the hourly
+echo gives every seat the same map without forcing each one to reconstruct it from
+cards and chat. Name lanes, not individual cards, unless a card is the lane's
+blocking gate.
+
 ## Per-seat checklists
 
 The five checks above are the general control loop. What each one means for a
