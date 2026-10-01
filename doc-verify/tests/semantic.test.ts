@@ -19,7 +19,7 @@ const item: RubricItem = {
 const rubric: ResolvedRubric = { threshold: 1, items: [item], chain: [] };
 
 function evaluate(evidence: string, backend: JudgeBackend, root = process.cwd(), useCache = false) {
-  const question: ExpandedQuestion = { id: "q", item, sectionIds: [sectionId("x")], evidence };
+  const question: ExpandedQuestion = { id: "q", item, sectionIds: [sectionId("x")], segments: [{ id: "x", ctx: "design/x.md", text: evidence }] };
   return evaluateSemantic({
     root, artifactKind: "design", questions: [question], rubric,
     model: "jev-1.13.0", policyVersion: 1, maxEvidenceBytes: 1000,

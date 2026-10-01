@@ -5,6 +5,7 @@ import YAML from "yaml";
 import { z } from "zod";
 
 import { RepoPath, Section, SectionId, TextBlob, UsageError, repoPath, sectionId } from "./types.js";
+import { OwnSegment, ownSegments } from "./segments.js";
 
 export type SemanticAnswer = "supported" | "refuted" | "unknown";
 
@@ -62,11 +63,24 @@ export interface ResolvedRubric {
   chain: RubricSource[];
 }
 
+/** One bounded evidence segment: a stable section id, its context path, its text. */
+export interface EvidenceSegment {
+  id: string;
+  ctx: string;
+  text: string;
+}
+
 export interface ExpandedQuestion {
   id: string;
   item: RubricItem;
   sectionIds: SectionId[];
-  evidence: string;
+  /** The segments this question needs; the segment store is built once, from these. */
+  segments: EvidenceSegment[];
+}
+
+/** Total bytes of a question's own segments, for the per-item evidence budget. */
+export function segmentBytes(segments: EvidenceSegment[]): number {
+  return segments.reduce((sum, segment) => sum + Buffer.byteLength(segment.text), 0);
 }
 
 export type BlobReader = (path: RepoPath) => Promise<TextBlob>;
@@ -145,6 +159,8 @@ export async function resolveRubrics(input: {
 export function expandRubric(input: {
   rubric: ResolvedRubric;
   artifactKind: string;
+  /** Path identity of the document under check; carried in every segment's context. */
+  artifactPath: string;
   sections: Section[];
   selectedIds?: SectionId[];
 }): ExpandedQuestion[] {
@@ -164,6 +180,7 @@ export function expandRubric(input: {
         return section;
       });
   const scopeIds = new Set(scope.map((section) => section.id));
+  const own = new Map(ownSegments(input.sections).map((segment) => [String(segment.id), segment]));
   const expanded: ExpandedQuestion[] = [];
 
   for (const item of input.rubric.items) {
@@ -184,10 +201,10 @@ export function expandRubric(input: {
     }
     if (item.applies_to.scope === "each") {
       for (const section of matched) {
-        expanded.push(makeQuestion(item, [section]));
+        expanded.push(makeQuestion(item, [section], own, input.artifactPath));
       }
     } else {
-      expanded.push(makeQuestion(item, matched));
+      expanded.push(makeQuestion(item, matched, own, input.artifactPath));
     }
   }
 
@@ -210,35 +227,42 @@ export class MissingCriticalSectionError extends Error {
   }
 }
 
-function makeQuestion(item: RubricItem, sections: Section[]): ExpandedQuestion {
+function makeQuestion(
+  item: RubricItem,
+  sections: Section[],
+  own: Map<string, OwnSegment>,
+  artifactPath: string,
+): ExpandedQuestion {
   const firstSection = sections[0];
   if (firstSection === undefined) {
     throw new UsageError(`rubric item ${item.id} has no evidence section`);
   }
-  // A heading section's content already includes its subsections, so a nested
-  // section is sent only through its outermost matched ancestor.
-  const outermost = sections.filter(
-    (section) =>
-      !sections.some(
-        (other) =>
-          other !== section && other.startByte <= section.startByte && section.endByte <= other.endByte,
-      ),
-  );
-  const evidence = outermost.map((section) => section.content).join("\n");
-  const evidenceBytes = Buffer.byteLength(evidence);
+  // Each matched section contributes its OWN bounded body plus its parent-heading
+  // context; the store is deduplicated downstream, so a shared body is serialized
+  // once no matter how many questions read it.
+  const segments: EvidenceSegment[] = sections.map((section) => {
+    const segment = own.get(String(section.id));
+    const headingPath = segment?.headingPath ?? [];
+    return {
+      id: String(section.id),
+      ctx: headingPath.length === 0 ? artifactPath : `${artifactPath} \u203a ${headingPath.join(" \u203a ")}`,
+      text: segment?.text ?? section.content,
+    };
+  });
+  const evidenceBytes = segmentBytes(segments);
   if (evidenceBytes > item.evidence.max_bytes) {
     throw new EvidenceBudgetError(
       item.id,
       item.evidence.max_bytes,
       evidenceBytes,
-      outermost.map((section) => `${section.id} (${Buffer.byteLength(section.content)} B)`),
+      segments.map((segment) => `${segment.id} (${Buffer.byteLength(segment.text)} B)`),
     );
   }
   return {
     id: item.applies_to.scope === "each" ? `${item.id}@${firstSection.id}` : item.id,
     item,
     sectionIds: sections.map((section) => section.id),
-    evidence,
+    segments,
   };
 }
 

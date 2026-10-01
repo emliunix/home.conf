@@ -20,7 +20,8 @@ describe("semantic mutations", () => {
     const first = item("first", false, 1);
     const second = item("second", false, 3);
     const questions: ExpandedQuestion[] = [first, second].map((entry) => ({
-      id: entry.id, item: entry, sectionIds: [sectionId(entry.id)], evidence: entry.id,
+      id: entry.id, item: entry, sectionIds: [sectionId(entry.id)],
+      segments: [{ id: entry.id, ctx: "design/x.md", text: entry.id }],
     }));
     const rubric: ResolvedRubric = { threshold: 0.8, items: [first, second], chain: [] };
     const answers: JudgeAnswer[] = [
@@ -41,7 +42,8 @@ describe("semantic mutations", () => {
     const critical = item("critical", true, 95);
     const hygiene = item("hygiene", false, 5);
     const questions: ExpandedQuestion[] = [critical, hygiene].map((entry) => ({
-      id: entry.id, item: entry, sectionIds: [sectionId(entry.id)], evidence: entry.id,
+      id: entry.id, item: entry, sectionIds: [sectionId(entry.id)],
+      segments: [{ id: entry.id, ctx: "design/x.md", text: entry.id }],
     }));
     const rubric: ResolvedRubric = { threshold: 0.85, items: [critical, hygiene], chain: [] };
     const answers: JudgeAnswer[] = [

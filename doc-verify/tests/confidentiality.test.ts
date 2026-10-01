@@ -27,7 +27,7 @@ describe("confidentiality policy", () => {
       id: item.id,
       item,
       sectionIds: [sectionId("x")],
-      evidence: "LOCAL-ONLY-CANARY",
+      segments: [{ id: "x", ctx: "design/x.md", text: "LOCAL-ONLY-CANARY" }],
     };
     await expect(evaluateSemantic({
       root: process.cwd(), artifactKind: "design", questions: [question], rubric,
