@@ -312,3 +312,73 @@ Verification executed from the repository root:
 
 - `npm test`: 10 files / 40 tests passed, including 10 CLI cases.
 - `npm run build`, `npm run typecheck`, and `npm run lint`: passed.
+
+## C12 - Retrospective: the rubric layer (2026-09-29)
+
+The owner asked for a retrospective on the design and a fix from the root. The trigger
+is evidence: a live defect and three consumer findings. Each one traces to the rubric
+model, not to the pipeline.
+
+### First-principles bottom line
+
+The problem statement still holds. The owner's requirements now include section
+classes, rules about what a section must or must not contain, modular references, and
+diagnostics at the level of individual findings. The smallest machine that meets them
+has two parts:
+- a declarative rule program over a section tree;
+- typed judge predicates bound to evidence by name.
+
+The as-built rubric layer is a configuration schema for a fixed program. The rest of
+design 02 still matches the smallest machine: the snapshot, segmentation, one bounded
+judge request, the trust boundary, and attestation.
+
+Divergences:
+
+- **(c) Accretion: positional identity.**
+  - Batch evidence was an array. Answers lined up with questions by index, and
+    question ids were joined strings (`item@section`).
+  - A batch of several questions had no binding at all. Commit `d0a02a9` on branch
+    `docverify-evidence-binding` added keyed evidence. The rule language removes the
+    positional identity everywhere.
+- **(c) Accretion: flat section set.**
+  - Sections were a set of slug ids. Commit `a616af3` therefore rebuilds parent and
+    child from byte spans to avoid sending a nested section twice.
+  - The rule language makes the section tree a segmenter fact.
+- **(c) Accretion: fixed decision templates.**
+  - The TypeScript structure checks and three fixed clause templates held logic the
+    YAML could not express.
+  - The rule language moves that logic into the program the YAML declares.
+- **Wrong machine for the rubric layer.**
+  - A per-item `choose` question over fixed evidence cannot express classes,
+    quantifiers, relations, or negation.
+  - Whole-block `PATH#FRAGMENT` inheritance with one global item-id namespace cannot
+    compose libraries.
+
+Head re-validation:
+- **Problem statement:** holds.
+- **Scope:** holds for the pipeline and fails for the rubric model.
+- **Rationale:** survives with one change. Batch answers turn into facts through a
+  threshold that can only demote. Confidence still never promotes an answer.
+
+### Evidence
+
+- **Binding.** Measured live through `evaluateSemantic` against jev-1.13.0, with six
+  synthetic sections in two orders:
+  - before the fix: 0/12 correct, every answer `unknown`, confidence about 0.2;
+  - after the fix: 12/12 correct, confidence 1.00.
+- **C10 verification miss.** The C10 closing pass accepted batch evidence that had no
+  failure witness with more than one question. The binding boundary was claimed but
+  never observed.
+- **Nested sections.** Consumers on #165 had to audit nesting by hand for each
+  (strategy, document) pair. At pin `c2f1560`, sandbox-deploy `c9edcf0` has 19
+  documents, 298 section facts, 104 selected facts, and 0 nested pairs. A seeded case
+  gives exactly 1 hit.
+
+### Routing
+
+The rubric layer is an architecture failure. Following `flow-common`, design 02 stays
+`landed`. `design/04-modular-verification-language.md` replaces its "Rubric library and
+reference resolution", "Structural and semantic facts", and "Rules and verdicts"
+sections. It also replaces the part of design 03 that has TypeScript own the
+deterministic verdict rules. When design 04 lands, both files gain a `Superseded by:`
+line for those sections.
