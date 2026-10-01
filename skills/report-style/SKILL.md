@@ -54,13 +54,8 @@ changed behavior with a list of tasks that happened.
 report must supply the inputs that decision requires. A list of decisions is not
 decision-ready merely because each item has a name.
 
-Before presenting a decision request, state:
-
-- the subject and its current state;
-- why the decision is needed now, from the source that established the need;
-- the available options, including the consequence of not deciding;
-- the evidence and constraints that distinguish the options; and
-- the recommended option, or an explicit statement that no recommendation is made.
+The fields that make a request decision-ready are defined once, as the decision-request subtemplate in
+`references/decision-report.md`, and accepted by the `DR-*` items in `tests/rubric.yaml`.
 
 If those inputs are missing, the report is not ready to ask for a decision. Supply the
 missing context or present the item as incomplete rather than transferring the work to

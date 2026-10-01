@@ -54,6 +54,16 @@ dimensions:
           - {id: C-VARIANT, claim: a reader picks the shape the task needs, red_when: a durable, source-keyed deliverable is written as a brief}
   production:
     rubrics:
+      - id: decision-request
+        arms: [full]
+        pass_bar: every decision carries its six inputs; a list of decision names does not pass
+        items:
+          - {id: DR-STATE, claim: each decision names its subject and its current state, red_when: a decision appears as a name with no state}
+          - {id: DR-WHY-NOW, claim: each decision says why it is needed now, from the source that established the need, red_when: the reason given is the report's own importance, or the need has no source}
+          - {id: DR-OPTIONS, claim: each decision lists its viable options in domain vocabulary, red_when: one option is presented as the decision}
+          - {id: DR-COST, claim: each decision states the consequence of not deciding, red_when: the consequence is absent and must be inferred}
+          - {id: DR-EVIDENCE, claim: the evidence and constraints that separate the options are given with their bases, red_when: options are listed with no measurement, bound, or rule that distinguishes them}
+          - {id: DR-RECOMMEND, claim: a recommendation is made or its absence is explicit, red_when: the reader cannot tell whether one is offered}
       - id: acceptance
         arms: [control, full, full-minus-boundary]
         pass_bar: the produced brief carries a status tag per claim, a contrast pair and a closing boundary; the record's keys resolve
