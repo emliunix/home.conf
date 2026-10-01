@@ -189,7 +189,7 @@ function answerDetails(answers: JudgeAnswer[], questionCount: number): AnswerDet
   }));
 }
 
-function productionBackend(model: string): JudgeBackend {
+export function productionBackend(model: string): JudgeBackend {
   const apiKey = process.env.TYPESAFE_API_KEY?.trim();
   if (apiKey === undefined || apiKey.length === 0) {
     throw new BlockedError("TYPESAFE_API_KEY is unavailable");

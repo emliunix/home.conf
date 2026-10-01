@@ -14,7 +14,8 @@ import {
   resolveProfile,
 } from "./config.js";
 import { loadDocVerifyEnv } from "./local-env.js";
-import { evaluateSemantic, PolicyViolationError } from "./semantic.js";
+import { evaluateSemantic, PolicyViolationError, productionBackend } from "./semantic.js";
+import { composeModules, ModuleError, renderReport, runProgram } from "./engine/index.js";
 import { EvidenceBudgetError, MissingCriticalSectionError, expandRubric, resolveRubrics, segmentBytes } from "./rubric.js";
 import { segmentMarkdown } from "./segments.js";
 import { MissingBlobError, SnapshotMode, captureSnapshots } from "./snapshot.js";
@@ -177,6 +178,13 @@ async function checkArtifact(input: {
   } else if (companion.document.kind !== input.rule.artifact_kind) {
     throw new UsageError(`invalid ${companionPath}: document.kind must be ${input.rule.artifact_kind}`);
   }
+  if (input.rule.modules !== undefined) {
+    return checkWithModules({ ...input, modules: input.rule.modules, sections, findings, warnings,
+      ...(companion?.document.status === undefined ? {} : { companionStatus: companion.document.status }) });
+  }
+  if (input.rule.verification === undefined) {
+    throw new UsageError(`document rule for ${input.file} names neither verification nor modules`);
+  }
   const strategy = await resolveVerificationStrategy({
     root: input.root,
     readBlob: input.readCandidate,
@@ -293,6 +301,121 @@ async function checkArtifact(input: {
     trace,
     verdict,
   };
+}
+
+/**
+ * The design-04 path: compose the rule's modules, derive the document's facts, and run the
+ * engine. A draft runs only the constraints without `profiles` (the structural ones);
+ * every other status runs the `promotion` profile. The verdict and findings are the engine's.
+ */
+async function checkWithModules(input: {
+  root: string;
+  file: RepoPath;
+  blob: TextBlob;
+  rule: DocumentIncludeRule;
+  config: DocVerifyConfig;
+  impactPath: RepoPath[];
+  selectorTrace: ArtifactReport["selectorTrace"];
+  readCandidate: (path: RepoPath) => Promise<TextBlob>;
+  requestedProfile: Profile;
+  backend?: JudgeBackend;
+  modules: string[];
+  sections: Section[];
+  findings: Finding[];
+  warnings: WarningDiagnostic[];
+  companionStatus?: string;
+}): Promise<ArtifactReport> {
+  const status = input.rule.status_from === "title"
+    ? titleStatus(input.blob.content)
+    : (sectionBody(input.sections.find((section) => section.id === "status")) ?? input.companionStatus)?.toLowerCase().replace(/[^a-z-]/g, "");
+  const profile: Exclude<Profile, "auto"> = input.requestedProfile !== "auto"
+    ? input.requestedProfile
+    : status === "draft" ? "draft" : "promotion";
+  const base: Omit<ArtifactReport, "findings" | "verdict" | "semanticCalls"> = {
+    path: input.file,
+    artifactKind: input.rule.artifact_kind,
+    profile,
+    impactPath: input.impactPath,
+    selectorTrace: input.selectorTrace,
+    requiredSections: input.rule.required_sections,
+    sections: input.sections.map(({ content: _content, ...section }) => section),
+    strategyChain: [],
+    rubricChain: [],
+    evaluations: [],
+    cacheHits: 0,
+    warnings: input.warnings,
+    trace: [],
+  };
+  const findings = [...input.findings];
+  if (findings.length > 0) {
+    return { ...base, findings, semanticCalls: 0, verdict: combineVerdicts(findings.map((item) => item.verdict)) };
+  }
+  let composed;
+  try {
+    composed = await composeModules(input.modules, input.readCandidate);
+  } catch (error) {
+    if (error instanceof ModuleError) {
+      throw new UsageError(`invalid modules for ${input.file}: ${error.message}`);
+    }
+    throw error;
+  }
+  let backend = input.backend;
+  if (backend === undefined) {
+    try {
+      backend = productionBackend(input.config.judge.model);
+    } catch (error) {
+      if (error instanceof BlockedError) {
+        findings.push(finding(input.file, input.sections[0], "semantic.prerequisite", "BLOCKED", error.message));
+        return { ...base, findings, semanticCalls: 0, verdict: "BLOCKED" };
+      }
+      throw error;
+    }
+  }
+  const meta: Record<string, string> = { kind: input.rule.artifact_kind };
+  if (status !== undefined && status.length > 0) {
+    meta.status = status;
+  }
+  const report = await runProgram({
+    moduleYaml: composed.yaml,
+    documents: [{ path: input.file, markdown: input.blob.content, meta }],
+    backend,
+    model: input.config.judge.model,
+    policy: {
+      maxEvidenceBytes: input.config.policy.max_evidence_bytes,
+      forbiddenLiterals: input.config.policy.forbidden_literals,
+      version: input.config.policy.version,
+    },
+    profile,
+  });
+  // One finding per binding that did not hold: a violated error is NO-GO, a violated warning or
+  // an undetermined binding NEEDS-REVIEW. Engine-level notes (unasked atoms, empty populations)
+  // follow as NEEDS-REVIEW. The artifact verdict stays the engine's own.
+  for (const constraint of report.constraints) {
+    for (const binding of constraint.bindings) {
+      if (binding.status === "satisfied") {
+        continue;
+      }
+      const verdict = binding.status === "violated" && constraint.severity === "error" ? "NO-GO" : "NEEDS-REVIEW";
+      findings.push(finding(input.file, input.sections[0], `module.${constraint.id}`, verdict,
+        `${binding.status}: ${binding.message}${binding.repair === undefined ? "" : ` -- repair: ${binding.repair}`}`));
+    }
+  }
+  for (const note of report.findings) {
+    findings.push(finding(input.file, input.sections[0], "module.engine", "NEEDS-REVIEW", note));
+  }
+  return {
+    ...base,
+    findings,
+    semanticCalls: report.requests.length,
+    engine: { modules: composed.sources, hash: report.hash, requests: report.requests.length, text: renderReport(report) },
+    verdict: report.verdict,
+  };
+}
+
+/** A goal keeps its status as the title suffix: `# <goal> — OPEN|BLOCKED|CLOSED-GREEN (<date>)`. */
+export function titleStatus(markdown: string): string | undefined {
+  const match = /^# .*?\s[—–-]\s+([A-Z][A-Z-]*[A-Z])\b/m.exec(markdown);
+  return match?.[1]?.toLowerCase();
 }
 
 function deletedReport(

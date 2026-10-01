@@ -94,6 +94,8 @@ export interface ArtifactReport {
   warnings: WarningDiagnostic[];
   findings: Finding[];
   trace: RuleTrace[];
+  /** Design-04 rules only: the engine's rendered diagnostics (populations, proofs, oracles, repairs). */
+  engine?: { modules: RepoPath[]; hash: string; requests: number; text: string };
   verdict: Verdict;
 }
 

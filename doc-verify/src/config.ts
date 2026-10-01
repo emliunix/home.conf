@@ -9,9 +9,19 @@ const documentIncludeRuleSchema = z.object({
   pattern: z.string().min(1),
   exclude: z.literal(false).optional(),
   artifact_kind: z.string().min(1),
-  verification: z.string().min(1),
+  /** A v1 verification strategy reference (`path#fragment`). Exactly one of this or `modules`. */
+  verification: z.string().min(1).optional(),
+  /**
+   * Design-04 verification modules, composed in order (later modules extend earlier ones; a name
+   * defined twice is refused). Exactly one of this or `verification`.
+   */
+  modules: z.array(z.string().min(1)).min(1).optional(),
+  /** Where the document keeps its status for the `meta(D, status, W)` fact: a `## Status` section (default) or its title suffix. */
+  status_from: z.enum(["section", "title"]).optional(),
   required_sections: z.array(z.string().min(1)).default([]),
-}).strict();
+}).strict().refine((rule) => (rule.verification === undefined) !== (rule.modules === undefined), {
+  message: "a document rule names exactly one of verification (v1 strategy) or modules (design-04)",
+});
 
 const documentExcludeRuleSchema = z.object({
   pattern: z.string().min(1),

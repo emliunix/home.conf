@@ -63,7 +63,10 @@ function renderVerboseText(report: VerificationReport): string {
     } else {
       lines.push(`  semantic: request=${artifact.semanticRequestId} calls=${String(artifact.semanticCalls)} cache-hits=${String(artifact.cacheHits)}`);
     }
-    if (artifact.trace.length === 0) {
+    if (artifact.engine !== undefined) {
+      lines.push(`  modules: ${artifact.engine.modules.join(" + ")} (${artifact.engine.hash.slice(0, 12)}), requests=${String(artifact.engine.requests)}`);
+      lines.push(...artifact.engine.text.trimEnd().split("\n").map((line) => `    ${line}`));
+    } else if (artifact.trace.length === 0) {
       lines.push("  decision: none");
     } else {
       lines.push(...artifact.trace.map((trace) =>
