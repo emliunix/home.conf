@@ -1,0 +1,58 @@
+# The constitution: onboarding and the manifest for every part of the process (design 10).
+schema_version: 2
+kind: verification-module
+module: visflow.spine
+oracles:
+  falsifiers_observable(D, S):
+    ask: Each falsifier listed here names an observable outcome that would retire the commitment, rather than a matter of taste or opinion.
+    evidence: core.body(D, S)
+    threshold: 0.5
+    max_bytes: 16000
+  idle_root(D, S):
+    ask: Find any root in this section, in whatever group, table or list it appears, that states neither the specific work it does for the project nor why it is not load-bearing. A root that only asserts its own value counts. Answer yes only if you can name such a root.
+    evidence: core.body(D, S)
+    threshold: 0.5
+    max_bytes: 16000
+rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  purpose_section(D, S): top(D, S), core.heading(D, S, '1. Purpose')
+  commitment_section(D, S): top(D, S), core.heading(D, S, '2. The commitment, in one sentence')
+  roots_section(D, S): top(D, S), core.heading(D, S, '4. The roots we stand on, and the work each does')
+  falsifier_section(D, S): top(D, S), core.heading(D, S, '6. What would falsify the commitment')
+constraints:
+  spine-states-purpose:
+    forall: core.meta(D, kind, constitution)
+    require: purpose_section(D, S)
+    severity: error
+    message: "{D} states no purpose section"
+    repair: "Add '## 1. Purpose': the one proposition the project tests."
+  spine-states-commitment:
+    forall: core.meta(D, kind, constitution)
+    require: commitment_section(D, S)
+    severity: error
+    message: "{D} states no one-sentence commitment"
+    repair: "Add '## 2. The commitment, in one sentence'."
+  spine-states-roots:
+    forall: core.meta(D, kind, constitution)
+    require: roots_section(D, S)
+    severity: error
+    message: "{D} names no roots"
+    repair: "Add '## 4. The roots we stand on, and the work each does', each root with its work."
+  spine-states-falsifiers:
+    forall: core.meta(D, kind, constitution)
+    require: falsifier_section(D, S)
+    severity: error
+    message: "{D} names nothing that would falsify its commitment"
+    repair: "Add '## 6. What would falsify the commitment' with observable outcomes."
+  spine-falsifiers-observable:
+    forall: falsifier_section(D, S)
+    require: falsifiers_observable(D, S)
+    severity: error
+    message: "a falsifier in {D} is not observable"
+    repair: "Rewrite each falsifier as an outcome someone could observe."
+  spine-roots-do-work:
+    forall: roots_section(D, S)
+    forbid: idle_root(D, S)
+    severity: error
+    message: "a root in {D} states no work it does"
+    repair: "Give each root the work it does, or drop it."
