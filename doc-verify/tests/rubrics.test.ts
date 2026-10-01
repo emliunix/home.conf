@@ -73,9 +73,9 @@ describe("rubric resolution", () => {
     if (problem === undefined || other === undefined) {
       throw new Error("fixture sections are missing");
     }
-    expect(expandRubric({ rubric, artifactKind: "design", sections, selectedIds: [problem.id] })).toHaveLength(1);
-    expect(() => expandRubric({ rubric, artifactKind: "design", sections, selectedIds: [other.id] })).toThrow("no applicable");
-    expect(() => expandRubric({ rubric, artifactKind: "design", sections: segmentMarkdown("# T\n## Other\nx\n") })).toThrow(MissingCriticalSectionError);
+    expect(expandRubric({ rubric, artifactKind: "design", artifactPath: "design/x.md", sections, selectedIds: [problem.id] })).toHaveLength(1);
+    expect(() => expandRubric({ rubric, artifactKind: "design", artifactPath: "design/x.md", sections, selectedIds: [other.id] })).toThrow("no applicable");
+    expect(() => expandRubric({ rubric, artifactKind: "design", artifactPath: "design/x.md", sections: segmentMarkdown("# T\n## Other\nx\n") })).toThrow(MissingCriticalSectionError);
   });
 
   it("sends a nested section once in combined evidence", async () => {
@@ -83,9 +83,10 @@ describe("rubric resolution", () => {
     const files = await fixture({ "base.yaml": `schema_version: 1\nrubrics:\n  kind: jev\n  threshold: 0.8\n  items:${selected}` });
     const rubric = await resolveRubric({ root: files.root, reference: "base.yaml#rubrics", readBlob: files.readBlob });
     const sections = segmentMarkdown("# T\nintro\n## Problem\ntext\n## Other\nother\n");
-    const [question] = expandRubric({ rubric, artifactKind: "design", sections });
+    const [question] = expandRubric({ rubric, artifactKind: "design", artifactPath: "design/x.md", sections });
     expect(question?.sectionIds).toHaveLength(3);
-    expect(question?.evidence.split("## Problem")).toHaveLength(2);
-    expect(question?.evidence.split("other")).toHaveLength(2);
+    const texts = (question?.segments ?? []).map((segment) => segment.text).join("\n");
+    expect(texts.split("## Problem")).toHaveLength(2);
+    expect(texts.split("other")).toHaveLength(2);
   });
 });

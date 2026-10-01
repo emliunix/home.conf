@@ -16,7 +16,7 @@ const criticalItem: RubricItem = {
   weight: 1,
   scores: { supported: 1, refuted: 0, unknown: 0 },
 };
-const question: ExpandedQuestion = { id: criticalItem.id, item: criticalItem, sectionIds: [sectionId("problem")], evidence: "evidence" };
+const question: ExpandedQuestion = { id: criticalItem.id, item: criticalItem, sectionIds: [sectionId("problem")], segments: [{ id: "problem", ctx: "design/x.md", text: "evidence" }] };
 const rubric: ResolvedRubric = { threshold: 0.8, items: [criticalItem], chain: [] };
 
 describe("DML rules", () => {
