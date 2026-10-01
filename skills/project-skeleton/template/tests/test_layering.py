@@ -6,6 +6,7 @@ construction; the first split-out package must be listed here in the same PR, an
 seeded-violation tests keep the parser honest.
 """
 import ast
+import sys
 from pathlib import Path
 
 import pytest
@@ -90,20 +91,39 @@ def test_tree_respects_the_layer_table():
     assert violations(import_graph()) == []
 
 
-def test_parser_reads_every_import_form():
-    source = ("from .ir import X\nfrom . import machine\nimport app.surface\n"
-              "from app.domains import y\nfrom numpy import z\nimport json\n")
-    assert internal_imports(source, "app") == {"ir", "machine", "surface", "domains"}
+def test_parser_reads_every_import_form(monkeypatch, tmp_path):
+    """Runs against a synthetic package, so renaming the project's real package
+    (as the docstring instructs) cannot break the parser tests."""
+    synthetic = tmp_path / "syn"
+    synthetic.mkdir()
+    (synthetic / "surf.py").write_text("X = 1\n", encoding="utf-8")
+    monkeypatch.setattr(sys.modules[__name__], "PACKAGES", {"syn": (synthetic, None)})
+    source = ("from .ir import X\nfrom . import machine\nimport syn.surf\n"
+              "from syn.domains import y\nfrom numpy import z\nimport json\n")
+    assert internal_imports(source, "syn") == {"ir", "machine", "surf", "domains"}
 
 
-def test_from_package_import_module_is_read_as_that_module():
+def test_from_package_import_module_is_read_as_that_module(monkeypatch, tmp_path):
     """`from PKG import module` must not escape the gate as an import of the package."""
-    directory = PACKAGES["app"][0]
-    (directory / "example_two.py").write_text("X = 1\n", encoding="utf-8") \
-        if directory.is_dir() else None
-    if directory.is_dir():
-        try:
-            assert internal_imports("from app import example_two, ATTRIBUTE\n", "app") == \
-                {"example_two", "__init__"}
-        finally:
-            (directory / "example_two.py").unlink(missing_ok=True)
+    synthetic = tmp_path / "syn"
+    synthetic.mkdir()
+    (synthetic / "example_two.py").write_text("X = 1\n", encoding="utf-8")
+    monkeypatch.setattr(sys.modules[__name__], "PACKAGES", {"syn": (synthetic, None)})
+    assert internal_imports("from syn import example_two, ATTRIBUTE\n", "syn") == \
+        {"example_two", "syn"}
+
+
+def test_a_seeded_violation_is_caught(monkeypatch, tmp_path):
+    """The gate is red-capable on every bootstrap: a synthetic two-layer project with
+    one forbidden arrow must be reported, and the allowed arrow must not be."""
+    core = tmp_path / "corep"; web = tmp_path / "webp"
+    core.mkdir(); web.mkdir()
+    (core / "values.py").write_text("V = 1\n", encoding="utf-8")
+    (web / "page.py").write_text("from corep.values import V  # allowed\n", encoding="utf-8")
+    (core / "greedy.py").write_text("from webp.page import P  # forbidden\n", encoding="utf-8")
+    monkeypatch.setattr(sys.modules[__name__], "PACKAGES",
+                        {"corep": (core, "core"), "webp": (web, "web")})
+    monkeypatch.setattr(sys.modules[__name__], "LAYER_OF", {})
+    monkeypatch.setattr(sys.modules[__name__], "MAY_IMPORT", {"web": {"core"}})
+    graph = import_graph()
+    assert violations(graph) == [("greedy", "page")]
