@@ -94,10 +94,27 @@ const strategyProfilesSchema = z.object({
   promotion: companionProfileSchema.optional(),
 }).strict();
 
+/**
+ * Checks a repository declares as its own and NOT machine-checkable.
+ *
+ * The design-04 strategy schema is strict, so before this existed a repository had nowhere to name
+ * the checks no predicate and no bounded question can decide: they lived beside the validated file
+ * in a sibling nothing read, and rotted there. Declaring them here keeps the declaration inside the
+ * file the engine validates, so the list is schema-checked even though its members are not.
+ *
+ * Shape: artifact kind -> check names. Unknown keys are still refused; only `verification` gained
+ * one optional field.
+ */
+const nonMachineCheckableSchema = z.record(
+  z.string().min(1),
+  z.array(z.string().min(1)).min(1),
+);
+
 export const verificationStrategySchema = z.object({
   kind: z.literal("jev-prolog"),
   inherits: z.string().min(1).optional(),
   rubrics: rubricBlockSchema.optional(),
+  non_machine_checkable: nonMachineCheckableSchema.optional(),
   default_profile: z.enum(["draft", "promotion"]).optional(),
   profiles: strategyProfilesSchema.optional(),
 }).strict().refine((value) => value.inherits !== undefined || value.rubrics !== undefined, {

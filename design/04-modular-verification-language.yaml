@@ -1,0 +1,17 @@
+schema_version: 1
+kind: document-contract
+document:
+  path: design/04-modular-verification-language.md
+  kind: design
+  depends_on:
+    - goals/03-modular-verification-language.md
+    - design/02-programmatic-document-contract-verification.md
+    - design/03-companion-driven-document-verification.md
+verification:
+  kind: jev-prolog
+  inherits: ../doc-verify/contracts/design-strategy.yaml#verification
+commands:
+  - npm test
+  - npm run typecheck
+  - npm run lint
+evidence_level: E1
