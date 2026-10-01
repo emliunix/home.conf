@@ -1,0 +1,10 @@
+schema_version: 1
+kind: document-contract
+document:
+  path: docs/modules/core/properties.md
+  kind: module-properties
+  depends_on:
+    - docs/architecture.md
+verification:
+  kind: jev-prolog
+  inherits: ../../../doc-verify/contracts/docs-strategy.yaml#verification
