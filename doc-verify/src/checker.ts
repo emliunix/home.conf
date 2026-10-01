@@ -15,7 +15,7 @@ import {
 } from "./config.js";
 import { loadDocVerifyEnv } from "./local-env.js";
 import { evaluateSemantic, PolicyViolationError } from "./semantic.js";
-import { EvidenceBudgetError, MissingCriticalSectionError, expandRubric, resolveRubrics } from "./rubric.js";
+import { EvidenceBudgetError, MissingCriticalSectionError, expandRubric, resolveRubrics, segmentBytes } from "./rubric.js";
 import { segmentMarkdown } from "./segments.js";
 import { MissingBlobError, SnapshotMode, captureSnapshots } from "./snapshot.js";
 import { resolveVerificationStrategy } from "./strategy.js";
@@ -209,11 +209,12 @@ async function checkArtifact(input: {
       const questions = expandRubric({
         rubric,
         artifactKind: input.rule.artifact_kind,
+        artifactPath: input.file,
         sections,
         ...(selectedIds === undefined ? {} : { selectedIds }),
       });
       const size = (question: (typeof questions)[number]) => ({
-        evidenceBytes: Buffer.byteLength(question.evidence),
+        evidenceBytes: segmentBytes(question.segments),
         evidenceBudget: question.item.evidence.max_bytes,
       });
       evaluations = questions.map((question) => ({
