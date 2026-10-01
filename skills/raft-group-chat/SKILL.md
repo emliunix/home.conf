@@ -10,8 +10,6 @@ substantive group-chat message such as a decision, status, review, handoff,
 blocker, or completion report. Ordinary acknowledgements and short
 conversational replies do not need the full pass.
 
-`INPUT_TEST` is another name for the **send test** defined below.
-
 ## Task cards: name the design authority
 
 Every task that can change behavior, a contract, schema, interface,
