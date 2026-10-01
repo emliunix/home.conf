@@ -201,10 +201,10 @@ export function expandRubric(input: {
     }
     if (item.applies_to.scope === "each") {
       for (const section of matched) {
-        expanded.push(makeQuestion(item, [section], own, input.artifactPath));
+        expanded.push(makeQuestion(item, [section], own, input.artifactPath, input.sections));
       }
     } else {
-      expanded.push(makeQuestion(item, matched, own, input.artifactPath));
+      expanded.push(makeQuestion(item, matched, own, input.artifactPath, input.sections));
     }
   }
 
@@ -227,12 +227,36 @@ export class MissingCriticalSectionError extends Error {
   }
 }
 
+/**
+ * A matched section's evidence is its whole subtree: the section and every descendant (each
+ * deeper section inside its byte span), in document order, each once. Own segments keep each
+ * piece bounded and the store dedupes them; selecting a section must still bring its
+ * subsections, or a section whose content lives in `###` children reaches the judge empty.
+ */
+function withDescendants(matched: Section[], all: Section[]): Section[] {
+  const picked = new Set<string>();
+  const result: Section[] = [];
+  for (const section of all) {
+    const inside = matched.some((root) =>
+      root.id === section.id
+      || (section.depth > root.depth && section.startByte >= root.startByte && section.endByte <= root.endByte && section.startByte > root.startByte));
+    if (inside && !picked.has(String(section.id))) {
+      picked.add(String(section.id));
+      result.push(section);
+    }
+  }
+  return result;
+}
+
 function makeQuestion(
   item: RubricItem,
-  sections: Section[],
+  matched: Section[],
   own: Map<string, OwnSegment>,
   artifactPath: string,
+  all: Section[] = matched,
 ): ExpandedQuestion {
+  const sections = matched;
+  const evidenceSections = withDescendants(matched, all);
   const firstSection = sections[0];
   if (firstSection === undefined) {
     throw new UsageError(`rubric item ${item.id} has no evidence section`);
@@ -240,7 +264,7 @@ function makeQuestion(
   // Each matched section contributes its OWN bounded body plus its parent-heading
   // context; the store is deduplicated downstream, so a shared body is serialized
   // once no matter how many questions read it.
-  const segments: EvidenceSegment[] = sections.map((section) => {
+  const segments: EvidenceSegment[] = evidenceSections.map((section) => {
     const segment = own.get(String(section.id));
     const headingPath = segment?.headingPath ?? [];
     return {

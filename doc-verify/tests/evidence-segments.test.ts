@@ -55,6 +55,23 @@ function sharedParentRubric(): ResolvedRubric {
 }
 
 describe("evidence segments", () => {
+  it("(e) a selected section brings its subsections: content that lives in ### children reaches the judge", () => {
+    const markdown = ["# Title", "## Rationale", "### One occurrence", "one receipt per occurrence", "### Settlement", "settled in one transaction", ""].join("\n");
+    const sections = segmentMarkdown(markdown);
+    const [question] = questionsFor({ threshold: 0.8, items: [item("rationale.whole", ["rationale"])], chain: [] }, sections);
+    const text = (question?.segments ?? []).map((segment) => segment.text).join("\n");
+    expect(text).toContain("one receipt per occurrence");
+    expect(text).toContain("settled in one transaction");
+    expect(question?.segments.map((segment) => segment.id)).toEqual(["rationale", "rationale/one-occurrence", "rationale/settlement"]);
+  });
+
+  it("(e) selecting a parent and its child together still sends the child once", () => {
+    const { sections } = fixture();
+    const [question] = questionsFor({ threshold: 0.8, items: [item("both", ["rationale", "rationale/first"])], chain: [] }, sections);
+    const ids = (question?.segments ?? []).map((segment) => segment.id);
+    expect(ids.filter((id) => id === "rationale/first")).toHaveLength(1);
+  });
+
   it("(a) does not repeat a shared parent body once per question", () => {
     const { sections } = fixture();
     const questions = questionsFor(sharedParentRubric(), sections);
