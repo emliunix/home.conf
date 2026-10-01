@@ -48,6 +48,24 @@ Distinguish three different things that are often all called "steps":
 Before/after comparison is not an implementation timeline. Do not replace an account of
 changed behavior with a list of tasks that happened.
 
+## INPUT_TEST: reports that ask for a decision
+
+`INPUT_TEST` is the quality test for a report that asks a reader to make a decision. The
+report must supply the inputs that decision requires. A list of decisions is not
+decision-ready merely because each item has a name.
+
+Before presenting a decision request, state:
+
+- the subject and its current state;
+- why the decision is needed now, from the source that established the need;
+- the available options, including the consequence of not deciding;
+- the evidence and constraints that distinguish the options; and
+- the recommended option, or an explicit statement that no recommendation is made.
+
+If those inputs are missing, the report is not ready to ask for a decision. Supply the
+missing context or present the item as incomplete rather than transferring the work to
+the reader.
+
 ## Shared discipline
 
 - State the reader's question and answer it early.
