@@ -33,6 +33,21 @@ describe("semantic boundary", () => {
     await expect(evaluate("safe", backend)).rejects.toThrow(BlockedError);
   });
 
+  it("names the measured bytes and the limit when the evidence is over budget", async () => {
+    let calls = 0;
+    const backend = createMockJevJudgeBackend({ answers: () => { calls += 1; return []; } });
+    // 1000 is this file's limit; the canonical state wraps the evidence, so this exceeds it
+    const error = await evaluate("x".repeat(1200), backend).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(BlockedError);
+    const message = (error as Error).message;
+    const measured = /the round's evidence is (\d+) bytes/.exec(message)?.[1];
+    expect(measured, `the refusal must carry the measured byte count: ${message}`).toBeDefined();
+    expect(Number(measured)).toBeGreaterThan(1000);
+    expect(message).toContain("above the outbound budget of 1000");
+    expect(message).toContain("a batch is never split");
+    expect(calls).toBe(0);
+  });
+
   it("rejects prohibited outbound evidence before calling the backend", async () => {
     let calls = 0;
     const backend = createMockJevJudgeBackend({ answers: () => { calls += 1; return []; } });
