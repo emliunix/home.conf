@@ -108,6 +108,10 @@ describe("outbound checks", () => {
     expect(requests).toHaveLength(0);
     expect(report.verdict).toBe("BLOCKED");
     expect(report.failure?.message).toMatch(/never split/);
+    // the numbers, not just the refusal: measured bytes and the configured limit
+    const refusal = report.failure?.message ?? "";
+    expect(refusal).toMatch(/the round's evidence is \d+ bytes/);
+    expect(refusal).toContain("above the outbound budget of 200");
   });
 
   it("gives NO-GO when the evidence carries a forbidden literal", async () => {

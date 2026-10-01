@@ -184,7 +184,9 @@ function enforceCapabilities(backend: JudgeBackend, questionCount: number, state
 
 function enforceOutboundPolicy(state: string, maxBytes: number, forbidden: string[]): void {
   if (Buffer.byteLength(state) > maxBytes) {
-    throw new BlockedError("semantic evidence exceeds the outbound policy budget");
+    throw new BlockedError(
+      `the round's evidence is ${String(Buffer.byteLength(state))} bytes, above the outbound budget of ${String(maxBytes)}; a batch is never split`,
+    );
   }
   const lower = state.toLowerCase();
   const generic = ["typesafe_api_key", "api_key=", "-----begin private key-----", "/users/"];
