@@ -325,9 +325,10 @@ async function checkWithModules(input: {
   warnings: WarningDiagnostic[];
   companionStatus?: string;
 }): Promise<ArtifactReport> {
+  const statusSection = input.sections.find((section) => section.id === "status");
   const status = input.rule.status_from === "title"
     ? titleStatus(input.blob.content)
-    : (sectionBody(input.sections.find((section) => section.id === "status")) ?? input.companionStatus)?.toLowerCase().replace(/[^a-z-]/g, "");
+    : (sectionBody(statusSection) ?? input.companionStatus)?.toLowerCase().replace(/[^a-z-]/g, "");
   const profile: Exclude<Profile, "auto"> = input.requestedProfile !== "auto"
     ? input.requestedProfile
     : status === "draft" ? "draft" : "promotion";
@@ -374,6 +375,12 @@ async function checkWithModules(input: {
   const meta: Record<string, string> = { kind: input.rule.artifact_kind };
   if (status !== undefined && status.length > 0) {
     meta.status = status;
+  }
+  // The status word is the line's first token, so `status` alone cannot tell "reviewed" from
+  // "Reviewed — nearly done". `status_words` counts the line's tokens for a module to constrain.
+  const line = input.rule.status_from === "title" ? undefined : statusLine(statusSection);
+  if (line !== undefined) {
+    meta.status_words = String(line.split(/\s+/).length);
   }
   const report = await runProgram({
     moduleYaml: composed.yaml,
@@ -480,6 +487,11 @@ async function optionalCompanion(reader: (path: RepoPath) => Promise<TextBlob>, 
 
 function findDocumentRule(config: DocVerifyConfig, file: RepoPath): DocumentIncludeRule | undefined {
   return documentRuleFor(config.documents, file);
+}
+
+/** The first non-empty line under a section's heading. */
+function statusLine(section: Section | undefined): string | undefined {
+  return section?.content.split("\n").slice(1).map((line) => line.trim()).find((line) => line.length > 0);
 }
 
 function sectionBody(section: Section | undefined): string | undefined {

@@ -124,6 +124,25 @@ describe("doc-verify check on design-04 modules", () => {
     expect(only(report).findings.map((item) => item.message).join("\n")).toContain("status selected is not one of");
   });
 
+  it("reports how many words the Status line holds, so a module can require exactly one", async () => {
+    const oneWord = BASE.replace("constraints:\n", `constraints:
+  status-is-one-word:
+    forall: core.meta(D, status, _)
+    require: core.meta(D, status_words, '1')
+    severity: error
+    message: "{D}: the status line is not one word"
+`);
+    const prose = GOOD.replace("reviewed", "Reviewed — nearly done, pending one more look");
+    const files = { "modules/base.yaml": oneWord, "modules/design.yaml": DESIGN };
+    const bad = await checkDocuments({ root: await repository({ ...files, "design/a.md": prose }, DESIGN_RULE),
+      mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend });
+    expect(only(bad).verdict).toBe("NO-GO");
+    expect(only(bad).findings.map((item) => item.message).join("\n")).toContain("the status line is not one word");
+    const good = await checkDocuments({ root: await repository({ ...files, "design/a.md": GOOD }, DESIGN_RULE),
+      mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend });
+    expect(only(good).verdict).toBe("PASS");
+  });
+
   it("runs a draft on structural constraints only: no judge request", async () => {
     const draft = GOOD.replace("reviewed", "draft");
     const root = await repository({ "modules/base.yaml": BASE, "modules/design.yaml": DESIGN, "design/a.md": draft }, DESIGN_RULE);
