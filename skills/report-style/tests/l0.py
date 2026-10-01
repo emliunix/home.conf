@@ -106,6 +106,28 @@ def check_references() -> int:
     return len(paths)
 
 
+
+def check_decision_subtemplate() -> int:
+    """The decision-request subtemplate and its acceptance ids must exist together."""
+    text = (ROOT / "references" / "decision-report.md").read_text()
+    rub = yaml.safe_load((ROOT / "tests" / "rubric.yaml").read_text())
+    ids: list[str] = []
+    for dimension in rub["dimensions"].values():
+        for rubric in dimension["rubrics"]:
+            if rubric["id"] == "decision-request":
+                ids = [item["id"] for item in rubric["items"]]
+    if not ids:
+        failures.append("tests/rubric.yaml: no `decision-request` rubric")
+        return 0
+    if "## Decision-request subtemplate" not in text:
+        failures.append("references/decision-report.md: no `## Decision-request subtemplate` "
+                        "- the DR-* acceptance items have no stated fields")
+    for item_id in ids:
+        if item_id not in text:
+            failures.append(f"references/decision-report.md: the subtemplate does not name {item_id}")
+    return len(ids)
+
+
 def check_pins() -> str:
     prod = ROOT / "tests" / "cases" / "production.yaml"
     pins = (yaml.safe_load(prod.read_text()) or {}).get("pins", [])
@@ -122,10 +144,11 @@ def main() -> int:
     items = check_rubric()
     cases = check_cases()
     references = check_references()
+    subtemplate = check_decision_subtemplate()
     pins = check_pins()
     print(
         f"frontmatter: parsed | rubric items: {items} | cited cases: {cases} | "
-        f"report kinds: {references} | pins: {pins}"
+        f"report kinds: {references} | subtemplate ids: {subtemplate} | pins: {pins}"
     )
     if failures:
         print(f"L0 FAIL - {len(failures)} defect(s):")
