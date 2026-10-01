@@ -13,7 +13,7 @@ import { z } from "zod";
 
 import { buildDml, DmlOutcome, parseDmlOutcome } from "./dml.js";
 import { canonicalJson, sha256 } from "./hash.js";
-import { ExpandedQuestion, ResolvedRubric } from "./rubric.js";
+import { EvidenceSegment, ExpandedQuestion, ResolvedRubric } from "./rubric.js";
 import { BlockedError } from "./types.js";
 
 const cacheSchema = z.object({
@@ -49,6 +49,42 @@ export interface SemanticEvaluation {
   details: AnswerDetail[];
 }
 
+/** The serialized evidence state sent to the judge. */
+export interface EvidenceState {
+  schema_version: 2;
+  artifact_kind: string;
+  segments: EvidenceSegment[];
+  questions: Array<{ question_id: string; segment_ids: string[] }>;
+}
+
+/**
+ * One canonical segment store, addressed by questions. A segment read by three
+ * questions is serialized once and referenced three times, so the outbound state
+ * is bounded by the document's distinct segments rather than by questions x bodies.
+ */
+export function buildEvidenceState(input: {
+  artifactKind: string;
+  questions: ExpandedQuestion[];
+}): EvidenceState {
+  const store = new Map<string, EvidenceSegment>();
+  for (const question of input.questions) {
+    for (const segment of question.segments) {
+      if (!store.has(segment.id)) {
+        store.set(segment.id, segment);
+      }
+    }
+  }
+  return {
+    schema_version: 2,
+    artifact_kind: input.artifactKind,
+    segments: [...store.values()].sort((left, right) => (left.id < right.id ? -1 : left.id > right.id ? 1 : 0)),
+    questions: input.questions.map((question) => ({
+      question_id: question.id,
+      segment_ids: question.segments.map((segment) => segment.id),
+    })),
+  };
+}
+
 export async function evaluateSemantic(input: {
   root: string;
   artifactKind: string;
@@ -62,15 +98,7 @@ export async function evaluateSemantic(input: {
   backend?: JudgeBackend;
   useCache?: boolean;
 }): Promise<SemanticEvaluation> {
-  const state = {
-    schema_version: 1,
-    artifact_kind: input.artifactKind,
-    evidence: input.questions.map((question) => ({
-      question_id: question.id,
-      sections: question.sectionIds,
-      text: question.evidence,
-    })),
-  };
+  const state = buildEvidenceState({ artifactKind: input.artifactKind, questions: input.questions });
   const stateJson = canonicalJson(state);
   enforceOutboundPolicy(stateJson, input.maxEvidenceBytes, input.forbiddenLiterals);
   const program = buildDml({ state, questions: input.questions, threshold: input.rubric.threshold });
