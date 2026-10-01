@@ -28,7 +28,7 @@ root requirement to justify an implementation that merely happened to be present
 Use this when the report is not *about* a decision already made but **asks the reader to make one**. It is the
 `INPUT_TEST` rule in fillable form: a list of decisions is not decision-ready merely because each item has a name.
 
-For each decision, supply all six fields:
+For each decision, supply all eight fields:
 
 | Field | What it must carry | When it is missing | Accepted by |
 | --- | --- | --- | --- |
@@ -38,6 +38,8 @@ For each decision, supply all six fields:
 | Consequence of not deciding | What stays broken, unjudged, or silently defaulted | Silence, so the reader infers it | `DR-COST` |
 | Distinguishing evidence and constraints | The measurement, bound, or rule that separates the options, with its base | Options with no basis for choosing | `DR-EVIDENCE` |
 | Recommendation | The recommended option, or an explicit statement that none is made | A recommendation hidden among the options | `DR-RECOMMEND` |
+| Decision owner | The seat, role, or person who makes the decision, named as the channel names them | "Someone should decide." | `DR-OWNER` |
+| Decision deadline or trigger | The date by which it must be made, or the event that forces it | No horizon, so the item drifts | `DR-TRIGGER` |
 
 Each id is an acceptance item in `tests/rubric.yaml` and names the defect that flips it. If a field is missing,
 supply the context or present the item as incomplete -- do not transfer the work to the reader.

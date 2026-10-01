@@ -41,7 +41,7 @@ triplets:
       cites: "SKILL.md:82-90 - factual claims are keyed and local links are verified"
   - behavior: a decision request over the pinned set
     canonical:
-      prompt: "We have to choose the parallelism model for taskboard-v3 before the next slice. Write the decision-ready report: where it stands now, why it is needed now, the options, what deferring costs us, the evidence that separates them, and your recommendation."
+      prompt: "We have to choose the parallelism model for taskboard-v3 before the next slice. Write the decision-ready report: where it stands now, why it is needed now, the options, what deferring costs us, the evidence that separates them, who owns the decision, when it must be made or what forces it, and your recommendation."
       expected: [report-style]
       cites: "SKILL.md:53-55 - INPUT_TEST: a request for a decision must supply the decision's inputs; the fields are defined once in references/decision-report.md \"Decision-request subtemplate\""
     trap:
@@ -49,7 +49,7 @@ triplets:
       expected: []
       cites: "SKILL.md:54-55 - a list of decisions is not decision-ready merely because each item has a name"
     paraphrase:
-      prompt: "Give me what I need to pick between the parallelism options, including what it costs us to keep deferring the choice."
+      prompt: "Give me what I need to pick between the parallelism options, including what it costs us to keep deferring the choice, who decides, and what forces the timing."
       expected: [report-style]
       cites: "SKILL.md:57 - the subtemplate fields and their DR-* acceptance ids live in references/decision-report.md"
 patterns:
