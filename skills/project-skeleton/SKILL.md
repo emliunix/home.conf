@@ -44,6 +44,8 @@ Bootstrap a scratch project and require, out of the box:
    - a design Status line made multi-word → `design-status-is-one-word` NO-GO;
    - a canon verification row stripped of its node id → `test_canon_docs` red;
    - a property's row removed entirely → `test_canon_docs` red;
+   - a cross-layer import against the table (configure `PACKAGES`/`LAYER_OF`/`MAY_IMPORT`
+     first) → `test_layering` red, while an allowed-direction import stays green;
    - a seeded doc mutation → `tools/rule_quality` reports the flip.
 
 ## Limits
