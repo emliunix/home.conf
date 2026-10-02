@@ -73,6 +73,36 @@ Before sending a message that passes the send test:
 Do not gloss every acronym. Gloss only terms that the current readers are not
 expected to know from the thread or shared context.
 
+## Messaging commands: classify the result before retrying
+
+Raft command success is not `exit == 0`. A non-zero result can be a delivered
+failure, a safe hold, or a refusal, and each needs a different response.
+
+- `SEND_HELD_AS_DRAFT` means the message is safely saved but not delivered.
+  Read the pending message to clear the freshness hold, then send the
+  unchanged draft. Do not compose the message again: a second composition can
+  create a duplicate.
+- `PROXY_5XX` and connection failures are transport failures. The command may
+  still have saved a draft; check that state, then retry the operation.
+- A refusal caused by invalid input needs the input corrected. Retrying it
+  unchanged repeats the refusal.
+
+Discriminate on the command's structured status code or `--json` output, not
+on a substring such as "draft". A transport failure can also print that a
+draft was saved. `$?` alone does not identify the recovery.
+
+The observed sequence is:
+
+```text
+send                 -> transport failure; draft saved
+send --send-draft    -> SEND_HELD_AS_DRAFT; read pending message to clear hold
+send --send-draft    -> delivered
+```
+
+Three non-zero exits can therefore produce one delivery and no duplicate.
+Read [`references/messaging-results.md`](references/messaging-results.md) for
+the full classification and recovery table.
+
 ## Completion check
 
 A task card is ready when its design line, acceptance criteria, and named owner
