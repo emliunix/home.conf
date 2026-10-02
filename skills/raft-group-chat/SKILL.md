@@ -69,42 +69,39 @@ Before sending a message that passes the send test:
    or scope that produced the number, and do not measure a negative over a
    window shorter than the period of the thing you claim did not happen. A
    count without its base cannot be reproduced.
+7. **Every claim names its subject, not only its extent.** Rules 5 and 6 bound
+   how far a claim reaches; this one says what it is about. Four subjects are
+   routinely confused, and the failure is invisible because the sentence stays
+   true about the wrong one.
+   - **Artifact versus running system.** An edited file is not a loaded module.
+     Say which one changed. "The fix is applied and verified" reads as "the
+     effect is present"; write "the file is patched, but no running process has
+     loaded it."
+   - **The moment of observation.** A negative is only about the window you
+     looked. If the subject is created and later cleaned up, name when you
+     sampled; "zero directories after the run" is exactly what a healthy run
+     leaves behind.
+   - **Your instrument versus the subject's rule.** A result is evidence about
+     what your command read. Before writing "the check has a hole" or "the
+     sweep missed X", say what population your instrument read versus the one
+     the subject reads.
+   - **The act a phrase denotes, when it admits two.** If "correct X" can mean
+     relabel or rewrite, name which. Two people acting in good faith on the
+     same instruction will otherwise contradict each other.
+
+   And keep measured separate from inferred. *Measured*, *reproduced* and
+   *verified* are claims about evidence; do not state a deduction in measurement
+   grammar.
 
 Do not gloss every acronym. Gloss only terms that the current readers are not
 expected to know from the thread or shared context.
 
-## Claim precision: state, time, subject
+## Corrections that do not leave the old belief live
 
-Five wording failures produced most of the rework in the 2026-10-02 pi-clm
-thread. Each has a cheap fix.
-
-- **Name the state, not just the object.** *Installed*, *loaded*, *live*,
-  *verified* and *deployed* are separate claims, and an artifact can be one
-  without being the next. A reader who hears "the fix is applied and verified"
-  concludes the effect is present. Write the state that answers the reader's
-  question — "the fix is on disk, but no running process has loaded it, so the
-  seats are still unbounded" — not the strongest state the artifact reached.
-
-- **Time-scope an observation whose subject has a lifecycle.** If what you
-  looked for is created and later cleaned up, a negative taken after teardown
-  says nothing. "Zero mirror directories after the run" is exactly what a
-  healthy run leaves behind. Name the moment you looked, and observe the thing
-  while it is alive.
-
-- **A result is evidence only about what the instrument read.** Before writing
-  "the check has a hole" or "the sweep missed X", confirm your pattern selects
-  the same population the subject does. State the population, not only the
-  command: a green over one extractor is silent about another.
-
-- **Do not state an inference in measurement grammar.** *Measured*,
-  *reproduced* and *verified* are claims about evidence. Keep the proven part
-  and the deduced part in separate clauses — "three coexisting instances is
-  measured; that the two handlers come from different instances is inferred."
-
-- **A retraction names the belief it removes.** "My earlier claim was wrong"
-  leaves the reader holding it. Say what a reader would have concluded from the
-  old wording, and that they should discard it. A correction that only negates
-  the sentence, without naming the inference, lets the false belief stay live.
+A retraction names the belief it removes. "My earlier claim was wrong" leaves
+the reader holding whatever the old wording implied. Say what a reader would
+have concluded from it, and that they should discard that conclusion. A
+correction that only negates the sentence lets the false belief survive.
 
 ## Messaging commands: classify the result before retrying
 
