@@ -17,8 +17,8 @@ small set of falsifiable rules, each with its population, command, result, and
 bound. This is not an agent ranking or a productivity score.
 
 Follow the `tool-calling-cookbook` skill for rules already earned. Its
-`references/cookbook.md` is the durable rulebook; do not rediscover or
-silently overwrite an entry.
+topic references are the durable rulebook; do not rediscover or silently
+overwrite an entry.
 
 ## 1. Freeze the corpus
 
@@ -96,8 +96,8 @@ guard itself works.
 - A low crash rate: do not promote it to a safety rule without a correctness
   check.
 - A verified correction: replace the superseded rule in
-  `tool-calling-cookbook/references/cookbook.md` and mark the correction in
-  the report. Do not leave both versions active.
+  the matching `tool-calling-cookbook` topic and mark the correction in the
+  report. Do not leave both versions active.
 
 Add a rule to the cookbook only when it changes a future decision and its
 evidence is reproducible. Keep single instances labeled as candidates until a
