@@ -24,6 +24,9 @@ the topic files are the durable rulebook, not this routing surface.
   [result-interpretation.md](references/result-interpretation.md): put the
   discriminating field in the test, bucket non-zero exits by code, keep crash
   rate separate from correctness, and split by command before blaming syntax.
+- **`efficient-tool-use/call-composition`** -
+  [call-composition.md](references/call-composition.md): keep payloads out of
+  command strings and block on a condition instead of polling.
 - **`efficient-tool-use/reuse-and-protection`** -
   [reuse-and-protection.md](references/reuse-and-protection.md): save repeated
   operations, measure a guard's reach and activation, require identity rather
