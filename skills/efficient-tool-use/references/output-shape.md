@@ -26,6 +26,13 @@ examples as if they happened.
 For a transcript, count tool-call records and pair calls with results by ID.
 If the format does not expose the needed record, state the reduced claim.
 
+## Check the record, not only the current tree
+
+When scanning a versioned record for a value, inspect both the current
+snapshot and the change history. A removal commit quotes the line it removes,
+so `git grep <value>` can be clean while `git log -p` still prints the value.
+Report tree cleanliness and record cleanliness as separate findings.
+
 ## Make required arguments explicit
 
 A typed or structured interface should require the identifiers and
