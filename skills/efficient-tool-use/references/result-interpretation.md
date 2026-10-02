@@ -6,17 +6,18 @@ that will drive the next action.
 ## Put the discriminating field in the test
 
 Do not key on a substring that merely correlates with the category. A
-transport failure may also print "draft saved"; the structured status code is
-what distinguishes it.
+transport failure and a safe stateful hold may print overlapping prose; the
+structured status code is what distinguishes them.
 
-Why: a test keyed on the word `draft` hid 20 real transport failures inside a
-"safe draft" bucket.
+Why: a test keyed on one shared word hid 20 real transport failures inside a
+safe-hold bucket.
 
 ## Bucket non-zero exits by code
 
 `exit != 0` is not one condition. Classify the result before retrying:
 
-- safe hold: read the pending state, then send the existing draft;
+- safe hold: perform the state-clearing read, then retry the existing artifact
+  unchanged;
 - transport failure: retry the operation;
 - refusal or invalid input: fix the input, do not retry unchanged.
 

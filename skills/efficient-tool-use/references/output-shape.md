@@ -9,8 +9,9 @@ Do not invent a text parser for a surface that already returns structured
 data. Use JSON, a typed API, or the command's native output format; then ask
 for only the fields needed.
 
-Why: the source corpus text-shaped structured `raft` output repeatedly. The
-tool already knew the response shape.
+Why: the source corpus repeatedly text-shaped output from commands that
+already returned structured data. The tool knew the response shape; the caller
+discarded it.
 
 ## Search before reading
 
