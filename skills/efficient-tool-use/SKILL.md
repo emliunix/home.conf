@@ -37,9 +37,9 @@ compared, or used as evidence. Do not rely on remembering a rule.
 
 ## Evidence
 
-Source case: **Tool-Pattern Mining and CLM Hands-On - 2026-10-02**, artifact
-`pt_ef39716d-e324-49a8-a1fc-685c7e078ca6`, revision 5, based on 17,551 tool
-calls across six transcripts.
+Source case: a six-transcript agent tool-use audit, 2026-10-02, based on
+17,551 tool calls. The underlying report stays in its originating workspace;
+this cookbook carries only the normalized rules and their bounds.
 
 The source report and its parsers remain the first case study. Add a rule to a
 topic only when it changes a future decision and its evidence is reproducible.
