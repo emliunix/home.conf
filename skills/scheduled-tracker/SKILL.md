@@ -67,6 +67,10 @@ sixth:
 - [`templates/tracker-wake.md`](templates/tracker-wake.md) — a seat that owns the
   board: dispositions, ownership, reachability by tip, labels traceable to
   measurements.
+- [`templates/project-tracker-message.md`](templates/project-tracker-message.md)
+  — the scheduled pass message: board rows, an explicit request for every named
+  member to report its own progress, and the three-step follow-up when a member
+  does not answer.
 
 A project that runs one of these seats usually keeps its own local extension — the
 same checklist with the *instances that earned each rule* attributed, plus that
@@ -169,4 +173,6 @@ Post one short update in the owning channel or thread only when there is a
 material change, decision, blocker, or required review. Lead with the exit
 state, then the next owner and action. Include the concrete task-track
 disposition when a card moved, stalled, landed, or became blocked. Do not paste
-routine command logs.
+routine command logs. Use
+[`templates/project-tracker-message.md`](templates/project-tracker-message.md)
+when the pass needs member-written progress or a silent member needs follow-up.

@@ -138,6 +138,56 @@ a museum.
 - **The board is reconciled, not narrated.** Every pass ends with a disposition for each active
   card and a concrete next owner/action for every non-landed row.
 
+## Liveness, and what follows a silent member
+
+The board records ownership; **ownership is not activity**. A tracker's summary of another seat is
+not evidence about that seat. Ask the member to answer for itself, in this thread, and treat its own
+reply as the only witness that cannot be counterfeited from outside. The pasteable pass message and
+diagnostic follow-up are in
+[`project-tracker-message.md`](project-tracker-message.md).
+
+### Ask, in the pass message
+
+> **Members named on a row: reply here now with one line of your own progress** — what you have
+> closed, what is open, and the one thing you are waiting on. **A row is not closed by the tracker
+> describing you; it is closed by you saying where it stands.**
+
+Why the member answers rather than the tracker: a status line cannot tell *assigned* from *moving*,
+and neither can a summary written about someone. `active; online` read true for every seat that was
+actually dead on 2026-10-02.
+
+### A reply witnesses liveness at the moment of replying — not continuity
+
+A seat that was silent for six hours replies correctly when finally reached. So **do not read a reply
+as continuity**: it proves *"I am alive now"*, not *"I was alive throughout"*. Three seats that day
+were silent for hours, and every one would have replied when woken.
+
+### Follow-up when a member does not answer: liveness → diagnostics → rescue
+
+Three steps, not one. A seat that looks silent may be dead, wedged, or merely busy, and those need
+different actions — so the tracker does not get to skip diagnostics.
+
+1. **Silence age** — the timestamp of the member's last real tool call. *This says something is
+   wrong. It does not say what.*
+2. **Diagnostics — read the record, not the status line.** Look for a run of provider-error records
+   in the member's transcript (`isApiErrorMessage`, or the harness's equivalent). **A wake that only
+   fails looks exactly like silence from outside**, and 2026-10-02 produced 93 such wakes in one seat
+   inside a two-hour window. *The error record names a failure; silence only implies one.*
+3. **Rescue** — with a named failure the action is knowable. A saturated context needs a **clean
+   session reset**, not a retry and not a nudge, because **every further turn re-sends the same
+   context**. Preserve the transcript: it is the only evidence of what the seat was doing. Escalate
+   to the accountable owner when the action is theirs to authorize.
+
+| symptom | what it is | what it is not |
+| --- | --- | --- |
+| no reply, no tool calls, no error records | unknown — could be thinking | **not** evidence of death |
+| no reply, a run of provider errors | a **named** provider failure | not merely idle |
+| a reply | liveness **at that moment** | **not** proof of continuity |
+
+**Bound to keep in the report:** state what was checked and when, and say plainly when the cause is
+not established. *"Silent since `<ts>`, two provider errors at `<ts>`" is a diagnosis;
+"unresponsive" is a guess.*
+
 ## Exit
 
 Every wake ends `done` or `blocked`, and every blocked card names its owner and lift condition. The
