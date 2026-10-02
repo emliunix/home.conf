@@ -96,6 +96,26 @@ Before sending a message that passes the send test:
 Do not gloss every acronym. Gloss only terms that the current readers are not
 expected to know from the thread or shared context.
 
+## Every result names what was tested, why, and what it means
+
+The most common failure is a bare result: "the test passes." It leaves three
+slots empty, and the reader cannot tell whether the sentence supports the
+decision in front of them.
+
+1. **What ran, on what.** Name the check or artifact and its subject: "the
+   pairwise check over all 18 refusal emitters and their 60 writer sites" —
+   not "the test."
+2. **What property it tests.** State the claim, not the file name: "every
+   refusal path writes the same envelope before responding." A reader who does
+   not know the suite cannot recover this from a test name.
+3. **What the outcome means for the decision.** Say what the reader should
+   conclude and what stays outside the result: "the pairing is complete; this
+   does not show the envelope's content is correct."
+
+The same shape applies to any result, not only tests: a review, a probe, a
+census, a migration. A result without its purpose and meaning is a fact the
+reader has to interpret before they can use it.
+
 ## Corrections that do not leave the old belief live
 
 A retraction names the belief it removes. "My earlier claim was wrong" leaves
