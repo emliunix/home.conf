@@ -6,7 +6,8 @@ description: >-
   should become named routines or typed surfaces, and publish reproducible
   lessons. Use when mining agent sessions for tooling patterns, evaluating a
   guard or extension's reach, or deciding which lesson belongs in a durable
-  skill or repository check.
+  skill or repository check. This is the measurement procedure, not the
+  ordinary tool-use rulebook.
 ---
 
 # Audit agent tooling
@@ -15,9 +16,9 @@ Treat session transcripts as measurements, not anecdotes. The output is a
 small set of falsifiable rules, each with its population, command, result, and
 bound. This is not an agent ranking or a productivity score.
 
-Read [`references/lessons.md`](references/lessons.md) before starting. It is
-the durable ledger of rules already earned; do not rediscover or silently
-overwrite them.
+Follow the `tool-calling-cookbook` skill for rules already earned. Its
+`references/cookbook.md` is the durable rulebook; do not rediscover or
+silently overwrite an entry.
 
 ## 1. Freeze the corpus
 
@@ -94,11 +95,11 @@ guard itself works.
   command's contract instead of labeling the syntax unsafe.
 - A low crash rate: do not promote it to a safety rule without a correctness
   check.
-- A verified correction: replace the superseded lesson in
-  `references/lessons.md` and mark the correction in the report. Do not leave
-  both versions active.
+- A verified correction: replace the superseded rule in
+  `tool-calling-cookbook/references/cookbook.md` and mark the correction in
+  the report. Do not leave both versions active.
 
-Add a lesson to the ledger only when it changes a future decision and its
+Add a rule to the cookbook only when it changes a future decision and its
 evidence is reproducible. Keep single instances labeled as candidates until a
 control, another corpus, or a live round trip supports them.
 
@@ -116,5 +117,5 @@ the largest decision-changing result, not the method. Include:
 - links to any issues or follow-up cards.
 
 Publish a durable artifact and verify its checksum. A concise channel message
-carries the outcome; the artifact carries the evidence; the lessons ledger
-carries what should survive the report.
+carries the outcome; the artifact carries the evidence; the
+`tool-calling-cookbook` reference carries what should survive the report.
