@@ -21,9 +21,9 @@ the topic files are the durable rulebook, not this routing surface.
   structure, search before reading, parse records rather than words, and make
   required arguments explicit.
 - **`efficient-tool-use/result-interpretation`** -
-  [result-interpretation.md](references/result-interpretation.md): bucket
-  non-zero exits by code, keep crash rate separate from correctness, and split
-  by command before blaming syntax.
+  [result-interpretation.md](references/result-interpretation.md): put the
+  discriminating field in the test, bucket non-zero exits by code, keep crash
+  rate separate from correctness, and split by command before blaming syntax.
 - **`efficient-tool-use/reuse-and-protection`** -
   [reuse-and-protection.md](references/reuse-and-protection.md): save repeated
   operations, measure a guard's reach and activation, require identity rather
