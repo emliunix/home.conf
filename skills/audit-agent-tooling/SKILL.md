@@ -16,7 +16,7 @@ Treat session transcripts as measurements, not anecdotes. The output is a
 small set of falsifiable rules, each with its population, command, result, and
 bound. This is not an agent ranking or a productivity score.
 
-Follow the `tool-calling-cookbook` skill for rules already earned. Its
+Follow the `efficient-tool-use` skill for rules already earned. Its
 topic references are the durable rulebook; do not rediscover or silently
 overwrite an entry.
 
@@ -96,7 +96,7 @@ guard itself works.
 - A low crash rate: do not promote it to a safety rule without a correctness
   check.
 - A verified correction: replace the superseded rule in
-  the matching `tool-calling-cookbook` topic and mark the correction in the
+  the matching `efficient-tool-use` topic and mark the correction in the
   report. Do not leave both versions active.
 
 Add a rule to the cookbook only when it changes a future decision and its
@@ -118,4 +118,4 @@ the largest decision-changing result, not the method. Include:
 
 Publish a durable artifact and verify its checksum. A concise channel message
 carries the outcome; the artifact carries the evidence; the
-`tool-calling-cookbook` reference carries what should survive the report.
+`efficient-tool-use` reference carries what should survive the report.

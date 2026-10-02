@@ -1,5 +1,5 @@
 ---
-name: tool-calling-cookbook
+name: efficient-tool-use
 description: >-
   Apply evidence-based rules when composing tool calls, parsing their output,
   interpreting non-zero exits, or turning repeated operations into durable
@@ -9,22 +9,22 @@ description: >-
   whole transcript corpus; use audit-agent-tooling for that procedure.
 ---
 
-# Tool-calling cookbook
+# Efficient tool use
 
 One trigger, topic-grouped rules. Read only the topic that matches the moment;
 the topic files are the durable rulebook, not this routing surface.
 
 ## Topics
 
-- **`tool-calling-cookbook/output-shape`** -
+- **`efficient-tool-use/output-shape`** -
   [output-shape.md](references/output-shape.md): ask the owning surface for
   structure, search before reading, parse records rather than words, and make
   required arguments explicit.
-- **`tool-calling-cookbook/result-interpretation`** -
+- **`efficient-tool-use/result-interpretation`** -
   [result-interpretation.md](references/result-interpretation.md): bucket
   non-zero exits by code, keep crash rate separate from correctness, and split
   by command before blaming syntax.
-- **`tool-calling-cookbook/reuse-and-protection`** -
+- **`efficient-tool-use/reuse-and-protection`** -
   [reuse-and-protection.md](references/reuse-and-protection.md): save repeated
   operations, measure a guard's reach and activation, require identity rather
   than liveness, and record the read time for live evidence.
