@@ -1,0 +1,37 @@
+---
+id: agent-phrasing
+title: Reporting style
+---
+
+Report the **state**, not the journey. Lead with the outcome and the number that
+establishes it. Give the context needed to *act or decide*; leave out what is needed
+only to *justify how you got here*.
+
+- **"I checked X, it found Y, so I then did Z" is a transcript, not a report.** Say
+  what is true now and what the reader should do.
+- **Do not narrate a rejected option** unless the rejection changes the reader's next
+  decision.
+- **One line for a correction, not the story of the search.** "The figure is 472, not
+  524 — the window straddled two revisions." The search belongs in the capture file.
+- **Self-test before sending:** if the reader's next action is unchanged by deleting a
+  paragraph, that paragraph is yours to hold, not theirs to read.
+
+For status, results, and answers, **default to this style without being asked.** The
+long form goes in an artifact, linked in one line.
+
+### Style hot words
+
+A reader can name the style directly. The word selects the phrasing and applies to the
+text that follows; the closing token is optional when the message ends there.
+
+| hot word | write like |
+| --- | --- |
+| `in brief:` | a message: outcome and its number, what it changes, what the reader must do. `(end brief)` |
+| `in record:` | a durable, source-keyed record with capture scope per source. `(end record)` |
+| `no process:` | the same content with every account of what was tried, checked, or rejected removed. `(end process)` |
+
+Hot words remove a routing judgement — the reader names the style, so nothing has to
+decide whether the text counts as a report. They never override correctness: a hot word
+that would compress away a load-bearing caveat — an unverified claim, a control that did
+not hold, a blocker, or a figure that was previously wrong — keeps the caveat and drops
+something else instead.
