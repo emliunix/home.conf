@@ -1,0 +1,6 @@
+Reporting style
+Registries and mirrors
+Containers (Apple `container` + `container-compose`)
+Owned resources
+Credentials
+Working habits that have paid off here

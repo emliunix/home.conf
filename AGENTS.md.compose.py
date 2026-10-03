@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any, NoReturn
 
 ROOT = Path(__file__).resolve().parent
-MANIFEST = ROOT / "AGENTS.md.snippets" / "manifest.yaml"
+MANIFEST = ROOT / "user.AGENTS.md.snippets" / "manifest.yaml"
 
 
 def _fail(msg: str) -> NoReturn:
@@ -69,6 +69,17 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
     return meta, text[end + 5:].lstrip("\n")
 
 
+def resolve_output(declared: str) -> Path:
+    """Resolve the composition's output path.
+
+    An absolute or `~`-anchored path is the user-global target and lives outside
+    the repo; a relative path is repo-local. Expanding before the is_absolute test
+    is what keeps `~/x` from becoming `<repo>/~/x`.
+    """
+    p = Path(declared).expanduser()
+    return p if p.is_absolute() else ROOT / p
+
+
 def resolve_snippet(entry_path: str, roots: list[Path]) -> Path:
     """Find a snippet file across the configured roots.
 
@@ -89,14 +100,11 @@ def resolve_snippet(entry_path: str, roots: list[Path]) -> Path:
           f"(roots: {', '.join(str(r) for r in roots)})")
 
 
-def compose(manifest_path: Path, include_local: bool = False) -> str:
+def compose(manifest_path: Path) -> str:
     manifest = load_yaml(manifest_path)
     for key in ("version", "output", "snippets", "header"):
         if key not in manifest:
             _fail(f"{manifest_path} is missing required key: {key}")
-    if include_local and "local_header" not in manifest:
-        _fail(f"{manifest_path} is missing required key for the local "
-              f"composition: local_header")
     if manifest["version"] != 1:
         _fail(f"unsupported manifest version: {manifest['version']!r}")
     if not isinstance(manifest["snippets"], list):
@@ -114,18 +122,12 @@ def compose(manifest_path: Path, include_local: bool = False) -> str:
     for extra in declared:
         roots.append(Path(str(extra)).expanduser())
 
-    # Two compositions, each with its own header: the repo one is instructions for
-    # working in this repo, the local one is machine-wide guidance. They are not
-    # two copies of the same document.
-    header_key = "local_header" if include_local else "header"
-    parts: list[str] = [str(manifest[header_key]).rstrip("\n")]
+    parts: list[str] = [str(manifest["header"]).rstrip("\n")]
 
     seen: set[str] = set()
     for entry in manifest["snippets"]:
         if not isinstance(entry, dict):
             _fail(f"snippet entry must be a mapping: {entry!r}")
-        if entry.get("local_only") and not include_local:
-            continue
         for key in ("id", "path", "title"):
             if key not in entry:
                 _fail(f"snippet entry missing {key!r}: {entry!r}")
@@ -184,13 +186,13 @@ def main(argv: list[str]) -> int:
         _fail(f"no snippet with id {args.only!r}")
 
     manifest = load_yaml(MANIFEST)
-    composed = compose(MANIFEST, include_local=False)
+    composed = compose(MANIFEST)
 
     if args.to_stdout:
-        sys.stdout.write(compose(MANIFEST, include_local=args.with_local))
+        sys.stdout.write(compose(MANIFEST))
         return 0
 
-    out = ROOT / manifest["output"]
+    out = resolve_output(str(manifest["output"]))
 
     if args.check:
         current = out.read_text() if out.is_file() else ""
@@ -202,17 +204,7 @@ def main(argv: list[str]) -> int:
         return 0
 
     out.write_text(composed)
-    print(f"compose: wrote {out.name} ({len(composed)} bytes) "
-          f"[publishable: repo snippets only]")
-
-    # The local composition carries the machine-specific roots and is written
-    # OUTSIDE the repo, so a public commit can never contain those bodies.
-    local_out = manifest.get("local_output")
-    if local_out:
-        local_path = Path(str(local_out)).expanduser()
-        local_path.parent.mkdir(parents=True, exist_ok=True)
-        local_path.write_text(compose(MANIFEST, include_local=True))
-        print(f"compose: wrote {local_path} [local: repo + machine snippets]")
+    print(f"compose: wrote {out} ({len(composed)} bytes)")
 
     if args.install:
         target = Path(args.install).expanduser()
@@ -220,7 +212,7 @@ def main(argv: list[str]) -> int:
         # destroy content this script did not write: an existing file that differs
         # is the owner's, and a silent overwrite is unrecoverable. --force is the
         # explicit override.
-        installed = compose(MANIFEST, include_local=True)
+        installed = compose(MANIFEST)
         if target.exists() and target.read_text() != installed and not args.force:
             print(
                 f"compose: REFUSING to overwrite {target} — it exists and differs "
