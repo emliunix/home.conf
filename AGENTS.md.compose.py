@@ -94,6 +94,9 @@ def compose(manifest_path: Path, include_local: bool = False) -> str:
     for key in ("version", "output", "snippets", "header"):
         if key not in manifest:
             _fail(f"{manifest_path} is missing required key: {key}")
+    if include_local and "local_header" not in manifest:
+        _fail(f"{manifest_path} is missing required key for the local "
+              f"composition: local_header")
     if manifest["version"] != 1:
         _fail(f"unsupported manifest version: {manifest['version']!r}")
     if not isinstance(manifest["snippets"], list):
@@ -111,7 +114,11 @@ def compose(manifest_path: Path, include_local: bool = False) -> str:
     for extra in declared:
         roots.append(Path(str(extra)).expanduser())
 
-    parts: list[str] = [str(manifest["header"]).rstrip("\n")]
+    # Two compositions, each with its own header: the repo one is instructions for
+    # working in this repo, the local one is machine-wide guidance. They are not
+    # two copies of the same document.
+    header_key = "local_header" if include_local else "header"
+    parts: list[str] = [str(manifest[header_key]).rstrip("\n")]
 
     seen: set[str] = set()
     for entry in manifest["snippets"]:
