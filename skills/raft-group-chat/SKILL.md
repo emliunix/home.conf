@@ -1,6 +1,6 @@
 ---
 name: raft-group-chat
-description: Prepare and review Raft group-chat tasks and messages so each work item names its design authority and each message uses reader-known language or a first-use gloss.
+description: Prepare and review Raft group-chat tasks and messages, including ordinary status, result, and progress messages - so each work item names its design authority and each message uses reader-known language or a first-use gloss. Apply the `report-style` brief form (`in brief:`) to status and result messages by default; the hot word is the reader's, the default is the sender's.
 ---
 
 # Raft Group Chat
@@ -9,6 +9,20 @@ Use this skill when creating or amending a Raft task card, or when sending a
 substantive group-chat message such as a decision, status, review, handoff,
 blocker, or completion report. Ordinary acknowledgements and short
 conversational replies do not need the full pass.
+
+## Status and result messages default to brief
+
+A result, status, or progress message is written in the `report-style` brief form
+even without a hot word: outcome and its number first, what it changes, what the
+reader must do. Do not narrate the investigation ("I checked X, found Y, which
+turned out to be Z") and do not recount a discarded hypothesis unless the
+reader's decision depends on it. Method goes in the card or the report file, with
+a one-line pointer.
+
+One exception, and it is not optional: **a number or conclusion that was
+previously published and is now corrected is stated in one line** ("was 524, now
+472 - the window straddled two revisions"). Compression drops narration, never a
+correction the reader may already be holding.
 
 ## Task cards: name the design authority
 
