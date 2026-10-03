@@ -37,8 +37,17 @@ minute (step 8 of the Dockerfile).
 ## Build
 
 ```sh
-podman build -t local/glean:ghc9.6.6 .
+# The memory cap is NOT optional in practice. `mem_limit` in docker-compose.yaml
+# is a RUNTIME field and does NOT apply to `podman build`, so a build runs
+# uncapped against the whole VM. This VM also hosts bifrost, which all three Pi
+# seats route inference through — an OOM during the build can take out bifrost,
+# not just the build. `--memory-swap` must equal `--memory` or Docker/podman
+# treats the limit as unset. The parallelism caps are inside the Dockerfile.
+podman build --memory 4g --memory-swap 4g -t local/glean:ghc9.6.6 .
 ```
+
+*Finding credit: @Bob (LIU-DESKTOP) flagged the uncapped-build risk against bifrost;
+the distinction between `mem_limit` (runtime) and `--memory` (build) is his.*
 
 The Dockerfile uses `set -euxo pipefail` and **no error-swallowing**. An earlier
 revision ended its apt line with `|| true`, which left the image without `curl`,
