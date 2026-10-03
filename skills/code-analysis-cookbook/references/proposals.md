@@ -42,9 +42,13 @@ Thread killed: schema ID in batch (7cb6848b…) does not match schema ID of DB (
 ```
 
 The message names both IDs, which is a good refusal — **but only on the
-standalone path.** Through the server the same mismatch surfaces as a
-**`Bad Gateway`**, which reads as a transport failure and sends you looking in
-the wrong place. A seat lost time to exactly that.
+standalone path.** A server-mediated attempt failed earlier with a bare
+**`Bad Gateway`** instead, and the mismatch was only found by driving the
+indexer standalone. **If the two are related, the mechanism is Trap 3, not the
+schema: this container's proxy env makes an HTTP client fabricate `Bad Gateway`
+for a local address.** Do not read `Bad Gateway` here as a schema signal — it is
+the least diagnostic error in this whole chapter, and it has at least two
+independent causes. Unset the proxy variables before concluding anything from it.
 
 **Trap 2 — Angle rejects a variable used only once.** The natural query shape
 `hs.ValBind { name = N }` is **refused**; the working form is `hs.ValBind _`. The
@@ -66,6 +70,46 @@ the question asks for. **Unmeasured: whether the same state is visible to a
 *running server*.** That is the stricter case, because a server is a long-lived
 process holding state and "which revision is in there" is not readable from a
 path.
+
+### Trap 3 — the server works; two instruments say it does not
+
+Measuring the server path produced a **false "the server never binds"** reading
+twice over, both by instruments that could not see what they were looking for.
+Recorded because each is a general trap, not a Glean quirk.
+
+**The container has a proxy set, and the glean client is HTTP-based.** So a
+client aimed at `localhost` is routed to the host proxy, which answers **502** —
+surfacing as `ChannelException "Bad Gateway"`:
+
+```
+$ glean --service localhost:9999 list
+  ->  ChannelException "Bad Gateway"
+$ env -u HTTP_PROXY -u HTTPS_PROXY -u http_proxy -u https_proxy \
+    glean --service localhost:9999 list
+  ->  (empty), exit 0
+```
+
+**A localhost thrift/HTTP client behind an HTTP proxy env var is not talking to
+localhost.** Unset the proxy variables for local service calls.
+
+**And `glean-server` binds IPv6, so `/proc/net/tcp` does not show it.** The same
+`LISTEN` filter on both tables:
+
+```
+$ awk 'NR>1 && $4=="0A"' /proc/net/tcp     ->  (empty)
+$ awk 'NR>1 && $4=="0A"' /proc/net/tcp6    ->  0: ::0:270F  ::0:0000  0A …
+```
+
+`270F` = 9999 on the IPv6 wildcard. **The log line `server alive on port 9999`
+(`Server.hs:104`) is accurate** — it prints the server's own bound port. Checking
+one address family and concluding "it binds nothing" was the error.
+
+**Trap 4 — this build's `glean index` grammar does not match its shipped docs.**
+`docs/indexer/haskell.md` gives `glean --db-root DBDIR index haskell ROOT --db
+NAME/INSTANCE`; in this build the indexer is named **`haskell-hie`**, and
+`--db-root` is rejected as an unknown flag on that invocation. **Read
+`glean index --help` for the build you have** rather than the website page for
+`main`.
 
 **Merge-time check, from the same card.** `git rev-parse --git-path hooks` answers
 where git **dispatches** (it honours `core.hooksPath`, which on this host is the
