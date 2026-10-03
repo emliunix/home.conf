@@ -1,0 +1,47 @@
+# Glean build/run environment. Podman is the runtime on this host (6.0.2,
+# linux/arm64, 4 CPU / 8 GiB — the VM was resized 2 -> 8 GiB on 2026-10-03), so
+# `podman compose` or `podman build` both work.
+#
+# The image registry is a MIRROR, not Docker Hub: direct pulls measured
+# 68-148 KB/s and hang. docker.m.daocloud.io fetched the same digest quickly.
+# Registry mirror is applied at build time via the build arg below rather than
+# in a daemon config, so the setup dir stays self-contained.
+
+services:
+  glean:
+    build:
+      context: .
+      args:
+        # host.containers.internal, NOT 127.0.0.1: the container is inside the
+        # podman VM, so 127.0.0.1 is the VM and cannot reach the host proxy.
+        HTTPS_PROXY: ${HTTPS_PROXY:-http://host.containers.internal:7897}
+        HTTP_PROXY: ${HTTP_PROXY:-http://host.containers.internal:7897}
+    image: local/glean:ghc9.6.6   # the tag the build actually produces
+    # Ingestion mounts a DISPOSABLE CLONE read-only, so the canonical checkout
+    # is never exposed to the container (owner direction, #108).
+    volumes:
+      - ${GLEAN_INDEX_DIR:-./indexes}:/indexes:rw
+      - ${GLEAN_REPO_CLONE:-./repo}:/repo:ro
+    working_dir: /work
+    # 4 CPU / 8 GiB is the podman VM. It was resized 2 -> 8 GiB on 2026-10-03
+    # because a GHC build does not fit in 2 GiB; the ceiling is stated rather
+    # than discovered by an OOM kill. 6g here is the container's cap inside it.
+    mem_limit: 6g
+    # STANDALONE MODE is what this container command runs.
+    #
+    # `glean-server` also works, and an earlier note here wrongly said it did
+    # not. Both symptoms were instrument errors, since measured:
+    #   - it binds the IPv6 wildcard, so `awk '$4=="0A"' /proc/net/tcp` is EMPTY.
+    #     The same filter on /proc/net/tcp6 shows the port (`270F` = 9999).
+    #   - `Bad Gateway` is the container's HTTP proxy, not the server: this image
+    #     sets HTTP(S)_PROXY, and the glean client is HTTP-based, so a call to
+    #     localhost is answered 502 by host.containers.internal:7897. Unset the
+    #     proxy vars for local service calls and the same call succeeds.
+    #
+    # Server-mode completeness is measured and typed (2026-10-04):
+    #   glean --service localhost:9999 list
+    #     NAME/INSTANCE (incomplete)   Created: ...          before `glean finish`
+    #     NAME/INSTANCE (complete)     Created: ... / Completed: ...
+    # A zero-fact finish is refused: "Database has no facts. Use
+    # --allow-zero-facts to allow this."
+    command: ["/bin/bash", "-lc", "glean --db-root /indexes --schema /glean/schema/source list"]
