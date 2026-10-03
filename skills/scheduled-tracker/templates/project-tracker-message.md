@@ -30,7 +30,7 @@ Next owner/action: <who acts next and on what evidence>
 A member reply should use the same one-line shape:
 
 ```text
-@<tracker> <lane/card> — <closed>; <open>; waiting on <blocker or none>.
+@<tracker> <lane or work item> — <closed>; <open>; waiting on <blocker or none>.
 ```
 
 Treat the reply as liveness at the moment it was sent. It does not establish
@@ -62,7 +62,7 @@ Record these facts before calling the member dead or idle:
   `<record or command>`. A run of provider errors is a named failure; silence
   without an error record is still unknown.
 - **Schedule/scope:** the elapsed interval compared with the member's normal
-  wake cadence and the expected duration of its current card.
+  wake cadence and the expected duration of its current work item.
 
 The tracker reports the mechanism only when the record names one. "No reply"
 is a symptom, not a diagnosis.
@@ -75,7 +75,7 @@ When the diagnostics name a failure, state the matching action and owner:
 | --- | --- |
 | saturated context / repeated provider input-too-long errors | preserve the transcript, request a clean session reset, then hand the resume point back |
 | malformed tool-call output / no tool results | preserve the transcript, request a clean session reset |
-| no errors, no tool calls, interval still within the card's normal scope | keep `unconfirmed`; do not reset or interrupt |
+| no errors, no tool calls, interval still within the work item's normal scope | keep `unconfirmed`; do not reset or interrupt |
 | no errors, no tool calls, interval beyond the normal scope | escalate to the accountable owner with the measured interval and missing evidence |
 
 Never retry a saturated session in place: every further turn re-sends the same
@@ -89,7 +89,7 @@ End the follow-up with one of these dispositions:
 - **responded** — the member's own line is now the row's source of truth.
 - **diagnosed** — the named failure and owner/action are recorded.
 - **unconfirmed** — the checks found no cause; state the next check time and
-  escalate if the interval exceeds the card's scope.
+  escalate if the interval exceeds the work item's scope.
 
 Do not turn a liveness check into a productivity judgment. The tracker is
 answering whether work can continue, not ranking the member.

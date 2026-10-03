@@ -1,6 +1,6 @@
 ---
 name: scheduled-tracker
-description: Maintain a recurring 30-minute tracker for active project work. Use when the user asks to arm, run, or resume a scheduled work tracker, periodic project checkpoint, or recurring progress/defect review. The tracker keeps high-level project understanding, the current goal, work-item progress, and process defects aligned; guards against over-engineering and ceremonial over-review; requires a first-principles rethink after one hour in the same state; and ends every wake as done or blocked.
+description: Maintain a recurring 30-minute tracker for active project work. Use when the user asks to arm, run, or resume a scheduled work tracker, periodic project checkpoint, or recurring progress/defect review The tracker keeps high-level project understanding, the current goal, work-item progress, and process defects aligned; guards against over-engineering and ceremonial over-review; requires a first-principles rethink after one hour in the same state; and ends every wake as done or blocked.
 ---
 
 # Scheduled Tracker
@@ -26,7 +26,16 @@ work changes. Cancel it only when the work is done or explicitly paused.
 
 ## Each wake
 
-Run these checks in order and keep notes brief:
+**A wake is not an acknowledgement.** When the reminder fires, select this skill by name, resolve the
+seat checklist in `templates/` that matches your seat, and **compose the pass from that template** —
+do not answer from recall and do not reply with a bare acknowledgement. If no template matches your
+seat, say so in the pass and pick the nearest; do not invent a sixth silently.
+
+The reminder payload may name the outcome but not this skill, and no runtime loads a skill on its own
+when a reminder fires — so the resolution is *yours to perform*, and it is the first step of the wake.
+A wake that produces no composed pass is a failed wake, not a quiet one.
+
+Then run these checks in order and keep notes brief:
 
 1. **Routine check.** Read the owning thread and task board. Identify new
    instructions, changed state, and unowned or stale work.
@@ -46,9 +55,9 @@ Run these checks in order and keep notes brief:
 **Hourly team-aware graph echo.** Once per hour, post the current workstream graph
 in the owning channel or thread: active lanes, each lane's owner, its next
 observable result, and its gate. This is a team-awareness surface, not a second
-status system: the 30-minute wakes keep card dispositions current, and the hourly
+status system: the 30-minute wakes keep work-item dispositions current, and the hourly
 echo gives every seat the same map without forcing each one to reconstruct it from
-cards and chat. Name lanes, not individual cards, unless a card is the lane's
+work items and chat. Name lanes, not individual work items, unless one is the lane's
 blocking gate.
 
 ## Per-seat checklists
@@ -71,6 +80,11 @@ sixth:
   — the scheduled pass message: board rows, an explicit request for every named
   member to report its own progress, and the three-step follow-up when a member
   does not answer.
+
+**Selecting one is a lookup, not a memory test.** Say which seat you are, pick the matching file, and
+name it in the pass. The tracker checklist and the pass message are **both** used by a tracker seat:
+the checklist is the audit, the message is the composition. That is two files for one seat by design,
+not a fifth seat.
 
 A project that runs one of these seats usually keeps its own local extension — the
 same checklist with the *instances that earned each rule* attributed, plus that
@@ -105,7 +119,7 @@ These are standing lead checks, not a second methodology:
   consequential unresolved disagreement, or a required independent seat; more
   ceremony is not more confidence. A reader who touched the work discloses the
   overlap instead of recusing, and the result is called a cross-check.
-- **Task-track guard.** Reconcile every active card against the tree and the goal
+- **Task-track guard.** Reconcile every active work item against the tree and the goal
   it serves. Finished and quality-met work is merged, and its worktree is removed
   or its holder states why it cannot be. Unfinished work names its owner, next
   observable result, and review condition. Blocked work names the blocker, owner,
@@ -137,14 +151,14 @@ the primary transcript and describe it in the project's pattern directory:
 ```
 
 `metadata.md` names, at minimum: **pattern name**; **date and revision**; **where
-it happened** (channel, thread, cards); **repo commit** (the exact commit, or the
+it happened** (channel, thread, work items); **repo commit** (the exact commit, or the
 nearest commit reachable if the exact one cannot be identified); **message-id locators**; **the
 seat**; **what was observed** (the messages or command output that show it,
 verbatim); **which instrument answered the wrong question**; **whether the
 instrument or the sentence was at fault**; **the class** it belongs to; **the
 disposition** (`fixed` / `recorded` / `open`); **the cost** (time, duplicate work,
 rework); **the corrective action taken in-process**; and **where that correction
-now lives** (skill, convention, check, or card). Copy messages verbatim; do not
+now lives** (skill, convention, check, or work item). Copy messages verbatim; do not
 paraphrase the evidence. Copy only the transcript segment that supports the
 capture, not the whole thread; compress or reference an oversized source when
 the relevant segment cannot be copied whole. Keep the initial description short
@@ -172,7 +186,7 @@ Do not leave an item indefinitely `in progress` without one of those outcomes.
 Post one short update in the owning channel or thread only when there is a
 material change, decision, blocker, or required review. Lead with the exit
 state, then the next owner and action. Include the concrete task-track
-disposition when a card moved, stalled, landed, or became blocked. Do not paste
+disposition when a work item moved, stalled, landed, or became blocked. Do not paste
 routine command logs. Use
 [`templates/project-tracker-message.md`](templates/project-tracker-message.md)
 when the pass needs member-written progress or a silent member needs follow-up.

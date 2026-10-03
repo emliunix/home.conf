@@ -25,7 +25,7 @@ pass a reader can audit.
 | 2 | Branch/worktree state | uncommitted work in a shared checkout — named drift, never reverted by the passer |
 | 3 | Receipts | each recent claim's verification, current at the commit it names; what was re-run vs read |
 | 4 | Real blockers | owner + reason, or the word "unowned" |
-| 5 | Stale cards | the disposition, not silence |
+| 5 | Stale work items | the disposition, not silence |
 | 6 | Reachability by **tip** | every local branch tip reachable from a remote ref — tested as commits, never branch names |
 | 7 | Severity labels | the measurement behind every grading word, or the label deleted |
 | 8 | Report → closed wall-clock | timestamp deltas per problem arc; no grades |

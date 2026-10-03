@@ -1,13 +1,17 @@
 # Seat: tracker
 
 Use when your seat owns the board rather than the code: the board's state, the ownership of every
-card, and whether the record still describes the work. The tracker's five ordered checks, as this
-seat. The bias to correct for is that a card's status is a claim about reality, and it is usually
-the oldest unverified thing on the board.
+work item, and whether the record still describes the work. The tracker's five ordered checks, as
+this seat. The bias to correct for is that a work item's status is a claim about reality, and it is
+usually the oldest unverified thing on the board.
+
+A **work item** is this checklist's unit of tracked work. It is deliberately domain-neutral: a Raft
+card, a GitHub issue, a Jira ticket, and a task in a project's own tracker are all work items here.
+Where a sentence is specific to Raft's card board it says so.
 
 ## The five checks, as a tracker
 
-1. **Routine check — the whole board against the goals.** Every card's state matches the goal file
+1. **Routine check — the whole board against the goals.** Every work item's state matches the goal file
    it serves. Scope changes are visible, never silent. Compare against the tree, not against the
    last status message.
 2. **High-level understanding — the project in a paragraph.** Restate what is being built and who
@@ -16,17 +20,47 @@ the oldest unverified thing on the board.
    work, and name what is still missing per acceptance criterion. A goal file whose criteria name
    evidence nobody can produce is a finding about the goal.
 4. **Work-item progress — owner, state, next observable result.** Including the unowned. An unowned
-   card is not queued; it is waiting for someone to notice, which is the tracker's job.
+   work item is not queued; it is waiting for someone to notice, which is the tracker's job.
 5. **Process defect review — the re-derivation cost.** How much of the effort went into repairing
    the instruments that check the work, rather than the work? A rising ratio with moving results is
    a process improving itself; a rising ratio with static results is the same work rediscovered.
 
+## Project frame before the table
+
+**A pass that opens a decision without reading the project frame is not a pass.** Before composing
+the on-track table, read these three, in this order, and be able to name each:
+
+1. **The project's constitution or standing purpose** — what this repo is for, and what it is not.
+2. **The current architecture overview** — the system boundary and how the parts relate
+   (`docs/architecture.md`, or the project's equivalent).
+3. **The owning contract for the subject of the pass** — the module, route, or interface document
+   that governs the thing being reported on.
+
+**If the frame already answers the question, the pass reports the existing answer. It does not open
+a decision request.** The failure this prevents: a tracker reads the code and the design, finds them
+disagree, and asks the owner to choose — when the constitution already settles it. Both parties then
+pay for a decision that was never open. A pass that names a design-vs-code contradiction, or asks
+the owner to choose between them, **must first state which of the three it read**, and quote the
+sentence that answers it.
+
+For a plugin or generic use of this skill where no constitution exists, name that in one line and
+substitute the nearest standing statement of purpose; the step is satisfied by naming the frame,
+not by finding a file with that exact name.
+
 ## On-track table
 
-Every active card gets one row. A row is not complete until all five fields are filled:
+Every active work item gets one row. A row is not complete until all five fields are filled:
 
-| card | owner and state | next observable result | evidence tip | disposition |
+| work item | owner and state | next observable result | evidence tip | disposition |
 | --- | --- | --- | --- | --- |
+
+**Why this table has five fields and the pass message's has five different ones.** The seat
+checklist audits **whether a row is trustworthy** — hence `evidence tip` (where the claim can be
+re-read) and `disposition` (what the lead does about it). The pass message is a **request addressed
+to the members named on it** — hence `gate / blocker` (what each member is waiting on). They are
+different questions asked of the same work items, so the field sets differ **deliberately**; a
+checklist row is not a pass-message row. Compose the pass message from
+[`project-tracker-message.md`](project-tracker-message.md) and keep the audit fields here.
 
 Classify the disposition as exactly one of:
 
@@ -35,7 +69,7 @@ Classify the disposition as exactly one of:
   lead merges it or pushes back with the measured reason.
 - **in flight** — the owner, next observable result, and expected review condition are named.
 - **blocked** — the blocker, accountable owner, and lift condition are named.
-- **stale** — the card has no new evidence or owner action in its expected interval; assign,
+- **stale** — the work item has no new evidence or owner action in its expected interval; assign,
   narrow, replace, or close it.
 - **unowned** — the lead assigns it or escalates it now.
 
@@ -83,15 +117,15 @@ pass:
 
 | pattern | counter-check |
 | --- | --- |
-| **Status outlives evidence.** A card says `done` while the branch, tip, or artifact moved. | Re-read the target ref and artifact at the claimed tip. Never grade from the last status message. |
+| **Status outlives evidence.** A work item says `done` while the branch, tip, or artifact moved. | Re-read the target ref and artifact at the claimed tip. Never grade from the last status message. |
 | **Green but never red.** A check has never failed on a real defect. | Ask for the mutation, seed, or production failure that flips it. If none exists, call it a claim, not a gate. |
 | **Right output, wrong question.** A valid-looking number answers a neighboring question: attribution for ownership, liveness for restoration, a count for a mechanism. | State the question, unit, revision, and population in the same sentence as the result. Reject evidence taken from an instrument that cannot distinguish the subject. |
 | **Report claims an action not taken.** A pass reports success while the state did not change. | Assert the observed result, not the intended action. A false action report is a failed pass even when the underlying mechanism works. |
 | **Restore is treated as reversible.** A removed tree is recreated from its commit while untracked files, install state, or a live process are lost. | Before deletion, inspect ignored and untracked files and every listening process whose cwd is the tree. Treat a service on a deleted inode as down, not up. |
 | **Review ceremony feeds itself.** More reviewers, more receipts, or a longer checklist appear without changing the landing decision. | Cap at one decision-changing pass unless new evidence or dispute exists. Disclose overlap and cross-check instead of building a queue of one. |
-| **Write collision is mistaken for a seat shortage.** Several cards edit the same file, so more parallel workers make the problem worse. | Serialize by landing order for a write collision; spread only when the constraint is reviewer capacity. |
+| **Write collision is mistaken for a seat shortage.** Several work items edit the same file, so more parallel workers make the problem worse. | Serialize by landing order for a write collision; spread only when the constraint is reviewer capacity. |
 | **Finished work stays parked.** A reviewed branch is neither merged nor explicitly held. | Merge it to `main`, or record the measured reason it cannot land and the owner of the lift condition. A release line is temporary transit for named commits awaiting replay, not a second permanent home. Remove the worktree once merged. |
-| **Ad-hoc probe has no claim.** A live service, database, credential, or machine-level surface is touched to answer a question nobody recorded. | Claim or post a one-line notice before the probe. Name the owning card or thread, the surface, and what the read can change. A probe that may produce a new locator is still a claim; only waiting is exempt when the intended read would merely confirm the live owner's already-running hypothesis. |
+| **Ad-hoc probe has no claim.** A live service, database, credential, or machine-level surface is touched to answer a question nobody recorded. | Claim or post a one-line notice before the probe. Name the owning work item or thread, the surface, and what the read can change. A probe that may produce a new locator is still a claim; only waiting is exempt when the intended read would merely confirm the live owner's already-running hypothesis. |
 | **Communication substitutes for disposition.** A long thread is mistaken for progress. | The tracker's deliverable is a changed board, tip, or explicit blocker; channel posts stay short and point to the owning artifact. |
 
 ## Failure-pattern capture
@@ -102,7 +136,7 @@ primary evidence and correct the process:
 1. **Capture** — copy the verbatim transcript into
    `~/Documents/process-failure-patterns/<project>/<date>-<short-name>/` and write
    `metadata.md` with: pattern name; date and revision; where it happened (channel,
-   thread, cards); repo commit (exact, or the nearest commit if the exact one is
+   thread, work items); repo commit (exact, or the nearest commit if the exact one is
    unrecoverable); message-id locators; seat; the observed evidence
    verbatim; which instrument answered the wrong question; whether the instrument
    or the sentence was at fault; the failure class; the disposition; the cost; the
@@ -111,9 +145,9 @@ primary evidence and correct the process:
    not the whole thread; compress or reference an oversized source when the
    relevant segment cannot be copied whole.
 2. **Correct** — make the process change in its owning surface (skill, convention,
-   check, or card). Name the surface in `metadata.md`.
+   check, or work item). Name the surface in `metadata.md`.
 3. **Reuse** — the captures are inputs for later process refinement and evaluation
-   samples for the change, so link the capture id from the card that produced it.
+   samples for the change, so link the capture id from the work item that produced it.
 
 An instance fixed without a capture reproduces; a capture without a correction is
 a museum.
@@ -125,18 +159,18 @@ a museum.
   channel or thread: which lanes are active, who owns each, the next observable result,
   and what gates each lane. The 30-minute wake may update dispositions silently, but the
   hourly echo gives the whole team the same current map instead of requiring each seat
-  to reconstruct it from cards and chat. The graph names lanes, not individual cards
-  unless a card is the lane's blocking gate.
+  to reconstruct it from work items and chat. The graph names lanes, not individual work items
+  unless a work item is the lane's blocking gate.
 - **Reachability is tested by tip, not by branch name.** A same-named stale remote branch is how a
   single-machine sprint looks healthy from every other row.
-- **Dispositions, not silence.** A card that stopped moving gets closed with a reason or re-reasoned;
+- **Dispositions, not silence.** A work item that stopped moving gets closed with a reason or re-reasoned;
   abandonment by omission is invisible on a board that only shows open work.
 - **The label must be traceable to the measurement** — or the measurement replaces it. A word that
   grades severity softer *or* broader than the artifact is the same defect.
 - **Every grading claim carries its command.** A count with no command becomes unreproducible the
   moment its author stops remembering it.
 - **The board is reconciled, not narrated.** Every pass ends with a disposition for each active
-  card and a concrete next owner/action for every non-landed row.
+  work item and a concrete next owner/action for every non-landed row.
 
 ## Liveness, and what follows a silent member
 
@@ -158,9 +192,16 @@ actually dead on 2026-10-02.
 
 ### A reply witnesses liveness at the moment of replying — not continuity
 
-A seat that was silent for six hours replies correctly when finally reached. So **do not read a reply
-as continuity**: it proves *"I am alive now"*, not *"I was alive throughout"*. Three seats that day
-were silent for hours, and every one would have replied when woken.
+**Two different cases, and they must not be run together:**
+
+- **A seat that is merely silent replies correctly once reached.** *So do not read a reply as
+  continuity:* it proves *"I am alive now"*, not *"I was alive throughout"*.
+- **A seat whose wakes all fail cannot reply at all.** On 2026-10-02 one seat was woken **93 times
+  in a two-hour window and every wake failed** on a provider error. **No reply was possible until the
+  session was reset — and from outside that looked exactly like silence.**
+
+**The second case is why the diagnostics step exists.** Without it, a dead seat and a thinking seat
+are indistinguishable, and the tracker either waits forever or resets a healthy session.
 
 ### Follow-up when a member does not answer: liveness → diagnostics → rescue
 
@@ -190,5 +231,5 @@ not established. *"Silent since `<ts>`, two provider errors at `<ts>`" is a diag
 
 ## Exit
 
-Every wake ends `done` or `blocked`, and every blocked card names its owner and lift condition. The
+Every wake ends `done` or `blocked`, and every blocked work item names its owner and lift condition. The
 tracker's own deliverable is the corrected record, not a report about it.
