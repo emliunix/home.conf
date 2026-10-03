@@ -48,6 +48,19 @@ Distinguish three different things that are often all called "steps":
 Before/after comparison is not an implementation timeline. Do not replace an account of
 changed behavior with a list of tasks that happened.
 
+## Messages are not reports
+
+A message is a decision or status surface, not a record, so the rule above applies harder. Lead
+with the outcome and the number; name what it changes; state what the reader must do. The method
+gets one pointer to the artifact that holds it. Do not narrate the investigation - "I checked X,
+found Y, which turned out to be Z" - and do not recount a discarded hypothesis unless the reader's
+decision depends on knowing it was discarded. When one of your own claims was wrong, give the
+corrected fact in one line; the story of finding it belongs in the capture file, not the message.
+Test: the reader can act after the first two lines.
+
+This is the same defect whether the work history is long or short. A short message that reports
+the search rather than the answer is still a transcript.
+
 ## INPUT_TEST: reports that ask for a decision
 
 `INPUT_TEST` is the quality test for a report that asks a reader to make a decision. The
