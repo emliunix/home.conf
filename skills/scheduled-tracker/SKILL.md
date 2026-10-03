@@ -26,16 +26,7 @@ work changes. Cancel it only when the work is done or explicitly paused.
 
 ## Each wake
 
-**A wake is not an acknowledgement.** When the reminder fires, select this skill by name, resolve the
-seat checklist in `templates/` that matches your seat, and **compose the pass from that template** —
-do not answer from recall and do not reply with a bare acknowledgement. If no template matches your
-seat, say so in the pass and pick the nearest; do not invent a sixth silently.
-
-The reminder payload may name the outcome but not this skill, and no runtime loads a skill on its own
-when a reminder fires — so the resolution is *yours to perform*, and it is the first step of the wake.
-A wake that produces no composed pass is a failed wake, not a quiet one.
-
-Then run these checks in order and keep notes brief:
+Run these checks in order and keep notes brief:
 
 1. **Routine check.** Read the owning thread and task board. Identify new
    instructions, changed state, and unowned or stale work.
