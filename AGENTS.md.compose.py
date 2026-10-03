@@ -123,6 +123,8 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--only", metavar="ID", help="print one snippet body")
     ap.add_argument("--install", metavar="PATH",
                     help="also write the composed bytes to this path")
+    ap.add_argument("--force", action="store_true",
+                    help="allow --install to replace an existing, differing file")
     args = ap.parse_args(argv)
 
     if not MANIFEST.is_file():
@@ -160,6 +162,21 @@ def main(argv: list[str]) -> int:
 
     if args.install:
         target = Path(args.install).expanduser()
+        # Installing into an arbitrary path replaces whatever is there. Refuse to
+        # destroy content this script did not write: an existing file that differs
+        # is the owner's, and a silent overwrite is unrecoverable. --force is the
+        # explicit override.
+        if target.exists() and target.read_text() != composed and not args.force:
+            print(
+                f"compose: REFUSING to overwrite {target} — it exists and differs "
+                f"({len(target.read_text().splitlines())} lines on disk vs "
+                f"{len(composed.splitlines())} composed).\n"
+                f"  Review the diff first: diff {target} <(python3 "
+                f"{Path(__file__).name} --print)\n"
+                f"  Then pass --force if replacing it is really intended.",
+                file=sys.stderr,
+            )
+            return 3
         target.write_text(composed)
         print(f"compose: installed to {target}")
     return 0
