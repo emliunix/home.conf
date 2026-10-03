@@ -3,9 +3,10 @@ name: report-style
 description: >-
   Use when writing a durable, source-keyed report or a concise report brief. Route
   first by the reader's question - system, change, status, decision, review output,
-  research, or retrospective - and then by the report's lifetime. Not for prose
-  polish, performing a review, a bare activity log, or duplicating an existing
-  structured record.
+  research, or retrospective - and then by the report's lifetime. Also use when a
+  message carries a style hot word (`in brief:`, `in record:`, `no process:`) even
+  if no report is being written. Not for prose polish, performing a review, a bare
+  activity log, or duplicating an existing structured record.
 ---
 
 # Report style
@@ -60,6 +61,27 @@ Test: the reader can act after the first two lines.
 
 This is the same defect whether the work history is long or short. A short message that reports
 the search rather than the answer is still a transcript.
+
+## Style hot words
+
+A hot word switches the phrasing of whatever follows it. The word names the style, so it also
+selects this skill - you do not have to decide whether the work counts as a "report". Apply it to
+the text between the opening word and `(end <word>)`; the closing token is optional when the
+message ends there.
+
+| hot word | write like |
+| --- | --- |
+| `in brief:` | the next lines are a message: outcome and its number first, what it changes, what the reader must do. No work history, no discarded hypotheses. `(end brief)` |
+| `in record:` | a durable, source-keyed record: the Shape A rules below, capture scope per source. `(end record)` |
+| `no process:` | the same content with every account of what was tried, checked, or rejected removed. Names only the state and the next action. `(end process)` |
+
+Hot words exist because a routing judgement is what fails. "Is this a report?" is answered *no* for
+a chat message, so the rule that governs chat messages never loads. A hot word removes the
+judgement: the reader names the style, and the style is applied.
+
+They do not override correctness. A hot word that would compress away a load-bearing caveat - an
+unverified claim, a control that did not hold, a blocker - keeps the caveat and drops something
+else instead.
 
 ## INPUT_TEST: reports that ask for a decision
 
