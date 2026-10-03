@@ -18,20 +18,3 @@ only to *justify how you got here*.
 
 For status, results, and answers, **default to this style without being asked.** The
 long form goes in an artifact, linked in one line.
-
-### Style hot words
-
-A reader can name the style directly. The word selects the phrasing and applies to the
-text that follows; the closing token is optional when the message ends there.
-
-| hot word | write like |
-| --- | --- |
-| `in brief:` | a message: outcome and its number, what it changes, what the reader must do. `(end brief)` |
-| `in record:` | a durable, source-keyed record with capture scope per source. `(end record)` |
-| `no process:` | the same content with every account of what was tried, checked, or rejected removed. `(end process)` |
-
-Hot words remove a routing judgement — the reader names the style, so nothing has to
-decide whether the text counts as a report. They never override correctness: a hot word
-that would compress away a load-bearing caveat — an unverified claim, a control that did
-not hold, a blocker, or a figure that was previously wrong — keeps the caveat and drops
-something else instead.

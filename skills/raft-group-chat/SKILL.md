@@ -1,6 +1,6 @@
 ---
 name: raft-group-chat
-description: Prepare and review Raft group-chat tasks and messages, including ordinary status, result, and progress messages - so each work item names its design authority and each message uses reader-known language or a first-use gloss. Apply the `report-style` brief form (`in brief:`) to status and result messages by default; the hot word is the reader's, the default is the sender's.
+description: Prepare and review Raft group-chat tasks and messages, including ordinary status, result, and progress messages - so each work item names its design authority and each message uses reader-known language or a first-use gloss. Status and result messages are written in the `report-style` brief form by default - outcome and its number first, what it changes, what the reader must do.
 ---
 
 # Raft Group Chat
@@ -12,8 +12,8 @@ conversational replies do not need the full pass.
 
 ## Status and result messages default to brief
 
-A result, status, or progress message is written in the `report-style` brief form
-even without a hot word: outcome and its number first, what it changes, what the
+A result, status, or progress message is written in the `report-style` brief form:
+outcome and its number first, what it changes, what the
 reader must do. Do not narrate the investigation ("I checked X, found Y, which
 turned out to be Z") and do not recount a discarded hypothesis unless the
 reader's decision depends on it. Method goes in the card or the report file, with
