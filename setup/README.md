@@ -30,5 +30,19 @@ Put the real files under `setup/<tool>/`, then point the conventional path at it
 ln -s home.conf/setup/<tool> ~/Documents/<tool>-setup
 ```
 
+## After a fresh clone
+
+The symlinks are machine-local and **not tracked**, so a fresh clone has the
+recipe files but none of the conventional paths. Recreate them with the script
+(idempotent; refuses to clobber a real file or a foreign symlink):
+
+```sh
+sh setup/link.sh
+```
+
+It links every subdirectory of `setup/` to `~/Documents/<name>-setup`, which is
+the convention in the table above. `git ls-files setup` names what should have a
+link; a table row with no link is a missing convenience, not a missing artifact.
+
 Record in the recipe's own README what is measured and what is not. An unmeasured
 arm is a legitimate state; an unlabelled one is not.
