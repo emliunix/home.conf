@@ -69,7 +69,27 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
     return meta, text[end + 5:].lstrip("\n")
 
 
-def compose(manifest_path: Path) -> str:
+def resolve_snippet(entry_path: str, roots: list[Path]) -> Path:
+    """Find a snippet file across the configured roots.
+
+    Roots are searched in order, so a private overlay can shadow a shared snippet
+    without editing the manifest. The first hit wins, and the chosen root is
+    recorded by the caller so a composition is explainable.
+    """
+    candidate = Path(entry_path)
+    if candidate.is_absolute():
+        if not candidate.is_file():
+            _fail(f"listed snippet does not exist: {entry_path}")
+        return candidate
+    for root in roots:
+        p = root / entry_path
+        if p.is_file():
+            return p
+    _fail(f"listed snippet not found under any root: {entry_path} "
+          f"(roots: {', '.join(str(r) for r in roots)})")
+
+
+def compose(manifest_path: Path, include_local: bool = False) -> str:
     manifest = load_yaml(manifest_path)
     for key in ("version", "output", "snippets", "header"):
         if key not in manifest:
@@ -79,12 +99,26 @@ def compose(manifest_path: Path) -> str:
     if not isinstance(manifest["snippets"], list):
         _fail("manifest 'snippets' must be a list")
 
+    # Roots: the manifest's own directory first, then any declared search roots.
+    # Local-only snippets are skipped entirely when compose is asked for the
+    # publishable composition, so a public output can never carry their bodies.
+    # `snippet_roots` is how a PRIVATE overlay supplies snippets that must not
+    # live in a public repo, without the manifest naming them by absolute path.
+    roots: list[Path] = [manifest_path.parent.parent]
+    declared = manifest.get("snippet_roots") or []
+    if not isinstance(declared, list):
+        _fail("manifest 'snippet_roots' must be a list")
+    for extra in declared:
+        roots.append(Path(str(extra)).expanduser())
+
     parts: list[str] = [str(manifest["header"]).rstrip("\n")]
 
     seen: set[str] = set()
     for entry in manifest["snippets"]:
         if not isinstance(entry, dict):
             _fail(f"snippet entry must be a mapping: {entry!r}")
+        if entry.get("local_only") and not include_local:
+            continue
         for key in ("id", "path", "title"):
             if key not in entry:
                 _fail(f"snippet entry missing {key!r}: {entry!r}")
@@ -93,9 +127,7 @@ def compose(manifest_path: Path) -> str:
             _fail(f"duplicate snippet id: {sid}")
         seen.add(sid)
 
-        path = ROOT / entry["path"]
-        if not path.is_file():
-            _fail(f"listed snippet does not exist: {entry['path']}")
+        path = resolve_snippet(entry["path"], roots)
         meta, body = split_frontmatter(path.read_text(), path)
 
         # The snippet and the manifest must agree about identity. A mismatch means
@@ -125,6 +157,8 @@ def main(argv: list[str]) -> int:
                     help="also write the composed bytes to this path")
     ap.add_argument("--force", action="store_true",
                     help="allow --install to replace an existing, differing file")
+    ap.add_argument("--with-local", action="store_true",
+                    help="with --print, include the local-only snippets")
     args = ap.parse_args(argv)
 
     if not MANIFEST.is_file():
@@ -132,21 +166,24 @@ def main(argv: list[str]) -> int:
 
     if args.only:
         manifest = load_yaml(MANIFEST)
+        roots = [ROOT] + [Path(str(x)).expanduser()
+                          for x in (manifest.get("snippet_roots") or [])]
         for entry in manifest["snippets"]:
             if entry["id"] == args.only:
-                snippet = ROOT / entry["path"]
+                snippet = resolve_snippet(entry["path"], roots)
                 _, body = split_frontmatter(snippet.read_text(), snippet)
                 sys.stdout.write(body)
                 return 0
         _fail(f"no snippet with id {args.only!r}")
 
-    composed = compose(MANIFEST)
+    manifest = load_yaml(MANIFEST)
+    composed = compose(MANIFEST, include_local=False)
 
     if args.to_stdout:
-        sys.stdout.write(composed)
+        sys.stdout.write(compose(MANIFEST, include_local=args.with_local))
         return 0
 
-    out = ROOT / load_yaml(MANIFEST)["output"]
+    out = ROOT / manifest["output"]
 
     if args.check:
         current = out.read_text() if out.is_file() else ""
@@ -158,7 +195,17 @@ def main(argv: list[str]) -> int:
         return 0
 
     out.write_text(composed)
-    print(f"compose: wrote {out.name} ({len(composed)} bytes)")
+    print(f"compose: wrote {out.name} ({len(composed)} bytes) "
+          f"[publishable: repo snippets only]")
+
+    # The local composition carries the machine-specific roots and is written
+    # OUTSIDE the repo, so a public commit can never contain those bodies.
+    local_out = manifest.get("local_output")
+    if local_out:
+        local_path = Path(str(local_out)).expanduser()
+        local_path.parent.mkdir(parents=True, exist_ok=True)
+        local_path.write_text(compose(MANIFEST, include_local=True))
+        print(f"compose: wrote {local_path} [local: repo + machine snippets]")
 
     if args.install:
         target = Path(args.install).expanduser()
@@ -166,18 +213,19 @@ def main(argv: list[str]) -> int:
         # destroy content this script did not write: an existing file that differs
         # is the owner's, and a silent overwrite is unrecoverable. --force is the
         # explicit override.
-        if target.exists() and target.read_text() != composed and not args.force:
+        installed = compose(MANIFEST, include_local=True)
+        if target.exists() and target.read_text() != installed and not args.force:
             print(
                 f"compose: REFUSING to overwrite {target} — it exists and differs "
                 f"({len(target.read_text().splitlines())} lines on disk vs "
-                f"{len(composed.splitlines())} composed).\n"
+                f"{len(installed.splitlines())} composed).\n"
                 f"  Review the diff first: diff {target} <(python3 "
-                f"{Path(__file__).name} --print)\n"
+                f"{Path(__file__).name} --print --with-local)\n"
                 f"  Then pass --force if replacing it is really intended.",
                 file=sys.stderr,
             )
             return 3
-        target.write_text(composed)
+        target.write_text(installed)
         print(f"compose: installed to {target}")
     return 0
 
