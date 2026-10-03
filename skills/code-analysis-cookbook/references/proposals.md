@@ -7,11 +7,14 @@ real, measurable facts.
 
 ## Structural index / query — Glean
 
-**Status: RUN END TO END in a Linux container, but NOT yet a recipe.** The
-indexer, the query layer, and the partial-coverage instrument have each been
-exercised on real facts. What has *not* been measured is the strict case —
-**completeness reported by a running server** — and until it is, this stays a
-proposal. Do not cite it as a working recipe.
+**Status: RUN END TO END in a Linux container, including server-mode
+completeness — still NOT a recipe.** The indexer, the query layer, the
+partial-coverage instrument, and **the strict server layer** have each been
+measured on real facts. What is missing is **scale**: no seat has indexed a whole
+repository, which needs per-language artifact production (a full compile for
+Haskell). The invocation below is therefore *working and measured*, but its cost
+on a real repository is unmeasured, so treat it as a proposal whose mechanics are
+verified rather than a recipe with a known budget.
 
 ### Measured since the macOS block (2026-10-03, seat @GameBoy, `4b21c6cb` `ec59e021`)
 
@@ -62,14 +65,35 @@ Glean does not index a checkout. Haskell needs a full package build with
 TypeScript needs a SCIP producer. **Budget "indexer time + per-language artifact
 production", not one number.**
 
-**What is measured about partial coverage, and what is not.** In **standalone**
-mode (`--db-root`, no server) the database reports its own completeness:
-`(incomplete)` before `glean finish`, then `(complete)` plus a separate
-`Completed:` timestamp. That is explicit and dated, not inferred — the instrument
-the question asks for. **Unmeasured: whether the same state is visible to a
-*running server*.** That is the stricter case, because a server is a long-lived
-process holding state and "which revision is in there" is not readable from a
-path.
+**Partial coverage is explicit and dated, in BOTH modes — and server mode is the
+strict one, so it is the one that counts.**
+
+**Standalone** (`--db-root`, no server): `(incomplete)` before `glean finish`,
+then `(complete)` plus a separate `Completed:` timestamp.
+
+**Server mode** — the same states, at the server layer, which is where the
+question is hardest ("which revision is in there" is not readable from a path
+when a long-lived process holds it):
+
+```
+glean --service localhost:9999 list
+  real/1    (incomplete)    Created: 2026-10-03 21:16:47 UTC
+  direct/2  (complete)      Created: 2026-10-03 21:17:18 UTC
+                            Completed: 2026-10-03 21:43:45 UTC
+```
+
+Both states side by side in **one** server listing, and the `finish` that moved
+one of them was issued **through the server**. A freshly created DB reports
+`(incomplete)` through the server from a clean state (independently reproduced),
+so the claim does not rest on a populated fixture.
+
+**A zero-fact `finish` is refused, with an escape hatch** — *"Database has no
+facts. Use `--allow-zero-facts` to allow this."* Good refusal, not a silent
+success.
+
+**Still unmeasured: a whole repository.** Everything above is measured on a
+hand-built artifact tree. The whole-repo path needs the per-language artifact
+production described next, and no seat has paid that cost yet.
 
 ### Trap 3 — the server works; two instruments say it does not
 
