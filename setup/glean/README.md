@@ -41,8 +41,17 @@ minute (step 8 of the Dockerfile).
 # is a RUNTIME field and does NOT apply to `podman build`, so a build runs
 # uncapped against the whole VM. This VM also hosts bifrost, which all three Pi
 # seats route inference through — an OOM during the build can take out bifrost,
-# not just the build. `--memory-swap` must equal `--memory` or Docker/podman
-# treats the limit as unset. The parallelism caps are inside the Dockerfile.
+# not just the build.
+#
+# `--memory-swap` is the memory+swap TOTAL, not the swap allowance: omitting it
+# lets swap be used on top of `--memory`, and `-1` means unlimited swap. Setting
+# the two equal is "no swap beyond the cap", which is what we want. This VM has
+# zero swap today (`swapon --show` is empty), so the two forms behave the same
+# right now; the explicit form is chosen to stay bounded if swap is ever added.
+# The parallelism caps are inside the Dockerfile.
+#
+# (Wording corrected by @Bob: my first version said the limit is "treated as
+# unset" without `--memory-swap`, which is not what podman does.)
 podman build --memory 4g --memory-swap 4g -t local/glean:ghc9.6.6 .
 ```
 
