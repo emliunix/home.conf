@@ -246,7 +246,7 @@ It also provides the derived relations `child/3`, `descendant/3`, and `nests/3`.
 the section's slug. The tree is a fact, not a reconstruction from byte spans.
 
 *Added 2026-10-05, because a judge cannot be trusted, and should not be paid, to notice that
-a linked file is gone (visflow's constitution kept stale links that no oracle flagged):*
+a named file is gone (visflow's constitution kept stale file names that no oracle flagged):*
 `ref(D, S, Target, Kind)` for every non-URL Markdown link target (`Kind = link`) and every
 backtick span that looks like a repository path (`Kind = path`) in section `S`, with `Target`
 as written; `resolves(D, Target)` when the target without its `#fragment` exists relative to

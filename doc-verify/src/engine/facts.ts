@@ -142,7 +142,7 @@ const PLACEHOLDER_SEGMENT = /(?:^|\/)[A-Z]{1,2}(?:\.[A-Za-z0-9]+)?(?:\/|$)/;
  * `core.ref` facts: every Markdown link, image or definition target that is not a URL
  * (`link`), and every inline code span that looks like a repository path (`path`): only
  * `[A-Za-z0-9_./-]`, either a `/` or a known file extension, and not a predicate indicator
- * such as `child/3` or a placeholder such as `path/X.md`. Fenced code is not read.
+ * such as `child/3` or a placeholder such as `path/X.md`. Code blocks (fenced or indented) are not read.
  */
 export function documentReferences(markdown: string, sections: Section[]): DocumentReference[] {
   const tree = unified().use(remarkParse).parse(markdown);

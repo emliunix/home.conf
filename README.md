@@ -97,7 +97,7 @@ such as `child/3`, nor a placeholder such as `path/X.md`); `S` is the innermost 
 its `#fragment`, names a file or directory relative to the document's directory or to the
 repository root, in the candidate's tracked files or (for `--paths`, `--all`, `--staged`) the
 working tree; a bare fragment resolves to the document. `core.dangling(D, S, Target, Kind)` is
-a ref that does not resolve. Fenced code is not read. A module requires that what a document
+a ref that does not resolve. Code blocks (fenced or indented) are not read. A module requires that what a document
 names exists with, for example:
 
 ```yaml
