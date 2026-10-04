@@ -277,8 +277,9 @@ async function checkWithModules(input: {
     profile,
   });
   // One finding per binding that did not hold: a violated error is NO-GO, a violated warning or
-  // an undetermined binding NEEDS-REVIEW. Engine-level notes (unasked atoms, empty populations)
-  // follow as NEEDS-REVIEW. The artifact verdict stays the engine's own.
+  // an undetermined binding NEEDS-REVIEW. Engine-level notes (unasked atoms, a judge answer
+  // that disagrees with its distribution) follow as NEEDS-REVIEW. An empty population is
+  // vacuously satisfied and adds nothing. The artifact verdict stays the engine's own.
   for (const constraint of report.constraints) {
     for (const binding of constraint.bindings) {
       if (binding.status === "satisfied") {

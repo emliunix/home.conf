@@ -99,11 +99,6 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
     }
   }
   const constraints = constraintReports(program, evaluation, store);
-  for (const constraint of constraints) {
-    if (constraint.population === 0) {
-      findings.push(`${constraint.id}: the population is empty`);
-    }
-  }
   const { verdict, decidedBy } = decideVerdict(constraints, failure, program.warningThreshold);
   return {
     module: program.module,

@@ -163,7 +163,7 @@ describe("rounds", () => {
     const report = await run(DEPTH_TWO, backend);
     expect(requests).toHaveLength(1);
     expect(report.constraints[0]).toMatchObject({ population: 0, status: "satisfied" });
-    expect(report.findings).toContain("items-included: the population is empty");
+    expect(report.findings).toEqual([]);
   });
 
   it("makes one request for a depth-1 program", async () => {

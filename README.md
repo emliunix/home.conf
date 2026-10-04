@@ -50,6 +50,11 @@ documents:
 A module reference is a repository path or an engine library `doc-verify:NAME`. The modules of
 one rule (and their `extends`) compose into one program; a name defined twice is refused.
 
+A constraint whose `forall` binds nothing is vacuously satisfied and reports nothing; the count
+(`population 0`) appears only in `--verbose`. When an empty population is itself a defect, say so
+with `population: nonempty` on the constraint: then a `forall` that binds nothing violates it,
+at the constraint's severity, with the message "<id>: the population is empty".
+
 ### Engine libraries
 
 Shipped in `doc-verify/lib/`, versioned with the engine and read from its install:

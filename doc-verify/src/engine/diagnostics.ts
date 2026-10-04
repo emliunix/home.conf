@@ -118,6 +118,20 @@ function constraintReport(program: Program, evaluation: Evaluation, store: Oracl
       proof: { kind: "binding", atom: `${constraint.id}: ${binding.status}`, children },
     };
   });
+  // An empty population is vacuously satisfied unless the author asked for `population: nonempty`.
+  if (constraint.nonempty && bindings.length === 0) {
+    bindings.push({
+      status: "violated",
+      certain: true,
+      values: {},
+      message: `${constraint.id}: the population is empty (population: nonempty)`,
+      repair: constraint.repair === undefined ? undefined : fill(constraint.repair, paramTexts(program.params)),
+      missing: [],
+      proof: { kind: "binding", atom: `${constraint.id}: violated`, children: [
+        { kind: "missing", atom: `${literalsText(constraint, "forall")} binds nothing`, mode: "possible" },
+      ] },
+    });
+  }
   const status: BindingStatus = bindings.some((binding) => binding.status === "violated") ? "violated"
     : bindings.some((binding) => binding.status === "undetermined") ? "undetermined" : "satisfied";
   return {
@@ -126,8 +140,8 @@ function constraintReport(program: Program, evaluation: Evaluation, store: Oracl
     severity: constraint.severity,
     weight: constraint.weight,
     mode: constraint.mode,
-    population: bindings.length,
-    certainPopulation: bindings.filter((binding) => binding.certain).length,
+    population: result.bindings.length,
+    certainPopulation: result.bindings.filter((binding) => binding.certain).length,
     bindings,
   };
 }
