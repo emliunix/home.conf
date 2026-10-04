@@ -21,7 +21,7 @@ contracts, in order. Each step says what failure looks like when it is skipped.
   prek clones the remote, so a local-only commit does not resolve.
 - `judge.client_sha256` names the JEV client the tool uses.
 - `documents` is ordered and uses last-match-wins selection. An include entry is
-  the normal rule with `artifact_kind`, `verification`, and
+  the normal rule with `artifact_kind`, `modules`, and optional
   `required_sections`; an exclusion is only
   `{pattern: ..., exclude: true}`. Include then exclude removes matching paths;
   exclude then include re-adds them and supplies the selected rule metadata.
@@ -30,24 +30,30 @@ contracts, in order. Each step says what failure looks like when it is skipped.
   the final file list.
 - Every companion (`X.yaml` beside a configured `X.md`) must use the current
   shape: `schema_version: 1`, `kind: document-contract`,
-  `document.{path, kind, status?, depends_on?}`, and `verification`. Project
-  fields may stay alongside, because the schema accepts extra keys. An
-  old-shape companion aborts the entire run, not just its own document.
+  `document.{path, kind, status?, depends_on?}`. Project fields may stay
+  alongside, because the schema accepts extra keys; a leftover v1
+  `verification` block is ignored with a `metadata.legacy-verification`
+  warning. An old-shape companion aborts the entire run, not just its own
+  document.
   `document.path` must name the adjacent Markdown file, and `document.kind`
   must equal the rule's `artifact_kind`.
-- Before writing rubric `applies_to`, run `doc-verify segments` across the
-  corpus and list every heading variant. A critical item that matches no
-  section is a NO-GO.
+- A rule that still names a v1 `verification:` strategy is a configuration
+  error for the whole run; migrate it to `modules:` (README, "Migrating from
+  v1 rubrics").
+- Before writing a module rule over `core.heading`, run `doc-verify segments`
+  across the corpus and list every heading variant. A heading rule that
+  matches no section leaves its constraint's population empty.
 - Commit bulk companion conversions as their own commit right away, staging
   explicit paths. In a shared worktree, uncommitted mechanical rewrites get
   swept into someone else's commit.
 
 ## 3. Baseline before the hook
 
-- Run `doc-verify check --all` without the credential first. Every document
-  that clears structure reports `BLOCKED`, so any `NO-GO` is a real structural
-  or policy failure. Then rerun with the credential for the semantic baseline.
-- Rule on each failure before installing the hook: fix it, change the rubric,
+- Run `doc-verify check --all` without the credential first. A document that
+  clears its rule's `required_sections` reports `BLOCKED` before its module
+  constraints run, so any `NO-GO` there is a real `required_sections` failure.
+  Then rerun with the credential for the module and semantic baseline.
+- Rule on each failure before installing the hook: fix it, change the module,
   or accept it explicitly. The setup commit touches the invalidation patterns,
   so it re-judges every configured document. Any existing failure blocks it.
 - After the hook is installed, an edit re-judges its whole reverse

@@ -50,8 +50,8 @@ does not prove unrelated semantics.
 When the repository has `.doc-verify.yaml`, use its `doc-verify` executable.
 
 - Use `doc-verify segments FILE` to inspect stable Markdown section IDs.
-- Use `doc-verify check --paths FILE --section ID --rubric PATH#FRAGMENT
-  --profile draft` while authoring.
+- Use `doc-verify check --paths FILE --profile draft` while authoring; add
+  `--section ID` to restrict the modules' `selected` sections.
 - Use `--profile promotion` for a review or lifecycle decision that depends on
   semantic evidence. Do not treat `auto` as proof that a draft was reviewed.
 - Use the repository's `prek` hook for the staged changed-file closure. CI must
@@ -79,9 +79,10 @@ failure signs are in [doc-verify setup](references/doc-verify-setup.md).
    `.git/hooks/pre-commit` exists and runs. A `.pre-commit-config.yaml` alone
    runs nothing.
 
-Rubric YAML is reusable policy. Artifact Markdown owns artifact-specific
-decisions. Adjacent metadata references a rubric and records commands or
-freshness; it does not duplicate the document.
+Verification modules are reusable policy, named by the `.doc-verify.yaml`
+rule (`modules:`). Artifact Markdown owns artifact-specific decisions. Adjacent
+metadata names the document and records commands or freshness; it does not
+duplicate the document.
 
 ## Stop condition
 

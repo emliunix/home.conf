@@ -1,1 +1,100 @@
 # home.conf
+
+## doc-verify
+
+`doc-verify` checks Markdown documents against verification modules (design 04,
+`design/04-modular-verification-language.md`). A module is a YAML program of facts over the
+document's section tree, judge-backed oracles, rules and constraints; the engine evaluates it in
+three-valued logic and reports each constraint's population, bindings, proof and repair hint.
+
+```sh
+npm ci && npm run build
+node doc-verify/dist/cli.js segments FILE              # stable section ids
+node doc-verify/dist/cli.js check --paths FILE --profile draft
+node doc-verify/dist/cli.js check --all                # every configured document
+```
+
+`check` takes exactly one of `--paths`, `--staged`, `--range BASE...HEAD` or `--all`, plus
+`--profile draft|promotion|auto`, `--section ID` (repeatable; restricts the `selected(D, S)`
+fact), `--format text|json`, `--verbose` and `--output PATH`. Exit codes: 0 PASS, 1 NO-GO,
+2 NEEDS-REVIEW, 3 BLOCKED, 64 usage or configuration error, 65 config not in the Git index
+(`--staged`), 66 config missing.
+
+The judge key comes from `TYPESAFE_API_KEY`, or from `API_KEY` in a gitignored
+`.env.doc-verify` at the repository root. Without it every module-governed document is
+`BLOCKED` (`semantic.prerequisite`) before its constraints run; only a rule's
+`required_sections` are checked.
+
+### Configuration
+
+`.doc-verify.yaml` lists ordered, last-match-wins document rules. An include rule names the
+modules that verify its documents:
+
+```yaml
+documents:
+  - pattern: design/{0[1-9],[1-9][0-9]}-*.md
+    artifact_kind: design
+    modules: [doc-verify:artifact, doc-verify/modules/design.yaml]
+  - pattern: goals/[0-9][0-9]-*.md
+    artifact_kind: goal
+    modules: [doc-verify:goal]
+    status_from: title          # the status word is the title suffix, not a '## Status' section
+  - pattern: goals/drafts/**
+    exclude: true
+```
+
+A module reference is a repository path or an engine library `doc-verify:NAME`. The modules of
+one rule (and their `extends`) compose into one program; a name defined twice is refused.
+
+### Engine libraries
+
+Shipped in `doc-verify/lib/`, versioned with the engine and read from its install:
+
+| Reference | What it checks |
+| --- | --- |
+| `doc-verify:artifact` | a status word in `$statuses` and a `## Goal` section; defines the `purpose` oracle |
+| `doc-verify:design` | extends artifact: `## Status` holding one of draft, reviewed, pending-retro, landed; on promotion, a verification section whose claims name a failing check, a decision section, and an altitude warning |
+| `doc-verify:goal` | extends artifact: OPEN, BLOCKED or CLOSED-GREEN; the anchored root, Design files, Workstreams, AC coverage and Worklog sections; on promotion, coverage of every root requirement |
+
+They were first authored as visflow's modules. Project-specific modules stay in the project.
+home.conf itself runs `doc-verify:goal` for goals, and `doc-verify:artifact` plus its own
+`doc-verify/modules/design.yaml` for designs.
+
+### Companions
+
+A companion `X.yaml` beside a configured `X.md` has `schema_version: 1`,
+`kind: document-contract` and `document: {path, kind, status?, depends_on?}`; other project
+fields are kept. A v1 `verification:` block in a companion is **ignored**: the rule's `modules`
+alone verify the document, and the check reports a `metadata.legacy-verification` warning so the
+block can be deleted.
+
+### Migrating from v1 rubrics
+
+The v1 rubric reader (`verification:` strategies, `rubrics:` items, `--rubric`, `--refresh`,
+`verify:jev`) was removed. A config rule that still names `verification:` is refused before
+anything runs:
+
+```text
+doc-verify: invalid .doc-verify.yaml: documents[3] (pattern "docs/**/*.md") names a v1
+`verification:` strategy; the v1 rubric reader was removed; replace `verification:` with
+`modules: [...]` naming design-04 verification modules (repository paths or engine libraries
+such as doc-verify:design); see "Migrating from v1 rubrics" in the doc-verify README
+```
+
+To migrate a rule (design 04 §Migration):
+
+1. Replace `verification: PATH#verification` with `modules: [...]`: an engine library, a module
+   of your own, or both.
+2. For each v1 rubric item write one oracle and one constraint. `scope: each` is an `ask` oracle
+   over `core.body(D, S)`; `scope: combined` is one over `core.union(D, [S1, ...])`; a section
+   id becomes a rule over `core.heading` facts. `critical: true` is `severity: error`; a
+   noncritical item is `severity: warning` with its `weight`, and the rubric threshold becomes
+   `warning_threshold`. Give a migrated oracle `threshold: 0`, so the argmax label stands as it
+   did in v1, and `profiles: [promotion]` if v1 judged it only on promotion.
+3. A v1 `required_sections` entry may stay on the rule, or become a constraint over heading
+   facts, which reports the module's message and repair.
+4. A companion's own `rubrics:` items become a module named by a later, narrower rule for that
+   document; then delete the companion's `verification:` block.
+
+`doc-verify/modules/design.yaml` and `doc-verify/modules/design-03.yaml` are home.conf's own
+migrations of its v1 design contract and of design/03's companion item.
