@@ -57,3 +57,57 @@ files over its size limit (stock pi-lens 4.3.0 is 5000 lines; this host patches
 it to 10000 — see `code-analysis-cookbook/symbol-edit`), and it reports a
 per-file view rather than a project compile, so it cannot see a cross-package
 `exports` error at all.
+
+## `--generateTrace` writes a trace, but not always a parseable one
+
+**Measured 2026-10-03, TS 5.9.3.** The trace is a **JSON array whose closing `]` is
+conditional on the run**, and the condition is the *kind* of failure, not whether
+one occurred:
+
+| run | exit | `trace.json` |
+| --- | --- | --- |
+| clean typecheck | **0** | **closed** — `json.loads` succeeds |
+| **type** error (TS2322) | **2** | **closed** — parses normally |
+| **syntax/parse** error (TS1185, e.g. conflict markers) | **1** | **UNCLOSED** — no final `]` |
+
+Four runs across two files first separated the two kinds, and the three
+**isolated one-file fixtures** above (the table's form) confirmed it: the compiler
+**closes the array when it can finish a program** and leaves it unclosed when the
+source did not parse.
+
+**The correction this contains, because the first reading was wrong.** A report on
+this tool said *"non-zero exit with a valid artifact"*, and a later one said *"the
+unclosed case is the run WITH diagnostics"*. **Both over-describe.** The artifact
+is not valid on a parse failure, and a run with **type** diagnostics is not the
+unclosed case at all — it is the ordinary reason you would open a trace, and its
+artifact is fine.
+
+**Recipe.**
+
+```bash
+tsc -p <cfg> --noEmit --generateTrace /tmp/trace    # do NOT chain with &&
+python3 - <<'PY'
+import json
+s = open("/tmp/trace/trace.json").read()
+try:    d = json.loads(s)
+except Exception: d = json.loads(s + "]")           # parse failure: append the bracket
+PY
+```
+
+- **Do not gate on `$?`.** A type error exits **2** and a parse error exits **1**
+  with a perfectly usable trace; `&&` discards both.
+- **The exit code carries no reason.** `1`, `2`, and `127` (binary absent) all
+  occur, and they do not tell you which artifact you have.
+- **Line-delimited also works** — every element parses individually, so
+  `for line in s.splitlines()[1:]: json.loads(line.rstrip(','))` recovers a trace
+  from either shape.
+
+**Bound.** Measured at **one repository on TS 5.9.3**. Package contents differ
+between revisions and the error *kind* is what decides the shape, so a tree with a
+different mix may separate differently — re-check before relying on the split for
+a specific file.
+
+**Untested, and named rather than implied:** a **syntax error in a file that also
+has a dependent type error**. Each kind above was isolated in its own directory
+with its own single-file `include`; the two have not been combined in one program,
+so which shape wins when both are present is not known.
