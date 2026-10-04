@@ -1,0 +1,94 @@
+# findings - rubrics by dimension
+# An item names the defect that must flip it; a property item says so.
+skill: findings
+dimensions:
+  trigger:
+    rubrics:
+      - id: selection
+        arms: [entry-only]
+        control_substitutes: [distractor_set, excluded_shapes, route_repetition]
+        pass_bar: fires when a defect, review or interrogation lands, or canon must move; silent on log-and-move-on and on canon moved by a bare commit
+        items:
+          - id: T-SELECT
+            claim: "a landed defect, review or interrogation, or a canon change, selects this surface"
+            red_when: "a distractor is selected instead"
+          - id: T-SILENT
+            claim: "the excluded shapes stay silent"
+            red_when: "any surface fires on them"
+      - id: generalisation
+        arms: [entry-only]
+        pass_bar: trap and paraphrase score alike
+        items:
+          - id: T-TRAP
+            claim: "the excluded case dressed in finding or canon vocabulary stays silent"
+            red_when: "the surface fires on the words \"bug\", \"finding\" or \"rewrite the sentence\""
+          - id: T-PARA
+            claim: "the same case without the vocabulary stays silent"
+            red_when: "silence depends on the clause wording appearing in the task"
+  procedure:
+    rubrics:
+      - id: triage
+        arms: [control, entry-only, full]
+        pass_bar: the five triage steps in order, each with its evidence
+        items:
+          - id: P-REPRO
+            claim: "the claim is reproduced against the tree with file and symbol before it is accepted"
+            red_when: "a finding is fixed or recorded with no reproduction"
+          - id: P-ROOT
+            claim: "the enabling rule is named and deletion of the mechanism is preferred"
+            red_when: "a guard is added where the mechanism could be removed, with no reason recorded"
+          - id: P-FIXREC
+            claim: "the finding is fixed, or recorded with the evaluating file that shows it"
+            red_when: "it is recorded with no evaluating file"
+          - id: P-REGRESS
+            claim: "the fix lands with the check that would catch it again"
+            red_when: "the fix commit carries no such check"
+          - id: P-DISPROW
+            claim: "the disposition lands in the open list and the decision rows"
+            red_when: "the disposition lives only in chat"
+          - id: P-SAMPLE
+            claim: "a property measured once is repeated or labelled a sample"
+            red_when: "one sample is reported as a property"
+      - id: canon
+        arms: [control, entry-only, full]
+        pass_bar: the five canon steps in order, each with its evidence
+        items:
+          - id: P-RECFIRST
+            claim: "what has been run about the sentence is enumerated before it is amended"
+            red_when: "the amendment precedes any enumeration of the record"
+          - id: P-SELECT
+            claim: "an evaluating file selects the change"
+            red_when: "canon moves on a review, a plan or a commit alone"
+          - id: P-CITE
+            claim: "the amended sentence cites the selecting file"
+            red_when: "the new sentence cites nothing"
+          - id: P-INPLACE
+            claim: "a contradicted prediction is corrected where it stands and the record says so"
+            red_when: "it is silently rewritten or left standing"
+          - id: P-RATCHET
+            claim: "the amended sentence gains or tightens a cell that goes red on drift"
+            red_when: "no check covers the new sentence"
+  production:
+    rubrics:
+      - id: acceptance
+        arms: [full]
+        pass_bar: the fix and the amended canon are both checkable
+        items:
+          - id: R-REGRED
+            claim: "the regression check goes red with the defect reintroduced"
+            red_when: "it stays green on the defect"
+          - id: R-CITEFOLLOW
+            claim: "the file cited by the amended sentence selects that change"
+            red_when: "following the citation finds no selection, or one that says otherwise"
+  ablation:
+    rubrics:
+      - id: steps
+        arms: [full, full-minus-one-step]
+        pass_bar: each step either degrades the outcome or is deleted
+        items:
+          - id: A-STEP
+            claim: "a step whose removal changes nothing on a trial that exercised it is decoration"
+            red_when: "it survives a fair test"
+          - id: A-UNPRICED
+            claim: "a step the trial never exercised is recorded unpriced"
+            red_when: "it is deleted on that evidence"

@@ -1,0 +1,50 @@
+# findings - trigger cases, as canonical / trap / paraphrase triplets
+# Rewritten without project nouns at the 2026-10-05 consolidation; one behaviour from each source scope
+# (triage, canon movement) plus a landed review. Each case cites the SKILL.md line that makes its
+# expectation correct.
+skill: findings
+dimension: trigger
+triplets:
+  - behavior: a defect lands on the open list
+    canonical:
+      prompt: "Item 27 on the open list: either fix the reserved budget counter or record it as a known limitation with the evaluation that shows it."
+      expected: [findings]
+      cites: "SKILL.md:7, 18 - a defect lands; fix it, or record it with the evaluating file"
+    trap:
+      prompt: "The bug in item 31 keeps coming back - just set it to done and move on."
+      expected: []
+      cites: "SKILL.md:8 - not when the task is to log a finding without fixing it or recording its disposition"
+    paraphrase:
+      prompt: "Write the bug down somewhere so we remember it later."
+      expected: []
+      cites: "SKILL.md:8 - the same situation without the vocabulary"
+  - behavior: a review lands
+    canonical:
+      prompt: "Three reviewers filed findings against the parser change - work through them."
+      expected: [findings]
+      cites: "SKILL.md:7, 16 - a review lands; reproduce each claim before accepting it"
+    trap:
+      prompt: "Copy the reviewers' findings into the tracker exactly as they are; we will look at them later."
+      expected: []
+      cites: "SKILL.md:8 - logging findings without fixing them or recording a disposition"
+    paraphrase:
+      prompt: "Paste those comments into a list for later."
+      expected: []
+      cites: "SKILL.md:8 - the same situation without the vocabulary"
+  - behavior: canon text must move
+    canonical:
+      prompt: "The round's evaluation selected the per-class frame condition - change section 4 of the theory document to match, citing it."
+      expected: [findings]
+      cites: "SKILL.md:7, 28-30 - canon must move; an evaluating file selects it and the amended sentence cites it"
+    trap:
+      prompt: "Rewrite the sentence in the theory document so it says what we now believe."
+      expected: []
+      cites: "SKILL.md:8-9 - a commit moving canon on its own, with no evaluating file"
+    paraphrase:
+      prompt: "Our documented rule turned out wrong in practice - just change the wording."
+      expected: []
+      cites: "SKILL.md:8-9 - the same situation without the vocabulary"
+run_notes:
+  - "Arms: entry-only over the full catalog; the degenerate control is replaced by the distractor set, the excluded shapes, and route repetition."
+  - "Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss."
+  - "The trap and the paraphrase are the same situation; if only the trap stays silent, the surface is reading words, not the shape."
