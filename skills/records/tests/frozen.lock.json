@@ -1,0 +1,10 @@
+{
+ "files": {
+  "README.md": "a6d54e162cfe8593948e32b6b1ab8d1edf0587428e78583f7147a54daf31872f",
+  "SKILL.md": "5e8efa218845bfc775ac42318c92cd942bfcff5d864ad6f33c26e3ccf6521ada",
+  "tests/cases/trigger.yaml": "1b9005438e8d1ca9a38d3733e5ffb69235df2cae94a5cf004e544d6598216715",
+  "tests/rubric.yaml": "8a04aceef98dc2b5df34366a17f8d0874c6ab8a442caa0ef224d5276b22809d9"
+ },
+ "skill": "records",
+ "version": 1
+}

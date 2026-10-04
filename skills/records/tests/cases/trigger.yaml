@@ -1,0 +1,49 @@
+# records - trigger cases, as canonical / trap / paraphrase triplets
+# Rewritten without project nouns at the 2026-10-05 consolidation; each case cites the SKILL.md line
+# that makes its expectation correct.
+skill: records
+dimension: trigger
+triplets:
+  - behavior: finding what a programme has run
+    canonical:
+      prompt: "Which files record the evidence that the retry gap is closed, and does every round of that programme have a verdict?"
+      expected: [records]
+      cites: "SKILL.md:6-7, 15-16 - finding what a programme has run; enumerate by convention, check against the commits"
+    trap:
+      prompt: "Trust the manifest and tell me what the programme has run."
+      expected: []
+      cites: "SKILL.md:7 - not when the task is to trust the manifest"
+    paraphrase:
+      prompt: "Just read me the list on the overview page of what was done - no need to check it."
+      expected: []
+      cites: "SKILL.md:7 - the same situation without the vocabulary"
+  - behavior: adding a record to a programme
+    canonical:
+      prompt: "Add round 3's verdict to the programme, with its index row and the decision row for what landed."
+      expected: [records]
+      cites: "SKILL.md:7, 28-31, 35 - adding a record: the four steps and one decision row per landed unit"
+    trap:
+      prompt: "Hand-write the generated results index so it lists round 3."
+      expected: []
+      cites: "SKILL.md:7-8 - not when the task is to hand-write a page a script generates"
+    paraphrase:
+      prompt: "Type round 3 into the corpus page by hand - the script that builds it is too slow."
+      expected: []
+      cites: "SKILL.md:7-8 - the same situation without the vocabulary"
+  - behavior: a new dated record in the worklog
+    canonical:
+      prompt: "Where does today's write-up of the outage review go in the worklog, and what should the file be called?"
+      expected: [records]
+      cites: "SKILL.md:6-7, 41 - adding a record; a new worklog record is dated and its created: agrees"
+    trap:
+      prompt: "The manifest already lists today's write-up - trust it and skip checking the worklog."
+      expected: []
+      cites: "SKILL.md:7 - not when the task is to trust the manifest"
+    paraphrase:
+      prompt: "The summary page says it is filed - take its word for it."
+      expected: []
+      cites: "SKILL.md:7 - the same situation without the vocabulary"
+run_notes:
+  - "Arms: entry-only over the full catalog; the degenerate control is replaced by the distractor set, the excluded shapes, and route repetition."
+  - "Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss."
+  - "The trap and the paraphrase are the same situation; if only the trap stays silent, the surface is reading words, not the shape."
