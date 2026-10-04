@@ -22,7 +22,7 @@ the same prompt, the same change set and the same rubric.
 2. **Roster the seats.** Independent seats, routed per role from the project's model-route table, if it
    has one; **the author is never a seat**, and neither is a model whose own defects landed inside the
    range under review. Reuse the child that evaluated the same subject before rather than minting a fresh
-   one (see `dispatch`). Three seats is the common shape; the count is a decision, and it is recorded.
+   one (see `subagent-dispatch`). Three seats is the common shape; the count is a decision, and it is recorded.
 3. **Hand one instrument to every seat.** The prompt is a **committed file, not an improvisation** —
    one per evaluation, named for its topic and date, read-only, naming the spine and the review set, with
    a fixed report shape: severity per finding, a capped finding count, and the next experiments ranked.
@@ -33,9 +33,9 @@ the same prompt, the same change set and the same rubric.
    findings arrived *independently* (the strongest signal available), which from one seat only, which the
    lead reproduced, and which it refuted. **Nothing is attributed to a seat that did not report it.**
 5. **Disposition every finding** — fixed, or recorded as a known limitation with this verdict (see
-   `findings`). A verdict that changes nothing still binds the next round: what the seats found is the
+   `finding-triage`). A verdict that changes nothing still binds the next round: what the seats found is the
    next round's input.
-6. **Record.** The verdict is an evaluating file named by the programme's convention (see `records`),
+6. **Record.** The verdict is an evaluating file named by the programme's convention (see `record-conventions`),
    with the commit range it evaluated, how the lead judged the pooled findings, and the next experiments
    ranked with the falsifiers first. One decision row per landed disposition. Where the fixes are
    consequential, follow with a **verification round** recording what they did to the findings — a

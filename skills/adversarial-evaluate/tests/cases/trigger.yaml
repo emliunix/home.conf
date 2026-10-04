@@ -38,7 +38,7 @@ triplets:
       cites: "SKILL.md:19-20, 55 - the review set is the commits since the previous evaluation, derived from the range"
     trap:
       prompt: "Add an evaluation row to the register."
-      expected: [records]
+      expected: [record-conventions]
       cites: "SKILL.md:40 - step 6 puts the decision row inside an evaluation, so the correct selection is ambiguous; this case records that ambiguity rather than scoring it"
     paraphrase:
       prompt: "What has landed since anyone looked at the compiler, and is it sound?"

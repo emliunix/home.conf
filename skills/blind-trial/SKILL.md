@@ -20,15 +20,15 @@ count what happens. Both instruments share five rules.
 1. **Hand the repository's own files, never a summary.** A trial whose material is the trial's own
    rendering measures the person who wrote the summary. Where the files do not exist, say so in the
    trial's record and treat the result as being about the summary as much as about the subject.
-2. **Blind the participants** — no priming, no guided tour; each is a fresh child (see `dispatch`: blinding
+2. **Blind the participants** — no priming, no guided tour; each is a fresh child (see `subagent-dispatch`: blinding
    is the case where reuse would destroy the instrument).
 3. **Three to five per batch**, each with one topic and the same prompt shape. One participant is an
    impression, not a measurement.
 4. **Tag and freeze.** Tag the tree at dispatch — one tag family per instrument (`reader-batch-<n>`,
    `author-round-<n>`), its name written into the trial's record — and commit nothing until the last
-   participant is back (the freeze rule of `dispatch`). A trial without a tag leaves its freeze unwitnessed
+   participant is back (the freeze rule of `subagent-dispatch`). A trial without a tag leaves its freeze unwitnessed
    and its findings unattributable to a revision. Correct in one batch afterwards.
-5. **Disposition every finding** (see `findings`) — including one only a single participant reports.
+5. **Disposition every finding** (see `finding-triage`) — including one only a single participant reports.
    **Blanket remediation is banned**: a single confusion is data about that path, not a consensus, and a
    fix applied to every document someone complained about recreates the defect. State a fact once and
    check it.

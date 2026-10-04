@@ -24,9 +24,9 @@ description: >-
 3. **Candidates** — two or three designs, one per point on the axis. A second flavour of the first shape does not count.
 4. **Pre-register** — record the outcome expected of each candidate **before the first run**. A prediction written after the measurement is a regression gate, not a prediction. **Before the run, an independent seat reads the plan against the hypothesis**: is it falsifiable by the named predicate, is the axis the one it turns on, is every expectation recorded first, what does the plan leave unmeasured. The plan and its review are committed together (see `adversarial-evaluate`, the plan-before-run case).
 5. **Run**, then **evaluate** — what measured, which candidate the measurement selects, what it leaves unmeasured, which expectations the run contradicted. Read the runs the way a user would, not the internals.
-6. **Predicate** — the committed commands this round runs, each reporting an honest `complete` flag: one command per track, not one for all of them. A skip is not a pass. Whether each check can fail at all belongs to `gate`.
+6. **Predicate** — the committed commands this round runs, each reporting an honest `complete` flag: one command per track, not one for all of them. A skip is not a pass. Whether each check can fail at all belongs to `seeded-defect-gate`.
 
-**A run that disagrees with the prediction is the finding**: correct the prediction in place and say so. A round carries both its predictions and its regression gates, and says which is which. The records a round produces follow `records`.
+**A run that disagrees with the prediction is the finding**: correct the prediction in place and say so. A round carries both its predictions and its regression gates, and says which is which. The records a round produces follow `record-conventions`.
 
 ## Worked instances (visflow)
 

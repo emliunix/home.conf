@@ -1,0 +1,50 @@
+# subagent-dispatch - trigger cases, as canonical / trap / paraphrase triplets
+# Rewritten without project nouns at the 2026-10-05 consolidation. The description deliberately has no
+# exclusion clause, so the traps are cases where no child is involved. Each case cites the SKILL.md line
+# that makes its expectation correct.
+skill: subagent-dispatch
+dimension: trigger
+triplets:
+  - behavior: a task is split across subagents
+    canonical:
+      prompt: "Split the audit of the four service modules across subagents, one report file each."
+      expected: [subagent-dispatch]
+      cites: "SKILL.md:6, 14 - a task split across subagents; one output file per child"
+    trap:
+      prompt: "Summarise the project's canon in two lines so I can paste it into a prompt."
+      expected: []
+      cites: "SKILL.md:6-7 - no subagent is involved; the Use clause names only splitting work or reusing a child"
+    paraphrase:
+      prompt: "Give me a two-line gist of what this repository is about."
+      expected: []
+      cites: "SKILL.md:6-7 - the same situation without the vocabulary"
+  - behavior: a child that did the same kind of work could be reused
+    canonical:
+      prompt: "The subagent that reviewed the storage design earlier - send it the follow-up review of the revised design."
+      expected: [subagent-dispatch]
+      cites: "SKILL.md:6-7, 15 - reuse keyed by topic and task kind"
+    trap:
+      prompt: "Review the revised storage design yourself and tell me whether it reads well."
+      expected: []
+      cites: "SKILL.md:6-7 - the work stays in-session; no child is split off or reused"
+    paraphrase:
+      prompt: "Does the revised storage design read well to you?"
+      expected: []
+      cites: "SKILL.md:6-7 - the same situation without the vocabulary"
+  - behavior: a different model is asked for an independent reading
+    canonical:
+      prompt: "Get a second opinion from a different model on the contract in the verifier module, and hand it the repository's own files."
+      expected: [subagent-dispatch]
+      cites: "SKILL.md:6, 12-13 - work handed to a child, routed per role, given the spine rather than a paraphrase"
+    trap:
+      prompt: "Write a summary of the verifier contract for the README - no subagents needed."
+      expected: []
+      cites: "SKILL.md:6-7 - no child is involved"
+    paraphrase:
+      prompt: "Put a short description of the verifier contract in the README."
+      expected: []
+      cites: "SKILL.md:6-7 - the same situation without the vocabulary"
+run_notes:
+  - "Arms: entry-only over the full catalog; the degenerate control is replaced by the distractor set, the excluded shapes, and route repetition."
+  - "Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss."
+  - "The trap and the paraphrase are the same situation; if only the trap stays silent, the surface is reading words, not the shape."

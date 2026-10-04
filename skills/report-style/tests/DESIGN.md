@@ -7,7 +7,7 @@ smoke-checkable routing and chronology cases; their production effect is open un
 
 ## Why this skill is not the same as the method skills
 
-The method skills (`gate`, `records`, `experiment-round` and their siblings) produce records whose acceptance is structural. `report-style` produces prose in
+The method skills (`seeded-defect-gate`, `record-conventions`, `experiment-round` and their siblings) produce records whose acceptance is structural. `report-style` produces prose in
 seven kinds and two shapes, so its hardest problem is still the **production oracle**: what counts as an
 accepted written artifact when a checklist over prose is close to self-grading.
 
@@ -116,7 +116,7 @@ the evaluation skill (now `adversarial-evaluate`) on route 2 and stayed silent o
 defect was a missing exclusion, not excessive visibility, and hiding the surface would have removed the six
 must-fire tasks that passed on both routes. The review trap was re-run on both routes after the clause
 landed, **and it now returns `none` on the route that had fired** (`round-1.md`, *Confirmation results*).
-One item remains route-dependent for a different reason — `T2` is contested on route 2 by the records skill's (now `records`)
+One item remains route-dependent for a different reason — `T2` is contested on route 2 by the records skill's (now `record-conventions`)
 positively-claimed "record", which is a catalog collision rather than a defect in this description.
 
 ## Review dispositions (r1 → r2)
