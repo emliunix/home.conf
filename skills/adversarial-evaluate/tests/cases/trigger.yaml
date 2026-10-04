@@ -1,0 +1,50 @@
+# adversarial-evaluate - trigger cases, as canonical / trap / paraphrase triplets
+# Rewritten without project nouns at the 2026-10-05 consolidation. In this file the paraphrase is the
+# canonical case with the vocabulary removed (it must still select), as in the source package. Each case
+# cites the SKILL.md line that makes its expectation correct.
+skill: adversarial-evaluate
+dimension: trigger
+triplets:
+  - behavior: a round's evidence is to be evaluated
+    canonical:
+      prompt: "Adversarially evaluate round 2 of the retry experiment - does its evidence establish what it claims?"
+      expected: [adversarial-evaluate]
+      cites: "SKILL.md:7-8, 52 - the Use clause names a round needing an adversarial verdict"
+    trap:
+      prompt: "Sanity-check my write-up of the round and fix the typos."
+      expected: []
+      cites: "SKILL.md:8-9 - the description refuses prose or style"
+    paraphrase:
+      prompt: "Get a second opinion on that round from other models before we trust it."
+      expected: [adversarial-evaluate, interrogate]
+      cites: "SKILL.md:15 - model diversity is the signal; a multi-model mechanism skill co-firing is correct"
+  - behavior: a design document's claims are to be tested against the tree
+    canonical:
+      prompt: "Test whether the architecture document's claims still hold against the tree, adversarially and independently."
+      expected: [adversarial-evaluate]
+      cites: "SKILL.md:7-8, 53 - a design needing an adversarial verdict; the cases table row 'a design document'"
+    trap:
+      prompt: "One reviewer said the design is fine - can we move on?"
+      expected: []
+      cites: "SKILL.md:9 - the description refuses one evaluator's impression presented as a consensus"
+    paraphrase:
+      prompt: "Would a stranger reading the design find it honest about the code?"
+      expected: [adversarial-evaluate]
+      cites: "SKILL.md:53 - the case is the design document; the wording is not the trigger"
+  - behavior: a unit of work before a round closes
+    canonical:
+      prompt: "Evaluate the 47 commits since the last pass on the compiler before we call this round done."
+      expected: [adversarial-evaluate]
+      cites: "SKILL.md:19-20, 55 - the review set is the commits since the previous evaluation, derived from the range"
+    trap:
+      prompt: "Add an evaluation row to the register."
+      expected: [records]
+      cites: "SKILL.md:40 - step 6 puts the decision row inside an evaluation, so the correct selection is ambiguous; this case records that ambiguity rather than scoring it"
+    paraphrase:
+      prompt: "What has landed since anyone looked at the compiler, and is it sound?"
+      expected: [adversarial-evaluate]
+      cites: "SKILL.md:7-8, 55 - a unit of work; the wording is not the trigger"
+run_notes:
+  - "Arms: entry-only over the full catalog; the degenerate control is replaced by the distractor set and the two traps."
+  - "Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss: the register-row trap is recorded, not scored."
+  - "Here the paraphrase must still select: if only the canonical wording selects, the surface is reading words, not the shape."
