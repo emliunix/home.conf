@@ -56,11 +56,33 @@ Shipped in `doc-verify/lib/`, versioned with the engine and read from its instal
 
 | Reference | What it checks |
 | --- | --- |
-| `doc-verify:artifact` | a status word in `$statuses` and a `## Goal` section; defines the `purpose` oracle |
+| `doc-verify:references` | `references-resolve` (error): every Markdown link that is not a URL resolves; `paths-resolve` (warning): every backtick repository path resolves. No judge |
+| `doc-verify:artifact` | extends references: a status word in `$statuses` and a `## Goal` section; defines the `purpose` oracle |
 | `doc-verify:design` | extends artifact: `## Status` holding one of draft, reviewed, pending-retro, landed; on promotion, a verification section whose claims name a failing check, a decision section, and an altitude warning |
 | `doc-verify:goal` | extends artifact: OPEN, BLOCKED or CLOSED-GREEN; the anchored root, Design files, Workstreams, AC coverage and Worklog sections; on promotion, coverage of every root requirement |
 
-They were first authored as visflow's modules. Project-specific modules stay in the project.
+Reference facts (added 2026-10-05). For each document `doc-verify:core` also provides
+`core.ref(D, S, Target, Kind)`: `Kind = link` for every Markdown link, image or definition target
+that is not a URL (no `scheme:` and no `//`), `Kind = path` for every inline code span made only of
+`[A-Za-z0-9_./-]` that contains `/` or ends in a known file extension (not a predicate indicator
+such as `child/3`, nor a placeholder such as `path/X.md`); `S` is the innermost section (or
+`@preamble`) and `Target` is as written. `core.resolves(D, Target)` holds when the target, without
+its `#fragment`, names a file or directory relative to the document's directory or to the
+repository root, in the candidate's tracked files or (for `--paths`, `--all`, `--staged`) the
+working tree; a bare fragment resolves to the document. `core.dangling(D, S, Target, Kind)` is
+a ref that does not resolve. Fenced code is not read. A module requires that what a document
+names exists with, for example:
+
+```yaml
+extends: [doc-verify:references]   # or write the constraint yourself:
+constraints:
+  references-resolve:
+    forall: core.ref(D, S, T, link)
+    forbid: core.dangling(D, S, T, link)
+    severity: error
+```
+
+The first libraries were first authored as visflow's modules. Project-specific modules stay in the project.
 home.conf itself runs `doc-verify:goal` for goals, and `doc-verify:artifact` plus its own
 `doc-verify/modules/design.yaml` for designs.
 

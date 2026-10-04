@@ -217,7 +217,7 @@ describe("engine libraries (doc-verify:NAME)", () => {
   });
 
   it("ships artifact, design and goal with the engine", () => {
-    expect(engineLibraries()).toEqual(["doc-verify:artifact", "doc-verify:design", "doc-verify:goal"]);
+    expect(engineLibraries()).toEqual(["doc-verify:artifact", "doc-verify:design", "doc-verify:goal", "doc-verify:references"]);
   });
 
   it("resolves doc-verify:design from the engine, with the library it extends", async () => {
@@ -227,7 +227,7 @@ describe("engine libraries (doc-verify:NAME)", () => {
     modules: [doc-verify:design]`);
     const judge = libraryJudge();
     const report = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: judge.backend });
-    expect(only(report).engine?.modules).toEqual(["doc-verify:artifact", "doc-verify:design"]);
+    expect(only(report).engine?.modules).toEqual(["doc-verify:references", "doc-verify:artifact", "doc-verify:design"]);
     expect(only(report).verdict).toBe("PASS");
     const bad = await repository({ "design/a.md": decided.replace("## Goal\n\nShip it.\n\n", "") }, `  - pattern: design/*.md
     artifact_kind: design
@@ -249,7 +249,7 @@ params:
     artifact_kind: design
     modules: [doc-verify:artifact, modules/local.yaml]`);
     const report = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: libraryJudge().backend });
-    expect(only(report).engine?.modules).toEqual(["doc-verify:artifact", "modules/local.yaml"]);
+    expect(only(report).engine?.modules).toEqual(["doc-verify:references", "doc-verify:artifact", "modules/local.yaml"]);
     expect(only(report).verdict).toBe("PASS");
   });
 
@@ -258,7 +258,7 @@ params:
     artifact_kind: design
     modules: [doc-verify:nope]`);
     await expect(checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend }))
-      .rejects.toThrow("doc-verify:nope: no such engine library; this engine ships doc-verify:artifact, doc-verify:design, doc-verify:goal");
+      .rejects.toThrow("doc-verify:nope: no such engine library; this engine ships doc-verify:artifact, doc-verify:design, doc-verify:goal, doc-verify:references");
     const escape = await repository({ "design/a.md": GOOD }, `  - pattern: design/*.md
     artifact_kind: design
     modules: [doc-verify:../../package]`);

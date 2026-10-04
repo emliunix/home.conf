@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { documentSectionsNote, explainSectionMatch, sectionIdMatches } from "./normalize.js";
 import path from "node:path";
 import { createMockJevJudgeBackend, type JudgeBackend } from "deepclause-sdk";
@@ -96,6 +97,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
     }
   }
   const selectedIds = options.sections?.map(sectionId);
+  const exists = candidateExists(root, pair.candidateInventory, pair.workingTree);
   const artifacts: ArtifactReport[] = [];
   for (const file of pair.candidatePaths) {
     const rule = findDocumentRule(config, file);
@@ -117,6 +119,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
       impactPath,
       selectorTrace: documentTraceFor(config.documents, file),
       readCandidate: pair.readCandidate,
+      exists,
       requestedProfile: options.profile,
       ...(selectedIds === undefined ? {} : { selectedIds }),
       ...(options.backend === undefined ? {} : { backend: options.backend }),
@@ -150,6 +153,7 @@ async function checkArtifact(input: {
   impactPath: RepoPath[];
   selectorTrace: ArtifactReport["selectorTrace"];
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
+  exists: (repoPath: string) => boolean;
   requestedProfile: Profile;
   selectedIds?: SectionId[];
   backend?: JudgeBackend;
@@ -192,6 +196,7 @@ async function checkWithModules(input: {
   impactPath: RepoPath[];
   selectorTrace: ArtifactReport["selectorTrace"];
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
+  exists: (repoPath: string) => boolean;
   requestedProfile: Profile;
   selectedIds?: SectionId[];
   backend?: JudgeBackend;
@@ -259,7 +264,7 @@ async function checkWithModules(input: {
   }
   const report = await runProgram({
     moduleYaml: composed.yaml,
-    documents: [{ path: input.file, markdown: input.blob.content, meta,
+    documents: [{ path: input.file, markdown: input.blob.content, meta, exists: input.exists,
       ...(input.selectedIds === undefined ? {} : { selected: input.selectedIds }) }],
     backend,
     ...(unavailable === undefined ? {} : { unavailable }),
@@ -300,6 +305,22 @@ async function checkWithModules(input: {
     engine: { modules: composed.sources, hash: report.hash, requests: report.requests.length, text: renderReport(report) },
     verdict: report.verdict,
   };
+}
+
+/**
+ * Whether a repository path is a file or directory of the candidate: in its tree (a directory
+ * when some file lies under it) or, when the working tree is part of the candidate, on disk.
+ */
+function candidateExists(root: string, inventory: readonly string[], workingTree: boolean): (repoPath: string) => boolean {
+  const files = new Set(inventory);
+  const directories = new Set<string>();
+  for (const file of inventory) {
+    for (let index = file.indexOf("/"); index > 0; index = file.indexOf("/", index + 1)) {
+      directories.add(file.slice(0, index));
+    }
+  }
+  return (repoPath) => files.has(repoPath) || directories.has(repoPath)
+    || (workingTree && existsSync(path.join(root, repoPath)));
 }
 
 /** A goal keeps its status as the title suffix: `# <goal> — OPEN|BLOCKED|CLOSED-GREEN (<date>)`. */

@@ -2,12 +2,14 @@
 # vocabulary and a '## Goal' section. Where the status is written is kind-specific (a design's
 # '## Status' section, a goal's title suffix, chosen by the rule's `status_from`); the checker
 # reads it into the `status` meta fact. A kind library that extends this one supplies `$statuses`.
+# It extends doc-verify:references (2026-10-05), so every link it governs must resolve.
 #
 # Shipped with the engine and versioned with it. First authored as visflow's
 # doc-verify/modules/artifact.yaml (visflow design 10).
 schema_version: 2
 kind: verification-module
 module: doc-verify.artifact
+extends: [doc-verify:references]
 oracles:
   purpose(D, S, P):
     choose: [goal, problem, scope, out_of_scope, rationale, model, decision, assumptions, owner_input, verification, evidence, review, status, handoff, workstreams, coverage, dependencies, record, other]

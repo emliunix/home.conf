@@ -27,6 +27,10 @@ export interface SnapshotPair {
   impactPaths: ReadonlyMap<RepoPath, RepoPath[]>;
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
   candidatePaths: RepoPath[];
+  /** Every file in the candidate's tree (tracked files, or the range head's tree). */
+  candidateInventory: readonly string[];
+  /** Whether the working tree is part of the candidate, so a file on disk also exists. */
+  workingTree: boolean;
 }
 
 export interface DocumentReferenceRule extends DocumentSelector {
@@ -78,6 +82,8 @@ export async function captureSnapshots(input: {
       documentRules: input.documentRules,
       readBaseline: (file) => readGitBlob(input.root, base, file),
       readCandidate: (file) => readGitBlob(input.root, head, file),
+      candidateInventory,
+      workingTree: false,
     });
   }
 
@@ -106,6 +112,8 @@ export async function captureSnapshots(input: {
       documentRules: input.documentRules,
       readBaseline,
       readCandidate: (file) => readGitBlob(input.root, ":", file),
+      candidateInventory: allTracked,
+      workingTree: true,
     });
   }
 
@@ -125,6 +133,8 @@ export async function captureSnapshots(input: {
     documentRules: input.documentRules,
     readBaseline,
     readCandidate: (file) => readWorkingBlob(input.root, file),
+    candidateInventory: workingInventory,
+    workingTree: true,
   });
 }
 
@@ -229,6 +239,8 @@ async function buildPair(input: {
   documentRules: DocumentReferenceRule[];
   readBaseline: (path: RepoPath) => Promise<TextBlob>;
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
+  candidateInventory: readonly string[];
+  workingTree: boolean;
 }): Promise<SnapshotPair> {
   const [baseline, candidate] = await Promise.all([
     capture(input.baselineLabel, input.baselineInputPaths, input.readBaseline),
@@ -247,6 +259,8 @@ async function buildPair(input: {
     impactPaths: affected.impactPaths,
     readCandidate: input.readCandidate,
     candidatePaths: affected.artifacts,
+    candidateInventory: input.candidateInventory,
+    workingTree: input.workingTree,
   };
 }
 

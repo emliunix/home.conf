@@ -6,6 +6,12 @@
  * child; `body` is the heading plus the whole subtree.
  */
 
+import path from "node:path";
+
+import type { Root, RootContent } from "mdast";
+import remarkParse from "remark-parse";
+import { unified } from "unified";
+
 import { segmentMarkdown } from "../segments.js";
 import type { Section } from "../types.js";
 import { atom, compound, number, type Term } from "./terms.js";
@@ -17,6 +23,11 @@ export interface DocumentInput {
   meta?: Record<string, string>;
   /** Section ids selected by the CLI or profile; every section when absent. */
   selected?: string[];
+  /**
+   * Whether a repository-relative path names a file or directory in the candidate. It decides
+   * `resolves(D, Target)`; when absent every reference resolves.
+   */
+  exists?: (repoPath: string) => boolean;
 }
 
 export interface DocumentFacts {
@@ -26,8 +37,8 @@ export interface DocumentFacts {
   facts: Term[];
 }
 
-export const CORE_BASE = ["section/3", "heading/3", "depth/3", "order/3", "meta/3", "selected/2"] as const;
-export const CORE_DERIVED = ["child/3", "descendant/3", "nests/3"] as const;
+export const CORE_BASE = ["section/3", "heading/3", "depth/3", "order/3", "meta/3", "selected/2", "ref/4", "resolves/2"] as const;
+export const CORE_DERIVED = ["child/3", "descendant/3", "nests/3", "dangling/4"] as const;
 
 export function documentFacts(document: DocumentInput): DocumentFacts {
   const sections = segmentMarkdown(document.markdown).filter((section) => section.depth > 0);
@@ -82,7 +93,123 @@ export function documentFacts(document: DocumentInput): DocumentFacts {
       }
     }
   }
+  // References (added 2026-10-05): what the document names, and whether it exists.
+  const seen = new Set<string>();
+  for (const reference of documentReferences(document.markdown, sections)) {
+    const key = `${reference.section}\u0000${reference.target}\u0000${reference.kind}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    const args = [D, atom(reference.section), atom(reference.target), atom(reference.kind)];
+    facts.push(core("ref", args));
+    if (resolvesTarget(id, reference.target, document.exists)) {
+      facts.push(core("resolves", [D, atom(reference.target)]));
+    } else {
+      facts.push(core("dangling", args));
+    }
+  }
   return { id, sections, parents, facts };
+}
+
+export interface DocumentReference {
+  /** The innermost section the reference sits in; `@preamble` before the first heading. */
+  section: string;
+  /** The target as written. */
+  target: string;
+  kind: "link" | "path";
+}
+
+/** A scheme (`https:`, `mailto:`) or a protocol-relative `//host` makes a link a URL. */
+const URL_TARGET = /^(?:[A-Za-z][A-Za-z0-9+.-]*:|\/\/)/;
+const PATH_SPAN = /^[A-Za-z0-9_./-]+$/;
+/**
+ * A file extension, from a fixed list: `core.body` or `document.path` is a dotted name, not a
+ * file, so "ends with an extension" cannot mean any `.word` suffix.
+ */
+const FILE_EXTENSION = new RegExp(`\\.(?:${[
+  "md", "markdown", "txt", "rst", "adoc", "yaml", "yml", "json", "jsonl", "toml", "ini", "cfg", "conf", "env", "lock",
+  "ts", "tsx", "mts", "cts", "js", "jsx", "mjs", "cjs", "py", "pyi", "rs", "go", "java", "kt", "c", "h", "cc", "cpp", "hpp",
+  "rb", "lua", "sh", "bash", "zsh", "fish", "ps1", "sql", "html", "htm", "css", "scss", "svg", "png", "jpg", "jpeg", "gif",
+  "pdf", "csv", "tsv", "xml", "proto", "graphql", "tldr", "tldraw", "ipynb", "pl", "pro",
+].join("|")})$`, "i");
+/** `name/3` is a predicate indicator (and `design/02` a shorthand), not a path. */
+const PREDICATE_INDICATOR = /^[A-Za-z_][A-Za-z0-9_-]*\/[0-9]+$/;
+/** `X.md`, `path/X.yaml`, `task/N`: a segment whose stem is one or two capitals is a placeholder. */
+const PLACEHOLDER_SEGMENT = /(?:^|\/)[A-Z]{1,2}(?:\.[A-Za-z0-9]+)?(?:\/|$)/;
+
+/**
+ * `core.ref` facts: every Markdown link, image or definition target that is not a URL
+ * (`link`), and every inline code span that looks like a repository path (`path`): only
+ * `[A-Za-z0-9_./-]`, either a `/` or a known file extension, and not a predicate indicator
+ * such as `child/3` or a placeholder such as `path/X.md`. Fenced code is not read.
+ */
+export function documentReferences(markdown: string, sections: Section[]): DocumentReference[] {
+  const tree = unified().use(remarkParse).parse(markdown);
+  const found: DocumentReference[] = [];
+  const sectionAt = (line: number | undefined): string => {
+    let current = "@preamble";
+    for (const section of sections) {
+      if (section.depth > 0 && line !== undefined && section.startLine <= line) {
+        current = section.id;
+      }
+    }
+    return current;
+  };
+  const visit = (node: Root | RootContent): void => {
+    if (node.type === "link" || node.type === "image" || node.type === "definition") {
+      const target = node.url.trim();
+      if (target.length > 0 && !URL_TARGET.test(target)) {
+        found.push({ section: sectionAt(node.position?.start.line), target, kind: "link" });
+      }
+    } else if (node.type === "inlineCode") {
+      const value = node.value.trim();
+      if (PATH_SPAN.test(value) && /[A-Za-z0-9]/.test(value) && !PREDICATE_INDICATOR.test(value)
+        && !PLACEHOLDER_SEGMENT.test(value) && (value.includes("/") || FILE_EXTENSION.test(value))) {
+        found.push({ section: sectionAt(node.position?.start.line), target: value, kind: "path" });
+      }
+    }
+    if ("children" in node) {
+      for (const child of node.children) {
+        visit(child);
+      }
+    }
+  };
+  visit(tree);
+  return found;
+}
+
+/**
+ * A target, stripped of any `#fragment` (and percent-decoded), resolves when it names a file
+ * or directory relative to the document's directory or to the repository root. A bare
+ * fragment names the document itself.
+ */
+export function resolvesTarget(documentPath: string, target: string, exists: ((repoPath: string) => boolean) | undefined): boolean {
+  if (exists === undefined) {
+    return true;
+  }
+  const raw = target.split("#")[0]?.split("?")[0] ?? "";
+  if (raw.length === 0) {
+    return true;
+  }
+  let decoded = raw;
+  try {
+    decoded = decodeURIComponent(raw);
+  } catch {
+    // keep the target as written
+  }
+  const candidates = new Set<string>();
+  for (const value of new Set([raw, decoded])) {
+    const relative = path.posix.normalize(path.posix.join(path.posix.dirname(documentPath), value));
+    const fromRoot = path.posix.normalize(value.replace(/^\/+/, ""));
+    for (const candidate of value.startsWith("/") ? [fromRoot] : [relative, fromRoot]) {
+      const clean = candidate.replace(/\/+$/, "");
+      if (clean.length > 0 && clean !== "." && !clean.startsWith("../") && clean !== "..") {
+        candidates.add(clean);
+      }
+    }
+  }
+  return [...candidates].some(exists);
 }
 
 function core(name: string, args: Term[]): Term {
