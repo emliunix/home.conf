@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 
 import { checkDocuments, titleStatus } from "../src/checker.js";
 import { renderText } from "../src/report.js";
+import { UsageError } from "../src/types.js";
 import { scriptedJudge } from "./engine-helpers.js";
 
 const BASE = `schema_version: 2
@@ -175,13 +176,30 @@ describe("doc-verify check on design-04 modules", () => {
     expect(only(report).verdict).toBe("PASS");
   });
 
-  it("refuses a rule that names both a v1 strategy and modules", async () => {
+  it("refuses a v1 verification: rule with a message that names the migration", async () => {
+    const root = await repository({ "modules/base.yaml": BASE, "design/a.md": GOOD },
+      `  - pattern: design/*.md
+    artifact_kind: design
+    verification: strategies/design.yaml#verification
+    required_sections: []`);
+    const refusal = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend })
+      .catch((error: unknown) => error);
+    expect(refusal).toBeInstanceOf(UsageError);
+    expect((refusal as Error).message).toBe(
+      'invalid .doc-verify.yaml: documents[0] (pattern "design/*.md") names a v1 `verification:` strategy; ' +
+      "the v1 rubric reader was removed; replace `verification:` with `modules: [...]` naming design-04 verification " +
+      "modules (repository paths or engine libraries such as doc-verify:design); " +
+      'see "Migrating from v1 rubrics" in the doc-verify README',
+    );
+  });
+
+  it("refuses a v1 rule even when it also names modules", async () => {
     const root = await repository({ "modules/base.yaml": BASE, "design/a.md": GOOD },
       `  - pattern: design/*.md
     artifact_kind: design
     verification: strategies/design.yaml#verification
     modules: [modules/base.yaml]`);
     await expect(checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend }))
-      .rejects.toThrow(/exactly one of verification/);
+      .rejects.toThrow(/names a v1 `verification:` strategy; the v1 rubric reader was removed/);
   });
 });

@@ -7,7 +7,7 @@
 
 import type { JudgeBackend } from "deepclause-sdk";
 
-import { PolicyViolationError } from "../semantic.js";
+import { PolicyViolationError } from "../judge.js";
 import { BlockedError } from "../types.js";
 import { checkModule, type Program } from "./checker.js";
 import { constraintReports, decideVerdict, type EngineFailure, type EngineReport } from "./diagnostics.js";

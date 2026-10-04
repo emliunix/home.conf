@@ -30,7 +30,8 @@ export interface SnapshotPair {
 }
 
 export interface DocumentReferenceRule extends DocumentSelector {
-  verification?: string | undefined;
+  /** The rule's verification modules; repository paths are edges of the affected closure. */
+  modules?: string[] | undefined;
 }
 
 export async function captureSnapshots(input: {
@@ -288,13 +289,11 @@ function linkGraph(
     const companionPath = repoPath(file.replace(/\.md$/i, ".yaml"));
     const companion = snapshot.entries.get(companionPath);
     const rule = resolveDocumentSelector(documentRules, file);
-    const defaultVerification = rule?.verification === undefined
-      ? []
-      : referencePath(repoPath("."), rule.verification);
+    const moduleFiles = (rule?.modules ?? []).flatMap((reference) => referencePath(repoPath("."), reference));
     graph.set(file, [...new Set([
       ...extractMarkdownLinks(file, entry.content),
       companionPath,
-      ...defaultVerification,
+      ...moduleFiles,
       ...(companion === undefined || "deleted" in companion ? [] : extractCompanionDependencies(companion.content)),
     ])].sort());
   }
@@ -376,6 +375,7 @@ function extractCompanionDependencies(content: string): RepoPath[] {
   }
 }
 
+/** A verification module's `extends` references, relative to the module file. */
 function extractYamlLinks(sourcePath: RepoPath, content: string): RepoPath[] {
   let value: unknown;
   try {
@@ -384,42 +384,20 @@ function extractYamlLinks(sourcePath: RepoPath, content: string): RepoPath[] {
     return [];
   }
   const parsed = z.object({
-    rubrics: z.object({
-      inherits: z.union([z.string(), z.array(z.string())]).optional(),
-    }).loose().optional(),
-    verification: z.object({
-      inherits: z.string().optional(),
-      rubrics: z.object({
-        inherits: z.union([z.string(), z.array(z.string())]).optional(),
-      }).loose().optional(),
-      profiles: z.object({
-        draft: z.object({ rubric: z.string().optional() }).loose().optional(),
-        promotion: z.object({ rubric: z.string().optional() }).loose().optional(),
-      }).loose().optional(),
-    }).loose().optional(),
+    kind: z.literal("verification-module"),
+    extends: z.array(z.string()).optional(),
   }).loose().safeParse(value);
   if (!parsed.success) {
     return [];
   }
-  const inherited = parsed.data.rubrics?.inherits;
-  const strategyInherited = parsed.data.verification?.inherits;
-  const strategyRubrics = parsed.data.verification?.rubrics?.inherits;
-  const references = [
-    ...(inherited === undefined ? [] : typeof inherited === "string" ? [inherited] : inherited),
-    ...(strategyInherited === undefined ? [] : [strategyInherited]),
-    ...(strategyRubrics === undefined ? [] : typeof strategyRubrics === "string" ? [strategyRubrics] : strategyRubrics),
-  ];
-  const profileReferences = [
-    parsed.data.verification?.profiles?.draft?.rubric,
-    parsed.data.verification?.profiles?.promotion?.rubric,
-  ].filter((reference): reference is string => reference !== undefined);
-  return [...new Set([
-    ...references.flatMap((reference) => referencePath(sourcePath, reference)),
-    ...profileReferences.flatMap((reference) => referencePath(repoPath("."), reference)),
-  ])].sort();
+  return [...new Set((parsed.data.extends ?? []).flatMap((reference) => referencePath(sourcePath, reference)))].sort();
 }
 
 function referencePath(sourcePath: RepoPath, reference: string): RepoPath[] {
+  if (reference.startsWith("doc-verify:")) {
+    // An engine library ships with the engine, not the repository: no repository edge.
+    return [];
+  }
   const filePart = reference.split("#", 1)[0];
   if (filePart === undefined || filePart.length === 0 || path.posix.isAbsolute(filePart)) {
     return [];

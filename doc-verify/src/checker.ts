@@ -11,15 +11,12 @@ import {
   documentTraceFor,
   parseCompanion,
   parseConfig,
-  resolveProfile,
 } from "./config.js";
 import { loadDocVerifyEnv } from "./local-env.js";
-import { evaluateSemantic, PolicyViolationError, productionBackend } from "./semantic.js";
+import { productionBackend } from "./judge.js";
 import { composeModules, ModuleError, renderReport, runProgram } from "./engine/index.js";
-import { EvidenceBudgetError, MissingCriticalSectionError, expandRubric, resolveRubrics, segmentBytes } from "./rubric.js";
 import { segmentMarkdown } from "./segments.js";
 import { MissingBlobError, SnapshotMode, captureSnapshots } from "./snapshot.js";
-import { resolveVerificationStrategy } from "./strategy.js";
 import {
   ArtifactReport,
   BlockedError,
@@ -45,10 +42,9 @@ export interface CheckOptions {
   root?: string;
   mode: SnapshotMode;
   profile: Profile;
+  /** Section ids for the `selected(D, S)` fact; every section when absent. */
   sections?: string[];
-  rubric?: string;
   backend?: JudgeBackend;
-  useCache?: boolean;
 }
 
 export async function checkDocuments(options: CheckOptions): Promise<VerificationReport> {
@@ -123,9 +119,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
       readCandidate: pair.readCandidate,
       requestedProfile: options.profile,
       ...(selectedIds === undefined ? {} : { selectedIds }),
-      ...(options.rubric === undefined ? {} : { rubricOverride: options.rubric }),
       ...(options.backend === undefined ? {} : { backend: options.backend }),
-      ...(options.useCache === undefined ? {} : { useCache: options.useCache }),
     }));
   }
   const verdict = combineVerdicts(artifacts.map((artifact) => artifact.verdict));
@@ -158,9 +152,7 @@ async function checkArtifact(input: {
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
   requestedProfile: Profile;
   selectedIds?: SectionId[];
-  rubricOverride?: string;
   backend?: JudgeBackend;
-  useCache?: boolean;
 }): Promise<ArtifactReport> {
   const sections = segmentMarkdown(input.blob.content);
   const findings: Finding[] = [];
@@ -178,129 +170,12 @@ async function checkArtifact(input: {
   } else if (companion.document.kind !== input.rule.artifact_kind) {
     throw new UsageError(`invalid ${companionPath}: document.kind must be ${input.rule.artifact_kind}`);
   }
-  if (input.rule.modules !== undefined) {
-    return checkWithModules({ ...input, modules: input.rule.modules, sections, findings, warnings,
-      ...(companion?.document.status === undefined ? {} : { companionStatus: companion.document.status }) });
+  if (companion?.legacyVerification === true) {
+    warnings.push(warning(input.file, "metadata.legacy-verification",
+      `${companionPath} carries a v1 verification: block, which is ignored; the rule's modules verify this document`));
   }
-  if (input.rule.verification === undefined) {
-    throw new UsageError(`document rule for ${input.file} names neither verification nor modules`);
-  }
-  const strategy = await resolveVerificationStrategy({
-    root: input.root,
-    readBlob: input.readCandidate,
-    source: companion === undefined
-      ? { kind: "reference", reference: input.rule.verification }
-      : { kind: "inline", strategy: companion.verification, declaringPath: companionPath },
-  });
-  const status = sectionBody(sections.find((section) => section.id === "status")) ?? companion?.document.status;
-  const profile = resolveProfile({ requested: input.requestedProfile, configured: strategy.defaultProfile, ...(status === undefined ? {} : { status }) });
-  const companionProfile = strategy.profiles[profile];
-  const selectedIds = input.selectedIds ?? companionProfile.sections?.map(sectionId);
-  const roots = input.rubricOverride !== undefined
-    ? [{ reference: input.rubricOverride }]
-    : companionProfile.rubric !== undefined
-      ? [{ reference: companionProfile.rubric }]
-      : strategy.rubricRoots;
-  const rubric = await resolveRubrics({
-    root: input.root,
-    roots,
-    readBlob: input.readCandidate,
-  });
-  let semanticRequestId: string | undefined;
-  let semanticCalls = 0;
-  let cacheHits = 0;
-  let evaluations: ArtifactReport["evaluations"] = [];
-  const trace = [];
-
-  if (findings.length === 0 && (profile === "promotion" || selectedIds !== undefined)) {
-    try {
-      const questions = expandRubric({
-        rubric,
-        artifactKind: input.rule.artifact_kind,
-        artifactPath: input.file,
-        sections,
-        ...(selectedIds === undefined ? {} : { selectedIds }),
-      });
-      const size = (question: (typeof questions)[number]) => ({
-        evidenceBytes: segmentBytes(question.segments),
-        evidenceBudget: question.item.evidence.max_bytes,
-      });
-      evaluations = questions.map((question) => ({
-        questionId: question.id, sectionIds: question.sectionIds, ...size(question),
-      }));
-      if (profile === "promotion") {
-        const semantic = await evaluateSemantic({
-          root: input.root,
-          artifactKind: input.rule.artifact_kind,
-          questions,
-          rubric,
-          model: input.config.judge.model,
-          policyVersion: input.config.policy.version,
-          maxEvidenceBytes: input.config.policy.max_evidence_bytes,
-          forbiddenLiterals: input.config.policy.forbidden_literals,
-          maxAgeSeconds: input.config.judge.attestation_max_age_seconds,
-          ...(input.backend === undefined ? {} : { backend: input.backend }),
-          ...(input.useCache !== undefined
-            ? { useCache: input.useCache }
-            : companionProfile.cache === "refresh"
-              ? { useCache: false }
-              : {}),
-        });
-        semanticRequestId = semantic.requestId;
-        semanticCalls = semantic.calls;
-        cacheHits = semantic.cacheHits;
-        evaluations = questions.map((question, index) => ({
-          questionId: question.id,
-          sectionIds: question.sectionIds,
-          ...size(question),
-          ...(semantic.outcome.answers[index] === undefined ? {} : { answer: semantic.outcome.answers[index] }),
-          ...semantic.details[index],
-        }));
-        trace.push({ ruleId: semantic.outcome.ruleId, verdict: semantic.outcome.verdict, facts: semantic.outcome.answers });
-        if (semantic.outcome.verdict !== "PASS") {
-          const first = questions[0];
-          findings.push(finding(
-            input.file,
-            sections.find((section) => section.id === first?.sectionIds[0]),
-            semantic.outcome.ruleId,
-            semantic.outcome.verdict,
-            "semantic rubric did not pass",
-          ));
-        }
-      }
-    } catch (error) {
-      if (error instanceof MissingCriticalSectionError) {
-        findings.push(finding(input.file, sections[0], error.itemId, "NO-GO", error.message));
-      } else if (error instanceof PolicyViolationError) {
-        findings.push(finding(input.file, sections[0], "policy.outbound", "NO-GO", error.message));
-      } else if (error instanceof EvidenceBudgetError || error instanceof BlockedError) {
-        findings.push(finding(input.file, sections[0], "semantic.prerequisite", "BLOCKED", error.message));
-      } else {
-        throw error;
-      }
-    }
-  }
-
-  const verdict = combineVerdicts(findings.map((item) => item.verdict));
-  return {
-    path: input.file,
-    artifactKind: input.rule.artifact_kind,
-    profile,
-    impactPath: input.impactPath,
-    selectorTrace: input.selectorTrace,
-    requiredSections: input.rule.required_sections,
-    sections: sections.map(({ content: _content, ...section }) => section),
-    strategyChain: strategy.chain,
-    rubricChain: rubric.chain,
-    evaluations,
-    ...(semanticRequestId === undefined ? {} : { semanticRequestId }),
-    semanticCalls,
-    cacheHits,
-    warnings,
-    findings,
-    trace,
-    verdict,
-  };
+  return checkWithModules({ ...input, modules: input.rule.modules, sections, findings, warnings,
+    ...(companion?.document.status === undefined ? {} : { companionStatus: companion.document.status }) });
 }
 
 /**
@@ -318,6 +193,7 @@ async function checkWithModules(input: {
   selectorTrace: ArtifactReport["selectorTrace"];
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
   requestedProfile: Profile;
+  selectedIds?: SectionId[];
   backend?: JudgeBackend;
   modules: string[];
   sections: Section[];
@@ -340,12 +216,8 @@ async function checkWithModules(input: {
     selectorTrace: input.selectorTrace,
     requiredSections: input.rule.required_sections,
     sections: input.sections.map(({ content: _content, ...section }) => section),
-    strategyChain: [],
-    rubricChain: [],
-    evaluations: [],
     cacheHits: 0,
     warnings: input.warnings,
-    trace: [],
   };
   const findings = [...input.findings];
   if (findings.length > 0) {
@@ -384,7 +256,8 @@ async function checkWithModules(input: {
   }
   const report = await runProgram({
     moduleYaml: composed.yaml,
-    documents: [{ path: input.file, markdown: input.blob.content, meta }],
+    documents: [{ path: input.file, markdown: input.blob.content, meta,
+      ...(input.selectedIds === undefined ? {} : { selected: input.selectedIds }) }],
     backend,
     model: input.config.judge.model,
     policy: {
@@ -440,14 +313,10 @@ function deletedReport(
     selectorTrace,
     requiredSections: rule.required_sections,
     sections: [],
-    strategyChain: [],
-    rubricChain: [],
-    evaluations: [],
     semanticCalls: 0,
     cacheHits: 0,
     warnings: [],
     findings: [item],
-    trace: [],
     verdict: "NO-GO",
   };
 }

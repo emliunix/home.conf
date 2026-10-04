@@ -1,27 +1,22 @@
 import YAML from "yaml";
 import { z } from "zod";
 
-import { rubricBlockSchema } from "./rubric.js";
 import { documentSelectorTrace, resolveDocumentSelector } from "./selection.js";
-import { Profile, RepoPath, TextBlob, UsageError, repoPath } from "./types.js";
+import { RepoPath, TextBlob, UsageError, repoPath } from "./types.js";
 
 const documentIncludeRuleSchema = z.object({
   pattern: z.string().min(1),
   exclude: z.literal(false).optional(),
   artifact_kind: z.string().min(1),
-  /** A v1 verification strategy reference (`path#fragment`). Exactly one of this or `modules`. */
-  verification: z.string().min(1).optional(),
   /**
    * Design-04 verification modules, composed in order (later modules extend earlier ones; a name
-   * defined twice is refused). Exactly one of this or `verification`.
+   * defined twice is refused). Each is a repository path or an engine library `doc-verify:NAME`.
    */
-  modules: z.array(z.string().min(1)).min(1).optional(),
+  modules: z.array(z.string().min(1)).min(1),
   /** Where the document keeps its status for the `meta(D, status, W)` fact: a `## Status` section (default) or its title suffix. */
   status_from: z.enum(["section", "title"]).optional(),
   required_sections: z.array(z.string().min(1)).default([]),
-}).strict().refine((rule) => (rule.verification === undefined) !== (rule.modules === undefined), {
-  message: "a document rule names exactly one of verification (v1 strategy) or modules (design-04)",
-});
+}).strict();
 
 const documentExcludeRuleSchema = z.object({
   pattern: z.string().min(1),
@@ -71,65 +66,37 @@ export function documentTraceFor(
   return documentSelectorTrace(rules, file);
 }
 
+/** The README section a v1 consumer follows to move a rule onto modules. */
+export const MIGRATION_HINT = "the v1 rubric reader was removed; replace `verification:` with `modules: [...]` " +
+  "naming design-04 verification modules (repository paths or engine libraries such as doc-verify:design); " +
+  "see \"Migrating from v1 rubrics\" in the doc-verify README";
+
 export function parseConfig(blob: TextBlob): DocVerifyConfig {
-  const parsed = configSchema.safeParse(YAML.parse(blob.content));
+  const value: unknown = YAML.parse(blob.content);
+  refuseV1Rules(blob.path, value);
+  const parsed = configSchema.safeParse(value);
   if (!parsed.success) {
     throw new UsageError(`invalid ${blob.path}: ${z.prettifyError(parsed.error)}`);
   }
   return parsed.data;
 }
 
-export function resolveProfile(input: {
-  requested: Profile;
-  configured: "draft" | "promotion";
-  status?: string;
-}): "draft" | "promotion" {
-  if (input.requested !== "auto") {
-    return input.requested;
+function refuseV1Rules(file: string, value: unknown): void {
+  const documents = (value as { documents?: unknown } | null)?.documents;
+  if (!Array.isArray(documents)) {
+    return;
   }
-  if (input.status !== undefined) {
-    return input.status.trim().toLowerCase() === "draft" ? "draft" : "promotion";
+  const v1 = documents.flatMap((rule: unknown, index) => {
+    if (rule === null || typeof rule !== "object" || !("verification" in rule)) {
+      return [];
+    }
+    const pattern = (rule as { pattern?: unknown }).pattern;
+    return [`documents[${String(index)}] (pattern ${JSON.stringify(typeof pattern === "string" ? pattern : "?")})`];
+  });
+  if (v1.length > 0) {
+    throw new UsageError(`invalid ${file}: ${v1.join(", ")} ${v1.length === 1 ? "names" : "name"} a v1 \`verification:\` strategy; ${MIGRATION_HINT}`);
   }
-  return input.configured;
 }
-
-const companionProfileSchema = z.object({
-  rubric: z.string().min(1).optional(),
-  sections: z.array(z.string().min(1)).min(1).optional(),
-  cache: z.enum(["reuse", "refresh"]).optional(),
-}).strict();
-
-const strategyProfilesSchema = z.object({
-  draft: companionProfileSchema.optional(),
-  promotion: companionProfileSchema.optional(),
-}).strict();
-
-/**
- * Checks a repository declares as its own and NOT machine-checkable.
- *
- * The design-04 strategy schema is strict, so before this existed a repository had nowhere to name
- * the checks no predicate and no bounded question can decide: they lived beside the validated file
- * in a sibling nothing read, and rotted there. Declaring them here keeps the declaration inside the
- * file the engine validates, so the list is schema-checked even though its members are not.
- *
- * Shape: artifact kind -> check names. Unknown keys are still refused; only `verification` gained
- * one optional field.
- */
-const nonMachineCheckableSchema = z.record(
-  z.string().min(1),
-  z.array(z.string().min(1)).min(1),
-);
-
-export const verificationStrategySchema = z.object({
-  kind: z.literal("jev-prolog"),
-  inherits: z.string().min(1).optional(),
-  rubrics: rubricBlockSchema.optional(),
-  non_machine_checkable: nonMachineCheckableSchema.optional(),
-  default_profile: z.enum(["draft", "promotion"]).optional(),
-  profiles: strategyProfilesSchema.optional(),
-}).strict().refine((value) => value.inherits !== undefined || value.rubrics !== undefined, {
-  message: "verification requires inherits or rubrics",
-});
 
 const documentMetadataSchema = z.object({
   path: z.string().min(1),
@@ -142,11 +109,13 @@ export const companionSchema = z.object({
   schema_version: z.literal(1),
   kind: z.literal("document-contract"),
   document: documentMetadataSchema,
-  verification: verificationStrategySchema,
+  /**
+   * A v1 strategy block. It is ignored: what verifies a document is its rule's `modules`. The
+   * checker reports a `metadata.legacy-verification` warning so the dead block can be removed.
+   */
+  verification: z.unknown().optional(),
 }).loose();
 
-export type CompanionProfile = z.infer<typeof companionProfileSchema>;
-export type VerificationStrategy = z.infer<typeof verificationStrategySchema>;
 export interface CompanionMetadata {
   schema_version: 1;
   kind: "document-contract";
@@ -156,7 +125,8 @@ export interface CompanionMetadata {
     status?: string;
     depends_on?: RepoPath[];
   };
-  verification: VerificationStrategy;
+  /** The companion still carries a v1 `verification:` block, which is ignored. */
+  legacyVerification: boolean;
 }
 
 export function parseCompanion(blob: TextBlob): CompanionMetadata {
@@ -178,7 +148,7 @@ export function parseCompanion(blob: TextBlob): CompanionMetadata {
   return {
     schema_version: parsed.data.schema_version,
     kind: parsed.data.kind,
-    verification: parsed.data.verification,
+    legacyVerification: parsed.data.verification !== undefined,
     document: {
       path: repoPath(parsed.data.document.path),
       kind: parsed.data.document.kind,

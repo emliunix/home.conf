@@ -10,7 +10,7 @@
 import type { JudgeAnswer, JudgeBackend, JudgeQuestion } from "deepclause-sdk";
 
 import { canonicalJson, sha256 } from "../hash.js";
-import { PolicyViolationError } from "../semantic.js";
+import { PolicyViolationError } from "../judge.js";
 import { BlockedError } from "../types.js";
 import type { Oracle } from "./checker.js";
 import { UNKNOWN, type Demand, type OracleView } from "./evaluate.js";

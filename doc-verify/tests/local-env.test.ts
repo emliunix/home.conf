@@ -83,6 +83,7 @@ describe("local credential file", () => {
         profile: "draft",
       });
       expect(process.env.TYPESAFE_API_KEY).toBe(canary);
+      expect(report.verdict).toBe("PASS");
       expect(JSON.stringify(report)).not.toContain(canary);
     } finally {
       restore("TYPESAFE_API_KEY", previous);
@@ -107,13 +108,13 @@ function restore(name: "TYPESAFE_API_KEY" | "OTHER_SECRET" | "API_KEY", value: s
 async function fixtureRepository(): Promise<string> {
   const root = await mkdtemp(path.join(tmpdir(), "doc-verify-env-check-"));
   await mkdir(path.join(root, "design"), { recursive: true });
-  await mkdir(path.join(root, "strategies"), { recursive: true });
+  await mkdir(path.join(root, "modules"), { recursive: true });
   await writeFile(path.join(root, ".doc-verify.yaml"), `schema_version: 1
 kind: document-verification
 documents:
   - pattern: design/*.md
     artifact_kind: design
-    verification: strategies/design.yaml#verification
+    modules: [modules/design.yaml]
     required_sections: [problem]
 invalidation_patterns: [.doc-verify.yaml]
 judge:
@@ -127,31 +128,15 @@ policy:
   max_evidence_bytes: 12000
   forbidden_literals: []
 `);
-  await writeFile(path.join(root, "strategies/design.yaml"), `schema_version: 1
-kind: verification-strategy
-verification:
-  kind: jev-prolog
-  rubrics:
-    kind: jev
-    threshold: 1
-    items:
-      - id: design.problem
-        artifact_kinds: [design]
-        applies_to: {sections: [problem], scope: combined}
-        evidence: {source: section_body, max_bytes: 1000}
-        question:
-          kind: choose
-          instruction: Is the problem explicit?
-          options: [supported, refuted, unknown]
-        critical: true
-        weight: 1
-        scores: {supported: 1, refuted: 0, unknown: 0}
-  default_profile: draft
-  profiles:
-    draft:
-      cache: reuse
-    promotion:
-      cache: refresh
+  // Structural only: the draft check builds the judge client from the file's key but asks nothing.
+  await writeFile(path.join(root, "modules/design.yaml"), `schema_version: 2
+kind: verification-module
+module: env.design
+constraints:
+  has-problem:
+    forall: core.meta(D, kind, design)
+    require: core.section(D, S, _), core.heading(D, S, 'Problem')
+    severity: error
 `);
   await writeFile(path.join(root, "design/a.md"), "# A\n## Problem\nA concrete problem.\n");
   execFileSync("git", ["init"], { cwd: root, stdio: "ignore" });

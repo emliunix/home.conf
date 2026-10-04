@@ -21,28 +21,25 @@ describe("CLI", () => {
     const result = spawnSync("node", [
       cli, "check", "--paths", "design/a.md",
       "--profile", "draft", "--format", "text",
-    ], { cwd: root, encoding: "utf8" });
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
     expect(result.status).toBe(0);
     expect(result.stdout).toMatch(/^PASS: 1 artifact\(s\)/);
   });
 
-  it("prints project impact, rubric, and section scope in verbose mode", () => {
+  it("prints project impact, modules, and section scope in verbose mode", () => {
     const root = cliFixture();
     const cli = path.resolve("doc-verify/dist/cli.js");
     const result = spawnSync("node", [
       cli, "check", "--paths", "design/a.md",
       "--profile", "draft", "--format", "text", "--verbose",
-    ], { cwd: root, encoding: "utf8" });
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
     expect(result.status).toBe(0);
     expect(result.stdout).toContain("verification invocation=paths:design/a.md requested-profile=draft");
     expect(result.stdout).toContain("artifact design/a.md [design] PASS profile=draft");
     expect(result.stdout).toContain("impact: design/a.md");
     expect(result.stdout).toContain("required sections (1): problem");
-    expect(result.stdout).toContain("strategies/design.yaml#verification");
-    expect(result.stdout).toContain("design/a.yaml#/verification");
-    expect(result.stdout).toContain("rubrics/default.yaml#rubrics");
-    expect(result.stdout).toContain("design.problem sections=problem@2:4 result=planned");
-    expect(result.stdout).toContain("decision: none");
+    expect(result.stdout).toContain("modules: modules/design.yaml");
+    expect(result.stdout).toContain("semantic: calls=0 cache-hits=0");
   });
 
   it("applies ordered include and exclude selectors in the served CLI", () => {
@@ -53,7 +50,7 @@ kind: document-verification
 documents:
   - pattern: design/*.md
     artifact_kind: design
-    verification: strategies/design.yaml#verification
+    modules: [modules/design.yaml]
     required_sections: [problem]
   - pattern: design/b.md
     exclude: true
@@ -75,14 +72,11 @@ kind: document-contract
 document:
   path: design/b.md
   kind: design
-verification:
-  kind: jev-prolog
-  inherits: ../strategies/design.yaml#verification
 `);
     const excluded = spawnSync("node", [
       cli, "check", "--paths", "design/b.md",
       "--profile", "draft", "--format", "text",
-    ], { cwd: root, encoding: "utf8" });
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
     expect(excluded.status).toBe(64);
     expect(excluded.stderr).toContain("selected no configured document or dependency");
 
@@ -93,7 +87,7 @@ documents:
     exclude: true
   - pattern: design/a.md
     artifact_kind: design
-    verification: strategies/design.yaml#verification
+    modules: [modules/design.yaml]
     required_sections: [problem]
 invalidation_patterns: []
 judge:
@@ -110,7 +104,7 @@ policy:
     const reIncluded = spawnSync("node", [
       cli, "check", "--paths", "design/a.md",
       "--profile", "draft", "--format", "text", "--verbose",
-    ], { cwd: root, encoding: "utf8" });
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
     expect(reIncluded.status).toBe(0);
     expect(reIncluded.stdout).toContain("selector trace: exclude:design/*.md -> include:design/a.md");
     expect(reIncluded.stdout).toContain("artifact design/a.md [design] PASS");
@@ -124,7 +118,7 @@ kind: document-verification
 documents:
   - pattern: design/*.md
     artifact_kind: design
-    verification: strategies/design.yaml#verification
+    modules: [modules/design.yaml]
     required_sections: [problem]
   - pattern: design/b.md
     exclude: true
@@ -146,14 +140,11 @@ kind: document-contract
 document:
   path: design/b.md
   kind: design
-verification:
-  kind: jev-prolog
-  inherits: ../strategies/design.yaml#verification
 `);
     const result = spawnSync("node", [
       cli, "check", "--paths", "design/a.md",
       "--profile", "draft", "--format", "json",
-    ], { cwd: root, encoding: "utf8" });
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
     expect(result.status).toBe(0);
     const report = JSON.parse(result.stdout) as {
       affectedArtifacts: string[];
@@ -164,17 +155,35 @@ verification:
     expect(report.artifacts[0]?.selectorTrace).toEqual([{ pattern: "design/*.md", action: "include" }]);
   });
 
-  it("lets CLI section and rubric arguments override the companion profile", () => {
+  it("passes --section into the selected(D, S) fact", () => {
     const root = cliFixture();
     const cli = path.resolve("doc-verify/dist/cli.js");
+    writeFileSync(path.join(root, "modules/design.yaml"), `${DESIGN_MODULE}  selected-is-problem:
+    forall: core.selected(D, S)
+    require: core.heading(D, S, 'Problem')
+    severity: error
+    message: "{S} is selected but is not the Problem section"
+`);
+    const narrowed = spawnSync("node", [
+      cli, "check", "--paths", "design/a.md", "--profile", "draft", "--section", "problem", "--format", "text",
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
+    expect(narrowed.status, narrowed.stdout + narrowed.stderr).toBe(0);
+    const whole = spawnSync("node", [
+      cli, "check", "--paths", "design/a.md", "--profile", "draft", "--format", "text",
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
+    expect(whole.status).toBe(1);
+    expect(whole.stdout).toContain("rationale is selected but is not the Problem section");
+  });
+
+  it("refuses the removed --rubric option with the migration hint", () => {
+    const root = cliFixture();
     const result = spawnSync("node", [
-      cli, "check", "--paths", "design/a.md", "--profile", "draft",
-      "--section", "rationale", "--rubric", "rubrics/override.yaml#rubrics",
-      "--format", "json",
-    ], { cwd: root, encoding: "utf8" });
-    expect(result.status).toBe(0);
-    const report = JSON.parse(result.stdout) as { artifacts: Array<{ rubricChain: Array<{ path: string }> }> };
-    expect(report.artifacts[0]?.rubricChain.map((entry) => entry.path)).toEqual(["rubrics/override.yaml"]);
+      path.resolve("doc-verify/dist/cli.js"), "check", "--paths", "design/a.md",
+      "--rubric", "rubrics/default.yaml#rubrics",
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
+    expect(result.status).toBe(64);
+    expect(result.stderr).toContain("--rubric was removed with the v1 rubric reader");
+    expect(result.stderr).toContain("Migrating from v1 rubrics");
   });
 
   it("reports a missing config with its expected path and a distinct exit", () => {
@@ -182,7 +191,7 @@ verification:
     execFileSync("git", ["init"], { cwd: root, stdio: "ignore" });
     const result = spawnSync("node", [
       path.resolve("doc-verify/dist/cli.js"), "check", "--all", "--profile", "draft",
-    ], { cwd: root, encoding: "utf8" });
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
     expect(result.status).toBe(66);
     expect(result.stderr).toContain("config .doc-verify.yaml not found");
     expect(result.stderr).toContain(path.join(root, ".doc-verify.yaml"));
@@ -190,12 +199,12 @@ verification:
 
   it("reports a config that is absent from the Git index with a distinct exit", () => {
     const root = cliFixture();
-    execFileSync("git", ["add", "design/a.md", "design/a.yaml", "rubrics", "strategies"], { cwd: root });
+    execFileSync("git", ["add", "design/a.md", "design/a.yaml", "modules"], { cwd: root });
     execFileSync("git", ["-c", "user.email=test@example.invalid", "-c", "user.name=Doc Verify Test",
       "commit", "-qm", "fixture"], { cwd: root });
     const result = spawnSync("node", [
       path.resolve("doc-verify/dist/cli.js"), "check", "--staged", "--profile", "draft",
-    ], { cwd: root, encoding: "utf8" });
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
     expect(result.status).toBe(65);
     expect(result.stderr).toContain("config .doc-verify.yaml is not in the Git index");
   });
@@ -206,7 +215,7 @@ verification:
     mkdirSync(path.join(root, ".doc-verify.yaml"));
     const result = spawnSync("node", [
       path.resolve("doc-verify/dist/cli.js"), "check", "--all", "--profile", "draft",
-    ], { cwd: root, encoding: "utf8" });
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
     expect(result.status).toBe(70);
     expect(result.stderr).toContain("doc-verify: internal error");
     expect(result.stderr).toMatch(/EISDIR|illegal operation on a directory/);
@@ -218,7 +227,7 @@ verification:
       path.resolve("doc-verify/dist/cli.js"), "check",
       "--paths", "design/a.md", "design/999-missing.md",
       "--profile", "draft",
-    ], { cwd: root, encoding: "utf8" });
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
     expect(result.status).toBe(64);
     expect(result.stderr).toContain("design/999-missing.md");
     expect(result.stderr).toContain("selected no configured document or dependency");
@@ -226,17 +235,38 @@ verification:
   });
 });
 
+/** The structural module the fixture's design rule names: no oracle, so no judge request is ever made. */
+const DESIGN_MODULE = `schema_version: 2
+kind: verification-module
+module: fixture.design
+rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+constraints:
+  has-problem:
+    forall: core.meta(D, kind, design)
+    require: top(D, S), core.heading(D, S, 'Problem')
+    severity: error
+    message: "{D} has no Problem section"
+`;
+
+/**
+ * The module path builds the production judge client before it runs; a placeholder key lets it,
+ * and the fixture's module asks nothing, so the key is never sent.
+ */
+function cliEnv(): NodeJS.ProcessEnv {
+  return { ...process.env, TYPESAFE_API_KEY: "placeholder-never-sent" };
+}
+
 function cliFixture(): string {
   const root = mkdtempSync(path.join(tmpdir(), "doc-verify-cli-"));
   mkdirSync(path.join(root, "design"), { recursive: true });
-  mkdirSync(path.join(root, "rubrics"), { recursive: true });
-  mkdirSync(path.join(root, "strategies"), { recursive: true });
+  mkdirSync(path.join(root, "modules"), { recursive: true });
   writeFileSync(path.join(root, ".doc-verify.yaml"), `schema_version: 1
 kind: document-verification
 documents:
   - pattern: design/*.md
     artifact_kind: design
-    verification: strategies/design.yaml#verification
+    modules: [modules/design.yaml]
     required_sections: [problem]
 invalidation_patterns: []
 judge:
@@ -250,56 +280,13 @@ policy:
   max_evidence_bytes: 12000
   forbidden_literals: []
 `);
-  const rubric = (section: string): string => `schema_version: 1
-rubrics:
-  kind: jev
-  threshold: 1
-  items:
-    - id: design.${section}
-      artifact_kinds: [design]
-      applies_to: {sections: [${section}], scope: combined}
-      evidence: {source: section_body, max_bytes: 1000}
-      question:
-        kind: choose
-        instruction: Is the ${section} explicit?
-        options: [supported, refuted, unknown]
-      critical: true
-      weight: 1
-      scores: {supported: 1, refuted: 0, unknown: 0}
-`;
-  writeFileSync(path.join(root, "rubrics/default.yaml"), rubric("problem"));
-  writeFileSync(path.join(root, "rubrics/override.yaml"), rubric("rationale"));
-  writeFileSync(path.join(root, "strategies/design.yaml"), `schema_version: 1
-kind: verification-strategy
-verification:
-  kind: jev-prolog
-  rubrics:
-    kind: jev
-    inherits: ../rubrics/default.yaml#rubrics
-  default_profile: draft
-  profiles:
-    draft:
-      sections: [problem]
-      cache: reuse
-    promotion:
-      cache: refresh
-`);
+  writeFileSync(path.join(root, "modules/design.yaml"), DESIGN_MODULE);
   writeFileSync(path.join(root, "design/a.md"), "# A\n## Problem\nA problem.\n## Rationale\nA rationale.\n");
   writeFileSync(path.join(root, "design/a.yaml"), `schema_version: 1
 kind: document-contract
 document:
   path: design/a.md
   kind: design
-verification:
-  kind: jev-prolog
-  inherits: ../strategies/design.yaml#verification
-  profiles:
-    draft:
-      sections: [problem]
-      rubric: rubrics/default.yaml#rubrics
-      cache: reuse
-    promotion:
-      cache: refresh
 `);
   execFileSync("git", ["init"], { cwd: root, stdio: "ignore" });
   return root;

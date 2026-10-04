@@ -1,84 +1,46 @@
-import { mkdtemp, rm } from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
-
-import { createMockJevJudgeBackend, type JudgeBackend } from "deepclause-sdk";
+// The judge boundary (design 04 "Trust boundary holds"): without a key the judge is BLOCKED and
+// never faked, a failing judge is BLOCKED without echoing its response, and the pure evaluation
+// program can reach neither a judge, an LLM, nor a tool.
+import { createMockJevJudgeBackend } from "deepclause-sdk";
 import { describe, expect, it } from "vitest";
 
-import { evaluateSemantic, PolicyViolationError } from "../src/semantic.js";
-import type { ExpandedQuestion, ResolvedRubric, RubricItem } from "../src/rubric.js";
-import { BlockedError, sectionId } from "../src/types.js";
+import { productionBackend } from "../src/judge.js";
+import { assertRestrictedDml, runPureDml } from "../src/engine/prolog.js";
+import { BlockedError } from "../src/types.js";
+import { moduleText, PURPOSE_ORACLE, run } from "./engine-helpers.js";
 
-const item: RubricItem = {
-  id: "q", artifact_kinds: ["design"],
-  applies_to: { sections: ["x"], scope: "combined" },
-  evidence: { source: "section_body", max_bytes: 1000 },
-  question: { kind: "choose", instruction: "Choose", options: ["supported", "refuted", "unknown"] },
-  critical: true, weight: 1, scores: { supported: 1, refuted: 0, unknown: 0 },
-};
-const rubric: ResolvedRubric = { threshold: 1, items: [item], chain: [] };
-
-function evaluate(evidence: string, backend: JudgeBackend, root = process.cwd(), useCache = false) {
-  const question: ExpandedQuestion = { id: "q", item, sectionIds: [sectionId("x")], segments: [{ id: "x", ctx: "design/x.md", text: evidence }] };
-  return evaluateSemantic({
-    root, artifactKind: "design", questions: [question], rubric,
-    model: "jev-1.13.0", policyVersion: 1, maxEvidenceBytes: 1000,
-    forbiddenLiterals: ["private-canary"], maxAgeSeconds: 3600, backend, useCache,
-  });
-}
+const ASKS = moduleText(`oracles:
+${PURPOSE_ORACLE}constraints:
+  known:
+    forall: core.section(D, S, _)
+    require: purpose(D, S, P), P in [problem, scope, rationale]
+    severity: error
+`);
 
 describe("semantic boundary", () => {
-  it("blocks an unavailable required judge", async () => {
-    const backend = createMockJevJudgeBackend({ answers: () => Promise.reject(new Error("secret response body")) });
-    await expect(evaluate("safe", backend)).rejects.toThrow(BlockedError);
-  });
-
-  it("names the measured bytes and the limit when the evidence is over budget", async () => {
-    let calls = 0;
-    const backend = createMockJevJudgeBackend({ answers: () => { calls += 1; return []; } });
-    // 1000 is this file's limit; the canonical state wraps the evidence, so this exceeds it
-    const error = await evaluate("x".repeat(1200), backend).catch((e: unknown) => e);
-    expect(error).toBeInstanceOf(BlockedError);
-    const message = (error as Error).message;
-    const measured = /the round's evidence is (\d+) bytes/.exec(message)?.[1];
-    expect(measured, `the refusal must carry the measured byte count: ${message}`).toBeDefined();
-    expect(Number(measured)).toBeGreaterThan(1000);
-    expect(message).toContain("above the outbound budget of 1000");
-    expect(message).toContain("a batch is never split");
-    expect(calls).toBe(0);
-  });
-
-  it("rejects prohibited outbound evidence before calling the backend", async () => {
-    let calls = 0;
-    const backend = createMockJevJudgeBackend({ answers: () => { calls += 1; return []; } });
-    await expect(evaluate("PRIVATE-CANARY", backend)).rejects.toThrow(PolicyViolationError);
-    expect(calls).toBe(0);
-  });
-
-  it("changes the request identity when evidence changes", async () => {
-    const backend = createMockJevJudgeBackend({ choice: "first" });
-    const first = await evaluate("one", backend);
-    const second = await evaluate("two", backend);
-    expect(first.requestId).not.toBe(second.requestId);
-  });
-
-  it("returns the judge's confidence and distribution, and keeps them through the cache", async () => {
-    const backend = createMockJevJudgeBackend({
-      answers: (request) => request.questions.map((question) => ({
-        id: question.id, kind: "choose", value: "refuted",
-        confidence: 0.62, distribution: [0.3, 0.62, 0.08], basis: "mock",
-      })),
-    });
-    const root = await mkdtemp(path.join(os.tmpdir(), "doc-verify-semantic-"));
+  it("blocks an unavailable required judge instead of faking one", () => {
+    const previous = process.env.TYPESAFE_API_KEY;
+    delete process.env.TYPESAFE_API_KEY;
     try {
-      const fresh = await evaluate("text", backend, root, true);
-      expect(fresh.outcome.answers).toEqual(["refuted"]);
-      expect(fresh.details).toEqual([{ confidence: 0.62, distribution: [0.3, 0.62, 0.08] }]);
-      const cached = await evaluate("text", backend, root, true);
-      expect(cached.cacheHits).toBe(1);
-      expect(cached.details).toEqual(fresh.details);
+      expect(() => productionBackend("jev-1.13.0")).toThrow(BlockedError);
     } finally {
-      await rm(root, { recursive: true, force: true });
+      if (previous !== undefined) {
+        process.env.TYPESAFE_API_KEY = previous;
+      }
     }
+  });
+
+  it("blocks a failing judge request without echoing the provider's response", async () => {
+    const backend = createMockJevJudgeBackend({ answers: () => Promise.reject(new Error("secret response body")) });
+    const report = await run(ASKS, backend);
+    expect(report.verdict).toBe("BLOCKED");
+    expect(report.failure?.message).toMatch(/judge request for round 1 failed/);
+    expect(JSON.stringify(report)).not.toContain("secret response body");
+  });
+
+  it("refuses an evaluation program that names a capability beyond pure Prolog", async () => {
+    expect(() => assertRestrictedDml('agent_main :- task("escape", X).')).toThrow("prohibited");
+    expect(() => assertRestrictedDml('agent_main :- answer("task( is only text here").')).not.toThrow();
+    await expect(runPureDml('agent_main :- with_judgment(jev, judge("{}", [])), answer(ok).')).rejects.toThrow(BlockedError);
   });
 });

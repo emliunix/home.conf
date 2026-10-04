@@ -1,4 +1,4 @@
-import { EvaluationDetail, VerificationReport, Verdict } from "./types.js";
+import { VerificationReport, Verdict } from "./types.js";
 
 const exitCodes: Record<Verdict, number> = {
   PASS: 0,
@@ -43,34 +43,13 @@ function renderVerboseText(report: VerificationReport): string {
       `  impact: ${artifact.impactPath.join(" -> ")}`,
       `  selector trace: ${artifact.selectorTrace.map((entry) => `${entry.action}:${entry.pattern}`).join(" -> ") || "none"}`,
       `  required sections (${String(artifact.requiredSections.length)}): ${artifact.requiredSections.join(",") || "none"}`,
-      `  strategy (${String(artifact.strategyChain.length)}):`,
-      ...artifact.strategyChain.map((source) => `    - ${source.path}#${source.fragment}`),
-      `  rubric (${String(artifact.rubricChain.length)}):`,
-      ...artifact.rubricChain.map((source) => `    - ${source.path}#${source.fragment} sha256=${source.hash.slice(0, 12)}`),
-      `  checks (${String(artifact.evaluations.length)}):`,
-      ...artifact.evaluations.map((evaluation) => {
-        const result = evaluation.answer ?? (artifact.profile === "draft" ? "planned" : "unavailable");
-        const sections = evaluation.sectionIds.map((id) => {
-          const section = artifact.sections.find((candidate) => candidate.id === id);
-          return section === undefined ? id : `${id}@${String(section.startLine)}:${String(section.endLine)}`;
-        });
-        return `    - ${evaluation.questionId} sections=${sections.join(",")} result=${result}${judgeNumbers(evaluation)}` +
-          ` evidence=${String(evaluation.evidenceBytes)}/${String(evaluation.evidenceBudget)}B`;
-      }),
     );
-    if (artifact.semanticRequestId === undefined) {
-      lines.push(`  semantic: request=none calls=${String(artifact.semanticCalls)} cache-hits=${String(artifact.cacheHits)}`);
-    } else {
-      lines.push(`  semantic: request=${artifact.semanticRequestId} calls=${String(artifact.semanticCalls)} cache-hits=${String(artifact.cacheHits)}`);
-    }
+    lines.push(`  semantic: calls=${String(artifact.semanticCalls)} cache-hits=${String(artifact.cacheHits)}`);
     if (artifact.engine !== undefined) {
       lines.push(`  modules: ${artifact.engine.modules.join(" + ")} (${artifact.engine.hash.slice(0, 12)}), requests=${String(artifact.engine.requests)}`);
       lines.push(...artifact.engine.text.trimEnd().split("\n").map((line) => `    ${line}`));
-    } else if (artifact.trace.length === 0) {
-      lines.push("  decision: none");
     } else {
-      lines.push(...artifact.trace.map((trace) =>
-        `  decision: ${trace.verdict} via ${trace.ruleId} facts=${trace.facts.join(",")}`));
+      lines.push("  modules: not run");
     }
     for (const warning of artifact.warnings) {
       lines.push(`  warning: ${warning.path}:${String(warning.line)} [${warning.sectionId}] ${warning.ruleId} WARN ${warning.message}`);
@@ -81,23 +60,6 @@ function renderVerboseText(report: VerificationReport): string {
   }
   lines.push(summary(report));
   return `${lines.join("\n")}\n`;
-}
-
-const OPTION_ORDER = ["supported", "refuted", "unknown"] as const;
-
-function judgeNumbers(evaluation: EvaluationDetail): string {
-  // JEV returns numbers, not a rationale: show how sure the judge was.
-  const parts = [];
-  if (evaluation.confidence !== undefined) {
-    parts.push(` confidence=${evaluation.confidence.toFixed(2)}`);
-  }
-  if (evaluation.distribution !== undefined && evaluation.distribution.length === OPTION_ORDER.length) {
-    const spread = evaluation.distribution
-      .map((probability, index) => `${OPTION_ORDER[index] ?? String(index)}:${probability.toFixed(2)}`)
-      .join(",");
-    parts.push(` distribution=${spread}`);
-  }
-  return parts.join("");
 }
 
 function listPaths(paths: string[]): string[] {

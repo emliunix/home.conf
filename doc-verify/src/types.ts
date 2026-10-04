@@ -58,25 +58,6 @@ export interface WarningDiagnostic {
   message: string;
 }
 
-export interface RuleTrace {
-  ruleId: string;
-  verdict: Verdict;
-  facts: string[];
-}
-
-export interface EvaluationDetail {
-  questionId: string;
-  sectionIds: SectionId[];
-  answer?: "supported" | "refuted" | "unknown";
-  /** The judge's confidence in its choice, when it reports one. */
-  confidence?: number;
-  /** Probability per option, in supported, refuted, unknown order. */
-  distribution?: number[];
-  /** Bytes of section text sent for this question, and the rubric budget. */
-  evidenceBytes: number;
-  evidenceBudget: number;
-}
-
 export interface ArtifactReport {
   path: RepoPath;
   artifactKind: string;
@@ -85,16 +66,11 @@ export interface ArtifactReport {
   selectorTrace: Array<{ pattern: string; action: "include" | "exclude" }>;
   requiredSections: string[];
   sections: Array<Omit<Section, "content">>;
-  strategyChain: Array<{ path: RepoPath; fragment: string }>;
-  rubricChain: Array<{ path: RepoPath; fragment: string; hash: string }>;
-  evaluations: EvaluationDetail[];
-  semanticRequestId?: string;
   semanticCalls: number;
   cacheHits: number;
   warnings: WarningDiagnostic[];
   findings: Finding[];
-  trace: RuleTrace[];
-  /** Design-04 rules only: the engine's rendered diagnostics (populations, proofs, oracles, repairs). */
+  /** The engine's rendered diagnostics (populations, proofs, oracles, repairs); absent when the run stopped before the engine. */
   engine?: { modules: RepoPath[]; hash: string; requests: number; text: string };
   verdict: Verdict;
 }
