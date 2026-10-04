@@ -1,0 +1,50 @@
+# experiment-round - trigger cases, as canonical / trap / paraphrase triplets
+# Rewritten without project nouns at the 2026-10-05 consolidation; one behaviour from each source scope
+# (a round, a programme) plus the pre-run plan review. Each case cites the SKILL.md line that makes its
+# expectation correct.
+skill: experiment-round
+dimension: trigger
+triplets:
+  - behavior: a question needs a round in an existing tree
+    canonical:
+      prompt: "Run an experiment to decide between keeping the cache per request or per session, with two candidate designs and the expected outcome of each written down first."
+      expected: [experiment-round]
+      cites: "SKILL.md:7-8, 22-25 - a question needing an experiment; candidates and pre-registered expectations"
+    trap:
+      prompt: "The experiment between the two cache designs has run - tabulate its results."
+      expected: []
+      cites: "SKILL.md:8-9 - not when the experiment has already been run, or the task is to tabulate its results"
+    paraphrase:
+      prompt: "We measured both cache layouts yesterday; put the numbers in a table."
+      expected: []
+      cites: "SKILL.md:8-9 - the same situation without the vocabulary"
+  - behavior: a question fits no existing tree
+    canonical:
+      prompt: "This question fits none of our existing experiment trees: what happens when one job is scheduled twice in the same tick? Start it somewhere."
+      expected: [experiment-round]
+      cites: "SKILL.md:6-8, 17-18 - a question that fits no existing tree gets its own root, its files arriving as its stages arrive"
+    trap:
+      prompt: "The new programme's first round has finished - write up its results table."
+      expected: []
+      cites: "SKILL.md:8-9 - the run is done; tabulating is excluded"
+    paraphrase:
+      prompt: "The numbers from the first run of the scheduling study are in - summarise them in a table."
+      expected: []
+      cites: "SKILL.md:8-9 - the same situation without the vocabulary"
+  - behavior: a plan is about to be run
+    canonical:
+      prompt: "Before we run the latency experiment, have someone independent check whether the plan's predictions could actually be falsified."
+      expected: [experiment-round, adversarial-evaluate]
+      cites: "SKILL.md:5, 25 - the pre-registration is reviewed by an independent seat before the run; adversarial-evaluate owns the plan-before-run case, so a co-fire is correct"
+    trap:
+      prompt: "The latency experiment already ran and contradicted its predictions - just tell me which candidate won."
+      expected: []
+      cites: "SKILL.md:8 - not when the experiment has already been run"
+    paraphrase:
+      prompt: "It finished last night - which option came out ahead?"
+      expected: []
+      cites: "SKILL.md:8 - the same situation without the vocabulary"
+run_notes:
+  - "Arms: entry-only over the full catalog; the degenerate control is replaced by the distractor set, the excluded shapes, and route repetition."
+  - "Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss."
+  - "The trap and the paraphrase are the same situation; if only the trap stays silent, the surface is reading words, not the shape."
