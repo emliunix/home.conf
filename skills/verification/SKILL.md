@@ -45,6 +45,9 @@ does not prove unrelated semantics.
 6. Report the lowest proved evidence level and unresolved prerequisites. Keep
    review history and command output out of the current design body.
 
+For a gate relied on for acceptance, the seeded-defect method is the `gate` skill.
+For a verdict that needs several independent seats, use `adversarial-evaluate`.
+
 ## Document contracts
 
 When the repository has `.doc-verify.yaml`, use its `doc-verify` executable.
