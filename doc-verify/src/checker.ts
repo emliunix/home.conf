@@ -298,7 +298,7 @@ async function checkWithModules(input: {
     ...(cache === undefined ? {} : { cache }),
   });
   // One finding per binding that did not hold: a violated error is NO-GO, a violated warning or
-  // an undetermined binding NEEDS-REVIEW. Engine-level notes (unasked atoms, a judge answer
+  // an undetermined binding NEEDS-REVIEW (BLOCKED when its oracle could not be asked). Engine-level notes (unasked atoms, a judge answer
   // that disagrees with its distribution) follow as NEEDS-REVIEW. An empty population is
   // vacuously satisfied and adds nothing. The artifact verdict stays the engine's own.
   for (const constraint of report.constraints) {
@@ -306,7 +306,11 @@ async function checkWithModules(input: {
       if (binding.status === "satisfied") {
         continue;
       }
-      const verdict = binding.status === "violated" && constraint.severity === "error" ? "NO-GO" : "NEEDS-REVIEW";
+      // An undetermined binding whose oracle was never asked because the engine failed (no
+      // judge, an over-budget round) is BLOCKED, not a judgment to review.
+      const unasked = report.failure !== undefined && bindingBasis(binding).some((line) => line.startsWith("unasked "));
+      const verdict = binding.status === "violated" && constraint.severity === "error" ? "NO-GO"
+        : binding.status === "undetermined" && unasked ? "BLOCKED" : "NEEDS-REVIEW";
       findings.push(bindingFinding(input.file, input.sections, `module.${constraint.id}`, verdict, binding));
     }
   }
