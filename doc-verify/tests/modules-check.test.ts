@@ -237,6 +237,19 @@ describe("engine libraries (doc-verify:NAME)", () => {
     expect(only(failed).findings.map((item) => item.ruleId)).toContain("module.artifact-has-goal");
   });
 
+  it("asks doc-verify:design's purpose oracle on promotion only, never on draft", async () => {
+    const decided = `${GOOD.replace("reviewed", "draft")}\n## Decision\n\nOne parser, one field list.\n`;
+    const root = await repository({ "design/a.md": decided }, `  - pattern: design/*.md
+    artifact_kind: design
+    modules: [doc-verify:design]`);
+    const judge = libraryJudge();
+    const draft = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: judge.backend });
+    expect(only(draft)).toMatchObject({ profile: "draft", verdict: "PASS", semanticCalls: 0 });
+    expect(judge.requests).toHaveLength(0);
+    const promotion = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "promotion", backend: judge.backend, cache: "off" });
+    expect(only(promotion).semanticCalls).toBeGreaterThan(0);
+  });
+
   it("lets a repository module extend a library, and composes a library listed twice once", async () => {
     const local = `schema_version: 2
 kind: verification-module

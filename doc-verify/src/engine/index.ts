@@ -9,7 +9,7 @@ import type { JudgeBackend } from "deepclause-sdk";
 
 import { PolicyViolationError } from "../judge.js";
 import { BlockedError } from "../types.js";
-import { checkModule, type Program } from "./checker.js";
+import { checkModule, type Constraint, type Literal, type Program, type Rule } from "./checker.js";
 import { constraintReports, decideVerdict, type EngineFailure, type EngineReport } from "./diagnostics.js";
 import { evaluate } from "./evaluate.js";
 import { documentFacts, type DocumentFacts, type DocumentInput } from "./facts.js";
@@ -50,7 +50,10 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
   const compiled = await compileModule(input.moduleYaml);
   const inProfile = (profiles: string[] | undefined): boolean =>
     profiles === undefined || input.profile === undefined || profiles.includes(input.profile);
-  const program: Program = { ...compiled, constraints: compiled.constraints.filter((constraint) => inProfile(constraint.profiles)) };
+  const selected = compiled.constraints.filter((constraint) => inProfile(constraint.profiles));
+  // Only rules some selected constraint can reach are evaluated, so an oracle that only
+  // out-of-profile constraints depend on is never asked (a draft asks nothing it does not use).
+  const program: Program = { ...compiled, constraints: selected, rules: reachableRules(compiled, selected) };
   const skipped = compiled.constraints.filter((constraint) => !inProfile(constraint.profiles)).map((constraint) => constraint.id);
 
   const documents = new Map<string, DocumentFacts>();
@@ -114,4 +117,33 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
     findings,
     failure,
   };
+}
+
+/** The rules whose predicates the given constraints reach, directly or through other rules. */
+function reachableRules(program: Program, constraints: Constraint[]): Rule[] {
+  const needed = new Set<string>();
+  const pending: string[] = [];
+  const visit = (literals: Literal[]): void => {
+    for (const literal of literals) {
+      if (literal.kind === "pos" || literal.kind === "neg") {
+        if (!needed.has(literal.predicate)) {
+          needed.add(literal.predicate);
+          pending.push(literal.predicate);
+        }
+      } else if (literal.kind === "count") {
+        visit(literal.goal);
+      }
+    }
+  };
+  for (const constraint of constraints) {
+    visit([...constraint.forall, ...constraint.goal]);
+  }
+  for (let predicate = pending.pop(); predicate !== undefined; predicate = pending.pop()) {
+    for (const rule of program.rules) {
+      if (rule.predicate === predicate) {
+        visit(rule.body);
+      }
+    }
+  }
+  return program.rules.filter((rule) => needed.has(rule.predicate));
 }
