@@ -1,0 +1,82 @@
+# home.conf's design contract: the v1 design contract migrated as design 04 §Migration states
+# (one oracle and one constraint per v1 item, threshold 0; a required section becomes a
+# constraint over heading facts), on top of doc-verify:artifact (status word and '## Goal').
+#   v1 required_sections [problem-statement, rationale, review, status]
+#     -> design-has-problem-statement / -rationale / -review / -status-section.
+#   v1 design.problem_resolved (critical, combined over problem-statement + rationale)
+#     -> problem_resolved / design-problem-resolved.
+#   v1 design.verification_falsifies (critical, over verification-design)
+#     -> verification_falsifies / design-verification-falsifies.
+#
+# Why not doc-verify:design: that library finds the verification and decision sections with the
+# artifact `purpose` oracle, which sends every top-level section to the judge. design/02 and
+# design/03 name the credential variable in sections v1 never sent, and the outbound policy
+# refuses that evidence (NO-GO). This module asks only about the sections v1 asked about.
+schema_version: 2
+kind: verification-module
+module: home.design
+params:
+  statuses: [draft, reviewed, pending-retro, landed]
+oracles:
+  problem_resolved(D, L):
+    ask: The proposed mechanism directly resolves the stated problem without relying on an unnamed decision.
+    evidence: core.union(D, L)
+    threshold: 0
+    max_bytes: 12000
+  verification_falsifies(D, S):
+    ask: The verification design names observable failure witnesses for its load-bearing claims.
+    evidence: core.body(D, S)
+    threshold: 0
+    max_bytes: 12000
+rules:
+  problem_section(D, S): top(D, S), core.heading(D, S, 'Problem statement')
+  rationale_section(D, S): top(D, S), core.heading(D, S, 'Rationale')
+  review_section(D, S): top(D, S), core.heading(D, S, 'Review')
+  status_section(D, S): top(D, S), core.heading(D, S, 'Status')
+  verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
+  one_word_status(D): has_status_word(D), core.meta(D, status_words, '1')
+constraints:
+  design-has-problem-statement:
+    forall: core.meta(D, kind, design)
+    require: problem_section(D, S)
+    severity: error
+    message: "{D} has no '## Problem statement' section"
+    repair: "Add '## Problem statement': what is wrong today, observably."
+  design-has-rationale:
+    forall: core.meta(D, kind, design)
+    require: rationale_section(D, S)
+    severity: error
+    message: "{D} has no '## Rationale' section"
+    repair: "Add '## Rationale': why this mechanism, and the alternatives rejected."
+  design-has-review:
+    forall: core.meta(D, kind, design)
+    require: review_section(D, S)
+    severity: error
+    message: "{D} has no '## Review' section"
+    repair: "Add '## Review' naming the worklog that records the review."
+  design-has-status-section:
+    forall: core.meta(D, kind, design)
+    require: status_section(D, S)
+    severity: error
+    message: "{D} has no '## Status' section"
+    repair: "Add '## Status' whose first line is one word: draft, reviewed, pending-retro or landed."
+  design-status-is-one-word:
+    forall: status_section(D, S)
+    require: one_word_status(D)
+    severity: error
+    message: "{D}: the first line under '## Status' is not one status word"
+    repair: "Put the status word alone on the first line under '## Status'."
+  design-problem-resolved:
+    forall: problem_section(D, P), rationale_section(D, R)
+    require: problem_resolved(D, [P, R])
+    severity: error
+    profiles: [promotion]
+    message: "the mechanism in {D} does not resolve its stated problem without an unnamed decision"
+    repair: "Name the decision the mechanism relies on, or change the mechanism so it resolves {P}."
+  design-verification-falsifies:
+    forall: verification_design_section(D, S)
+    require: verification_falsifies(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{S} in {D} names no observable failure witness for a load-bearing claim"
+    repair: "For each load-bearing claim, name the test, command or measurement that fails when the claim is false."

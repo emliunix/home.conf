@@ -8,6 +8,7 @@
   },
   "files": [
     "doc-verify/dist",
+    "doc-verify/lib",
     ".pre-commit-hooks.yaml"
   ],
   "scripts": {

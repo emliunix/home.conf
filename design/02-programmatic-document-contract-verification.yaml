@@ -3,13 +3,9 @@ kind: document-contract
 document:
   path: design/02-programmatic-document-contract-verification.md
   kind: design
-verification:
-  kind: jev-prolog
-  inherits: ../doc-verify/contracts/design-strategy.yaml#verification
 commands:
   - npm test
   - npm run typecheck
   - npm run lint
   - npm run check
-  - npm run verify:jev
 evidence_level: E2

@@ -8,13 +8,60 @@
  * defined twice is refused, never silently overridden, because a later definition that
  * quietly replaces an earlier one is the global-namespace defect design 04 exists to remove.
  * `rounds` and `warning_threshold` take the strictest value across the chain.
+ *
+ * A reference is a repository path or an engine library `doc-verify:NAME` (design 04 §Modules
+ * and references). A library is a module file shipped with the engine in `doc-verify/lib/`,
+ * versioned with it, and read from the engine's own install, never from the repository. A
+ * library's `extends` may name only other libraries.
  */
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import YAML from "yaml";
 
+import { sha256 } from "../hash.js";
 import { RepoPath, TextBlob, repoPath } from "../types.js";
 import { ModuleError } from "./module.js";
+
+const LIBRARY_PREFIX = "doc-verify:";
+const LIBRARY_NAME = /^[a-z][a-z0-9-]*(\/[a-z][a-z0-9-]*)*$/;
+/** `doc-verify/lib`, from both `src/engine` (tests) and `dist/engine` (the built CLI). */
+const LIBRARY_DIR = fileURLToPath(new URL("../../lib/", import.meta.url));
+
+/** The engine libraries this install ships, by `doc-verify:NAME`. */
+export function engineLibraries(): string[] {
+  const names: string[] = [];
+  const walk = (dir: string, prefix: string): void => {
+    for (const entry of readdirSync(path.join(LIBRARY_DIR, dir), { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        walk(path.join(dir, entry.name), `${prefix}${entry.name}/`);
+      } else if (entry.name.endsWith(".yaml")) {
+        names.push(`${LIBRARY_PREFIX}${prefix}${entry.name.slice(0, -".yaml".length)}`);
+      }
+    }
+  };
+  try {
+    walk("", "");
+  } catch {
+    return [];
+  }
+  return names.sort();
+}
+
+function isLibrary(reference: string): boolean {
+  return reference.startsWith(LIBRARY_PREFIX);
+}
+
+function readLibrary(reference: string): TextBlob {
+  const name = reference.slice(LIBRARY_PREFIX.length);
+  const known = engineLibraries();
+  if (!LIBRARY_NAME.test(name) || !known.includes(reference)) {
+    throw new ModuleError([`${reference}: no such engine library; this engine ships ${known.join(", ") || "none"}`]);
+  }
+  const content = readFileSync(path.join(LIBRARY_DIR, `${name}.yaml`), "utf8");
+  return { path: repoPath(reference), content, hash: sha256(content) };
+}
 
 const MERGED = ["params", "oracles", "rules", "constraints"] as const;
 
@@ -46,7 +93,7 @@ export async function composeModules(
       return;
     }
     active.push(file);
-    const blob = await readBlob(file);
+    const blob = isLibrary(file) ? readLibrary(file) : await readBlob(file);
     let parsed: unknown;
     try {
       parsed = YAML.parse(blob.content);
@@ -58,7 +105,13 @@ export async function composeModules(
     }
     const source = parsed as Record<string, unknown>;
     for (const parent of (source.extends as string[] | undefined) ?? []) {
-      await visit(repoPath(path.posix.normalize(path.posix.join(path.posix.dirname(file), parent))));
+      if (isLibrary(parent)) {
+        await visit(repoPath(parent));
+      } else if (isLibrary(file)) {
+        throw new ModuleError([`${file}: an engine library may extend only doc-verify: libraries, not ${parent}`]);
+      } else {
+        await visit(repoPath(path.posix.normalize(path.posix.join(path.posix.dirname(file), parent))));
+      }
     }
     for (const key of MERGED) {
       for (const [entry, value] of Object.entries((source[key] as Record<string, unknown> | undefined) ?? {})) {
@@ -85,7 +138,7 @@ export async function composeModules(
   };
 
   for (const file of files) {
-    await visit(repoPath(path.posix.normalize(file)));
+    await visit(repoPath(isLibrary(file) ? file : path.posix.normalize(file)));
   }
 
   const out: Record<string, unknown> = {
