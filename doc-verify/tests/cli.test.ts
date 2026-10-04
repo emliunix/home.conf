@@ -250,11 +250,14 @@ constraints:
 `;
 
 /**
- * The module path builds the production judge client before it runs; a placeholder key lets it,
- * and the fixture's module asks nothing, so the key is never sent.
+ * No judge key: structural constraints are decided without one (the fixture's module asks
+ * nothing), so these runs never need a judge.
  */
 function cliEnv(): NodeJS.ProcessEnv {
-  return { ...process.env, TYPESAFE_API_KEY: "placeholder-never-sent" };
+  const env = { ...process.env };
+  delete env.TYPESAFE_API_KEY;
+  delete env.API_KEY;
+  return env;
 }
 
 function cliFixture(): string {

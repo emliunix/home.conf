@@ -21,9 +21,13 @@ fact), `--format text|json`, `--verbose` and `--output PATH`. Exit codes: 0 PASS
 (`--staged`), 66 config missing.
 
 The judge key comes from `TYPESAFE_API_KEY`, or from `API_KEY` in a gitignored
-`.env.doc-verify` at the repository root. Without it every module-governed document is
-`BLOCKED` (`semantic.prerequisite`) before its constraints run; only a rule's
-`required_sections` are checked.
+`.env.doc-verify` at the repository root. Without it the engine still runs: every constraint
+whose goal reads no oracle (a heading, a status word, a reference) is decided, and only the
+constraints that need the judge are undetermined, reported as `semantic.prerequisite BLOCKED
+TYPESAFE_API_KEY is unavailable`. A violated structural `error` constraint is `NO-GO` (exit 1)
+with or without a key; otherwise a document that needed the judge is `BLOCKED` (exit 3), and one
+that did not is decided outright. A keyless pre-commit run therefore still refuses a document
+with a missing required heading.
 
 ### Configuration
 

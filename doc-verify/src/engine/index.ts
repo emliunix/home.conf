@@ -27,7 +27,13 @@ export type { DocumentInput } from "./facts.js";
 export interface RunProgramInput {
   moduleYaml: string;
   documents: DocumentInput[];
-  backend: JudgeBackend;
+  /**
+   * The judge. Absent when none is available (no key): every constraint whose goal involves no
+   * oracle is still decided, and the first round that must ask the judge fails BLOCKED with
+   * `unavailable` as its message.
+   */
+  backend: JudgeBackend | undefined;
+  unavailable?: string;
   model: string;
   policy: OutboundPolicy;
   /** Runs only constraints without `profiles` or listing this profile. */
@@ -67,7 +73,7 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
     try {
       requests.push(...await askRound({
         round, demands: [...demands.values()], documents, store,
-        backend: input.backend, model: input.model, policy: input.policy, cache: input.cache,
+        backend: input.backend, unavailable: input.unavailable, model: input.model, policy: input.policy, cache: input.cache,
       }));
     } catch (error) {
       if (error instanceof PolicyViolationError) {

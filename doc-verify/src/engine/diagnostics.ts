@@ -61,7 +61,7 @@ export interface ConstraintReport {
 }
 
 export interface EngineFailure {
-  verdict: Verdict;
+  verdict: Exclude<Verdict, "PASS">;
   message: string;
 }
 
@@ -197,11 +197,12 @@ function fill(template: string, values: Record<string, string>): string {
 }
 
 /**
- * `doc-verify:verdict/strict`: a violated error is NO-GO; an engine failure is its own
- * verdict (BLOCKED, or NO-GO for an outbound-policy violation); an undetermined error
- * is NEEDS-REVIEW; a warning ratio of satisfied weight to total weight below the
- * threshold is NEEDS-REVIEW; otherwise PASS. Precedence is NO-GO, BLOCKED,
- * NEEDS-REVIEW, PASS.
+ * `doc-verify:verdict/strict`: a violated error is NO-GO; an outbound-policy violation is
+ * NO-GO; an engine failure that left some constraint undetermined (no judge, a failed or
+ * over-budget round) is BLOCKED; an undetermined error is NEEDS-REVIEW; a warning ratio of
+ * satisfied weight to total weight below the threshold is NEEDS-REVIEW; otherwise PASS.
+ * Precedence is NO-GO, BLOCKED, NEEDS-REVIEW, PASS. A constraint whose goal reads no oracle is
+ * always decided, so a structural NO-GO stands whether or not the judge could be asked.
  */
 export function decideVerdict(constraints: ConstraintReport[], failure: EngineFailure | undefined, warningThreshold: number): { verdict: Verdict; decidedBy: string } {
   const errors = constraints.filter((constraint) => constraint.severity === "error");
@@ -209,7 +210,10 @@ export function decideVerdict(constraints: ConstraintReport[], failure: EngineFa
   if (violated !== undefined) {
     return { verdict: "NO-GO", decidedBy: violated.id };
   }
-  if (failure !== undefined) {
+  if (failure !== undefined && failure.verdict === "NO-GO") {
+    return { verdict: failure.verdict, decidedBy: "engine" };
+  }
+  if (failure !== undefined && constraints.some((constraint) => constraint.status === "undetermined")) {
     return { verdict: failure.verdict, decidedBy: "engine" };
   }
   const undetermined = errors.find((constraint) => constraint.status === "undetermined");

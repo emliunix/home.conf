@@ -232,16 +232,19 @@ async function checkWithModules(input: {
     }
     throw error;
   }
+  // No key is not a reason to skip the structural constraints: the engine runs without a judge,
+  // decides every constraint whose goal reads no oracle, and fails BLOCKED only at the round
+  // that must ask one.
   let backend = input.backend;
+  let unavailable: string | undefined;
   if (backend === undefined) {
     try {
       backend = productionBackend(input.config.judge.model);
     } catch (error) {
-      if (error instanceof BlockedError) {
-        findings.push(finding(input.file, input.sections[0], "semantic.prerequisite", "BLOCKED", error.message));
-        return { ...base, findings, semanticCalls: 0, verdict: "BLOCKED" };
+      if (!(error instanceof BlockedError)) {
+        throw error;
       }
-      throw error;
+      unavailable = error.message;
     }
   }
   const meta: Record<string, string> = { kind: input.rule.artifact_kind };
@@ -259,6 +262,7 @@ async function checkWithModules(input: {
     documents: [{ path: input.file, markdown: input.blob.content, meta,
       ...(input.selectedIds === undefined ? {} : { selected: input.selectedIds }) }],
     backend,
+    ...(unavailable === undefined ? {} : { unavailable }),
     model: input.config.judge.model,
     policy: {
       maxEvidenceBytes: input.config.policy.max_evidence_bytes,
@@ -279,6 +283,12 @@ async function checkWithModules(input: {
       findings.push(finding(input.file, input.sections[0], `module.${constraint.id}`, verdict,
         `${binding.status}: ${binding.message}${binding.repair === undefined ? "" : ` -- repair: ${binding.repair}`}`));
     }
+  }
+  // An engine failure that decided nothing (every constraint was decided without the judge)
+  // does not turn a PASS into a finding.
+  if (report.failure !== undefined && report.verdict !== "PASS") {
+    findings.push(finding(input.file, input.sections[0], unavailable !== undefined && report.failure.message === unavailable
+      ? "semantic.prerequisite" : "module.engine", report.failure.verdict, report.failure.message));
   }
   for (const note of report.findings) {
     findings.push(finding(input.file, input.sections[0], "module.engine", "NEEDS-REVIEW", note));
