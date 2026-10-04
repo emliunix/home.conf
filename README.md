@@ -88,17 +88,53 @@ Shipped in `doc-verify/lib/`, versioned with the engine and read from its instal
 | `doc-verify:design` | extends artifact: `## Status` holding one of draft, reviewed, pending-retro, landed; on promotion, a verification section whose claims name a failing check, a decision section, and an altitude warning |
 | `doc-verify:goal` | extends artifact: OPEN, BLOCKED or CLOSED-GREEN; the anchored root, Design files, Workstreams, AC coverage and Worklog sections; on promotion, coverage of every root requirement |
 
-Reference facts (added 2026-10-05). For each document `doc-verify:core` also provides
-`core.ref(D, S, Target, Kind)`: `Kind = link` for every Markdown link, image or definition target
-that is not a URL (no `scheme:` and no `//`), `Kind = path` for every inline code span made only of
-`[A-Za-z0-9_./-]` that contains `/` or ends in a known file extension (not a predicate indicator
-such as `child/3`, nor a placeholder such as `path/X.md`); `S` is the innermost section (or
-`@preamble`) and `Target` is as written. `core.resolves(D, Target)` holds when the target, without
-its `#fragment`, names a file or directory relative to the document's directory or to the
-repository root, in the candidate's tracked files or (for `--paths`, `--all`, `--staged`) the
-working tree; a bare fragment resolves to the document. `core.dangling(D, S, Target, Kind)` is
-a ref that does not resolve. Code blocks (fenced or indented) are not read. A module requires that what a document
-names exists with, for example:
+Reference facts (added 2026-10-05; path rules revised the same day). For each document
+`doc-verify:core` also provides `core.ref(D, S, Target, Kind)`, where `S` is the innermost section
+(or `@preamble`) and `Target` is as written:
+
+- `Kind = link`: every Markdown link, image or definition target that is not a URL (no `scheme:`
+  and no `//`).
+- `Kind = path`: an inline code span that names a repository path, by the rules below.
+- `Kind = name`: a bare file name (no `/`, a known extension) that names no one file: it resolves
+  beside neither the document nor the root, and the tracked files hold it zero times or several
+  times (`local-env.md`, or `ir.py` in two packages). `paths-resolve` reads only `path`, so a name
+  is never a finding; it resolves when some tracked file has it.
+
+A code span is a candidate only when it is made of `[A-Za-z0-9_./-]` and is not a predicate
+indicator (`child/3`, `design/02`) or a placeholder (`path/X.md`, `task/N`). Then, in order:
+
+1. A span inside the text of a link that resolves (or of a URL link) is the link's label, not a
+   second reference: ``[`x.py`](x.py)`` gives one `link` ref. Inside a broken link the span counts.
+2. A span that is only extensions (`.md`, `.md/.yaml`) is not a path.
+3. A span starting with `/` is a URL route (`/api/build`, `/step`), not a repository path;
+   repository paths are written relative.
+4. A Git ref is not a path: a span equal to a branch, tag or remote-branch name from
+   `git for-each-ref` (empty when Git cannot list them), or one starting `origin/`, `archive/`,
+   `exp/` or `refs/` whose first segment is not an existing directory.
+5. A span with a `/` is a path when it ends in a known file extension, starts `./` or `../`, or
+   its first segment is an existing directory at the repository root or beside the document.
+   Slash-joined words (`lane/site/visit`) are not paths.
+6. A span with no `/` is a path only when it ends in a known file extension and resolves beside
+   the document or at the root, or exactly one tracked file has that name (which is where it
+   resolves). Otherwise it is a `name`.
+
+The extension list is fixed (`md`, `yaml`, `json`, `py`, `ts`, ... in `facts.ts`), because
+`core.body` or `document.path` is a dotted name, not a file. YAML front matter (a first line
+`---`, a YAML mapping, a closing `---`) is metadata: it belongs to `@preamble`, is not a section,
+and is not read for references. Code blocks (fenced or indented) are not read either.
+
+What the rules do not try to tell apart is the author's to reword: a file kind rather than a file
+("each package's `verification.md`" is a `path` when one such file exists at the root), or a
+retired name cited on purpose with a `/` (write it as the archive link it is, or without
+backticks).
+
+`core.resolves(D, Target)` holds when the target, without its `#fragment`, names a file or
+directory relative to the document's directory or to the repository root, in the candidate's
+tracked files or (for `--paths`, `--all`, `--staged`) the working tree; a bare fragment resolves to
+the document. `core.dangling(D, S, Target, Kind)` is a ref that does not resolve. A violated
+warning constraint such as `paths-resolve` prints `WARN` and leaves the verdict alone;
+`NEEDS-REVIEW` is for a binding the engine could not decide. A module requires that what a
+document names exists with, for example:
 
 ```yaml
 extends: [doc-verify:references]   # or write the constraint yourself:

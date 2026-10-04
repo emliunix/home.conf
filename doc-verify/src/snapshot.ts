@@ -31,6 +31,8 @@ export interface SnapshotPair {
   candidateInventory: readonly string[];
   /** Whether the working tree is part of the candidate, so a file on disk also exists. */
   workingTree: boolean;
+  /** Branch, tag and remote-branch names (`git for-each-ref`, short form); empty when Git cannot list them. */
+  gitRefs: readonly string[];
 }
 
 export interface DocumentReferenceRule extends DocumentSelector {
@@ -261,6 +263,7 @@ async function buildPair(input: {
     candidatePaths: affected.artifacts,
     candidateInventory: input.candidateInventory,
     workingTree: input.workingTree,
+    gitRefs: gitRefNames(input.root),
   };
 }
 
@@ -419,6 +422,14 @@ function referencePath(sourcePath: RepoPath, reference: string): RepoPath[] {
   const base = sourcePath === "." ? "" : path.posix.dirname(sourcePath);
   const normalized = path.posix.normalize(path.posix.join(base, filePart));
   return normalized === ".." || normalized.startsWith("../") ? [] : [repoPath(normalized)];
+}
+
+function gitRefNames(root: string): string[] {
+  try {
+    return gitLines(root, ["for-each-ref", "--format=%(refname:short)", "refs/heads", "refs/tags", "refs/remotes"]);
+  } catch {
+    return [];
+  }
 }
 
 function gitLines(root: string, args: string[]): string[] {

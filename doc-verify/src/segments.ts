@@ -3,13 +3,39 @@ import type { Heading, Root, RootContent } from "mdast";
 import { toString } from "mdast-util-to-string";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
+import YAML from "yaml";
 
 import { sha256 } from "./hash.js";
 import { Section, SectionId, sectionId } from "./types.js";
 
+/**
+ * The character offset where a YAML front matter block ends, or 0 when there is none:
+ * a first line `---`, then any lines, then a closing `---` (or `...`) line. CommonMark alone reads
+ * `---`/`key: v`/`---` as a rule and a setext heading; the block is metadata, part of the preamble.
+ * The lines between must parse as a YAML mapping (or be empty).
+ */
+export function frontMatterEnd(markdown: string): number {
+  const match = /^---[ \t]*\r?\n((?:[\s\S]*?\r?\n)?)(?:---|\.\.\.)[ \t]*(?:\r?\n|$)/.exec(markdown);
+  if (match === null) {
+    return 0;
+  }
+  // Only a YAML mapping (or nothing) is front matter; a document that opens with a rule is not.
+  try {
+    const body = match[1] ?? "";
+    if (body.trim().length === 0) {
+      return match[0].length;
+    }
+    const value: unknown = YAML.parse(body);
+    return typeof value === "object" && value !== null && !Array.isArray(value) ? match[0].length : 0;
+  } catch {
+    return 0;
+  }
+}
+
 export function segmentMarkdown(markdown: string): Section[] {
   const root = unified().use(remarkParse).parse(markdown);
-  const headings = collectHeadings(root).map(({ node, offset, line }) => ({
+  const metadataEnd = frontMatterEnd(markdown);
+  const headings = collectHeadings(root).filter(({ offset }) => offset >= metadataEnd).map(({ node, offset, line }) => ({
     node,
     offset,
     line,

@@ -253,7 +253,10 @@ as written; `resolves(D, Target)` when the target without its `#fragment` exists
 the document's directory or the repository root (a directory counts); and the derived
 `dangling/4`, a ref without resolves. These are deterministic, so a constraint over them is
 decided with no judge. `doc-verify:references` ships `references-resolve` (error, links) and
-`paths-resolve` (warning, paths) over them.
+`paths-resolve` (warning, paths) over them. *Revised the same day, after visflow's first run
+gave 176 path warnings that were mostly not paths:* which spans are paths is a list of stated
+rules in the doc-verify README ("Reference facts"), and a bare file name that names no one
+tracked file is `Kind = name`, which `paths-resolve` does not read.
 
 Evidence expressions:
 - `core.body(D, S)` is the heading plus the whole subtree;

@@ -34,6 +34,7 @@ import {
   ConfigNotFoundError,
   ConfigNotStagedError,
   Finding,
+  FindingVerdict,
   Profile,
   RepoPath,
   Section,
@@ -113,6 +114,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
   }
   const selectedIds = options.sections?.map(sectionId);
   const exists = candidateExists(root, pair.candidateInventory, pair.workingTree);
+  const repository = { exists, files: pair.candidateInventory, gitRefs: pair.gitRefs };
   const artifacts: ArtifactReport[] = [];
   for (const file of pair.candidatePaths) {
     const rule = findDocumentRule(config, file);
@@ -134,7 +136,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
       impactPath,
       selectorTrace: documentTraceFor(config.documents, file),
       readCandidate: pair.readCandidate,
-      exists,
+      repository,
       requestedProfile: options.profile,
       cacheEnabled: options.cache !== "off",
       ...(selectedIds === undefined ? {} : { selectedIds }),
@@ -169,7 +171,7 @@ async function checkArtifact(input: {
   impactPath: RepoPath[];
   selectorTrace: ArtifactReport["selectorTrace"];
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
-  exists: (repoPath: string) => boolean;
+  repository: RepositoryView;
   requestedProfile: Profile;
   cacheEnabled: boolean;
   selectedIds?: SectionId[];
@@ -213,7 +215,7 @@ async function checkWithModules(input: {
   impactPath: RepoPath[];
   selectorTrace: ArtifactReport["selectorTrace"];
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
-  exists: (repoPath: string) => boolean;
+  repository: RepositoryView;
   requestedProfile: Profile;
   cacheEnabled: boolean;
   selectedIds?: SectionId[];
@@ -284,7 +286,7 @@ async function checkWithModules(input: {
   const cache = input.cacheEnabled ? fileOracleCache(input.root, cacheSetting === "refresh" ? "refresh" : "use") : undefined;
   const report = await runProgram({
     moduleYaml: composed.yaml,
-    documents: [{ path: input.file, markdown: input.blob.content, meta, exists: input.exists,
+    documents: [{ path: input.file, markdown: input.blob.content, meta, ...input.repository,
       ...(input.selectedIds === undefined ? {} : { selected: input.selectedIds }) }],
     backend,
     ...(unavailable === undefined ? {} : { unavailable }),
@@ -297,8 +299,8 @@ async function checkWithModules(input: {
     profile,
     ...(cache === undefined ? {} : { cache }),
   });
-  // One finding per binding that did not hold: a violated error is NO-GO, a violated warning or
-  // an undetermined binding NEEDS-REVIEW (BLOCKED when its oracle could not be asked). Engine-level notes (unasked atoms, a judge answer
+  // One finding per binding that did not hold: a violated error is NO-GO, a violated warning
+  // WARN, an undetermined binding NEEDS-REVIEW (BLOCKED when its oracle could not be asked). Engine-level notes (unasked atoms, a judge answer
   // that disagrees with its distribution) follow as NEEDS-REVIEW. An empty population is
   // vacuously satisfied and adds nothing. The artifact verdict stays the engine's own.
   for (const constraint of report.constraints) {
@@ -309,8 +311,9 @@ async function checkWithModules(input: {
       // An undetermined binding whose oracle was never asked because the engine failed (no
       // judge, an over-budget round) is BLOCKED, not a judgment to review.
       const unasked = report.failure !== undefined && bindingBasis(binding).some((line) => line.startsWith("unasked "));
-      const verdict = binding.status === "violated" && constraint.severity === "error" ? "NO-GO"
-        : binding.status === "undetermined" && unasked ? "BLOCKED" : "NEEDS-REVIEW";
+      const verdict: FindingVerdict = binding.status === "violated"
+        ? constraint.severity === "error" ? "NO-GO" : "WARN"
+        : unasked ? "BLOCKED" : "NEEDS-REVIEW";
       findings.push(bindingFinding(input.file, input.sections, `module.${constraint.id}`, verdict, binding));
     }
   }
@@ -331,6 +334,13 @@ async function checkWithModules(input: {
     engine: { modules: composed.sources, hash: report.hash, requests: report.requests.length, text: renderReport(report), report },
     verdict: report.verdict,
   };
+}
+
+/** What reference facts may consult about the candidate (`core.ref`, `core.resolves`). */
+interface RepositoryView {
+  exists: (repoPath: string) => boolean;
+  files: readonly string[];
+  gitRefs: readonly string[];
 }
 
 /**
@@ -382,7 +392,7 @@ function deletedReport(
  * A finding for one binding that did not hold. It sits at the binding's section (`S`, else `C`,
  * else the first section an oracle read), or at the document's first section when it names none.
  */
-function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, verdict: Exclude<Verdict, "PASS">, binding: BindingReport): Finding {
+function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, verdict: FindingVerdict, binding: BindingReport): Finding {
   const read = bindingSections(binding);
   const named = [binding.values.S, binding.values.C].filter((value): value is string =>
     value !== undefined && sections.some((section) => section.id === value));
@@ -398,7 +408,7 @@ function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, ver
   };
 }
 
-function finding(pathValue: RepoPath, section: Section | undefined, ruleId: string, verdict: Exclude<Verdict, "PASS">, message: string): Finding {
+function finding(pathValue: RepoPath, section: Section | undefined, ruleId: string, verdict: FindingVerdict, message: string): Finding {
   return {
     path: pathValue,
     line: section?.startLine ?? 1,
@@ -447,7 +457,8 @@ function sectionBody(section: Section | undefined): string | undefined {
   return section.content.split("\n").slice(1).join("\n").trim().split(/\s+/, 1)[0];
 }
 
-export function combineVerdicts(verdicts: Verdict[]): Verdict {
+/** The worst verdict; a `WARN` finding does not move it. */
+export function combineVerdicts(verdicts: Array<Verdict | FindingVerdict>): Verdict {
   const precedence: Verdict[] = ["NO-GO", "BLOCKED", "NEEDS-REVIEW", "PASS"];
   return precedence.find((verdict) => verdicts.includes(verdict)) ?? "PASS";
 }

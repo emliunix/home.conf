@@ -4,6 +4,8 @@ import type { EngineReport } from "./engine/diagnostics.js";
 
 export const verdictSchema = z.enum(["PASS", "NO-GO", "NEEDS-REVIEW", "BLOCKED"]);
 export type Verdict = z.infer<typeof verdictSchema>;
+/** A finding's label: a verdict, or `WARN` for a violated warning constraint (it does not move the verdict). */
+export type FindingVerdict = Exclude<Verdict, "PASS"> | "WARN";
 
 export const profileSchema = z.enum(["draft", "promotion", "auto"]);
 export type Profile = z.infer<typeof profileSchema>;
@@ -47,7 +49,7 @@ export interface Finding {
   line: number;
   sectionId: SectionId;
   ruleId: string;
-  verdict: Exclude<Verdict, "PASS">;
+  verdict: FindingVerdict;
   message: string;
   evidenceId: string;
   /** The binding's status for a module constraint (`violated` or `undetermined`). */
