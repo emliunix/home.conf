@@ -288,7 +288,63 @@ export function renderReport(report: EngineReport): string {
   return `${lines.join("\n")}\n`;
 }
 
-function renderProof(node: ProofNode, indent: string): string[] {
+/**
+ * What decided a non-satisfied binding, one line each: every oracle leaf in its proof as
+ * `answered <label> (p=<value> <|>= threshold <t>) over <sections>` (or `unasked <atom>`), and,
+ * for a structural result, `structural: missing <literal>` for a violated require or
+ * `structural: <atoms>` for the facts a violated forbid found.
+ */
+export function bindingBasis(binding: BindingReport): string[] {
+  const lines: string[] = [];
+  const seen = new Set<string>();
+  const visit = (node: ProofNode): void => {
+    if (node.oracle !== undefined && !seen.has(node.oracle.key)) {
+      seen.add(node.oracle.key);
+      const leaf = node.oracle;
+      const sections = leaf.sections.join(", ") || "no section";
+      if (leaf.distribution.length === 0) {
+        lines.push(`answered ${leaf.answered} (no distribution; threshold ${String(leaf.threshold)}) over ${sections}`);
+      } else {
+        const p = Math.max(...leaf.distribution);
+        lines.push(`answered ${leaf.answered} (p=${String(p)} ${p >= leaf.threshold ? ">=" : "<"} threshold ${String(leaf.threshold)}) over ${sections}`);
+      }
+    } else if (node.kind === "unasked" && !seen.has(node.atom)) {
+      seen.add(node.atom);
+      lines.push(`unasked ${node.atom}`);
+    }
+    for (const child of node.children ?? []) {
+      visit(child);
+    }
+  };
+  visit(binding.proof);
+  for (const missing of binding.missing) {
+    lines.push(`structural: missing ${missing}`);
+  }
+  if (lines.length === 0) {
+    const goal = binding.proof.children?.find((child) => child.kind === "goal");
+    const gap = binding.proof.children?.find((child) => child.kind === "missing");
+    const atoms = goal?.children?.map((child) => child.atom) ?? [];
+    lines.push(`structural: ${atoms.length > 0 ? atoms.join(", ") : gap?.atom ?? binding.proof.atom}`);
+  }
+  return lines;
+}
+
+/** The section ids a binding's oracles read, in proof order. */
+export function bindingSections(binding: BindingReport): string[] {
+  const sections: string[] = [];
+  const visit = (node: ProofNode): void => {
+    for (const section of node.oracle?.sections ?? []) {
+      if (!sections.includes(section)) {
+        sections.push(section);
+      }
+    }
+    (node.children ?? []).forEach(visit);
+  };
+  visit(binding.proof);
+  return sections;
+}
+
+export function renderProof(node: ProofNode, indent: string): string[] {
   const head = node.oracle === undefined
     ? `${indent}${node.kind} ${node.atom}${node.mode === undefined ? "" : ` [${node.mode}]`}`
     : `${indent}oracle ${node.atom} -> ${oracleSummary(node.oracle)}`;

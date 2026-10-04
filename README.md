@@ -20,6 +20,16 @@ fact), `--format text|json`, `--verbose` and `--output PATH`. Exit codes: 0 PASS
 2 NEEDS-REVIEW, 3 BLOCKED, 64 usage or configuration error, 65 config not in the Git index
 (`--staged`), 66 config missing.
 
+The text report prints one line per finding, `path:line [section] rule VERDICT status: message
+(sections: ...)`, then for a module constraint its repair hint and what decided it: one
+`answered <label> (p=<value> <|>= threshold <t>) over <sections>` line per oracle answer, or
+`structural: missing <literal>` / `structural: <facts found>` for a constraint decided from facts.
+Engine failures (no judge, an over-budget round, an outbound-policy violation) are findings too.
+`--verbose` adds the snapshot and selector detail, each finding's evidence hash and proof tree,
+and the engine's full report (populations, every oracle question). `--format json` carries every
+finding field and, per artifact, the engine's full report under `engine.report`. The last line is
+always the summary, `VERDICT: N artifact(s), ...`.
+
 The judge key comes from `TYPESAFE_API_KEY`, or from `API_KEY` in a gitignored
 `.env.doc-verify` at the repository root. Without it the engine still runs: every constraint
 whose goal reads no oracle (a heading, a status word, a reference) is decided, and only the

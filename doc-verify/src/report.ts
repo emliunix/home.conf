@@ -1,4 +1,4 @@
-import { VerificationReport, Verdict } from "./types.js";
+import { Finding, VerificationReport, Verdict } from "./types.js";
 
 const exitCodes: Record<Verdict, number> = {
   PASS: 0,
@@ -21,7 +21,7 @@ export function renderText(report: VerificationReport, options: { verbose?: bool
       lines.push(`${warning.path}:${String(warning.line)} [${warning.sectionId}] ${warning.ruleId} WARN ${warning.message}`);
     }
     for (const finding of artifact.findings) {
-      lines.push(`${finding.path}:${String(finding.line)} [${finding.sectionId}] ${finding.ruleId} ${finding.verdict} ${finding.message} (evidence: ${finding.evidenceId})`);
+      lines.push(...findingLines(finding, false));
     }
   }
   lines.push(summary(report));
@@ -55,11 +55,31 @@ function renderVerboseText(report: VerificationReport): string {
       lines.push(`  warning: ${warning.path}:${String(warning.line)} [${warning.sectionId}] ${warning.ruleId} WARN ${warning.message}`);
     }
     for (const finding of artifact.findings) {
-      lines.push(`  finding: ${finding.path}:${String(finding.line)} [${finding.sectionId}] ${finding.ruleId} ${finding.verdict} ${finding.message} (evidence: ${finding.evidenceId})`);
+      const [head, ...rest] = findingLines(finding, true);
+      lines.push(`  finding: ${head ?? ""}`, ...rest.map((line) => `  ${line}`));
     }
   }
   lines.push(summary(report));
   return `${lines.join("\n")}\n`;
+}
+
+/**
+ * A finding's head line, then its repair hint and what decided it. The default names the
+ * sections it rests on; `verbose` adds the evidence hash and the binding's proof tree.
+ */
+function findingLines(finding: Finding, verbose: boolean): string[] {
+  const status = finding.status === undefined ? "" : `${finding.status}: `;
+  const sections = finding.sections === undefined || finding.sections.length === 0 ? "" : ` (sections: ${finding.sections.join(", ")})`;
+  const evidence = verbose ? ` (evidence: ${finding.evidenceId})` : "";
+  const lines = [`${finding.path}:${String(finding.line)} [${finding.sectionId}] ${finding.ruleId} ${finding.verdict} ${status}${finding.message}${sections}${evidence}`];
+  if (finding.repair !== undefined) {
+    lines.push(`  repair: ${finding.repair}`);
+  }
+  lines.push(...(finding.basis ?? []).map((line) => `  ${line}`));
+  if (verbose && finding.proof !== undefined) {
+    lines.push("  proof:", ...finding.proof.map((line) => `    ${line}`));
+  }
+  return lines;
 }
 
 function listPaths(paths: string[]): string[] {

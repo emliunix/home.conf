@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { EngineReport } from "./engine/diagnostics.js";
+
 export const verdictSchema = z.enum(["PASS", "NO-GO", "NEEDS-REVIEW", "BLOCKED"]);
 export type Verdict = z.infer<typeof verdictSchema>;
 
@@ -48,6 +50,15 @@ export interface Finding {
   verdict: Exclude<Verdict, "PASS">;
   message: string;
   evidenceId: string;
+  /** The binding's status for a module constraint (`violated` or `undetermined`). */
+  status?: string;
+  repair?: string;
+  /** The section ids the finding rests on (the binding's sections and its oracles' evidence). */
+  sections?: string[];
+  /** What decided it: oracle answers against thresholds, or the structural fact found or missing. */
+  basis?: string[];
+  /** The engine's proof tree for the binding, rendered. */
+  proof?: string[];
 }
 
 export interface WarningDiagnostic {
@@ -71,7 +82,7 @@ export interface ArtifactReport {
   warnings: WarningDiagnostic[];
   findings: Finding[];
   /** The engine's rendered diagnostics (populations, proofs, oracles, repairs); absent when the run stopped before the engine. */
-  engine?: { modules: RepoPath[]; hash: string; requests: number; text: string };
+  engine?: { modules: RepoPath[]; hash: string; requests: number; text: string; report: EngineReport };
   verdict: Verdict;
 }
 

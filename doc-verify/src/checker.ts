@@ -15,7 +15,16 @@ import {
 } from "./config.js";
 import { loadDocVerifyEnv } from "./local-env.js";
 import { productionBackend } from "./judge.js";
-import { composeModules, ModuleError, renderReport, runProgram } from "./engine/index.js";
+import {
+  bindingBasis,
+  bindingSections,
+  composeModules,
+  ModuleError,
+  renderProof,
+  renderReport,
+  runProgram,
+  type BindingReport,
+} from "./engine/index.js";
 import { segmentMarkdown } from "./segments.js";
 import { MissingBlobError, SnapshotMode, captureSnapshots } from "./snapshot.js";
 import {
@@ -286,8 +295,7 @@ async function checkWithModules(input: {
         continue;
       }
       const verdict = binding.status === "violated" && constraint.severity === "error" ? "NO-GO" : "NEEDS-REVIEW";
-      findings.push(finding(input.file, input.sections[0], `module.${constraint.id}`, verdict,
-        `${binding.status}: ${binding.message}${binding.repair === undefined ? "" : ` -- repair: ${binding.repair}`}`));
+      findings.push(bindingFinding(input.file, input.sections, `module.${constraint.id}`, verdict, binding));
     }
   }
   // An engine failure that decided nothing (every constraint was decided without the judge)
@@ -303,7 +311,7 @@ async function checkWithModules(input: {
     ...base,
     findings,
     semanticCalls: report.requests.length,
-    engine: { modules: composed.sources, hash: report.hash, requests: report.requests.length, text: renderReport(report) },
+    engine: { modules: composed.sources, hash: report.hash, requests: report.requests.length, text: renderReport(report), report },
     verdict: report.verdict,
   };
 }
@@ -350,6 +358,26 @@ function deletedReport(
     warnings: [],
     findings: [item],
     verdict: "NO-GO",
+  };
+}
+
+/**
+ * A finding for one binding that did not hold. It sits at the binding's section (`S`, else `C`,
+ * else the first section an oracle read), or at the document's first section when it names none.
+ */
+function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, verdict: Exclude<Verdict, "PASS">, binding: BindingReport): Finding {
+  const read = bindingSections(binding);
+  const named = [binding.values.S, binding.values.C].filter((value): value is string =>
+    value !== undefined && sections.some((section) => section.id === value));
+  const ids = [...new Set([...named, ...read])];
+  const anchor = sections.find((section) => section.id === ids[0]) ?? sections[0];
+  return {
+    ...finding(file, anchor, ruleId, verdict, binding.message),
+    status: binding.status,
+    ...(binding.repair === undefined ? {} : { repair: binding.repair }),
+    sections: ids,
+    basis: bindingBasis(binding),
+    proof: renderProof(binding.proof, ""),
   };
 }
 

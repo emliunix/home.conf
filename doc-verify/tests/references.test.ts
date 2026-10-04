@@ -117,7 +117,9 @@ describe("doc-verify:references", () => {
     const finding = artifact?.findings.find((item) => item.ruleId === "module.references-resolve");
     expect(finding?.verdict).toBe("NO-GO");
     expect(finding?.message).toContain("docs/a.md §body links to gone.md, which does not exist");
-    expect(finding?.message).toContain("Fix the path or remove the link");
+    expect(finding?.repair).toBe("Fix the path or remove the link");
+    expect(finding?.sections).toEqual(["body"]);
+    expect(finding?.basis).toEqual(["structural: core.dangling(docs/a.md, body, gone.md, link)"]);
   });
 
   it("warns on a backtick path that does not exist, without failing the document", async () => {
