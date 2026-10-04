@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -173,6 +173,15 @@ document:
     ], { cwd: root, encoding: "utf8", env: cliEnv() });
     expect(whole.status).toBe(1);
     expect(whole.stdout).toContain("rationale is selected but is not the Problem section");
+  });
+
+  it("accepts --no-cache and writes no cache entry", () => {
+    const root = cliFixture();
+    const result = spawnSync("node", [
+      path.resolve("doc-verify/dist/cli.js"), "check", "--paths", "design/a.md", "--profile", "draft", "--no-cache",
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
+    expect(result.status, result.stderr).toBe(0);
+    expect(existsSync(path.join(root, ".doc-verify-cache"))).toBe(false);
   });
 
   it("refuses the removed --rubric option with the migration hint", () => {

@@ -81,6 +81,7 @@ async function runCheck(argv: string[]): Promise<number> {
       format: { type: "string", default: "text" },
       output: { type: "string" },
       verbose: { type: "boolean" },
+      "no-cache": { type: "boolean" },
     },
   }));
   const pathValues = parsed.values.paths === undefined
@@ -107,6 +108,7 @@ async function runCheck(argv: string[]): Promise<number> {
   const report = await checkDocuments({
     mode,
     profile: profileResult.data,
+    ...(parsed.values["no-cache"] === true ? { cache: "off" as const } : {}),
     ...(parsed.values.section === undefined ? {} : { sections: parsed.values.section }),
   });
   const format = parsed.values.format;

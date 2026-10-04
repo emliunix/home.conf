@@ -39,6 +39,14 @@ const configSchema = z.object({
     client_sha256: z.string().regex(/^[a-f0-9]{64}$/),
     attestation_max_age_seconds: z.number().int().positive(),
   }).strict(),
+  /**
+   * Per-profile settings (design 04 §Modules and references). `cache: refresh` asks every oracle
+   * again and rewrites its cache entry; `reuse` (the default) answers from the cache when it can.
+   */
+  profiles: z.object({
+    draft: z.object({ cache: z.enum(["reuse", "refresh"]).optional() }).strict().optional(),
+    promotion: z.object({ cache: z.enum(["reuse", "refresh"]).optional() }).strict().optional(),
+  }).strict().optional(),
   policy: z.object({
     kind: z.literal("semantic-boundary"),
     version: z.number().int().positive(),

@@ -13,6 +13,7 @@ import {
   parseCompanion,
   parseConfig,
 } from "./config.js";
+import { fileOracleCache } from "./cache.js";
 import { loadDocVerifyEnv } from "./local-env.js";
 import { productionBackend } from "./judge.js";
 import {
@@ -55,6 +56,11 @@ export interface CheckOptions {
   /** Section ids for the `selected(D, S)` fact; every section when absent. */
   sections?: string[];
   backend?: JudgeBackend;
+  /**
+   * The persistent oracle cache: `use` (default) unless the profile says `cache: refresh`;
+   * `off` (`--no-cache`) neither reads nor writes it.
+   */
+  cache?: "use" | "off";
 }
 
 export async function checkDocuments(options: CheckOptions): Promise<VerificationReport> {
@@ -130,6 +136,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
       readCandidate: pair.readCandidate,
       exists,
       requestedProfile: options.profile,
+      cacheEnabled: options.cache !== "off",
       ...(selectedIds === undefined ? {} : { selectedIds }),
       ...(options.backend === undefined ? {} : { backend: options.backend }),
     }));
@@ -164,6 +171,7 @@ async function checkArtifact(input: {
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
   exists: (repoPath: string) => boolean;
   requestedProfile: Profile;
+  cacheEnabled: boolean;
   selectedIds?: SectionId[];
   backend?: JudgeBackend;
 }): Promise<ArtifactReport> {
@@ -207,6 +215,7 @@ async function checkWithModules(input: {
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
   exists: (repoPath: string) => boolean;
   requestedProfile: Profile;
+  cacheEnabled: boolean;
   selectedIds?: SectionId[];
   backend?: JudgeBackend;
   modules: string[];
@@ -271,6 +280,8 @@ async function checkWithModules(input: {
   if (line !== undefined) {
     meta.status_words = String(line.split(/\s+/).length);
   }
+  const cacheSetting = input.config.profiles?.[profile]?.cache;
+  const cache = input.cacheEnabled ? fileOracleCache(input.root, cacheSetting === "refresh" ? "refresh" : "use") : undefined;
   const report = await runProgram({
     moduleYaml: composed.yaml,
     documents: [{ path: input.file, markdown: input.blob.content, meta, exists: input.exists,
@@ -284,6 +295,7 @@ async function checkWithModules(input: {
       version: input.config.policy.version,
     },
     profile,
+    ...(cache === undefined ? {} : { cache }),
   });
   // One finding per binding that did not hold: a violated error is NO-GO, a violated warning or
   // an undetermined binding NEEDS-REVIEW. Engine-level notes (unasked atoms, a judge answer
@@ -311,6 +323,7 @@ async function checkWithModules(input: {
     ...base,
     findings,
     semanticCalls: report.requests.length,
+    cacheHits: report.oracles.filter((leaf) => leaf.cacheHit).length,
     engine: { modules: composed.sources, hash: report.hash, requests: report.requests.length, text: renderReport(report), report },
     verdict: report.verdict,
   };

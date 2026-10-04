@@ -16,7 +16,7 @@ node doc-verify/dist/cli.js check --all                # every configured docume
 
 `check` takes exactly one of `--paths`, `--staged`, `--range BASE...HEAD` or `--all`, plus
 `--profile draft|promotion|auto`, `--section ID` (repeatable; restricts the `selected(D, S)`
-fact), `--format text|json`, `--verbose` and `--output PATH`. Exit codes: 0 PASS, 1 NO-GO,
+fact), `--format text|json`, `--verbose`, `--no-cache` and `--output PATH`. Exit codes: 0 PASS, 1 NO-GO,
 2 NEEDS-REVIEW, 3 BLOCKED, 64 usage or configuration error, 65 config not in the Git index
 (`--staged`), 66 config missing.
 
@@ -38,6 +38,18 @@ TYPESAFE_API_KEY is unavailable`. A violated structural `error` constraint is `N
 with or without a key; otherwise a document that needed the judge is `BLOCKED` (exit 3), and one
 that did not is decided outright. A keyless pre-commit run therefore still refuses a document
 with a missing required heading.
+
+Judge answers are cached per oracle atom in `.doc-verify-cache/atoms/<key>.json` at the repository
+root (files mode 0600), keyed by model, question, labels, evidence hash and policy version, so an
+unchanged section is never asked twice. Add `.doc-verify-cache/` to the consuming repository's
+`.gitignore`. The cache is honoured by default, also on a keyless run; `--no-cache` neither reads
+nor writes it, and a profile setting in `.doc-verify.yaml` asks every atom again and rewrites
+its entry:
+
+```yaml
+profiles:
+  promotion: {cache: refresh}   # default: reuse
+```
 
 ### Configuration
 
