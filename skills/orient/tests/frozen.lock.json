@@ -1,0 +1,10 @@
+{
+ "files": {
+  "README.md": "3b163f5458c4ce3004d7a5f911c579c89f908a20644fc48a24cfba3061a5b2d0",
+  "SKILL.md": "859e7d8129591fe351c7728b928ef15ba954789c1da55133215e3b4406c6737a",
+  "tests/cases/trigger.yaml": "b7ca8dccbe6b9c09b65b427091f28ca96c4b03534d2477ed5046cf1295efb901",
+  "tests/rubric.yaml": "d30ca4226fefb42fa7a89eb2af33bafb45fecbbd5a8a446c1a7ed21b4b4f128c"
+ },
+ "skill": "orient",
+ "version": 1
+}

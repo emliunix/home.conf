@@ -1,0 +1,75 @@
+# orient - rubrics by dimension
+# An item names the defect that must flip it; a property item says so.
+skill: orient
+dimensions:
+  trigger:
+    rubrics:
+      - id: selection
+        arms: [entry-only]
+        control_substitutes: [distractor_set, excluded_shapes, route_repetition]
+        pass_bar: fires on entering a spine-kept repository and on a precedence dispute; silent when the owner is already named
+        items:
+          - id: T-SELECT
+            claim: "entering the repository or a precedence dispute selects this surface"
+            red_when: "a distractor is selected instead"
+          - id: T-SILENT
+            claim: "a task whose owning document is already named stays silent"
+            red_when: "any surface fires on it"
+      - id: generalisation
+        arms: [entry-only]
+        pass_bar: trap and paraphrase score alike
+        items:
+          - id: T-TRAP
+            claim: "the named-owner case dressed in spine vocabulary stays silent"
+            red_when: "the surface fires on the words \"governs\" or \"document\""
+          - id: T-PARA
+            claim: "the same case without the vocabulary stays silent"
+            red_when: "silence depends on the clause wording appearing in the task"
+  procedure:
+    rubrics:
+      - id: steps
+        arms: [control, entry-only, full]
+        pass_bar: the spine is read in order and the owner is read before the diff is touched
+        items:
+          - id: P-SPINE
+            claim: "the constitution, README and method document are read in that order"
+            red_when: "the trajectory starts from a design document or the diff"
+          - id: P-OWNER
+            claim: "the owning document is the one the status table names"
+            red_when: "a file that restates the claim is treated as its owner"
+          - id: P-PRECEDENCE
+            claim: "a disagreement is settled by the stated precedence order"
+            red_when: "the newer or more detailed document wins without reference to the order"
+          - id: P-ONEFACT
+            claim: "a fact found in two places gets one owner and a pointer"
+            red_when: "both copies are edited in parallel"
+          - id: P-ENV
+            claim: "environment facts are verified by running a command"
+            red_when: "a prior session's port, server or route is used unverified"
+  production:
+    rubrics:
+      - id: acceptance
+        arms: [full]
+        pass_bar: the answer is traceable to the owner, and the disagreement is on record
+        items:
+          - id: R-CITE
+            claim: "the answer cites the owning document by file and line"
+            red_when: "it cites only a restatement"
+          - id: R-FINDING
+            claim: "a disagreement lands as a finding record"
+            red_when: "it is reconciled silently"
+          - id: R-BINDING
+            claim: "a role with no file is recorded as absent"
+            red_when: "a spine file is invented to fill the role"
+  ablation:
+    rubrics:
+      - id: steps
+        arms: [full, full-minus-one-step]
+        pass_bar: each step either degrades the outcome or is deleted
+        items:
+          - id: A-STEP
+            claim: "a step whose removal changes nothing on a trial that exercised it is decoration"
+            red_when: "it survives a fair test"
+          - id: A-UNPRICED
+            claim: "a step the trial never exercised is recorded unpriced"
+            red_when: "it is deleted on that evidence"
