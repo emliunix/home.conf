@@ -146,10 +146,12 @@ while it can still be corrected.
 Locate the work for a reader joining fresh: name the project, the module or
 area, and whether the issue is a code change, a design change, or something
 else. "I will continue the re-architecture" does not locate anything; "In
-`sandbox-deploy`, I will continue the module-layout design for the two session
-worlds, starting with the dispatch record" does. The example must carry enough
-domain context that a new reader can find the subject without asking what it
-is about.
+`agent-substrate`, I will continue the `session` module design for the
+two-world split: installed sessions use SQLite, hosted sessions use the store;
+I will start with the session-route record" does. Put the key problem nouns in
+the line — project, module, and the thing under change — so a new reader can
+locate the subject without asking what it is about. "Session storage: the
+installed and hosted ledgers" locates the problem; "the two worlds" does not.
 
 Do not hold for confirmation because the reading might vary. If the reading
 conflicts with another one in the thread, the group can point that out from
