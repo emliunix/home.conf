@@ -19,9 +19,18 @@ services:
     image: local/glean:ghc9.6.6   # the tag the build actually produces
     # Ingestion mounts a DISPOSABLE CLONE read-only, so the canonical checkout
     # is never exposed to the container (owner direction, #108).
+    #
+    # ⚠ THE `glean` SOURCE MOUNT IS LOAD-BEARING for the `command` below: the
+    # schema lives in a host checkout and is NOT baked into the image (the
+    # Dockerfile has no COPY/ADD at all; it only verifies /root/.cabal/bin/glean).
+    # Measured 2026-10-05: without this mount the compose command exits 1 with
+    # "does not exist" for /glean/schema/source, which reads as a broken image
+    # rather than a missing mount; the README's `podman run` shape, which does
+    # mount it, exits 0. Do not remove this line to "simplify" the service.
     volumes:
       - ${GLEAN_INDEX_DIR:-./indexes}:/indexes:rw
       - ${GLEAN_REPO_CLONE:-./repo}:/repo:ro
+      - ${GLEAN_SRC:-$HOME/Documents/Glean/glean}:/glean:ro
     working_dir: /work
     # 4 CPU / 8 GiB is the podman VM. It was resized 2 -> 8 GiB on 2026-10-03
     # because a GHC build does not fit in 2 GiB; the ceiling is stated rather
