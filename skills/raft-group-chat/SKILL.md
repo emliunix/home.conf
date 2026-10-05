@@ -143,6 +143,14 @@ When a message hands you work, send one short line before you start: what you
 understood and the first thing you will do. This makes the reading visible
 while it can still be corrected.
 
+Locate the work for a reader joining fresh: name the project, the module or
+area, and whether the issue is a code change, a design change, or something
+else. "I will continue the re-architecture" does not locate anything; "In
+`sandbox-deploy`, I will continue the module-layout design for the two session
+worlds, starting with the dispatch record" does. The example must carry enough
+domain context that a new reader can find the subject without asking what it
+is about.
+
 Do not hold for confirmation because the reading might vary. If the reading
 conflicts with another one in the thread, the group can point that out from
 the visible statement; waiting turns collaboration into ceremony.
