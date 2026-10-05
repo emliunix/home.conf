@@ -94,12 +94,17 @@ cutting precision — precision is what tells them what to do next.
 
 The second is short and useless to both readers.
 
-## Name what you are setting aside
+## State what you are not doing
 
 ### The rule
 
-Before acting, state the competing reading or the option you are **not** taking, in the
-same line as the thing you are doing.
+Before acting, name the option or competing reading you are **not** taking, in the same
+line as the one you are.
+
+Plainly: say what you are *not* doing, next to what you *are*. "I will split storage into
+two module directories **and leave the session and run ledgers where they are for now**."
+The second half is the part the reader can correct; without it, the first half reads as
+already decided.
 
 ### Why
 

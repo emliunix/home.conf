@@ -73,13 +73,17 @@ Precision is never the thing to trade for brevity.
 
 *Why:* [references/writing-discipline.md](references/writing-discipline.md#orient-to-the-readers-lookup-cost).
 
-### Name what you are setting aside
+### State what you are not doing
+
+Name the option or competing reading you are **not** taking, in the same line as the one
+you are. A choice stated alone reads as settled, so a reader who knows the alternative
+has nothing to push against.
 
 Before acting, state the competing reading or the option you are **not** taking, in the
 same line. A choice stated alone reads as settled, and a reader who knows the alternative
 has nothing to push against.
 
-*Why:* [references/writing-discipline.md](references/writing-discipline.md#name-what-you-are-setting-aside).
+*Why:* [references/writing-discipline.md](references/writing-discipline.md#state-what-you-are-not-doing).
 
 ### Keep process in its place
 

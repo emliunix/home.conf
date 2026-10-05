@@ -61,7 +61,7 @@ settled fact, narrates process, or reports that someone already did the work.
 
 A message that passes the send test follows **`report-style`**. Read it, or its
 discipline reference, rather than a copy: locate the subject first, orient to the
-reader's lookup cost, name what you are setting aside, keep process in its place,
+reader's lookup cost, state what you are not doing, keep process in its place,
 make every claim checkable, and end at a claim boundary. The rules and their
 sources live at
 [`../report-style/SKILL.md`](../report-style/SKILL.md) and
@@ -96,10 +96,10 @@ The line carries three things, all from `report-style`:
    (`../report-style/SKILL.md`, *Locate the subject before you add to it*).
    "Session storage: the installed and hosted ledgers" locates the problem; "the
    two worlds" does not.
-2. **What you are setting aside** — the competing reading or the option you are
-   not taking, in the same line (`../report-style/SKILL.md`, *Name what you are
-   setting aside*). This is what lets a peer who knows the other option correct
-   you in one reply.
+2. **What you are not doing** — the option or competing reading you are not
+   taking, in the same line (`../report-style/SKILL.md`, *State what you are not
+   doing*). Say it next to what you *are* doing. This is what lets a peer who
+   knows the other option correct you in one reply.
 3. **Precision over brevity** — the problem statement is as precise as the reader
    needs, because brevity is never the thing to trade it for.
 
