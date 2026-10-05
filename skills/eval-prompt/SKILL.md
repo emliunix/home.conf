@@ -52,6 +52,38 @@ Record the artifact’s digest and length, and hand subjects **those bytes**. If
 5. **Trajectory** — one file per trial: what it read, what it ran, what it decided, in order, plus the artifact it produced. Score that, never a memory of the run. Then, **after** the trial, ask for **feedback** on the artifact — where it re-read, what it skipped and why, what it would delete — and record it in the same file. Trajectory is evidence; feedback generates leads: not evidence until something reproduces it, and never scored.
 6. **Score** per rubric item, per trial, then report the **delta against control**: a claim counts only when control is worse — a tie is decoration, worse is harmful. If no clean subject can be obtained, say so and label the result a **sample**.
 7. **Disposition** every finding: fixed, or recorded with the trial that shows it. Where the host project has its own disposition rules, follow those.
+
+## Score the behaviour, not the phrasing
+
+A **rubric item is a predicate on behaviour**, but the instrument that applies it is usually a
+pattern — a regex, a keyword search, a checklist read. **A pattern scores the words the arm
+happened to choose; the rubric names the thing it did.** The two come apart silently, because a
+missed feature and a differently-worded feature look identical in a rate table.
+
+- **State the predicate before you write the pattern**, from the artifact's own sentence rather
+  than from output you have already read. A pattern fitted to the outputs manufactures the rate
+  it was built to find.
+- **Score by hand on a sample and report the disagreement**, even when the pattern is meant to be
+  the instrument. The pattern's error rate is a measurement; assuming it is zero is not.
+- **Repeat counts fix variance, not validity.** Repeating a cell rejects sampling noise and does
+  nothing about a pattern that reads the wrong surface: an arm that reuses its own phrasing yields
+  the *same* wrong number on every repeat, so a stable rate can be stably wrong. Before treating
+  stability as soundness, ask what would have to change for the number to move.
+- **A rate that inverts the expected order is evidence about the instrument first.** When the arm
+  that should win scores below the arms that had rules deleted, prefer the boring explanation —
+  the pattern did not recognise its phrasing — over an interaction story, and settle it against
+  the stored outputs before running another cell.
+
+**Measured instance** (2026-10-05, task #166; capture in
+`~/Documents/process-failure-patterns/agent-substrate/2026-10-05-stable-rate-scored-phrasing/`).
+An ablation of a writing rule reported `full 0/6` against both ablated arms at `6/6`, stable
+across six repeats, and the report called it *"either an interaction I have not identified or a
+defect in the feature regex."* Hand-labelling the 72 stored messages against the rule's own
+sentence gave `4/6` for the full arm: the pattern had required two named verbs where the rule
+named a **class** of actions, so four of six runs that performed the behaviour were scored as not
+performing it. The inversion was entirely the detector, and it was visible without re-running
+anything.
+
 ## Walking a workflow
 
 A walk takes a workflow — a skill, a method section, a documented procedure — with a scenario drawn from the real work, and asks whether the work can be **executed against the repository as it stands**. Read-only: the trial produces a plan and an evidence trail, never a change. One scenario per trial.
