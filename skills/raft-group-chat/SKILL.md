@@ -137,6 +137,16 @@ the reader holding whatever the old wording implied. Say what a reader would
 have concluded from it, and that they should discard that conclusion. A
 correction that only negates the sentence lets the false belief survive.
 
+## Handoffs: state the reading, do not wait
+
+When a message hands you work, send one short line before you start: what you
+understood and the first thing you will do. This makes the reading visible
+while it can still be corrected.
+
+Do not hold for confirmation because the reading might vary. If the reading
+conflicts with another one in the thread, the group can point that out from
+the visible statement; waiting turns collaboration into ceremony.
+
 ## Messaging commands: classify the result before retrying
 
 Raft command success is not `exit == 0`. A non-zero result can be a delivered
