@@ -7,54 +7,54 @@ triplets:
     canonical:
       prompt: "Write a brief for a colleague who knows Temporal but not this work: how does taskboard-v3 achieve parallelism?"
       expected: [report-style]
-      cites: "SKILL.md:4-8 - the entry surface names concise report briefs"
+      cites: "SKILL.md frontmatter - the entry surface names a concise report brief"
     trap:
       prompt: "Polish this paragraph for me and cut the AI tells."
       expected: []
-      cites: "SKILL.md:6-8 - prose polish is excluded"
+      cites: "SKILL.md frontmatter - prose polish is excluded"
     paraphrase:
       prompt: "Turn my notes on the frontier into a write-up someone can understand in one sitting."
       expected: [report-style]
-      cites: "SKILL.md:29-31 - the brief shape without the word report"
+      cites: "SKILL.md#route-first - the brief shape fires without the word report"
   - behavior: a durable report record is wanted
     canonical:
       prompt: "Write a durable report from these source artifacts, with every factual claim keyed and resolved in the legend."
       expected: [report-style]
-      cites: "SKILL.md:69-90 - the durable record contract"
+      cites: "SKILL.md#shape-of-a-record - the durable record contract"
     trap:
       prompt: "The existing structured record already answers the question; reproduce it as another report."
       expected: []
-      cites: "SKILL.md:137-141 - duplicate source-of-truth reports are excluded"
+      cites: "SKILL.md#boundary - a structured record that already answers the question is linked, not rewritten"
     paraphrase:
       prompt: "Make the version a reader can open in six months without this conversation; preserve where every fact came from."
       expected: [report-style]
-      cites: "SKILL.md:29-34 - a record survives the conversation and carries source machinery"
+      cites: "SKILL.md#route-first - a record survives the conversation and carries source machinery"
   - behavior: a report kind is selected from the reader's question
     canonical:
       prompt: "Write a self-contained report of the domain-model and policy changes. Explain before and after, not the implementation diary."
       expected: [report-style]
-      cites: "SKILL.md:18-28 - select the dominant report kind instead of one universal outline"
+      cites: "SKILL.md#route-first - select the dominant report kind instead of one universal outline"
     trap:
       prompt: "List the commands, files edited, and agent messages in chronological order."
       expected: []
-      cites: "SKILL.md:36-49 - bare work history is excluded when it is not evidence for a report question"
+      cites: "SKILL.md#keep-process-in-its-place - bare work history is excluded when it is not evidence"
     paraphrase:
       prompt: "I need to know what callers can do differently and which rules changed; how the team got there is not important."
       expected: [report-style]
-      cites: "SKILL.md:18-28 - the reader's question selects the report kind without catalog vocabulary"
+      cites: "SKILL.md#route-first - the reader's question selects the report kind without catalog vocabulary"
   - behavior: report writing is separate from the underlying method
     canonical:
       prompt: "The review is complete. Turn its verified findings into the durable review output."
       expected: [report-style]
-      cites: "SKILL.md:135-140 - the skill may communicate a completed method's result"
+      cites: "SKILL.md#boundary - the skill may communicate a completed method's result"
     trap:
       prompt: "Review this report and find its defects."
       expected: []
-      cites: "SKILL.md:6-8 - performing a review is excluded"
+      cites: "SKILL.md frontmatter - performing a review is excluded"
     paraphrase:
       prompt: "The analysis is done; package the verdict, evidence, recommendations, and unverified boundary for the owner."
       expected: [report-style]
-      cites: "SKILL.md:137-140 - the skill shapes the result after the method"
+      cites: "SKILL.md#boundary - the skill shapes a report after the method; it does not perform it"
 run_notes:
   - "Arms: entry-only over the full catalog. Ambiguity is a finding, never a miss."
   - "The kind-routing triplet is new in v2 and must be run before the frozen lock is refreshed."

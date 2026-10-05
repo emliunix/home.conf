@@ -17,41 +17,41 @@ triplets:
     canonical:
       prompt: "Using only the pinned set, write the brief: how taskboard-v3 achieves true parallelism. A peer knows Temporal, not this work."
       expected: [report-style]
-      cites: "SKILL.md:24-31 - select the system kind and the brief shape; the system reference supplies its aspect spine"
+      cites: "SKILL.md#route-first - select the system kind and the brief shape; the system reference supplies its aspect spine"
     trap:
       prompt: "Summarise the pinned set and close by restating the main point."
       expected: []
-      cites: "SKILL.md:125-133 - the brief closes with a claim boundary, not a summary"
+      cites: "SKILL.md#end-at-a-claim-boundary - the brief closes with a claim boundary, not a summary"
     paraphrase:
       prompt: "Explain to a Temporal engineer who has never seen this repo how the runner gets independent work in flight at once, and be explicit about what you have not shown."
       expected: [report-style]
-      cites: "SKILL.md:122-133 - the brief carries the smallest sufficient argument and explicit boundary"
+      cites: "SKILL.md#end-at-a-claim-boundary - the brief carries the smallest sufficient argument and an explicit boundary"
   - behavior: a record over the same set
     canonical:
       prompt: "Write the durable record of the parallelism work: reading frame, layers, diagrams, legend, abstract last."
       expected: [report-style]
-      cites: "SKILL.md:69-90 - the record's order, legend and rules"
+      cites: "SKILL.md#shape-of-a-record - the record's order, legend and rules"
     trap:
       prompt: "Write the record, and in the abstract give the conclusion the description has not reached."
       expected: []
-      cites: "SKILL.md:74-80 - the abstract introduces no claim the description does not expand"
+      cites: "SKILL.md#shape-of-a-record - the abstract introduces no claim the description does not expand"
     paraphrase:
       prompt: "Make the vault version of this work - every fact tied to the artifact it came from, links checked against the filesystem."
       expected: [report-style]
-      cites: "SKILL.md:82-90 - factual claims are keyed and local links are verified"
+      cites: "SKILL.md#make-every-claim-checkable - factual claims are keyed and local links are verified"
   - behavior: a decision request over the pinned set
     canonical:
       prompt: "We have to choose the parallelism model for taskboard-v3 before the next slice. Write the decision-ready report: where it stands now, why it is needed now, the options, what deferring costs us, the evidence that separates them, who owns the decision, when it must be made or what forces it, and your recommendation."
       expected: [report-style]
-      cites: "SKILL.md:53-55 - INPUT_TEST: a request for a decision must supply the decision's inputs; the fields are defined once in references/decision-report.md \"Decision-request subtemplate\""
+      cites: "SKILL.md#reports-that-ask-for-a-decision - INPUT_TEST: a request for a decision must supply the decision's inputs; the fields are defined once in references/decision-report.md \"Decision-request subtemplate\""
     trap:
       prompt: "List the parallelism decisions the team still has to make."
       expected: []
-      cites: "SKILL.md:54-55 - a list of decisions is not decision-ready merely because each item has a name"
+      cites: "SKILL.md#reports-that-ask-for-a-decision - a list of decisions is not decision-ready merely because each item has a name"
     paraphrase:
       prompt: "Give me what I need to pick between the parallelism options, including what it costs us to keep deferring the choice, who decides, and what forces the timing."
       expected: [report-style]
-      cites: "SKILL.md:57 - the subtemplate fields and their DR-* acceptance ids live in references/decision-report.md"
+      cites: "SKILL.md#reports-that-ask-for-a-decision - the eight subtemplate fields and their DR-* acceptance ids live in references/decision-report.md"
 patterns:
   # Mechanical half: script-checkable over the produced text.
   status_tag_per_claim: "(?m)^.*\\b(source-backed|derived|measured|open)\\b"
