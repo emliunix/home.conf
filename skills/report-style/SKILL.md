@@ -1,177 +1,172 @@
 ---
 name: report-style
 description: >-
-  Use when writing a durable, source-keyed report or a concise report brief. Route
-  first by the reader's question - system, change, status, decision, review output,
-  research, or retrospective - and then by the report's lifetime. Not for prose polish, performing a review, a bare
-  activity log, or duplicating an existing structured record.
+  Use when writing or reviewing a durable source-keyed report, a concise report
+  brief, or a substantive status, decision, review, or handoff message. Route by
+  the reader's dominant question, then choose whether the answer must survive the
+  conversation. Not for prose polish, for performing the review or investigation
+  itself, for a bare activity log, or for restructuring an existing structured
+  record.
 ---
 
 # Report style
 
-A report has two independent dimensions:
+This skill is a dispatcher. Every rule below is mandatory and fits on one line; the
+reference named beside it carries the reasoning and the worked examples. Read the rules
+here, open a reference only when you need the detail.
 
-- its **kind** answers the reader's question;
-- its **shape** decides how long the answer must survive.
+## Route first
 
-Do not use one universal report outline. A feature inventory may suit a change report;
-it does not suit every report. Likewise, the steps taken to produce the work are rarely
-the subject.
+Two independent choices, in this order.
 
-## Route the report
+**1. Kind — the reader's dominant question.** Read
+[references/catalog.md](references/catalog.md) and choose exactly one:
 
-1. Read [references/catalog.md](references/catalog.md) and select the one dominant
-   report kind.
-2. Read only that kind's reference. If the request genuinely spans two questions,
-   choose a primary kind and borrow only the necessary aspects from one secondary kind;
-   do not concatenate templates.
-3. Choose the shape:
-   - a **record** survives the conversation: durable, self-contained, source-keyed;
-   - a **brief** transfers the answer in one sitting and may assume shared context.
+| The reader's question | Kind | Template |
+| --- | --- | --- |
+| What is this system, and how does it behave? | system | [system-report.md](references/system-report.md) |
+| What is different now? | change | [change-report.md](references/change-report.md) |
+| What is usable now, and what is blocked? | status | [status-report.md](references/status-report.md) |
+| Why was this direction chosen? | decision | [decision-report.md](references/decision-report.md) |
+| Is the reviewed subject sound and ready? | review output | [review-report.md](references/review-report.md) |
+| What do the sources establish? | research | [research-report.md](references/research-report.md) |
+| What happened, and what should change? | retrospective | [retrospective-report.md](references/retrospective-report.md) |
+
+Choose one primary kind. Borrow at most one secondary kind's aspects; never concatenate
+every template.
+
+**2. Shape — how long the answer must survive.**
+
+- a **record** survives the conversation: durable, self-contained, source-keyed;
+- a **brief** transfers the answer in one sitting and may assume shared context.
+
+A message is always a brief. See [references/writing-discipline.md](references/writing-discipline.md)
+for both shapes in detail.
 
 The kind controls **what must be explained**. The shape controls **how much context and
-source machinery must travel with it**.
+source machinery travels with it**.
 
-## Keep process in its place
+## Mandatory rules
 
-Distinguish three different things that are often all called "steps":
+### Locate the subject before you add to it
 
-- **domain or runtime flow** explains how the subject behaves and is included when it
-  answers the reader's question;
-- **change order** explains before/after, migration, or supersession and is included
-  only when order changes the meaning or safety of the result;
-- **work history** recounts commands, edits, review rounds, or agent activity and is
-  omitted unless the process itself is the subject, a blocker depends on it, or it is
-  needed to establish cause.
+Name the project, the module or area, and the thing under change, **then** state the new
+information. Put what the reader already holds at the front and the point at the close.
 
-Before/after comparison is not an implementation timeline. Do not replace an account of
-changed behavior with a list of tasks that happened.
+- A pointer is not a subject: write the meaning into the sentence that first uses a card
+  number, SHA, branch, or path.
+- Never hand the reader a lookup table to resolve on their own.
 
-## Messages are not reports
+*Why, with the source:* [references/writing-discipline.md](references/writing-discipline.md#locate-the-subject).
 
-A message is a decision or status surface, not a record, so the rule above applies harder. Lead
-with the outcome and the number; name what it changes; state what the reader must do. The method
-gets one pointer to the artifact that holds it. Do not narrate the investigation - "I checked X,
-found Y, which turned out to be Z" - and do not recount a discarded hypothesis unless the reader's
-decision depends on knowing it was discarded. When one of your own claims was wrong, give the
-corrected fact in one line; the story of finding it belongs in the capture file, not the message.
-Test: the reader can act after the first two lines.
+### Orient to the reader's lookup cost
 
-This is the same defect whether the work history is long or short. A short message that reports
-the search rather than the answer is still a transcript.
+Before sending, run one thought experiment: **can this reader act without leaving the
+message?** Decide which reader you have.
 
-## INPUT_TEST: reports that ask for a decision
+- **An agent reader** needs a reference plus a precise problem statement. Following the
+  reference is expected work, not a cost to reduce.
+- **A human reader** needs the same precision, but dislikes lookup. Put the context in the
+  message.
 
-`INPUT_TEST` is the quality test for a report that asks a reader to make a decision. The
-report must supply the inputs that decision requires. A list of decisions is not
-decision-ready merely because each item has a name.
+Precision is never the thing to trade for brevity.
 
-The fields that make a request decision-ready are defined once, as the decision-request subtemplate in
-`references/decision-report.md`, and accepted by the `DR-*` items in `tests/rubric.yaml`.
+*Why:* [references/writing-discipline.md](references/writing-discipline.md#orient-to-the-readers-lookup-cost).
 
-If those inputs are missing, the report is not ready to ask for a decision. Supply the
-missing context or present the item as incomplete rather than transferring the work to
-the reader.
+### Name what you are setting aside
 
-## Shared discipline
+Before acting, state the competing reading or the option you are **not** taking, in the
+same line. A choice stated alone reads as settled, and a reader who knows the alternative
+has nothing to push against.
 
-- State the reader's question and answer it early.
-- Anchor scope: subject, relevant version or state, and capture date when facts can
-  change.
-- Keep observed facts, source-backed design, analysis, and open questions visibly
-  distinct.
-- Preserve the source's vocabulary. Define overloaded terms instead of silently
-  paraphrasing them.
-- When a report uses codes, abbreviations, symbols, or project shorthand, include a
-  **reader key** rather than making the reader look them up. Use the subheading that
-  names the content: **Glossary** for terms, **Codes, abbreviations, and acronyms**
-  for project shorthand, **Notation** for symbols, and **Source keys** for source
-  labels. A **legend** is the narrower term for a table that decodes marks, colors,
-  or symbols; it is not the default name for a list of project codes.
-- Give every load-bearing assertion a warrant: measured, derived, source-backed, or
-  explicitly open.
-- End at an honest claim boundary: what is established, designed but not observed,
-  unresolved, and deliberately not claimed.
-- Use a diagram only when it carries a relationship, boundary, flow, or comparison that
-  prose would make harder to inspect.
-- Subtract before adding. Cut repeated summaries, process narration, and decorative
-  sections.
+*Why:* [references/writing-discipline.md](references/writing-discipline.md#name-what-you-are-setting-aside).
 
-## Shape A - the record
+### Keep process in its place
 
-Write in this order: capture sources -> select kind and reading frame -> write the
-description -> add useful diagrams -> resolve the reader key -> write the abstract last.
+Separate **domain or runtime flow** (included when it answers the question), **change
+order** (included when order changes meaning or safety), and **work history** (omitted
+unless the process is the subject, blocks something, or establishes cause).
 
-| Element | Optional | Description |
+*Why:* [references/writing-discipline.md](references/writing-discipline.md#keep-process-in-its-place).
+
+### Make every claim checkable
+
+- Open the source, not the sentence that names it. Mark anything unopened as reported or
+  inferred.
+- A universal claim ("all", "every", "none") names the members you read, or says "I read
+  N of M".
+- Every figure travels with its base: the population and the command or scope that
+  produced it.
+- Every claim names its subject: artifact versus running system, the observation window,
+  your instrument versus the subject's rule, and which act an ambiguous verb denotes.
+- Keep *measured*, *reproduced* and *verified* separate from inferred.
+- A result names what ran, what property it tested, and what the outcome means for the
+  decision — and what stays outside it.
+- A correction names the belief it removes, so the reader discards the old conclusion.
+
+*Why, with all four subject confusions:* [references/writing-discipline.md](references/writing-discipline.md#make-every-claim-checkable).
+
+### End at a claim boundary
+
+Close with what is established, what is designed but not observed, what is unresolved, and
+what is deliberately not claimed. Do not close with another summary.
+
+### Subtract before adding
+
+Cut repeated summaries, process narration, and decorative sections. For every proposed
+section ask: *"would removing this stop the reader understanding the answer, making the
+decision, or trusting the boundary?"* If not, remove it.
+
+## Reports that ask for a decision
+
+`INPUT_TEST` is the quality test for a report that asks someone to decide. A list of
+decisions is not decision-ready merely because each item has a name. Supply all eight
+fields from the decision-request subtemplate in
+[references/decision-report.md](references/decision-report.md#decision-request-subtemplate),
+accepted by the `DR-*` items in [tests/rubric.yaml](tests/rubric.yaml).
+
+The field most often omitted is **the consequence of not deciding**; when it is missing,
+the reader infers that silence is safe.
+
+## Discipline of the surface itself
+
+- Use the active voice and name the actor: write "the sweep reopens the store", not "the
+  store is reopened".
+- Give link text that names its destination, so the reader can decide whether to follow it.
+- Put a condition before the instruction it guards.
+- When the document uses codes, symbols, or shorthand, include a **reader key** rather
+  than making the reader look it up — **Glossary** for terms, **Codes, abbreviations, and
+  acronyms** for project shorthand, **Notation** for symbols, **Source keys** for source
+  labels. A **legend** is the narrower term for a table that decodes marks or colors.
+- Preserve the source's vocabulary. Define an overloaded term rather than silently
+  paraphrasing it.
+
+*Why, with the sources:* [references/writing-discipline.md](references/writing-discipline.md#discipline-of-the-surface-itself).
+
+## Shape of a record
+
+Write in this order: capture sources -> select kind -> write the description -> add
+diagrams -> resolve the reader key -> write the abstract last.
+
+| Element | Optional | Carries |
 | --- | --- | --- |
-| Abstract | no | One page or less: the question, load-bearing answer, and consequence for the reader. Introduces no claim the description does not expand. |
-| Description | no | Numbered, claim-bearing sections selected from the chosen kind's aspects. Inventories use tables when comparison matters. |
-| Diagrams | yes | Mermaid; one claim per diagram, with a name and caption. Cut any diagram that only repeats adjacent prose. |
-| Reader key | no | The report's decoding section. Use exactly the subsections the report needs: Notation, Source keys, Glossary, and/or Codes, abbreviations, and acronyms. Include only marks, codes, and terms actually used. |
+| Abstract | no | One page or less: the question, the load-bearing answer, the consequence. Introduces no claim the description does not expand. |
+| Description | no | Numbered, claim-bearing sections from the chosen kind's aspects. |
+| Diagrams | yes | One claim per diagram, named and captioned. Cut any diagram that repeats adjacent prose. |
+| Reader key | no | Only the subsections the report needs, carrying only marks, codes, and terms actually used. |
 | Open capture list | yes | Unreachable primary sources, the blocker, and the intended capture method. Never reconstruct an unavailable primary from memory. |
 
-Record rules:
-
-- Every factual claim carries a source key, and every key resolves in the Source keys
-  table.
-- Record capture scope per source: artifact, branch or tag when relevant, capture date,
-  and whether it is pinned.
-- Keep source digest and interpretation separate. The report may link a digest; it does
-  not impersonate one.
-- Verify local links against the filesystem before finishing.
-
-```markdown
----
-title: <Subject> - Report
-tags:
-  - <topic>
-  - report
-created: YYYY-MM-DD
----
-
-# <Subject> - Report
-
-Sources: <artifacts> | Captured YYYY-MM-DD | <pinned or not> | Keys resolve in Reader key.
-
-## Abstract
-
-## Description
-
-### 1. <the chosen kind's reading frame>
-
-## Diagrams
-
-## Reader key
-
-### Notation
-### Source keys
-### Glossary
-### Codes, abbreviations, and acronyms
-```
-
-## Shape B - the brief
-
-A brief is not a compressed record. It carries the smallest argument that lets its
-reader understand or decide:
-
-1. correct the reader's frame when necessary;
-2. state the answer once in the subject's vocabulary;
-3. include only the selected kind's load-bearing aspects;
-4. connect evidence to consequence;
-5. close with the claim boundary, not another summary.
-
-Use inline source anchors or status labels when the brief mixes measured, designed,
-inferred, and open claims. Do not add record furniture solely to make a brief look
-formal.
-
-If the brief uses project codes, abbreviations, or symbols, include a compact reader
-key even when the surrounding document is informal. Put it where the reader meets the
-first code, or at the end when the code set is large enough to scan separately.
+Every factual claim carries a source key; every key resolves; capture scope names the
+artifact, branch or tag, date, and whether it is pinned. Verify local links against the
+filesystem before finishing. The skeleton is in
+[references/writing-discipline.md](references/writing-discipline.md#shape-of-a-record).
 
 ## Boundary
 
-This skill shapes a report; it does not perform the underlying review, research,
-incident response, or retrospective method. Use the applicable method first, then use
-the corresponding report-kind reference to communicate its result. A structured source
-record that already answers the same reader question should be linked or summarized,
-not rewritten as a second source of truth.
+This skill shapes a report; it does not perform the underlying review, research, incident
+response, or retrospective method. Use the applicable method first, then the kind template
+to communicate its result. A structured source record that already answers the same reader
+question is linked or summarized, not rewritten as a second source of truth.
+
+[`raft-group-chat`](../raft-group-chat/SKILL.md) adapts these rules for a group-chat
+surface. It does not restate them.

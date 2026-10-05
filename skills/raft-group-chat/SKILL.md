@@ -52,118 +52,63 @@ Do not invent a design path or cite an index as though it were a design. Before
 creating or amending a card, read the current task body and verify that the
 linked file exists at the named base.
 
-## Messages: reader, wording, claims
+## Messages: the send test
 
 Before drafting a message, apply the send test. Send only when the message
 changes a decision, answers a question that was asked, carries a result someone
 is waiting for, or raises a problem. Do not send a message that only repeats a
 settled fact, narrates process, or reports that someone already did the work.
 
-Before sending a message that passes the send test:
+A message that passes the send test follows **`report-style`**. Read it, or its
+discipline reference, rather than a copy: locate the subject first, orient to the
+reader's lookup cost, name what you are setting aside, keep process in its place,
+make every claim checkable, and end at a claim boundary. The rules and their
+sources live at
+[`../report-style/SKILL.md`](../report-style/SKILL.md) and
+[`../report-style/references/writing-discipline.md`](../report-style/references/writing-discipline.md).
 
-1. Identify the readers and the context they may be missing.
-2. Use terms already defined in the thread. On first use of a term that is not
-   generally known, give a short gloss: its plain-language meaning and why it
-   matters in this message. Reuse that term afterward.
-   **A bare identifier is not a gloss.** Card numbers (`#260`, `task #15`),
-   commit SHAs, branch names, file paths, and internal status words are private
-   shorthand unless the reader already uses them in the same thread. Write the
-   meaning into the sentence that first uses the identifier — "the
-   control-plane identity change that requires an idempotency key (`#260`)" —
-   and never hand the reader a lookup table, a glossary posted afterward, or a
-   list of numbers to resolve on their own. This binds every substantive
-   message, not only owner-facing ones, and it is a duty of the sender: if a
-   sentence needs the identifier to be understood, the sender has handed the
-   reader work the sender should have done. The owner named this failure
-   directly on 2026-09-30: "I know they are card numbers, you expect me to
-   lookup each one every time?"
-3. Name the specific event or object. For example, write "the paused-to-ready
-   goal transition started a second run," not "the flip collided."
-4. Open the file, run, record, or decision that the message depends on. Do not
-   review only the sentence that names it. If the underlying source is not
-   available, say so and mark the claim as reported or inferred rather than
-   checked.
-5. **A universal claim names the members you read.** Words such as "all",
-   "every", "none", and "the corpus" stand for a set. Name the members actually
-   read, or write "I read N of M". A set inferred from a search term rather
-   than read does not support the claim.
-6. **Every figure travels with its base.** Give the population and the command
-   or scope that produced the number, and do not measure a negative over a
-   window shorter than the period of the thing you claim did not happen. A
-   count without its base cannot be reproduced.
-7. **Every claim names its subject, not only its extent.** Rules 5 and 6 bound
-   how far a claim reaches; this one says what it is about. Four subjects are
-   routinely confused, and the failure is invisible because the sentence stays
-   true about the wrong one.
-   - **Artifact versus running system.** An edited file is not a loaded module.
-     Say which one changed. "The fix is applied and verified" reads as "the
-     effect is present"; write "the file is patched, but no running process has
-     loaded it."
-   - **The moment of observation.** A negative is only about the window you
-     looked. If the subject is created and later cleaned up, name when you
-     sampled; "zero directories after the run" is exactly what a healthy run
-     leaves behind.
-   - **Your instrument versus the subject's rule.** A result is evidence about
-     what your command read. Before writing "the check has a hole" or "the
-     sweep missed X", say what population your instrument read versus the one
-     the subject reads.
-   - **The act a phrase denotes, when it admits two.** If "correct X" can mean
-     relabel or rewrite, name which. Two people acting in good faith on the
-     same instruction will otherwise contradict each other.
+Two clauses bind harder in a group chat than in a document, because the reader
+cannot see the rest of your context:
 
-   And keep measured separate from inferred. *Measured*, *reproduced* and
-   *verified* are claims about evidence; do not state a deduction in measurement
-   grammar.
+- **A bare identifier is not a gloss.** Card numbers, commit SHAs, branch names,
+  file paths, and internal status words are private shorthand unless the reader
+  already uses them in the same thread. Write the meaning into the sentence that
+  first uses the identifier — "the control-plane identity change that requires an
+  idempotency key (`#260`)" — and never hand the reader a lookup table, a glossary
+  posted afterward, or a list of numbers to resolve on their own. The owner named
+  this failure directly on 2026-09-30: "I know they are card numbers, you expect me
+  to lookup each one every time?"
+- **Name the specific event or object.** Write "the paused-to-ready goal
+  transition started a second run," not "the flip collided."
 
-Do not gloss every acronym. Gloss only terms that the current readers are not
-expected to know from the thread or shared context.
-
-## Every result names what was tested, why, and what it means
-
-The most common failure is a bare result: "the test passes." It leaves three
-slots empty, and the reader cannot tell whether the sentence supports the
-decision in front of them.
-
-1. **What ran, on what.** Name the check or artifact and its subject: "the
-   pairwise check over all 18 refusal emitters and their 60 writer sites" —
-   not "the test."
-2. **What property it tests.** State the claim, not the file name: "every
-   refusal path writes the same envelope before responding." A reader who does
-   not know the suite cannot recover this from a test name.
-3. **What the outcome means for the decision.** Say what the reader should
-   conclude and what stays outside the result: "the pairing is complete; this
-   does not show the envelope's content is correct."
-
-The same shape applies to any result, not only tests: a review, a probe, a
-census, a migration. A result without its purpose and meaning is a fact the
-reader has to interpret before they can use it.
-
-## Corrections that do not leave the old belief live
-
-A retraction names the belief it removes. "My earlier claim was wrong" leaves
-the reader holding whatever the old wording implied. Say what a reader would
-have concluded from it, and that they should discard that conclusion. A
-correction that only negates the sentence lets the false belief survive.
+Do not gloss every acronym. Gloss only terms the current readers are not expected
+to know from the thread or shared context.
 
 ## Handoffs: state the reading, do not wait
 
-When a message hands you work, send one short line before you start: what you
-understood and the first thing you will do. This makes the reading visible
-while it can still be corrected.
+When a message hands you work, send **one short line before you start**: what you
+understood and the first thing you will do. This makes the reading visible while
+it can still be corrected.
 
-Locate the work for a reader joining fresh: name the project, the module or
-area, and whether the issue is a code change, a design change, or something
-else. "I will continue the re-architecture" does not locate anything; "In
-`agent-substrate`, I will continue the `session` module design for the
-two-world split: installed sessions use SQLite, hosted sessions use the store;
-I will start with the session-route record" does. Put the key problem nouns in
-the line — project, module, and the thing under change — so a new reader can
-locate the subject without asking what it is about. "Session storage: the
-installed and hosted ledgers" locates the problem; "the two worlds" does not.
+The line carries three things, all from `report-style`:
+
+1. **The located subject** — project, module or area, and the thing under change
+   (`../report-style/SKILL.md`, *Locate the subject before you add to it*).
+   "Session storage: the installed and hosted ledgers" locates the problem; "the
+   two worlds" does not.
+2. **What you are setting aside** — the competing reading or the option you are
+   not taking, in the same line (`../report-style/SKILL.md`, *Name what you are
+   setting aside*). This is what lets a peer who knows the other option correct
+   you in one reply.
+3. **Precision over brevity** — the problem statement is as precise as the reader
+   needs, because brevity is never the thing to trade it for.
+
+> "In `agent-substrate`, I will split storage into two module directories, and leave
+> the `session` and `run` ledgers where they are for now."
 
 Do not hold for confirmation because the reading might vary. If the reading
-conflicts with another one in the thread, the group can point that out from
-the visible statement; waiting turns collaboration into ceremony.
+conflicts with another one in the thread, the group can point that out from the
+visible statement; waiting turns collaboration into ceremony.
 
 ## Messaging commands: classify the result before retrying
 
