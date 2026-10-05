@@ -27,6 +27,9 @@ tree. The bias to correct for is that progress feels like state; only a landed, 
 - A red test that fails for the *wrong reason* is green in disguise: assert the placement of a
   seed or mutation, not just its effect.
 - When a check you rely on has never failed on a real defect, it is a claim, not a gate.
+- A gate result names the revision and population it read. If a gate enumerates tracked files, stage
+  every new file or run the gate from a clean checkout of the exact commit before reporting it. An
+  untracked file is outside a tracked-file gate, so a green run can exclude the change under test.
 - Report what you measured, and separately what you read. They are different claims.
 
 ## Exit
