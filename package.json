@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "tsc -p doc-verify/tsconfig.build.json",
-    "prepare": "npm run build",
+    "prepare": "npm run build && prek install --git-dir \"$(git rev-parse --path-format=absolute --git-common-dir)\" -t pre-commit",
     "test": "npm run build && vitest run",
     "typecheck": "tsc -p doc-verify/tsconfig.json --noEmit",
     "lint": "eslint doc-verify/src doc-verify/tests",
