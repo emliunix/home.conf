@@ -13,6 +13,9 @@ Checks:
      (`SKILL.md#some-heading`) is resolved against the headings in SKILL.md.
   4. Every linked report-kind reference exists and carries its four routing sections.
   5. The pinned production sources exist (skipped, not failed, when the visflow tree is absent).
+  6. The frozen lock matches the package on disk. A lock nothing verifies is decoration:
+     measured 2026-10-05, all six of its entries pointed at a different vintage of the
+     package and no check read the file at all.
 
 Usage:  python3 tests/l0.py          (exit 0 = lint clean, 1 = a defect)
 Dependency-free apart from PyYAML; run from the package root.
@@ -23,6 +26,8 @@ from __future__ import annotations
 import pathlib
 import re
 import sys
+import json
+import hashlib
 
 try:
     import yaml
@@ -179,16 +184,57 @@ def check_pins() -> str:
     return f"{len(pins)} pins, {len(missing)} missing"
 
 
+def check_frozen_lock() -> str:
+    """The frozen lock must match the package on disk.
+
+    It did not, and nothing read it. Measured 2026-10-05 at `2c15775`: all six entries
+    pointed at a different vintage of the package, so 'the last behaviorally evaluated
+    surface' named a surface that was not in the tree. `--update` refreshes it after a
+    trial, and is the only sanctioned way to change it.
+    """
+    lock_path = ROOT / "tests" / "frozen.lock.json"
+    lock = json.loads(lock_path.read_text())
+    files = lock.get("files", {})
+    drifted = []
+    for rel, want in files.items():
+        path = ROOT / rel
+        if not path.is_file():
+            drifted.append(f"{rel} (missing)")
+            continue
+        got = hashlib.sha256(path.read_bytes()).hexdigest()
+        if got != want:
+            drifted.append(f"{rel} (lock {want[:12]}, disk {got[:12]})")
+    if drifted:
+        failures.append(
+            "tests/frozen.lock.json does not match the package: "
+            + "; ".join(drifted)
+            + " - refresh with `python3 tests/l0.py --update` after the trial that pins it"
+        )
+    return f"lock v{lock.get('version')}: {len(files) - len(drifted)}/{len(files)} match"
+
+
 def main() -> int:
+    if "--update" in sys.argv:
+        # The only sanctioned way to move the lock. Run it AFTER a trial, not to silence
+        # a red: the lock records the surface that was actually measured.
+        lock_path = ROOT / "tests" / "frozen.lock.json"
+        lock = json.loads(lock_path.read_text())
+        for rel in lock.get("files", {}):
+            lock["files"][rel] = hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()
+        lock["version"] = int(lock.get("version", 1)) + 1
+        lock_path.write_text(json.dumps(lock, indent=1) + "\n")
+        print(f"frozen lock updated to v{lock['version']}")
+        return 0
     check_frontmatter()
     items = check_rubric()
     cases = check_cases()
     references = check_references()
     subtemplate = check_decision_subtemplate()
+    lock = check_frozen_lock()
     pins = check_pins()
     print(
         f"frontmatter: parsed | rubric items: {items} | cited cases: {cases} | "
-        f"report kinds: {references} | subtemplate ids: {subtemplate} | pins: {pins}"
+        f"report kinds: {references} | subtemplate ids: {subtemplate} | {lock} | pins: {pins}"
     )
     if failures:
         print(f"L0 FAIL - {len(failures)} defect(s):")

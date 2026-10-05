@@ -1,12 +1,12 @@
 {
  "files": {
-  "CHANGELOG.md": "1ba042fbfa20db92d0139c077e756b9f5a4fea8cf78647f56ccbb06fc0b98b38",
-  "README.md": "59c06fa5570e9c9fc6178863f2228e0d3e60373d80c6cd3bccd85821fed299e5",
-  "SKILL.md": "36b8560b6da2c3cb744cc3ea829c2d9ed2ce8b26cddd5786cde1cdaafbc90c5a",
-  "tests/cases/production.yaml": "8a24d1d087224a1b273063609fff2a14bd8ba0c2ee153abc5ba906d9d41bada5",
-  "tests/cases/trigger.yaml": "9647a58274a7e6e20a101fedff08b808cc0d34bbdc746fe7d6ff86b5b21bb8ec",
-  "tests/rubric.yaml": "20e1535db10348c491c4ba4d36a45f1581aaad4044d90f0fdb6a3eb3852148dc"
+  "CHANGELOG.md": "1023bcc68e43c0a5afabd2f0f2f1595f5a86117064212f2f5bc612218cfbcf54",
+  "README.md": "4ceffe93e02476bf041bdae039299026dd949866aba57e3fa7bcc97a85d5bd1f",
+  "SKILL.md": "c5afe9e671f1189f49f2ca6a6a6fc256855b028374edd570c62e1e03def970e9",
+  "tests/cases/production.yaml": "3bf00a09500d1c55ce640dd814337afcd30891a7a92b5a2da9a4f93c3463320f",
+  "tests/cases/trigger.yaml": "5519ae1e96069f102e3901d1b5d23860cb851e91b59ec88195d21fbb2d42ef91",
+  "tests/rubric.yaml": "f39a83a456c48e6a1fa5b8ebe8b924da4c7d4179349d6df853e7875002230444"
  },
  "skill": "report-style",
- "version": 1
+ "version": 3
 }

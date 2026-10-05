@@ -18,3 +18,17 @@ repos:
         pass_filenames: false
         files: '^skills/'
         require_serial: true
+      - id: skill-l0
+        name: skill package lint (L0 + frozen lock)
+        language: system
+        # Every skill that ships an L0 lint runs it on an edit to that package. L0
+        # checks the instrument's own consistency -- frontmatter, rubric items naming
+        # their flipping defect, case cites resolving, and the frozen lock matching
+        # the package. The lock check is why this hook exists: on 2026-10-05 all six
+        # entries of report-style's lock named a different vintage of the package and
+        # NOTHING read the file, so 'the last behaviorally evaluated surface' named a
+        # surface that was not in the tree. A lock nothing verifies is decoration.
+        entry: bash -c 'for f in skills/*/tests/l0.py; do [ -e "$f" ] || continue; uv run --with pyyaml python "$f" || exit 1; done'
+        pass_filenames: false
+        files: '^skills/'
+        require_serial: true
