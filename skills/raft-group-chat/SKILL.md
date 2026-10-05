@@ -24,6 +24,14 @@ previously published and is now corrected is stated in one line** ("was 524, now
 472 - the window straddled two revisions"). Compression drops narration, never a
 correction the reader may already be holding.
 
+## Section labels are headers
+
+When a message has sections, write each label as a Markdown heading on its own
+line (`## What the problem is`), not as an inline lead-in with the first
+sentence on the same line (`**What the problem is.** ...`). The header form
+scans, and it lets a reader jump between parts; the inline form buries the label
+in the paragraph it is supposed to precede.
+
 ## Task cards: name the design authority
 
 Every task that can change behavior, a contract, schema, interface,
