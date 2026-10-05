@@ -8,3 +8,13 @@ repos:
         pass_filenames: false
         files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$'
         require_serial: true
+      - id: skill-dispatch
+        name: skill dispatch coverage
+        language: system
+        # Every skill that ships a dispatcher runs its own coverage check. The
+        # check asserts reachability (kind -> template -> reference -> anchor),
+        # not prose quality, and it starts green so a red is a regression.
+        entry: bash -c 'for f in skills/*/tests/check-dispatch.mjs; do [ -e "$f" ] || continue; node "$f" || exit 1; done'
+        pass_filenames: false
+        files: '^skills/'
+        require_serial: true

@@ -111,11 +111,15 @@ unless the process is the subject, blocks something, or establishes cause).
 Close with what is established, what is designed but not observed, what is unresolved, and
 what is deliberately not claimed. Do not close with another summary.
 
+*Why:* [references/writing-discipline.md](references/writing-discipline.md#end-at-a-claim-boundary).
+
 ### Subtract before adding
 
 Cut repeated summaries, process narration, and decorative sections. For every proposed
 section ask: *"would removing this stop the reader understanding the answer, making the
 decision, or trusting the boundary?"* If not, remove it.
+
+*Why:* [references/writing-discipline.md](references/writing-discipline.md#subtract-before-adding).
 
 ## Reports that ask for a decision
 

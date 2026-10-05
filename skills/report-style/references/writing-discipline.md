@@ -291,3 +291,48 @@ inferred, and open claims. Do not add record furniture solely to make a brief lo
 If the brief uses project codes, abbreviations, or symbols, include a compact reader key
 even when the surrounding document is informal. Put it where the reader meets the first
 code, or at the end when the code set is large enough to scan separately.
+
+## End at a claim boundary
+
+### The rule
+
+Close with what is **established**, what is **designed but not observed**, what is
+**unresolved**, and what is **deliberately not claimed**. Do not close with another
+summary.
+
+### Why
+
+A summary repeats what the reader has just read, so it costs attention and changes nothing.
+A boundary is the opposite: it is the one part of the document that tells the reader how
+far they may rely on it. The distinction matters most when the reader is about to act —
+"the pairing is complete" and "the pairing is complete, but this does not show the
+envelope's content is correct" license different actions.
+
+The boundary is also where an honest gap stays visible. A report that ends on its
+conclusion implies the work is finished; a report that ends on its boundary says which
+part is not.
+
+## Subtract before adding
+
+### The rule
+
+Cut repeated summaries, process narration, and decorative sections. For every proposed
+section ask: **"would removing this stop the reader understanding the answer, making the
+decision, or trusting the boundary?"** If not, remove it.
+
+### Why
+
+This is the same test `references/catalog.md` applies to a proposed section, stated once
+here so it governs the whole document and not only the kind routing. Length is not the
+defect — a long document that carries new information is fine. The defect is a section
+that changes nothing for the reader while still costing them the time to read and judge
+it.
+
+The three shapes that most often fail the test:
+
+- **the repeated summary** — the conclusion stated twice, once mid-document and once at
+  the end;
+- **the process narration** — commands, edit order, or review rounds that are not
+  evidence;
+- **the decorative section** — a diagram, table, or heading that restates adjacent prose
+  in another format.
