@@ -3,6 +3,7 @@ import { writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
 import { checkDocuments } from "./checker.js";
+import { MIGRATION_HINT } from "./config.js";
 import { renderText, exitCodeFor } from "./report.js";
 import { segmentMarkdown } from "./segments.js";
 import {
@@ -25,12 +26,27 @@ async function main(argv: string[]): Promise<number> {
   throw new UsageError("usage: doc-verify <segments|check> [options]");
 }
 
+/** Runs `parseArgs`, reporting an unknown or malformed option as a usage error (exit 64). */
+function parseOptions<T>(argv: string[], parse: () => T): T {
+  try {
+    return parse();
+  } catch (error) {
+    if (error instanceof Error && "code" in error && String(error.code).startsWith("ERR_PARSE_ARGS")) {
+      if (argv.some((arg) => arg === "--rubric" || arg.startsWith("--rubric="))) {
+        throw new UsageError(`--rubric was removed with the v1 rubric reader; ${MIGRATION_HINT}`);
+      }
+      throw new UsageError(error.message);
+    }
+    throw error;
+  }
+}
+
 async function runSegments(argv: string[]): Promise<number> {
-  const parsed = parseArgs({
+  const parsed = parseOptions(argv, () => parseArgs({
     args: argv,
     allowPositionals: true,
     options: { format: { type: "string", default: "text" } },
-  });
+  }));
   if (parsed.positionals.length !== 1) {
     throw new UsageError("usage: doc-verify segments DOCUMENT [--format text|json]");
   }
@@ -52,7 +68,7 @@ async function runSegments(argv: string[]): Promise<number> {
 }
 
 async function runCheck(argv: string[]): Promise<number> {
-  const parsed = parseArgs({
+  const parsed = parseOptions(argv, () => parseArgs({
     args: argv,
     allowPositionals: true,
     options: {
@@ -61,14 +77,13 @@ async function runCheck(argv: string[]): Promise<number> {
       range: { type: "string" },
       all: { type: "boolean" },
       section: { type: "string", multiple: true },
-      rubric: { type: "string" },
       profile: { type: "string", default: "auto" },
       format: { type: "string", default: "text" },
       output: { type: "string" },
-      refresh: { type: "boolean" },
       verbose: { type: "boolean" },
+      "no-cache": { type: "boolean" },
     },
-  });
+  }));
   const pathValues = parsed.values.paths === undefined
     ? undefined
     : [...parsed.values.paths, ...parsed.positionals];
@@ -93,9 +108,8 @@ async function runCheck(argv: string[]): Promise<number> {
   const report = await checkDocuments({
     mode,
     profile: profileResult.data,
+    ...(parsed.values["no-cache"] === true ? { cache: "off" as const } : {}),
     ...(parsed.values.section === undefined ? {} : { sections: parsed.values.section }),
-    ...(parsed.values.rubric === undefined ? {} : { rubric: parsed.values.rubric }),
-    ...(parsed.values.refresh === true ? { useCache: false } : {}),
   });
   const format = parsed.values.format;
   if (format !== "text" && format !== "json") {

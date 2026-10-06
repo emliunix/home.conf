@@ -1,18 +1,20 @@
 schema_version: 1
 kind: document-verification
+# Ordered, last-match-wins. Every rule runs design-04 verification modules: `doc-verify:NAME` is
+# an engine library shipped in doc-verify/lib, a path is one of this repository's modules.
+# Goal files follow design/00's `goals/NN-<topic>.md` form; the dated
+# goals/2026-09-09-goal-file-funnel.md predates it and is not governed.
 documents:
   - pattern: design/{0[1-9],[1-9][0-9]}-*.md
     artifact_kind: design
-    verification: doc-verify/contracts/design-strategy.yaml#verification
-    required_sections: [problem-statement, rationale, review, status]
-  - pattern: goals/01-document-verification-and-skill-transfer.md
+    modules: [doc-verify:artifact, doc-verify/modules/design.yaml]
+  - pattern: design/03-companion-driven-document-verification.md
+    artifact_kind: design
+    modules: [doc-verify:artifact, doc-verify/modules/design.yaml, doc-verify/modules/design-03.yaml]
+  - pattern: goals/[0-9][0-9]-*.md
     artifact_kind: goal
-    verification: doc-verify/contracts/goal-strategy.yaml#verification
-    required_sections: [user-requirements-frozen-root, design-files, worklog]
-  - pattern: goals/*.md
-    artifact_kind: goal
-    verification: doc-verify/contracts/goal-strategy.yaml#verification
-    required_sections: []
+    modules: [doc-verify:goal]
+    status_from: title
 invalidation_patterns:
   - .doc-verify.yaml
   - doc-verify/**

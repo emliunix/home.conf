@@ -8,7 +8,9 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { checkDocuments, titleStatus } from "../src/checker.js";
+import { engineLibraries } from "../src/engine/index.js";
 import { renderText } from "../src/report.js";
+import { UsageError } from "../src/types.js";
 import { scriptedJudge } from "./engine-helpers.js";
 
 const BASE = `schema_version: 2
@@ -175,13 +177,105 @@ describe("doc-verify check on design-04 modules", () => {
     expect(only(report).verdict).toBe("PASS");
   });
 
-  it("refuses a rule that names both a v1 strategy and modules", async () => {
+  it("refuses a v1 verification: rule with a message that names the migration", async () => {
+    const root = await repository({ "modules/base.yaml": BASE, "design/a.md": GOOD },
+      `  - pattern: design/*.md
+    artifact_kind: design
+    verification: strategies/design.yaml#verification
+    required_sections: []`);
+    const refusal = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend })
+      .catch((error: unknown) => error);
+    expect(refusal).toBeInstanceOf(UsageError);
+    expect((refusal as Error).message).toBe(
+      'invalid .doc-verify.yaml: documents[0] (pattern "design/*.md") names a v1 `verification:` strategy; ' +
+      "the v1 rubric reader was removed; replace `verification:` with `modules: [...]` naming design-04 verification " +
+      "modules (repository paths or engine libraries such as doc-verify:design); " +
+      'see "Migrating from v1 rubrics" in the doc-verify README',
+    );
+  });
+
+  it("refuses a v1 rule even when it also names modules", async () => {
     const root = await repository({ "modules/base.yaml": BASE, "design/a.md": GOOD },
       `  - pattern: design/*.md
     artifact_kind: design
     verification: strategies/design.yaml#verification
     modules: [modules/base.yaml]`);
     await expect(checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend }))
-      .rejects.toThrow(/exactly one of verification/);
+      .rejects.toThrow(/names a v1 `verification:` strategy; the v1 rubric reader was removed/);
+  });
+});
+
+describe("engine libraries (doc-verify:NAME)", () => {
+  /** Answers each question from its options: a section's purpose by its heading, every `ask` holds. */
+  const libraryJudge = () => scriptedJudge((question) => {
+    if (question.options.includes("holds")) {
+      return { value: "holds" };
+    }
+    const heading = question.text.split("\n")[0] ?? "";
+    const purpose = heading.includes("Verification") ? "verification" : heading.includes("Goal") ? "goal" : heading.includes("Status") ? "status" : "decision";
+    return { value: purpose };
+  });
+
+  it("ships artifact, design and goal with the engine", () => {
+    expect(engineLibraries()).toEqual(["doc-verify:artifact", "doc-verify:design", "doc-verify:goal", "doc-verify:references"]);
+  });
+
+  it("resolves doc-verify:design from the engine, with the library it extends", async () => {
+    const decided = `${GOOD}\n## Decision\n\nOne parser, one field list.\n`;
+    const root = await repository({ "design/a.md": decided }, `  - pattern: design/*.md
+    artifact_kind: design
+    modules: [doc-verify:design]`);
+    const judge = libraryJudge();
+    const report = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: judge.backend });
+    expect(only(report).engine?.modules).toEqual(["doc-verify:references", "doc-verify:artifact", "doc-verify:design"]);
+    expect(only(report).verdict).toBe("PASS");
+    const bad = await repository({ "design/a.md": decided.replace("## Goal\n\nShip it.\n\n", "") }, `  - pattern: design/*.md
+    artifact_kind: design
+    modules: [doc-verify:design]`);
+    const failed = await checkDocuments({ root: bad, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: libraryJudge().backend });
+    expect(only(failed).verdict).toBe("NO-GO");
+    expect(only(failed).findings.map((item) => item.ruleId)).toContain("module.artifact-has-goal");
+  });
+
+  it("asks doc-verify:design's purpose oracle on promotion only, never on draft", async () => {
+    const decided = `${GOOD.replace("reviewed", "draft")}\n## Decision\n\nOne parser, one field list.\n`;
+    const root = await repository({ "design/a.md": decided }, `  - pattern: design/*.md
+    artifact_kind: design
+    modules: [doc-verify:design]`);
+    const judge = libraryJudge();
+    const draft = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: judge.backend });
+    expect(only(draft)).toMatchObject({ profile: "draft", verdict: "PASS", semanticCalls: 0 });
+    expect(judge.requests).toHaveLength(0);
+    const promotion = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "promotion", backend: judge.backend, cache: "off" });
+    expect(only(promotion).semanticCalls).toBeGreaterThan(0);
+  });
+
+  it("lets a repository module extend a library, and composes a library listed twice once", async () => {
+    const local = `schema_version: 2
+kind: verification-module
+module: local
+extends: [doc-verify:artifact]
+params:
+  statuses: [reviewed]
+`;
+    const root = await repository({ "modules/local.yaml": local, "design/a.md": GOOD }, `  - pattern: design/*.md
+    artifact_kind: design
+    modules: [doc-verify:artifact, modules/local.yaml]`);
+    const report = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: libraryJudge().backend });
+    expect(only(report).engine?.modules).toEqual(["doc-verify:references", "doc-verify:artifact", "modules/local.yaml"]);
+    expect(only(report).verdict).toBe("PASS");
+  });
+
+  it("refuses an unknown library and names the ones this engine ships", async () => {
+    const root = await repository({ "design/a.md": GOOD }, `  - pattern: design/*.md
+    artifact_kind: design
+    modules: [doc-verify:nope]`);
+    await expect(checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend }))
+      .rejects.toThrow("doc-verify:nope: no such engine library; this engine ships doc-verify:artifact, doc-verify:design, doc-verify:goal, doc-verify:references");
+    const escape = await repository({ "design/a.md": GOOD }, `  - pattern: design/*.md
+    artifact_kind: design
+    modules: [doc-verify:../../package]`);
+    await expect(checkDocuments({ root: escape, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend }))
+      .rejects.toThrow("no such engine library");
   });
 });

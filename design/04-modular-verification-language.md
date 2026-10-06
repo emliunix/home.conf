@@ -245,6 +245,19 @@ profile.
 It also provides the derived relations `child/3`, `descendant/3`, and `nests/3`. `S` is
 the section's slug. The tree is a fact, not a reconstruction from byte spans.
 
+*Added 2026-10-05, because a judge cannot be trusted, and should not be paid, to notice that
+a named file is gone (visflow's constitution kept stale file names that no oracle flagged):*
+`ref(D, S, Target, Kind)` for every non-URL Markdown link target (`Kind = link`) and every
+backtick span that looks like a repository path (`Kind = path`) in section `S`, with `Target`
+as written; `resolves(D, Target)` when the target without its `#fragment` exists relative to
+the document's directory or the repository root (a directory counts); and the derived
+`dangling/4`, a ref without resolves. These are deterministic, so a constraint over them is
+decided with no judge. `doc-verify:references` ships `references-resolve` (error, links) and
+`paths-resolve` (warning, paths) over them. *Revised the same day, after visflow's first run
+gave 176 path warnings that were mostly not paths:* which spans are paths is a list of stated
+rules in the doc-verify README ("Reference facts"), and a bare file name that names no one
+tracked file is `Kind = name`, which `paths-resolve` does not read.
+
 Evidence expressions:
 - `core.body(D, S)` is the heading plus the whole subtree;
 - `core.own(D, S)` is the heading plus the text before the first child;

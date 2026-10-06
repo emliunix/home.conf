@@ -163,7 +163,7 @@ describe("rounds", () => {
     const report = await run(DEPTH_TWO, backend);
     expect(requests).toHaveLength(1);
     expect(report.constraints[0]).toMatchObject({ population: 0, status: "satisfied" });
-    expect(report.findings).toContain("items-included: the population is empty");
+    expect(report.findings).toEqual([]);
   });
 
   it("makes one request for a depth-1 program", async () => {
@@ -195,6 +195,39 @@ constraints:
     const { backend, requests } = scriptedJudge((question) => question.options.includes("holds") ? { value: "holds" } : byHeading(PURPOSES)(question));
     const report = await run(program, backend);
     expect(requests.map((request) => request.questions.length)).toEqual([6, 1]);
+    expect(report.verdict).toBe("PASS");
+  });
+});
+
+describe("profile selection reaches only the rules it needs (2026-10-05)", () => {
+  const PROGRAM = moduleText(`oracles:
+${PURPOSE_ORACLE}rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  scope_section(D, S): top(D, S), purpose(D, S, scope)
+constraints:
+  has-sections:
+    forall: core.section(D, S, root)
+    require: top(D, _)
+    severity: error
+  has-scope:
+    forall: core.section(D, S, root)
+    require: scope_section(D, _)
+    severity: error
+    profiles: [promotion]
+`);
+
+  it("asks no oracle on draft when only promotion constraints reach it", async () => {
+    const { backend, requests } = scriptedJudge(byHeading(PURPOSES));
+    const report = await run(PROGRAM, backend, { profile: "draft" });
+    expect(requests).toHaveLength(0);
+    expect(report.oracles).toEqual([]);
+    expect(report).toMatchObject({ verdict: "PASS", skipped: ["has-scope"] });
+  });
+
+  it("still asks it on promotion", async () => {
+    const { backend, requests } = scriptedJudge(byHeading(PURPOSES));
+    const report = await run(PROGRAM, backend, { profile: "promotion" });
+    expect(requests).toHaveLength(1);
     expect(report.verdict).toBe("PASS");
   });
 });

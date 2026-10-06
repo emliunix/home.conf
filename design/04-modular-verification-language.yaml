@@ -7,9 +7,6 @@ document:
     - goals/03-modular-verification-language.md
     - design/02-programmatic-document-contract-verification.md
     - design/03-companion-driven-document-verification.md
-verification:
-  kind: jev-prolog
-  inherits: ../doc-verify/contracts/design-strategy.yaml#verification
 commands:
   - npm test
   - npm run typecheck

@@ -10,7 +10,7 @@
 import type { JudgeAnswer, JudgeBackend, JudgeQuestion } from "deepclause-sdk";
 
 import { canonicalJson, sha256 } from "../hash.js";
-import { PolicyViolationError } from "../semantic.js";
+import { PolicyViolationError } from "../judge.js";
 import { BlockedError } from "../types.js";
 import type { Oracle } from "./checker.js";
 import { UNKNOWN, type Demand, type OracleView } from "./evaluate.js";
@@ -100,7 +100,9 @@ export async function askRound(input: {
   demands: Demand[];
   documents: Map<string, DocumentFacts>;
   store: OracleStore;
-  backend: JudgeBackend;
+  backend: JudgeBackend | undefined;
+  /** Why there is no backend; the round fails BLOCKED with it once a question must be sent. */
+  unavailable?: string | undefined;
   model: string;
   policy: OutboundPolicy;
   cache: OracleCache | undefined;
@@ -151,6 +153,9 @@ export async function askRound(input: {
     };
     const stateJson = canonicalJson(state);
     enforceOutboundPolicy(stateJson, input.policy);
+    if (input.backend === undefined) {
+      throw new BlockedError(input.unavailable ?? "no judge is available");
+    }
     enforceCapabilities(input.backend, prepared, Buffer.byteLength(stateJson));
     const questions: JudgeQuestion[] = prepared.map((entry) => ({
       id: entry.key,

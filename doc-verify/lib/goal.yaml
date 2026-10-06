@@ -1,0 +1,72 @@
+# doc-verify:goal - a goal file in the goal-file skill's shape: the epic and the bookkeeping file
+# that drives the process. Extends doc-verify:artifact. The status is the title suffix
+# (`status_from: title`): OPEN | BLOCKED | CLOSED-GREEN. The heading lists accept the template's
+# spelling and the earlier spellings goal files still carry ('frozen root', 'AC coverage').
+#
+# Shipped with the engine and versioned with it. First authored as visflow's
+# doc-verify/modules/goal.yaml (visflow design 10).
+schema_version: 2
+kind: verification-module
+module: doc-verify.goal
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [open, blocked, closed-green]
+  root_headings:
+    - 'User requirements — anchored root'
+    - 'User requirements — frozen root'
+    - 'User requirements - anchored root'
+    - 'User requirements - frozen root'
+    - 'User requirements (anchored root)'
+    - 'User requirements (frozen root)'
+  coverage_headings: ['AC coverage matrix', 'AC coverage']
+oracles:
+  coverage_complete(D, L):
+    ask: The AC coverage matrix accounts for every requirement in the anchored root, each mapped to the design or workstream that covers it.
+    evidence: core.union(D, L)
+    threshold: 0.5
+    max_bytes: 16000
+rules:
+  root_section(D, S): top(D, S), core.heading(D, S, H), H in $root_headings
+  design_files_section(D, S): top(D, S), core.heading(D, S, 'Design files')
+  workstreams_section(D, S): top(D, S), core.heading(D, S, 'Workstreams')
+  coverage_section(D, S): top(D, S), core.heading(D, S, H), H in $coverage_headings
+  worklog_section(D, S): top(D, S), core.heading(D, S, 'Worklog')
+constraints:
+  goal-has-anchored-root:
+    forall: core.meta(D, kind, goal)
+    require: root_section(D, S)
+    severity: error
+    message: "{D} has no anchored requirements root"
+    repair: "Add '## User requirements — anchored root' with the owner's requirements, verbatim and numbered."
+  goal-has-design-files:
+    forall: core.meta(D, kind, goal)
+    require: design_files_section(D, S)
+    severity: error
+    message: "{D} has no '## Design files' section"
+    repair: "List each design/NN this goal funnels into."
+  goal-has-workstreams:
+    forall: core.meta(D, kind, goal)
+    require: workstreams_section(D, S)
+    severity: error
+    message: "{D} has no '## Workstreams' section"
+    repair: "Group the work into workstreams and phases (goal-file skill)."
+  goal-has-coverage:
+    forall: core.meta(D, kind, goal)
+    require: coverage_section(D, S)
+    severity: error
+    message: "{D} has no '## AC coverage matrix'"
+    repair: "Map every root requirement to the design or workstream that covers it."
+  goal-has-worklog:
+    forall: core.meta(D, kind, goal)
+    require: worklog_section(D, S)
+    severity: error
+    message: "{D} has no '## Worklog' section"
+    repair: "Point to the worklog entries this goal drives."
+  goal-coverage-complete:
+    forall: root_section(D, R), coverage_section(D, C)
+    require: coverage_complete(D, [R, C])
+    severity: error
+    profiles: [promotion]
+    message: "{C} in {D} leaves a root requirement unmapped"
+    repair: "Add a row for every requirement in {R}, naming the design or workstream that covers it."

@@ -206,6 +206,10 @@ its covering designs across all phases land — not when one slice lands. Worker
 check only their design's covered rows; the admin reconciles full coverage at
 close.
 
+## Goal
+
+goals/2026-09-09-goal-file-funnel.md
+
 ## Review
 
 worklog/01-goal-file-workstreams-phases.md

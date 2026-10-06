@@ -1,4 +1,4 @@
-import { EvaluationDetail, VerificationReport, Verdict } from "./types.js";
+import { Finding, VerificationReport, Verdict } from "./types.js";
 
 const exitCodes: Record<Verdict, number> = {
   PASS: 0,
@@ -21,7 +21,7 @@ export function renderText(report: VerificationReport, options: { verbose?: bool
       lines.push(`${warning.path}:${String(warning.line)} [${warning.sectionId}] ${warning.ruleId} WARN ${warning.message}`);
     }
     for (const finding of artifact.findings) {
-      lines.push(`${finding.path}:${String(finding.line)} [${finding.sectionId}] ${finding.ruleId} ${finding.verdict} ${finding.message} (evidence: ${finding.evidenceId})`);
+      lines.push(...findingLines(finding, false));
     }
   }
   lines.push(summary(report));
@@ -43,61 +43,43 @@ function renderVerboseText(report: VerificationReport): string {
       `  impact: ${artifact.impactPath.join(" -> ")}`,
       `  selector trace: ${artifact.selectorTrace.map((entry) => `${entry.action}:${entry.pattern}`).join(" -> ") || "none"}`,
       `  required sections (${String(artifact.requiredSections.length)}): ${artifact.requiredSections.join(",") || "none"}`,
-      `  strategy (${String(artifact.strategyChain.length)}):`,
-      ...artifact.strategyChain.map((source) => `    - ${source.path}#${source.fragment}`),
-      `  rubric (${String(artifact.rubricChain.length)}):`,
-      ...artifact.rubricChain.map((source) => `    - ${source.path}#${source.fragment} sha256=${source.hash.slice(0, 12)}`),
-      `  checks (${String(artifact.evaluations.length)}):`,
-      ...artifact.evaluations.map((evaluation) => {
-        const result = evaluation.answer ?? (artifact.profile === "draft" ? "planned" : "unavailable");
-        const sections = evaluation.sectionIds.map((id) => {
-          const section = artifact.sections.find((candidate) => candidate.id === id);
-          return section === undefined ? id : `${id}@${String(section.startLine)}:${String(section.endLine)}`;
-        });
-        return `    - ${evaluation.questionId} sections=${sections.join(",")} result=${result}${judgeNumbers(evaluation)}` +
-          ` evidence=${String(evaluation.evidenceBytes)}/${String(evaluation.evidenceBudget)}B`;
-      }),
     );
-    if (artifact.semanticRequestId === undefined) {
-      lines.push(`  semantic: request=none calls=${String(artifact.semanticCalls)} cache-hits=${String(artifact.cacheHits)}`);
-    } else {
-      lines.push(`  semantic: request=${artifact.semanticRequestId} calls=${String(artifact.semanticCalls)} cache-hits=${String(artifact.cacheHits)}`);
-    }
+    lines.push(`  semantic: calls=${String(artifact.semanticCalls)} cache-hits=${String(artifact.cacheHits)}`);
     if (artifact.engine !== undefined) {
       lines.push(`  modules: ${artifact.engine.modules.join(" + ")} (${artifact.engine.hash.slice(0, 12)}), requests=${String(artifact.engine.requests)}`);
       lines.push(...artifact.engine.text.trimEnd().split("\n").map((line) => `    ${line}`));
-    } else if (artifact.trace.length === 0) {
-      lines.push("  decision: none");
     } else {
-      lines.push(...artifact.trace.map((trace) =>
-        `  decision: ${trace.verdict} via ${trace.ruleId} facts=${trace.facts.join(",")}`));
+      lines.push("  modules: not run");
     }
     for (const warning of artifact.warnings) {
       lines.push(`  warning: ${warning.path}:${String(warning.line)} [${warning.sectionId}] ${warning.ruleId} WARN ${warning.message}`);
     }
     for (const finding of artifact.findings) {
-      lines.push(`  finding: ${finding.path}:${String(finding.line)} [${finding.sectionId}] ${finding.ruleId} ${finding.verdict} ${finding.message} (evidence: ${finding.evidenceId})`);
+      const [head, ...rest] = findingLines(finding, true);
+      lines.push(`  finding: ${head ?? ""}`, ...rest.map((line) => `  ${line}`));
     }
   }
   lines.push(summary(report));
   return `${lines.join("\n")}\n`;
 }
 
-const OPTION_ORDER = ["supported", "refuted", "unknown"] as const;
-
-function judgeNumbers(evaluation: EvaluationDetail): string {
-  // JEV returns numbers, not a rationale: show how sure the judge was.
-  const parts = [];
-  if (evaluation.confidence !== undefined) {
-    parts.push(` confidence=${evaluation.confidence.toFixed(2)}`);
+/**
+ * A finding's head line, then its repair hint and what decided it. The default names the
+ * sections it rests on; `verbose` adds the evidence hash and the binding's proof tree.
+ */
+function findingLines(finding: Finding, verbose: boolean): string[] {
+  const status = finding.status === undefined ? "" : `${finding.status}: `;
+  const sections = finding.sections === undefined || finding.sections.length === 0 ? "" : ` (sections: ${finding.sections.join(", ")})`;
+  const evidence = verbose ? ` (evidence: ${finding.evidenceId})` : "";
+  const lines = [`${finding.path}:${String(finding.line)} [${finding.sectionId}] ${finding.ruleId} ${finding.verdict} ${status}${finding.message}${sections}${evidence}`];
+  if (finding.repair !== undefined) {
+    lines.push(`  repair: ${finding.repair}`);
   }
-  if (evaluation.distribution !== undefined && evaluation.distribution.length === OPTION_ORDER.length) {
-    const spread = evaluation.distribution
-      .map((probability, index) => `${OPTION_ORDER[index] ?? String(index)}:${probability.toFixed(2)}`)
-      .join(",");
-    parts.push(` distribution=${spread}`);
+  lines.push(...(finding.basis ?? []).map((line) => `  ${line}`));
+  if (verbose && finding.proof !== undefined) {
+    lines.push("  proof:", ...finding.proof.map((line) => `    ${line}`));
   }
-  return parts.join("");
+  return lines;
 }
 
 function listPaths(paths: string[]): string[] {

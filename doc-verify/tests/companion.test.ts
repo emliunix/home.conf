@@ -1,271 +1,127 @@
+// Companion manifests after the v1 decommission: a companion names its document (`kind:
+// document-contract`, `document:`) and may carry project fields. A v1 `verification:` block is
+// ignored with a warning; the rule's `modules` alone verify the document.
 import { execFileSync } from "node:child_process";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { createMockJevJudgeBackend } from "deepclause-sdk";
 import { describe, expect, it } from "vitest";
 
 import { checkDocuments } from "../src/checker.js";
 import { parseCompanion } from "../src/config.js";
 import { sha256 } from "../src/hash.js";
-import { renderText } from "../src/report.js";
 import { repoPath } from "../src/types.js";
+import { scriptedJudge } from "./engine-helpers.js";
 
-const baseStrategy = `schema_version: 1
-kind: verification-strategy
-verification:
-  kind: jev-prolog
-  rubrics:
-    kind: jev
-    threshold: 1
-    items:
-      - id: design.problem
-        artifact_kinds: [design]
-        applies_to: {sections: [problem], scope: combined}
-        evidence: {source: section_body, max_bytes: 1000}
-        question:
-          kind: choose
-          instruction: Is the problem explicit?
-          options: [supported, refuted, unknown]
-        critical: true
-        weight: 1
-        scores: {supported: 1, refuted: 0, unknown: 0}
-  default_profile: draft
-  profiles:
-    draft:
-      cache: reuse
-    promotion:
-      cache: refresh
+const MODULE = `schema_version: 2
+kind: verification-module
+module: companion.design
+constraints:
+  has-problem:
+    forall: core.meta(D, kind, design)
+    require: core.section(D, S, _), core.heading(D, S, 'Problem')
+    severity: error
+    message: "{D} has no Problem section"
+  not-draft:
+    forall: core.meta(D, status, W)
+    require: W in [reviewed, landed]
+    severity: error
+    profiles: [promotion]
+    message: "{D} is a draft"
 `;
 
-describe("companion manifests", () => {
-  it("parses a strict document contract with a local rubric and profile strategies", () => {
-    const content = `schema_version: 1
-kind: document-contract
-document:
-  path: design/a.md
-  kind: design
-verification:
+const V1_BLOCK = `verification:
   kind: jev-prolog
   inherits: ../strategies/design.yaml#verification
-  rubrics:
-    kind: jev
-    threshold: 1
-    items: []
-  profiles:
-    draft:
-      cache: reuse
-    promotion:
-      sections: [problem]
-      cache: refresh
-commands: [npm test]
-evidence_level: E2
 `;
-    const companion = parseCompanion({ path: repoPath("design/a.yaml"), content, hash: sha256(content) });
-    expect(companion.document.kind).toBe("design");
-    expect(companion.verification.inherits).toBe("../strategies/design.yaml#verification");
-    expect(companion.verification.rubrics?.kind).toBe("jev");
-    expect(companion.verification.profiles?.promotion).toEqual({ sections: ["problem"], cache: "refresh" });
-  });
 
-  it("warns and uses repository defaults when the companion is absent", async () => {
-    const root = await fixtureRepository();
-    const report = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "draft" });
-    expect(report.verdict).toBe("PASS");
-    expect(report.warningCount).toBe(1);
-    expect(report.artifacts[0]?.warnings[0]?.ruleId).toBe("metadata.missing-companion");
-  });
-
-  it("uses the companion as the local rubric root and applies its promotion profile", async () => {
-    const root = await fixtureRepository();
-    await writeFile(path.join(root, "design/a.yaml"), `schema_version: 1
-kind: document-contract
-document:
-  path: design/a.md
-  kind: design
-verification:
-  kind: jev-prolog
-  inherits: ../strategies/design.yaml#verification
-  rubrics:
-    kind: jev
-    items:
-      - id: design.local
-        artifact_kinds: [design]
-        applies_to: {sections: [problem], scope: combined}
-        evidence: {source: section_body, max_bytes: 1000}
-        question:
-          kind: choose
-          instruction: Is the local condition explicit?
-          options: [supported, refuted, unknown]
-        critical: true
-        weight: 1
-        scores: {supported: 1, refuted: 0, unknown: 0}
-  profiles:
-    draft:
-      cache: reuse
-    promotion:
-      sections: [problem]
-      cache: refresh
-`);
-    const report = await checkDocuments({
-      root,
-      mode: { kind: "paths", paths: ["design/a.md"] },
-      profile: "promotion",
-      backend: createMockJevJudgeBackend({ choice: "first" }),
-    });
-    expect(report.verdict).toBe("PASS");
-    expect(report.warningCount).toBe(0);
-    expect(report.semanticCalls).toBe(1);
-    expect(report.artifacts[0]?.strategyChain.map((entry) => entry.path)).toEqual([
-      "strategies/design.yaml",
-      "design/a.yaml",
-    ]);
-    expect(report.artifacts[0]?.rubricChain.map((entry) => entry.path)).toEqual([
-      "strategies/design.yaml",
-      "design/a.yaml",
-    ]);
-    expect(report.artifacts[0]?.trace[0]?.facts).toEqual(["supported", "supported"]);
-    const verbose = renderText(report, { verbose: true });
-    expect(verbose).toContain("design.problem sections=problem@2:4 result=supported");
-    expect(verbose).toContain("design.local sections=problem@2:4 result=supported");
-    expect(verbose).toContain("decision: PASS via all.required.facts facts=supported,supported");
-    // Verbose shows how sure the judge was and how much evidence it saw.
-    expect(verbose).toMatch(
-      /design\.problem sections=problem@2:4 result=supported confidence=1\.00 distribution=supported:1\.00,refuted:0\.00,unknown:0\.00 evidence=\d+\/\d+B/,
-    );
-
-    const repeated = await checkDocuments({
-      root,
-      mode: { kind: "paths", paths: ["design/a.md"] },
-      profile: "promotion",
-      backend: createMockJevJudgeBackend({ choice: "first" }),
-    });
-    expect(repeated.semanticCalls).toBe(1);
-    expect(repeated.cacheHits).toBe(0);
-  });
-
-  it("resolves a profile rubric relative to its companion", async () => {
-    const root = await fixtureRepository();
-    await writeFile(path.join(root, "rubrics/profile.yaml"), `schema_version: 1
-rubrics:
-  kind: jev
-  threshold: 1
-  items:
-    - id: design.rationale
-      artifact_kinds: [design]
-      applies_to: {sections: [rationale], scope: combined}
-      evidence: {source: section_body, max_bytes: 1000}
-      question:
-        kind: choose
-        instruction: Is the rationale explicit?
-        options: [supported, refuted, unknown]
-      critical: true
-      weight: 1
-      scores: {supported: 1, refuted: 0, unknown: 0}
-`);
-    await writeFile(path.join(root, "design/a.md"), "# A\n## Problem\nA concrete problem.\n## Rationale\nA concrete rationale.\n");
-    await writeFile(path.join(root, "design/a.yaml"), `schema_version: 1
-kind: document-contract
-document:
-  path: design/a.md
-  kind: design
-verification:
-  kind: jev-prolog
-  inherits: ../strategies/design.yaml#verification
-  profiles:
-    draft:
-      cache: reuse
-    promotion:
-      rubric: rubrics/profile.yaml#rubrics
-      sections: [rationale]
-`);
-    const report = await checkDocuments({
-      root,
-      mode: { kind: "paths", paths: ["design/a.md"] },
-      profile: "promotion",
-      backend: createMockJevJudgeBackend({ choice: "first" }),
-      useCache: false,
-    });
-    expect(report.verdict).toBe("PASS");
-    expect(report.artifacts[0]?.rubricChain.map((entry) => entry.path)).toEqual(["rubrics/profile.yaml"]);
-    expect(report.artifacts[0]?.trace[0]?.facts).toEqual(["supported"]);
-  });
-
-  it("rejects a malformed companion instead of silently falling back", async () => {
-    const root = await fixtureRepository();
-    await writeFile(path.join(root, "design/a.yaml"), `schema_version: 1
-kind: document-contract
-document:
-  path: design/a.md
-  kind: design
-verification:
-  kind: jev-prolog
-  inherits: ../strategies/design.yaml#verification
-  profiles:
-    draft:
-      cache: sometimes
-    promotion:
-      cache: refresh
-`);
-    await expect(checkDocuments({
-      root,
-      mode: { kind: "paths", paths: ["design/a.md"] },
-      profile: "draft",
-    })).rejects.toThrow("invalid design/a.yaml");
-  });
-
-  it("reports malformed companion YAML as a usage error", async () => {
-    const root = await fixtureRepository();
-    await writeFile(path.join(root, "design/a.yaml"), "verification: [\n");
-    await expect(checkDocuments({
-      root,
-      mode: { kind: "paths", paths: ["design/a.md"] },
-      profile: "draft",
-    })).rejects.toThrow("invalid design/a.yaml: malformed YAML");
-  });
-
-  it("accepts project fields but rejects unknown verification fields and mismatched identities", () => {
-    const contract = (pathValue: string, verificationExtra = "", projectExtra = ""): string => `schema_version: 1
+function contract(pathValue: string, extra = ""): string {
+  return `schema_version: 1
 kind: document-contract
 document:
   path: ${pathValue}
   kind: design
   project_owner: docs-team
-verification:
-  kind: jev-prolog
-  inherits: ../strategies/design.yaml#verification
-${verificationExtra}${projectExtra}`;
+${extra}`;
+}
+
+const judge = scriptedJudge(() => ({ value: "holds" }));
+
+function check(root: string, profile: "auto" | "draft" | "promotion" = "auto") {
+  return checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile, backend: judge.backend });
+}
+
+describe("companion manifests", () => {
+  it("parses a document contract, keeps project fields, and flags a v1 verification block", () => {
+    const parsed = parseCompanion({
+      path: repoPath("design/a.yaml"),
+      content: contract("design/a.md", "commands: [npm test]\nfreshness: {owner: project}\n"),
+      hash: sha256("project-fields"),
+    });
+    expect(parsed.document).toEqual({ path: "design/a.md", kind: "design" });
+    expect(parsed.legacyVerification).toBe(false);
+    const legacy = parseCompanion({ path: repoPath("design/a.yaml"), content: contract("design/a.md", V1_BLOCK), hash: sha256("legacy") });
+    expect(legacy.legacyVerification).toBe(true);
     expect(() => parseCompanion({
       path: repoPath("design/a.yaml"),
       content: contract("design/b.md"),
       hash: sha256("mismatch"),
     })).toThrow("document.path must be design/a.md");
-    const parsed = parseCompanion({
-      path: repoPath("design/a.yaml"),
-      content: contract("design/a.md", "", "commands: [npm test]\nfreshness: {owner: project}\n"),
-      hash: sha256("project-fields"),
-    });
-    expect(parsed.document).toEqual({ path: "design/a.md", kind: "design" });
-    expect(() => parseCompanion({
-      path: repoPath("design/a.yaml"),
-      content: contract("design/a.md", "  unexpected: true\n"),
-      hash: sha256("unknown-verification"),
-    })).toThrow("invalid design/a.yaml");
+  });
+
+  it("warns and uses repository defaults when the companion is absent", async () => {
+    const root = await fixtureRepository();
+    const report = await check(root, "draft");
+    expect(report.verdict).toBe("PASS");
+    expect(report.warningCount).toBe(1);
+    expect(report.artifacts[0]?.warnings[0]?.ruleId).toBe("metadata.missing-companion");
+  });
+
+  it("ignores a companion's v1 verification block with a warning, and the verdict is the modules' own", async () => {
+    const root = await fixtureRepository();
+    await writeFile(path.join(root, "design/a.yaml"), contract("design/a.md", V1_BLOCK));
+    const report = await check(root, "draft");
+    expect(report.verdict).toBe("PASS");
+    expect(report.artifacts[0]?.warnings.map((entry) => entry.ruleId)).toEqual(["metadata.legacy-verification"]);
+    expect(report.artifacts[0]?.warnings[0]?.message).toContain("design/a.yaml carries a v1 verification: block, which is ignored");
+    expect(report.artifacts[0]?.engine?.modules).toEqual(["modules/design.yaml"]);
+  });
+
+  it("reads the companion's document.status when the document has no Status section", async () => {
+    const root = await fixtureRepository();
+    await writeFile(path.join(root, "design/a.yaml"), contract("design/a.md").replace("  kind: design\n", "  kind: design\n  status: draft\n"));
+    const report = await check(root);
+    expect(report.artifacts[0]?.profile).toBe("draft");
+    expect(report.verdict).toBe("PASS");
+    const forced = await check(root, "promotion");
+    expect(forced.verdict).toBe("NO-GO");
+    expect(forced.artifacts[0]?.findings.map((entry) => entry.message).join("\n")).toContain("design/a.md is a draft");
+  });
+
+  it("refuses a companion whose document.kind is not the rule's artifact kind", async () => {
+    const root = await fixtureRepository();
+    await writeFile(path.join(root, "design/a.yaml"), contract("design/a.md").replace("  kind: design\n", "  kind: goal\n"));
+    await expect(check(root)).rejects.toThrow("invalid design/a.yaml: document.kind must be design");
+  });
+
+  it("reports malformed companion YAML as a usage error", async () => {
+    const root = await fixtureRepository();
+    await writeFile(path.join(root, "design/a.yaml"), "verification: [\n");
+    await expect(check(root, "draft")).rejects.toThrow("invalid design/a.yaml: malformed YAML");
   });
 });
 
 async function fixtureRepository(): Promise<string> {
   const root = await mkdtemp(path.join(tmpdir(), "doc-verify-companion-"));
   await mkdir(path.join(root, "design"), { recursive: true });
-  await mkdir(path.join(root, "rubrics"), { recursive: true });
-  await mkdir(path.join(root, "strategies"), { recursive: true });
+  await mkdir(path.join(root, "modules"), { recursive: true });
   await writeFile(path.join(root, ".doc-verify.yaml"), `schema_version: 1
 kind: document-verification
 documents:
   - pattern: design/*.md
     artifact_kind: design
-    verification: strategies/design.yaml#verification
+    modules: [modules/design.yaml]
     required_sections: [problem]
 invalidation_patterns: [.doc-verify.yaml]
 judge:
@@ -279,7 +135,7 @@ policy:
   max_evidence_bytes: 12000
   forbidden_literals: []
 `);
-  await writeFile(path.join(root, "strategies/design.yaml"), baseStrategy);
+  await writeFile(path.join(root, "modules/design.yaml"), MODULE);
   await writeFile(path.join(root, "design/a.md"), "# A\n## Problem\nA concrete problem.\n");
   execFileSync("git", ["init"], { cwd: root, stdio: "ignore" });
   return root;

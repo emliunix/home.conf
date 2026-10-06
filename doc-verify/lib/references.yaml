@@ -1,0 +1,23 @@
+# doc-verify:references - what a document names exists (added 2026-10-05). A Markdown link
+# that is not a URL must resolve; a backtick span that looks like a repository path should.
+# Both read only the deterministic `core.ref` / `core.dangling` facts: no judge is asked, so
+# these constraints are decided with or without a key. `doc-verify:artifact` extends this
+# library; a module that wants only the reference checks extends it directly.
+#
+# Shipped with the engine and versioned with it.
+schema_version: 2
+kind: verification-module
+module: doc-verify.references
+constraints:
+  references-resolve:
+    forall: core.ref(D, S, T, link)
+    forbid: core.dangling(D, S, T, link)
+    severity: error
+    message: "{D} §{S} links to {T}, which does not exist"
+    repair: "Fix the path or remove the link"
+  paths-resolve:
+    forall: core.ref(D, S, T, path)
+    forbid: core.dangling(D, S, T, path)
+    severity: warning
+    message: "{D} §{S} names the path {T}, which does not exist"
+    repair: "Fix the path, or drop the backticks if it is not a path"

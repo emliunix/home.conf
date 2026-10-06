@@ -3,9 +3,6 @@ kind: document-contract
 document:
   path: goals/01-document-verification-and-skill-transfer.md
   kind: goal
-verification:
-  kind: jev-prolog
-  inherits: ../doc-verify/contracts/goal-strategy.yaml#verification
 commands:
   - npm run check
 evidence_level: E1

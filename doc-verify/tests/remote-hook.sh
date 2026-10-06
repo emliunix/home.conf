@@ -16,16 +16,16 @@ git -C "$tmp" init -q
 git -C "$tmp" config user.email test@example.invalid
 git -C "$tmp" config user.name "Doc Verify Test"
 
-mkdir -p "$tmp/design" "$tmp/rubrics" "$tmp/strategies"
+mkdir -p "$tmp/design" "$tmp/modules"
 printf '%s\n' \
   'schema_version: 1' \
   'kind: document-verification' \
   'documents:' \
   '  - pattern: design/*.md' \
   '    artifact_kind: design' \
-  '    verification: strategies/design.yaml#verification' \
+  '    modules: [modules/design.yaml]' \
   '    required_sections: [problem-statement, rationale, review, status]' \
-  'invalidation_patterns: [.doc-verify.yaml, rubrics/**]' \
+  'invalidation_patterns: [.doc-verify.yaml, modules/**]' \
   'judge:' \
   '  kind: jev' \
   '  model: jev-1.13.0' \
@@ -37,37 +37,28 @@ printf '%s\n' \
   '  max_evidence_bytes: 12000' \
   '  forbidden_literals: []' > "$tmp/.doc-verify.yaml"
 printf '%s\n' \
-  'schema_version: 1' \
-  'rubrics:' \
-  '  kind: jev' \
-  '  threshold: 1' \
-  '  items:' \
-  '    - id: design.problem' \
-  '      artifact_kinds: [design]' \
-  '      applies_to: {sections: [problem-statement], scope: combined}' \
-  '      evidence: {source: section_body, max_bytes: 1000}' \
-  '      question:' \
-  '        kind: choose' \
-  '        instruction: Is the problem stated?' \
-  '        options: [supported, refuted, unknown]' \
-  '      critical: true' \
-  '      weight: 1' \
-  '      scores: {supported: 1, refuted: 0, unknown: 0}' > "$tmp/rubrics/design.yaml"
-printf '%s\n' \
-  'schema_version: 1' \
-  'kind: verification-strategy' \
-  'verification:' \
-  '  kind: jev-prolog' \
-  '  rubrics:' \
-  '    kind: jev' \
-  '    inherits: ../rubrics/design.yaml#rubrics' \
-  '  default_profile: draft' \
-  '  profiles:' \
-  '    draft:' \
-  '      sections: [problem-statement]' \
-  '      cache: reuse' \
-  '    promotion:' \
-  '      cache: refresh' > "$tmp/strategies/design.yaml"
+  'schema_version: 2' \
+  'kind: verification-module' \
+  'module: hook.design' \
+  'oracles:' \
+  '  problem_stated(D, S):' \
+  '    ask: The section states a concrete problem.' \
+  '    evidence: core.body(D, S)' \
+  '    threshold: 0' \
+  'rules:' \
+  "  problem_section(D, S): core.section(D, S, _), core.heading(D, S, 'Problem statement')" \
+  'constraints:' \
+  '  has-problem:' \
+  '    forall: core.meta(D, kind, design)' \
+  '    require: problem_section(D, S)' \
+  '    severity: error' \
+  '    message: "{D} has no Problem statement"' \
+  '  problem-is-stated:' \
+  '    forall: problem_section(D, S)' \
+  '    require: problem_stated(D, S)' \
+  '    severity: error' \
+  '    profiles: [promotion]' \
+  '    message: "{S} in {D} states no concrete problem"' > "$tmp/modules/design.yaml"
 printf '%s\n' \
   '# Fixture' \
   '## Problem statement' \
@@ -91,6 +82,10 @@ git -C "$tmp" commit -qm base
 
 printf '%s\n' 'not a verifier input' > "$tmp/notes.txt"
 git -C "$tmp" add notes.txt
+# A draft builds the judge client but asks nothing, so a placeholder key is never sent. The live
+# arm below replaces it with the caller's real key.
+live_key="${TYPESAFE_API_KEY:-}"
+export TYPESAFE_API_KEY=placeholder-never-sent
 skip_output="$(cd "$tmp" && PREK_COLOR=never uvx prek run 2>&1)"
 if [[ "$skip_output" != *"Skipped"* ]]; then
   echo "remote hook did not skip an unrelated staged file" >&2
@@ -102,7 +97,7 @@ git -C "$tmp" commit -qm unrelated
 printf '%s\n' 'valid edit' >> "$tmp/design/01-fixture.md"
 git -C "$tmp" add design/01-fixture.md
 valid_output="$(cd "$tmp" && PREK_COLOR=never uvx prek run 2>&1)"
-for expected in 'verification invocation=staged' 'artifact design/01-fixture.md' 'impact: design/01-fixture.md' 'required sections (4): problem-statement,rationale,review,status' 'design.problem sections=problem-statement@' 'result=planned' 'metadata.missing-companion WARN' 'PASS:'; do
+for expected in 'verification invocation=staged' 'artifact design/01-fixture.md' 'impact: design/01-fixture.md' 'required sections (4): problem-statement,rationale,review,status' 'modules: modules/design.yaml' 'has-problem' 'metadata.missing-companion WARN' 'PASS:'; do
   if [[ "$valid_output" != *"$expected"* ]]; then
     echo "remote hook valid diagnostic is missing: $expected" >&2
     exit 1
@@ -114,7 +109,7 @@ if [[ "${DOC_VERIFY_LIVE:-0}" == "1" ]]; then
   rm -f "$tmp/design/01-fixture.md.bak"
   git -C "$tmp" add design/01-fixture.md
   set +e
-  live_output="$(cd "$tmp" && PREK_COLOR=never uvx prek run 2>&1)"
+  live_output="$(cd "$tmp" && TYPESAFE_API_KEY="$live_key" PREK_COLOR=never uvx prek run 2>&1)"
   live_status=$?
   set -e
   if [[ $live_status -ne 0 ]]; then
@@ -126,20 +121,10 @@ if [[ "${DOC_VERIFY_LIVE:-0}" == "1" ]]; then
     echo "remote hook live run did not make exactly one semantic call" >&2
     exit 1
   fi
-  if [[ "$live_output" != *"decision: PASS via all.required.facts"* ]]; then
-    echo "remote hook live run did not print the Prolog decision" >&2
+  if [[ "$live_output" != *"problem-is-stated"* || "$live_output" != *"satisfied"* ]]; then
+    echo "remote hook live run did not print the module's constraint result" >&2
     exit 1
   fi
-  cache_count="$(find "$tmp/.doc-verify-cache" -type f -name '*.json' | wc -l | tr -d ' ')"
-  if [[ "$cache_count" != "1" ]]; then
-    echo "remote hook live run wrote $cache_count cache records, expected 1" >&2
-    exit 1
-  fi
-  cache_file="$(find "$tmp/.doc-verify-cache" -type f -name '*.json' -print -quit)"
-  node -e '
-    const record = JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8"));
-    if (record.outcome?.ruleId !== "all.required.facts" || record.outcome?.verdict !== "PASS") process.exit(1);
-  ' "$cache_file"
 fi
 
 sed -i.bak '/## Rationale/,+1d' "$tmp/design/01-fixture.md"

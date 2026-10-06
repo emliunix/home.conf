@@ -1,0 +1,73 @@
+# doc-verify:design - a design: high-level model, decision and verification plan only, in the
+# flow lifecycle's four status words. Extends doc-verify:artifact. Oracle-backed constraints run
+# on the promotion profile; a draft is structural only.
+#
+# Shipped with the engine and versioned with it. First authored as visflow's
+# doc-verify/modules/design.yaml (visflow design 10).
+schema_version: 2
+kind: verification-module
+module: doc-verify.design
+extends: [doc-verify:artifact]
+rounds: 2
+params:
+  statuses: [draft, reviewed, pending-retro, landed]
+oracles:
+  falsifies(D, C):
+    ask: This verification text names an observable check (a test, a command, or a measurement) that would fail if the claim it protects were false.
+    evidence: core.body(D, C)
+    threshold: 0.5
+    max_bytes: 12000
+  prescribes_implementation(D, S):
+    ask: This section mostly prescribes implementation steps (file-by-file edits, function bodies, code-level detail) rather than stating a decision, a model, a scope or a rationale.
+    evidence: core.own(D, S)
+    threshold: 0.5
+rules:
+  status_section(D, S): top(D, S), core.heading(D, S, 'Status')
+  one_word_status(D): has_status_word(D), core.meta(D, status_words, '1')
+  verification_section(D, S): top(D, S), purpose(D, S, P), P in [verification, evidence]
+  verification_item(D, C): verification_section(D, S), core.child(D, S, C)
+  itemised(D, S): verification_section(D, S), core.child(D, S, _)
+  verification_claim(D, C): verification_item(D, C)
+  verification_claim(D, S): verification_section(D, S), not itemised(D, S)
+  decision_section(D, S): top(D, S), purpose(D, S, P), P in [rationale, model, decision]
+constraints:
+  design-has-status-section:
+    forall: core.meta(D, kind, design)
+    require: status_section(D, S)
+    severity: error
+    message: "{D} has no '## Status' section"
+    repair: "Add '## Status' whose first line is one word: draft, reviewed, pending-retro or landed."
+  design-status-is-one-word:
+    forall: status_section(D, S)
+    require: one_word_status(D)
+    severity: error
+    message: "{D}: the first line under '## Status' is not one status word"
+    repair: "Put the status word alone on the first line under '## Status'."
+  design-has-verification:
+    forall: core.meta(D, kind, design)
+    require: verification_section(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{D} has no section whose purpose is verification"
+    repair: "Add '## Verification' naming, for each load-bearing claim, the check that would fail if it were false."
+  design-has-decision:
+    forall: core.meta(D, kind, design)
+    require: decision_section(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{D} states no rationale, model or decision"
+    repair: "Add the decision and why, or the model it rests on."
+  design-verification-falsifies:
+    forall: verification_claim(D, C)
+    require: falsifies(D, C)
+    severity: error
+    profiles: [promotion]
+    message: "{C} in {D} names no check that would fail if its claim were false"
+    repair: "Name the test, command or measurement, and what it observes when the claim is false."
+  design-altitude:
+    forall: top(D, S), core.meta(D, kind, design)
+    forbid: prescribes_implementation(D, S)
+    severity: warning
+    profiles: [promotion]
+    message: "{S} in {D} reads as implementation steps"
+    repair: "State the decision and the model; leave the steps to the implementation."

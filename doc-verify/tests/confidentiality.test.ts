@@ -1,21 +1,24 @@
+// Outbound policy: a local-only canary or a generic secret pattern in the evidence stops the
+// round before the adapter sees anything, and the verdict is NO-GO.
 import { createMockJevJudgeBackend } from "deepclause-sdk";
 import { describe, expect, it } from "vitest";
 
-import { evaluateSemantic, PolicyViolationError } from "../src/semantic.js";
-import type { ExpandedQuestion, ResolvedRubric, RubricItem } from "../src/rubric.js";
-import { sectionId } from "../src/types.js";
+import { DOC, moduleText, PURPOSE_ORACLE, run } from "./engine-helpers.js";
 
-const item: RubricItem = {
-  id: "private.boundary", artifact_kinds: ["design"],
-  applies_to: { sections: ["x"], scope: "combined" },
-  evidence: { source: "section_body", max_bytes: 1000 },
-  question: { kind: "choose", instruction: "Safe?", options: ["supported", "refuted", "unknown"] },
-  critical: true, weight: 1, scores: { supported: 1, refuted: 0, unknown: 0 },
-};
-const rubric: ResolvedRubric = { threshold: 1, items: [item], chain: [] };
+const ASKS = moduleText(`oracles:
+${PURPOSE_ORACLE}constraints:
+  known:
+    forall: core.section(D, S, _)
+    require: purpose(D, S, P), P in [problem, scope, rationale]
+    severity: error
+`);
 
 describe("confidentiality policy", () => {
-  it("keeps a local-only canary outside the adapter", async () => {
+  it.each([
+    ["a configured local-only canary", `${DOC}\nLOCAL-ONLY-CANARY\n`, ["local-only-canary"]],
+    ["a generic credential pattern", `${DOC}\nTYPESAFE_API_KEY=abc\n`, []],
+    ["a home-directory path", `${DOC}\nsee /Users/someone/notes\n`, []],
+  ])("keeps %s outside the adapter", async (_name, markdown, forbiddenLiterals) => {
     let captured = "";
     const backend = createMockJevJudgeBackend({
       answers: (request) => {
@@ -23,17 +26,9 @@ describe("confidentiality policy", () => {
         return [];
       },
     });
-    const question: ExpandedQuestion = {
-      id: item.id,
-      item,
-      sectionIds: [sectionId("x")],
-      segments: [{ id: "x", ctx: "design/x.md", text: "LOCAL-ONLY-CANARY" }],
-    };
-    await expect(evaluateSemantic({
-      root: process.cwd(), artifactKind: "design", questions: [question], rubric,
-      model: "jev-1.13.0", policyVersion: 1, maxEvidenceBytes: 1000,
-      forbiddenLiterals: ["local-only-canary"], maxAgeSeconds: 3600, backend, useCache: false,
-    })).rejects.toThrow(PolicyViolationError);
+    const report = await run(ASKS, backend, { markdown, policy: { maxEvidenceBytes: 20_000, forbiddenLiterals } });
+    expect(report.verdict).toBe("NO-GO");
+    expect(report.failure?.message).toBe("semantic evidence contains prohibited data");
     expect(captured).toBe("");
   });
 });

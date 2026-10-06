@@ -1,0 +1,25 @@
+# design/03's own item, migrated from its companion's v1 `rubrics` block (design 04 §Migration):
+# v1 design.local_constraint (noncritical, weight 1, rubric threshold 0.9) over
+# scope---what-we-touch -> scope_explicit / design-scope-explicit, a weight-1 warning. The v1
+# threshold carries over as warning_threshold. Composed after doc-verify/modules/design.yaml.
+schema_version: 2
+kind: verification-module
+module: home.design-03
+warning_threshold: 0.9
+oracles:
+  scope_explicit(D, S):
+    ask: The document-specific scope is explicit.
+    evidence: core.body(D, S)
+    threshold: 0
+    max_bytes: 4000
+rules:
+  scope_section(D, S): top(D, S), core.heading(D, S, 'Scope - what we touch')
+constraints:
+  design-scope-explicit:
+    forall: scope_section(D, S)
+    require: scope_explicit(D, S)
+    severity: warning
+    weight: 1
+    profiles: [promotion]
+    message: "{S} in {D} does not make the document-specific scope explicit"
+    repair: "State what this design touches and what it leaves alone."

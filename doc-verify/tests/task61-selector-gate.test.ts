@@ -44,42 +44,20 @@ policy:
   forbidden_literals: []
 `;
 
-/** A minimal contract world built independently of the shipped test fixture. */
+/** A minimal contract world built independently of the shipped test fixture: one structural
+ *  module (no oracle, so the judge is never asked). */
 function writeWorld(root: string): void {
   mkdirSync(path.join(root, "design"), { recursive: true });
-  mkdirSync(path.join(root, "rubrics"), { recursive: true });
-  mkdirSync(path.join(root, "strategies"), { recursive: true });
-  writeFileSync(path.join(root, "rubrics", "default.yaml"), `schema_version: 1
-rubrics:
-  kind: jev
-  threshold: 1
-  items:
-    - id: design.problem
-      artifact_kinds: [design]
-      applies_to: {sections: [problem], scope: combined}
-      evidence: {source: section_body, max_bytes: 1000}
-      question:
-        kind: choose
-        instruction: Is the problem explicit?
-        options: [supported, refuted, unknown]
-      critical: true
-      weight: 1
-      scores: {supported: 1, refuted: 0, unknown: 0}
-`);
-  writeFileSync(path.join(root, "strategies", "design.yaml"), `schema_version: 1
-kind: verification-strategy
-verification:
-  kind: jev-prolog
-  rubrics:
-    kind: jev
-    inherits: ../rubrics/default.yaml#rubrics
-  default_profile: draft
-  profiles:
-    draft:
-      sections: [problem]
-      cache: reuse
-    promotion:
-      cache: refresh
+  mkdirSync(path.join(root, "modules"), { recursive: true });
+  writeFileSync(path.join(root, "modules", "design.yaml"), `schema_version: 2
+kind: verification-module
+module: task61.design
+constraints:
+  has-problem:
+    forall: core.meta(D, kind, design)
+    require: core.section(D, S, _), core.heading(D, S, 'Problem')
+    severity: error
+    message: "{D} has no Problem section"
 `);
 }
 
@@ -95,9 +73,6 @@ kind: document-contract
 document:
   path: design/${name}.md
   kind: design
-verification:
-  kind: jev-prolog
-  inherits: ../strategies/design.yaml#verification
 `);
 }
 
@@ -126,7 +101,10 @@ function repo(documents: string, opts: { commit?: string[]; untracked?: string[]
 }
 
 function run(root: string, args: string[]): { status: number | null; stdout: string; stderr: string } {
-  return spawnSync("node", [CLI, "check", ...args], { cwd: root, encoding: "utf8" });
+  // The module path builds the judge client first; the module asks nothing, so the key is never sent.
+  return spawnSync("node", [CLI, "check", ...args], {
+    cwd: root, encoding: "utf8", env: { ...process.env, TYPESAFE_API_KEY: "placeholder-never-sent" },
+  });
 }
 
 interface Report {
@@ -146,13 +124,13 @@ function artifactPaths(root: string): string[] {
 
 const INCLUDE_ALL = `  - pattern: design/*.md
     artifact_kind: design
-    verification: strategies/design.yaml#verification
+    modules: [modules/design.yaml]
     required_sections: [problem]
 `;
 
 const INCLUDE_B = `  - pattern: design/b.md
     artifact_kind: design
-    verification: strategies/design.yaml#verification
+    modules: [modules/design.yaml]
     required_sections: [problem]
 `;
 
@@ -181,7 +159,7 @@ describe("#61 arm 2 — ordered last-match-wins: a later include re-adds", () =>
     exclude: true
 ${INCLUDE_B.replace("design/b.md", "design/a.md")}  - pattern: design/c.md
     artifact_kind: design
-    verification: strategies/design.yaml#verification
+    modules: [modules/design.yaml]
     required_sections: [problem]
 `, { commit: ["a", "b", "c"] });
     const result = run(root, ["--all", "--profile", "draft", "--format", "json"]);
@@ -231,7 +209,7 @@ describe("#61 arm 4 — the --paths refusal consumer", () => {
   it("refuses a path matched by NO selector (a third input to the same refusal)", () => {
     const root = repo(`  - pattern: design/only-*.md
     artifact_kind: design
-    verification: strategies/design.yaml#verification
+    modules: [modules/design.yaml]
     required_sections: [problem]
 `, { commit: ["a"] });
     const result = run(root, ["--paths", "design/a.md", "--profile", "draft", "--format", "json"]);

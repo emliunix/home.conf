@@ -27,10 +27,17 @@ export interface SnapshotPair {
   impactPaths: ReadonlyMap<RepoPath, RepoPath[]>;
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
   candidatePaths: RepoPath[];
+  /** Every file in the candidate's tree (tracked files, or the range head's tree). */
+  candidateInventory: readonly string[];
+  /** Whether the working tree is part of the candidate, so a file on disk also exists. */
+  workingTree: boolean;
+  /** Branch, tag and remote-branch names (`git for-each-ref`, short form); empty when Git cannot list them. */
+  gitRefs: readonly string[];
 }
 
 export interface DocumentReferenceRule extends DocumentSelector {
-  verification?: string | undefined;
+  /** The rule's verification modules; repository paths are edges of the affected closure. */
+  modules?: string[] | undefined;
 }
 
 export async function captureSnapshots(input: {
@@ -77,6 +84,8 @@ export async function captureSnapshots(input: {
       documentRules: input.documentRules,
       readBaseline: (file) => readGitBlob(input.root, base, file),
       readCandidate: (file) => readGitBlob(input.root, head, file),
+      candidateInventory,
+      workingTree: false,
     });
   }
 
@@ -105,6 +114,8 @@ export async function captureSnapshots(input: {
       documentRules: input.documentRules,
       readBaseline,
       readCandidate: (file) => readGitBlob(input.root, ":", file),
+      candidateInventory: allTracked,
+      workingTree: true,
     });
   }
 
@@ -124,6 +135,8 @@ export async function captureSnapshots(input: {
     documentRules: input.documentRules,
     readBaseline,
     readCandidate: (file) => readWorkingBlob(input.root, file),
+    candidateInventory: workingInventory,
+    workingTree: true,
   });
 }
 
@@ -228,6 +241,8 @@ async function buildPair(input: {
   documentRules: DocumentReferenceRule[];
   readBaseline: (path: RepoPath) => Promise<TextBlob>;
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
+  candidateInventory: readonly string[];
+  workingTree: boolean;
 }): Promise<SnapshotPair> {
   const [baseline, candidate] = await Promise.all([
     capture(input.baselineLabel, input.baselineInputPaths, input.readBaseline),
@@ -246,6 +261,9 @@ async function buildPair(input: {
     impactPaths: affected.impactPaths,
     readCandidate: input.readCandidate,
     candidatePaths: affected.artifacts,
+    candidateInventory: input.candidateInventory,
+    workingTree: input.workingTree,
+    gitRefs: gitRefNames(input.root),
   };
 }
 
@@ -288,13 +306,11 @@ function linkGraph(
     const companionPath = repoPath(file.replace(/\.md$/i, ".yaml"));
     const companion = snapshot.entries.get(companionPath);
     const rule = resolveDocumentSelector(documentRules, file);
-    const defaultVerification = rule?.verification === undefined
-      ? []
-      : referencePath(repoPath("."), rule.verification);
+    const moduleFiles = (rule?.modules ?? []).flatMap((reference) => referencePath(repoPath("."), reference));
     graph.set(file, [...new Set([
       ...extractMarkdownLinks(file, entry.content),
       companionPath,
-      ...defaultVerification,
+      ...moduleFiles,
       ...(companion === undefined || "deleted" in companion ? [] : extractCompanionDependencies(companion.content)),
     ])].sort());
   }
@@ -376,6 +392,7 @@ function extractCompanionDependencies(content: string): RepoPath[] {
   }
 }
 
+/** A verification module's `extends` references, relative to the module file. */
 function extractYamlLinks(sourcePath: RepoPath, content: string): RepoPath[] {
   let value: unknown;
   try {
@@ -384,42 +401,20 @@ function extractYamlLinks(sourcePath: RepoPath, content: string): RepoPath[] {
     return [];
   }
   const parsed = z.object({
-    rubrics: z.object({
-      inherits: z.union([z.string(), z.array(z.string())]).optional(),
-    }).loose().optional(),
-    verification: z.object({
-      inherits: z.string().optional(),
-      rubrics: z.object({
-        inherits: z.union([z.string(), z.array(z.string())]).optional(),
-      }).loose().optional(),
-      profiles: z.object({
-        draft: z.object({ rubric: z.string().optional() }).loose().optional(),
-        promotion: z.object({ rubric: z.string().optional() }).loose().optional(),
-      }).loose().optional(),
-    }).loose().optional(),
+    kind: z.literal("verification-module"),
+    extends: z.array(z.string()).optional(),
   }).loose().safeParse(value);
   if (!parsed.success) {
     return [];
   }
-  const inherited = parsed.data.rubrics?.inherits;
-  const strategyInherited = parsed.data.verification?.inherits;
-  const strategyRubrics = parsed.data.verification?.rubrics?.inherits;
-  const references = [
-    ...(inherited === undefined ? [] : typeof inherited === "string" ? [inherited] : inherited),
-    ...(strategyInherited === undefined ? [] : [strategyInherited]),
-    ...(strategyRubrics === undefined ? [] : typeof strategyRubrics === "string" ? [strategyRubrics] : strategyRubrics),
-  ];
-  const profileReferences = [
-    parsed.data.verification?.profiles?.draft?.rubric,
-    parsed.data.verification?.profiles?.promotion?.rubric,
-  ].filter((reference): reference is string => reference !== undefined);
-  return [...new Set([
-    ...references.flatMap((reference) => referencePath(sourcePath, reference)),
-    ...profileReferences.flatMap((reference) => referencePath(repoPath("."), reference)),
-  ])].sort();
+  return [...new Set((parsed.data.extends ?? []).flatMap((reference) => referencePath(sourcePath, reference)))].sort();
 }
 
 function referencePath(sourcePath: RepoPath, reference: string): RepoPath[] {
+  if (reference.startsWith("doc-verify:")) {
+    // An engine library ships with the engine, not the repository: no repository edge.
+    return [];
+  }
   const filePart = reference.split("#", 1)[0];
   if (filePart === undefined || filePart.length === 0 || path.posix.isAbsolute(filePart)) {
     return [];
@@ -427,6 +422,14 @@ function referencePath(sourcePath: RepoPath, reference: string): RepoPath[] {
   const base = sourcePath === "." ? "" : path.posix.dirname(sourcePath);
   const normalized = path.posix.normalize(path.posix.join(base, filePart));
   return normalized === ".." || normalized.startsWith("../") ? [] : [repoPath(normalized)];
+}
+
+function gitRefNames(root: string): string[] {
+  try {
+    return gitLines(root, ["for-each-ref", "--format=%(refname:short)", "refs/heads", "refs/tags", "refs/remotes"]);
+  } catch {
+    return [];
+  }
 }
 
 function gitLines(root: string, args: string[]): string[] {

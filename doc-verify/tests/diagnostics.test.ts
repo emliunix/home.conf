@@ -141,7 +141,7 @@ ${PURPOSE_ORACLE}constraints:
     expect(blocked.constraints[0]?.status).toBe("undetermined");
   });
 
-  it("reports an empty population with a count of zero", async () => {
+  it("treats an empty population as vacuously satisfied and silent, counting zero in the full report", async () => {
     const program = moduleText(`constraints:
   appendix-exists:
     forall: core.section(D, appendix, _)
@@ -149,9 +149,40 @@ ${PURPOSE_ORACLE}constraints:
     severity: error
 `);
     const report = await run(program, scriptedJudge(() => ({ value: "unknown" })).backend);
-    expect(report.constraints[0]).toMatchObject({ population: 0, status: "satisfied" });
+    expect(report.constraints[0]).toMatchObject({ population: 0, status: "satisfied", bindings: [] });
     expect(renderReport(report)).toContain("population 0 (0 certain)");
-    expect(report.findings).toContain("appendix-exists: the population is empty");
+    expect(report.findings).toEqual([]);
+    expect(report.verdict).toBe("PASS");
+  });
+
+  it("violates a `population: nonempty` constraint that binds nothing", async () => {
+    const program = moduleText(`constraints:
+  appendix-exists:
+    forall: core.section(D, appendix, _)
+    require: core.depth(D, appendix, 2)
+    severity: error
+    population: nonempty
+    repair: Add an Appendix.
+`);
+    const report = await run(program, scriptedJudge(() => ({ value: "unknown" })).backend);
+    expect(report.constraints[0]).toMatchObject({ population: 0, status: "violated" });
+    expect(report.constraints[0]?.bindings[0]).toMatchObject({
+      status: "violated", message: "appendix-exists: the population is empty (population: nonempty)", repair: "Add an Appendix.",
+    });
+    expect(report.verdict).toBe("NO-GO");
+    const present = await run(program, scriptedJudge(() => ({ value: "unknown" })).backend, { markdown: "# D\n\n## Appendix\n\nA.\n" });
+    expect(present.verdict).toBe("PASS");
+  });
+
+  it("refuses an unknown population value", async () => {
+    const program = moduleText(`constraints:
+  appendix-exists:
+    forall: core.section(D, appendix, _)
+    require: core.depth(D, appendix, 2)
+    severity: error
+    population: some
+`);
+    await expect(run(program, scriptedJudge(() => ({ value: "unknown" })).backend)).rejects.toThrow(/population/);
   });
 
   it("runs only the constraints of the selected profile", async () => {
