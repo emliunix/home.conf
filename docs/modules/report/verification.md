@@ -8,6 +8,7 @@
 | P-report-04 | `doc-verify/tests/keyless.test.ts` | spawns the built CLI; the `subprocess` project, 30 s timeout |
 | P-report-05 | `doc-verify/tests/segments.test.ts` | in-process |
 
-`doc-verify/tests/keyless.test.ts` is the only subprocess-decided property; it spawns the built
-CLI. The tests run in two vitest projects: `unit` (in-process) and `subprocess` (the CLI tests,
-a 30 s timeout), so a slow spawn does not flake the logic tier.
+`doc-verify/tests/keyless.test.ts` is a subprocess-decided property; it spawns the built CLI, as
+does `doc-verify/tests/task61-selector-gate.test.ts` (which decides P-selection-01). The tests run
+in two vitest projects: `unit` (in-process) and `subprocess` (the CLI tests, a 30 s timeout), so
+a slow spawn does not flake the logic tier.
