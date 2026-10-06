@@ -8,9 +8,14 @@ internal consistency, cheapest first, and says plainly what it cannot see.
 Checks:
   1. SKILL.md's frontmatter parses and carries a `name` and a `description`.
   2. Every rubric item names the defect that flips it (`red_when`).
-  3. Every case cites a real `SKILL.md` line.
+  3. Every case cites a real `SKILL.md` location, and that location says what the case
+     claims it says. A line-number cite is checked for range; an anchor cite
+     (`SKILL.md#some-heading`) is resolved against the headings in SKILL.md.
   4. Every linked report-kind reference exists and carries its four routing sections.
   5. The pinned production sources exist (skipped, not failed, when the visflow tree is absent).
+  6. The frozen lock matches the package on disk. A lock nothing verifies is decoration:
+     measured 2026-10-05, all six of its entries pointed at a different vintage of the
+     package and no check read the file at all.
 
 Usage:  python3 tests/l0.py          (exit 0 = lint clean, 1 = a defect)
 Dependency-free apart from PyYAML; run from the package root.
@@ -21,6 +26,8 @@ from __future__ import annotations
 import pathlib
 import re
 import sys
+import json
+import hashlib
 
 try:
     import yaml
@@ -31,6 +38,20 @@ except ImportError:  # pragma: no cover
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 VISFLOW = pathlib.Path.home() / "Documents" / "visflow"
 failures: list[str] = []
+
+
+def skill_anchors(skill_text: str) -> set[str]:
+    """GitHub-style heading slugs for SKILL.md, the targets a `SKILL.md#anchor` cite uses."""
+    anchors: set[str] = set()
+    for line in skill_text.splitlines():
+        m = re.match(r"^#{1,6}\s+(.*?)\s*$", line)
+        if not m:
+            continue
+        slug = m.group(1).lower()
+        slug = re.sub(r"[^a-z0-9 _-]", "", slug)
+        slug = slug.strip().replace(" ", "-")
+        anchors.add(slug)
+    return anchors
 
 
 def check_frontmatter() -> None:
@@ -63,21 +84,45 @@ def check_rubric() -> int:
 
 
 def check_cases() -> int:
-    lines = (ROOT / "SKILL.md").read_text().count("\n") + 1
+    """A case's `cites` must point at a real location in SKILL.md.
+
+    A cite must be `SKILL.md#anchor` (resolved against the headings) or the literal
+    `SKILL.md frontmatter`. Line-number cites (`SKILL.md:N-M`) are REFUSED: they drift
+    silently when a section moves, and the range check cannot tell that they now point at
+    unrelated text. That is the defect this check carries from the 2026-10-05 rewrite,
+    where every production and trigger cite still named the pre-rewrite line numbers and
+    the lint stayed green.
+    """
+    skill_text = (ROOT / "SKILL.md").read_text()
+    anchors = skill_anchors(skill_text)
     n = 0
     for path in sorted((ROOT / "tests" / "cases").glob("*.yaml")):
         doc = yaml.safe_load(path.read_text())
         for t in doc.get("triplets", []):
             for arm in ("canonical", "trap", "paraphrase"):
                 cite = (t.get(arm) or {}).get("cites", "")
-                m = re.search(r"SKILL\.md:(\d+)(?:-(\d+))?", cite)
-                if not m:
-                    failures.append(f"{path.name}/{t.get('behavior')}/{arm}: no SKILL.md line cite")
+                anchor = re.search(r"SKILL\.md#([a-z0-9-]+)", cite)
+                if anchor:
+                    # The anchor must name a heading that exists. This is the fix for the
+                    # defect the line-range check carried: a rewrite moves every section,
+                    # line numbers stay IN RANGE while pointing at the wrong text, and the
+                    # lint stays green. An anchor either resolves or it does not.
+                    if anchor.group(1) not in anchors:
+                        failures.append(
+                            f"{path.name}/{t.get('behavior')}/{arm}: cites SKILL.md#{anchor.group(1)} "
+                            f"but SKILL.md has no such heading "
+                            f"(have: {', '.join(sorted(anchors))})"
+                        )
+                    n += 1
                     continue
-                last = int(m.group(2) or m.group(1))
-                if last > lines:
-                    failures.append(f"{path.name}/{t.get('behavior')}/{arm}: cites SKILL.md:{last} "
-                                    f"but the file has {lines} lines")
+                if "SKILL.md frontmatter" in cite:
+                    n += 1
+                    continue
+                failures.append(
+                    f"{path.name}/{t.get('behavior')}/{arm}: cite is neither an anchor nor the "
+                    f"frontmatter - line-number cites drift silently when a section moves; "
+                    f"use SKILL.md#<heading>. Got: {cite!r}"
+                )
                 n += 1
     return n
 
@@ -139,16 +184,57 @@ def check_pins() -> str:
     return f"{len(pins)} pins, {len(missing)} missing"
 
 
+def check_frozen_lock() -> str:
+    """The frozen lock must match the package on disk.
+
+    It did not, and nothing read it. Measured 2026-10-05 at `2c15775`: all six entries
+    pointed at a different vintage of the package, so 'the last behaviorally evaluated
+    surface' named a surface that was not in the tree. `--update` refreshes it after a
+    trial, and is the only sanctioned way to change it.
+    """
+    lock_path = ROOT / "tests" / "frozen.lock.json"
+    lock = json.loads(lock_path.read_text())
+    files = lock.get("files", {})
+    drifted = []
+    for rel, want in files.items():
+        path = ROOT / rel
+        if not path.is_file():
+            drifted.append(f"{rel} (missing)")
+            continue
+        got = hashlib.sha256(path.read_bytes()).hexdigest()
+        if got != want:
+            drifted.append(f"{rel} (lock {want[:12]}, disk {got[:12]})")
+    if drifted:
+        failures.append(
+            "tests/frozen.lock.json does not match the package: "
+            + "; ".join(drifted)
+            + " - refresh with `python3 tests/l0.py --update` after the trial that pins it"
+        )
+    return f"lock v{lock.get('version')}: {len(files) - len(drifted)}/{len(files)} match"
+
+
 def main() -> int:
+    if "--update" in sys.argv:
+        # The only sanctioned way to move the lock. Run it AFTER a trial, not to silence
+        # a red: the lock records the surface that was actually measured.
+        lock_path = ROOT / "tests" / "frozen.lock.json"
+        lock = json.loads(lock_path.read_text())
+        for rel in lock.get("files", {}):
+            lock["files"][rel] = hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()
+        lock["version"] = int(lock.get("version", 1)) + 1
+        lock_path.write_text(json.dumps(lock, indent=1) + "\n")
+        print(f"frozen lock updated to v{lock['version']}")
+        return 0
     check_frontmatter()
     items = check_rubric()
     cases = check_cases()
     references = check_references()
     subtemplate = check_decision_subtemplate()
+    lock = check_frozen_lock()
     pins = check_pins()
     print(
         f"frontmatter: parsed | rubric items: {items} | cited cases: {cases} | "
-        f"report kinds: {references} | subtemplate ids: {subtemplate} | pins: {pins}"
+        f"report kinds: {references} | subtemplate ids: {subtemplate} | {lock} | pins: {pins}"
     )
     if failures:
         print(f"L0 FAIL - {len(failures)} defect(s):")

@@ -5,14 +5,14 @@ tree. The bias to correct for is that progress feels like state; only a landed, 
 
 ## The five checks, as an implementer
 
-1. **Routine check — your cards, not the channel.** Read the tasks assigned to you and the lane
+1. **Routine check — your work items, not the channel.** Read the tasks assigned to you and the lane
    thread you follow. Mute the general channel if it interrupts the work; accept the named cost,
-   which is missing unassigned-card announcements.
+   which is missing unassigned-work item announcements.
 2. **High-level understanding — state what your change touches.** Name the boundary you are
    modifying and what you are *not* touching. If you cannot say which surface a claim is about,
    you are not ready to change it.
-3. **Goal clarity — the smallest evidence that closes the card.** Write it down before starting:
-   the command, the expected result, the count. A card whose closing evidence cannot be named will
+3. **Goal clarity — the smallest evidence that closes the work item.** Write it down before starting:
+   the command, the expected result, the count. A work item whose closing evidence cannot be named will
    be closed on opinion.
 4. **Work-item progress — one writer per tree.** Say where the work physically is (branch, worktree,
    commit), whether that tip is reachable from a remote ref, and what the next observable result is.
@@ -27,10 +27,13 @@ tree. The bias to correct for is that progress feels like state; only a landed, 
 - A red test that fails for the *wrong reason* is green in disguise: assert the placement of a
   seed or mutation, not just its effect.
 - When a check you rely on has never failed on a real defect, it is a claim, not a gate.
+- A gate result names the revision and population it read. If a gate enumerates tracked files, stage
+  every new file or run the gate from a clean checkout of the exact commit before reporting it. An
+  untracked file is outside a tracked-file gate, so a green run can exclude the change under test.
 - Report what you measured, and separately what you read. They are different claims.
 
 ## Exit
 
-Every wake ends `done` (the claimed result has direct evidence and the card can move) or `blocked`
+Every wake ends `done` (the claimed result has direct evidence and the work item can move) or `blocked`
 (exact blocker, accountable owner, lift condition). "In progress" without one of those two is the
 state that hides a stall.
