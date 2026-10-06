@@ -4,6 +4,7 @@
 import { describe, expect, it } from "vitest";
 
 import { memoryOracleCache } from "../src/engine/index.js";
+import { sentenceSpans } from "../src/engine/oracles.js";
 import { moduleText, run, scriptedJudge } from "./engine-helpers.js";
 
 const MODULE = moduleText(`oracles:
@@ -57,5 +58,29 @@ describe("the deciding span", () => {
     const two = await run(MODULE, second.backend, { cache });
     expect(second.requests).toHaveLength(0);
     expect(two.oracles.find((oracle) => oracle.atom.includes("falsifies"))?.span).toMatchObject({ kind: "sentence", judged: true });
+  });
+
+  it("a sentence that starts on the next line does not include the previous line", () => {
+    const text = "Alpha beta.\nGamma delta\nepsilon.\n";
+    const spans = sentenceSpans({ sections: ["s"], text, pieces: [{ id: "s", startLine: 10, offset: 0, text }] });
+    expect(spans.map((span) => span.quote)).toEqual(["Alpha beta.", "Gamma delta epsilon."]);
+    expect(spans[1]).toMatchObject({ startLine: 11, endLine: 12 });
+  });
+
+  it("a cached fails asks its follow-up when the follow-up cache is cold", async () => {
+    const stored = new Map<string, { answered: string; distribution: number[] }>();
+    const full = {
+      get: (key: string) => stored.get(key),
+      set: (key: string, value: { answered: string; distribution: number[] }) => { stored.set(key, value); },
+    };
+    await run(MODULE, failing("s1").backend, { cache: full });
+    // Keep only the main-atom entries (their labels are the oracle's own); drop the follow-ups.
+    const mainOnly = new Map([...stored].filter(([, value]) => ["holds", "fails", "unknown"].includes(value.answered)));
+    const sparse = { get: (key: string) => mainOnly.get(key), set: () => undefined };
+    const second = failing("s1");
+    const report = await run(MODULE, second.backend, { cache: sparse });
+    // The main came from the cache, so the only fresh call is the follow-up.
+    expect(second.requests).toHaveLength(1);
+    expect(report.oracles.find((oracle) => oracle.atom.includes("falsifies"))?.span).toMatchObject({ kind: "sentence", judged: true });
   });
 });

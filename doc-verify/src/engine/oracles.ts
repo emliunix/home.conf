@@ -342,6 +342,11 @@ export function sentenceSpans(evidence: EvidenceText): OracleSpan[] {
       while ((match = boundary.exec(block.text)) !== null) {
         emit(block, start, match.index + match[0].length);
         start = boundary.lastIndex;
+        // The next sentence starts after the whitespace (and any line break) that follows the
+        // boundary, so its line range does not include the previous line.
+        while (start < block.text.length && /\s/.test(block.text[start] as string)) {
+          start += 1;
+        }
       }
       emit(block, start, block.text.length);
     }
