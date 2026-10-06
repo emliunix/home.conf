@@ -27,6 +27,7 @@ import {
   renderReport,
   runProgram,
   type BindingReport,
+  type EngineReport,
 } from "./engine/index.js";
 import { segmentMarkdown } from "./segments.js";
 import { MissingBlobError, SnapshotMode, captureSnapshots } from "./snapshot.js";
@@ -316,8 +317,10 @@ async function checkWithModules(input: {
       const verdict: FindingVerdict = binding.status === "violated"
         ? constraint.severity === "error" ? "NO-GO" : "WARN"
         : unasked ? "BLOCKED" : "NEEDS-REVIEW";
-      const item = bindingFinding(input.file, input.sections, `module.${constraint.id}`, verdict, binding);
-      const reason = unasked ? report.failure?.message ?? "evidence not resolved" : bindingReason(binding);
+      const item = bindingFinding(input.file, input.sections, `module.${constraint.id}`, verdict, binding, report.oracles);
+      const fallback = item.reason ?? (report.oracles.find((oracle) =>
+        (oracle.label === "fails" || oracle.label === "unknown") && oracle.sections.some((section) => (item.sections ?? []).includes(section)))?.finding);
+      const reason = unasked ? report.failure?.message ?? "evidence not resolved" : fallback;
       findings.push(reason === undefined ? item : { ...item, reason });
     }
   }
@@ -396,18 +399,27 @@ function deletedReport(
  * A finding for one binding that did not hold. It sits at the binding's section (`S`, else `C`,
  * else the first section an oracle read), or at the document's first section when it names none.
  */
-function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, verdict: FindingVerdict, binding: BindingReport): Finding {
+function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, verdict: FindingVerdict, binding: BindingReport, oracles: EngineReport["oracles"]): Finding {
   const read = bindingSections(binding);
   const named = [binding.values.S, binding.values.C].filter((value): value is string =>
     value !== undefined && sections.some((section) => section.id === value));
   const ids = [...new Set([...named, ...read])];
   const anchor = sections.find((section) => section.id === ids[0]) ?? sections[0];
+  // The span and reason usually come from the binding's own proof; when a violated require's
+  // proof omits the oracle leaf (a certain-false oracle is a structural miss), take them from the
+  // report's oracle leaves on the same sections.
+  const onSections = oracles.filter((oracle) =>
+    (oracle.label === "fails" || oracle.label === "unknown") && oracle.sections.some((section) => ids.includes(section)));
+  const span = bindingSpan(binding) ?? onSections.find((oracle) => oracle.span !== undefined)?.span;
+  const reason = bindingReason(binding) ?? onSections.find((oracle) => oracle.finding !== undefined)?.finding
+    ?? (onSections.length > 0 ? (onSections[0]?.distribution.length === 0 ? "no distribution from the judge" : "below the oracle's threshold") : undefined);
   return {
     ...finding(file, anchor, ruleId, verdict, binding.message),
     status: binding.status,
     ...(binding.repair === undefined ? {} : { repair: binding.repair }),
     sections: ids,
-    ...(() => { const span = bindingSpan(binding); return span === undefined ? {} : { span }; })(),
+    ...(span === undefined ? {} : { span }),
+    ...(reason === undefined ? {} : { reason }),
     basis: bindingBasis(binding),
     proof: renderProof(binding.proof, ""),
   };

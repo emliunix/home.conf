@@ -123,6 +123,9 @@ export async function askRound(input: {
   cache: OracleCache | undefined;
 }): Promise<RequestRecord[]> {
   const byDocument = new Map<string, Prepared[]>();
+  // Non-passing atoms whose main answer came from the cache still need a span: their follow-up
+  // is asked (or replayed from its own cache) in the pass after the fresh batches.
+  const cachedCandidates = new Map<string, Array<{ entry: Prepared; spans: OracleSpan[] }>>();
   const usedKeys = new Map<string, string>();
   for (const demand of [...input.demands].sort((a, b) => a.key.localeCompare(b.key))) {
     const oracle = demand.oracle;
@@ -152,13 +155,14 @@ export async function askRound(input: {
     if (cached !== undefined) {
       const leaf = thresholdLeaf({ demand, key, question, options, evidence, cacheKey }, cached, input.round, true);
       if (leaf.label === "fails" || leaf.label === UNKNOWN) {
-        // The follow-up's own cache is honored on a warm run, so a rerun keeps the judged span.
         const spans = sentenceSpans(evidence);
-        const answer = spans.length === 0
-          ? undefined
-          : (await input.cache?.get(spanCacheKey(input.model, input.policy, demand.key, evidence, spans)))?.answered;
-        const index = answer === undefined ? -1 : spans.findIndex((_span, i) => `s${String(i)}` === answer);
-        leaf.span = (index >= 0 ? spans[index] : undefined) ?? sectionSpan(evidence);
+        if (spans.length === 0) {
+          leaf.span = sectionSpan(evidence);
+        } else {
+          const list = cachedCandidates.get(documentId) ?? [];
+          list.push({ entry: { demand, key, question, options, evidence, cacheKey }, spans });
+          cachedCandidates.set(documentId, list);
+        }
       }
       input.store.leaves.set(demand.key, leaf);
       continue;
@@ -239,6 +243,27 @@ export async function askRound(input: {
       stateBytes: Buffer.byteLength(stateJson),
       id: sha256(canonicalJson({ state, questions, model: input.model })),
     });
+  }
+
+  // A cached non-passing atom still gets its span: ask the follow-up (or replay it from the
+  // follow-up cache), one keyed batch per document, exactly as for a freshly answered atom.
+  for (const [document, candidates] of cachedCandidates) {
+    const state = {
+      schema_version: 2,
+      document,
+      round: input.round,
+      evidence: Object.fromEntries(candidates.map((candidate) =>
+        [candidate.entry.key, { sections: candidate.entry.evidence.sections, text: candidate.entry.evidence.text }])),
+    };
+    const chosen = await askSpans(input, candidates, state);
+    for (const candidate of candidates) {
+      const leaf = input.store.leaves.get(candidate.entry.demand.key);
+      if (leaf === undefined) {
+        continue;
+      }
+      const index = candidate.spans.findIndex((_span, i) => `s${String(i)}` === chosen.get(candidate.entry.key));
+      leaf.span = (index >= 0 ? candidate.spans[index] : undefined) ?? sectionSpan(candidate.entry.evidence);
+    }
   }
   return records;
 }

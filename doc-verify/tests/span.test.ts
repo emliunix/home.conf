@@ -3,6 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 
+import { memoryOracleCache } from "../src/engine/index.js";
 import { moduleText, run, scriptedJudge } from "./engine-helpers.js";
 
 const MODULE = moduleText(`oracles:
@@ -43,5 +44,18 @@ describe("the deciding span", () => {
     const report = await run(MODULE, backend);
     const leaf = report.oracles.find((oracle) => oracle.atom.includes("falsifies"));
     expect(leaf?.span).toMatchObject({ kind: "section", judged: false });
+  });
+
+  it("a cached fails keeps its judged span, replayed from the follow-up cache", async () => {
+    const cache = memoryOracleCache();
+    const first = failing("s1");
+    const one = await run(MODULE, first.backend, { cache });
+    expect(one.oracles.find((oracle) => oracle.atom.includes("falsifies"))?.span).toMatchObject({ kind: "sentence", judged: true });
+    // A second judge that would answer the follow-up `unknown`: if it were asked, the span would
+    // fall back to the section. It is not asked, so the judged span is replayed from the cache.
+    const second = failing("unknown");
+    const two = await run(MODULE, second.backend, { cache });
+    expect(second.requests).toHaveLength(0);
+    expect(two.oracles.find((oracle) => oracle.atom.includes("falsifies"))?.span).toMatchObject({ kind: "sentence", judged: true });
   });
 });
