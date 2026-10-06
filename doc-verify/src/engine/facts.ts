@@ -129,9 +129,10 @@ export interface DocumentReference {
   target: string;
   /**
    * `link`: a Markdown link target; `path`: a code span naming a repository path; `name`: a bare
-   * file name (no `/`) that names no one tracked file, so it is a name, not a path.
+   * file name (no `/`) that names no one tracked file, so it is a name, not a path; `line`: a code
+   * span naming a position by line number, such as `path.ts:123`.
    */
-  kind: "link" | "path" | "name";
+  kind: "link" | "path" | "name" | "line";
 }
 
 /** What reference extraction may consult about the repository; each part is optional. */
@@ -157,6 +158,108 @@ const EXTENSIONS = [
   "pdf", "csv", "tsv", "xml", "proto", "graphql", "tldr", "tldraw", "ipynb", "pl", "pro",
 ].join("|");
 const FILE_EXTENSION = new RegExp(`\\.(?:${EXTENSIONS})$`, "i");
+/**
+ * `design/103`, `design/21-25`: a numbered document named by its short form, which is how this
+ * repository writes a reference to a design. Whether it names a real file is a question only the
+ * reference context can answer, so `shorthandStem` below asks it.
+ */
+const SHORTHAND_STEM = /^[A-Za-z_][A-Za-z0-9_-]*\/[0-9]+(?:-[0-9]+)?$/;
+/**
+ * A line locator: a stem, then `:` and one or more line numbers or ranges. The tail may list
+ * several, separated by `,` or `/` -- `:123`, `:123-456`, `:11,16`, `:280-289,393-400`,
+ * `:797/826`, `:119/154` -- because they are one citation of one file.
+ */
+const LOCATOR_TAIL = "[0-9]+(?:-[0-9]+)?(?:(?:,|/)[0-9]+(?:-[0-9]+)?)*";
+/**
+ * A line locator whose stem carries a separator: `impl/x/queue.ts:312`,
+ * `impl/environment/Dockerfile:38,56-66`. The last segment need not have an extension, because a
+ * path already says it is a file.
+ */
+const LINE_PATH = new RegExp(`^(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]+:${LOCATOR_TAIL}$`);
+/**
+ * A line locator with no separator, so the stem must END IN A KNOWN EXTENSION to be a file:
+ * `schema.sql:11,16`, `types.d.ts:286`, `migrations-v2.test.ts:49-62`. This is what keeps
+ * `localhost:8080`, `127.0.0.1:5432`, `node:18`, `12:30` and `utf-8:3` out -- they are a port, a
+ * version or a time, not a position.
+ */
+const LINE_BARE = new RegExp(`^[A-Za-z0-9_.-]+\\.(?:${EXTENSIONS}):${LOCATOR_TAIL}$`, "i");
+/** A line locator naming a dotfile, which has no separate extension: `.gitignore:3`, `.env:12`. */
+const LINE_DOTFILE = new RegExp(`^\\.[A-Za-z0-9_.-]+:${LOCATOR_TAIL}$`);
+/**
+ * A line locator's stem: everything before the `:` that opens the line tail. `-1` when the span
+ * has no such colon.
+ */
+function locatorStem(value: string): string | undefined {
+  const colon = value.indexOf(":");
+  return colon <= 0 ? undefined : value.slice(0, colon);
+}
+
+/**
+ * Whether the span is exactly its stem, a colon, and a line tail. The stem alone is not enough:
+ * a resolved file name would otherwise make `Dockerfile:`, `Dockerfile:foo` and `Dockerfile:16abc`
+ * locators, which is the port mistake in another costume.
+ */
+function hasLocatorTail(value: string, stem: string): boolean {
+  return new RegExp(`^${stem.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}:${LOCATOR_TAIL}$`).test(value);
+}
+
+/**
+ * Whether a short-form stem names a repository file: `design/103` is `design/103-*.md`. Only the
+ * reference context knows, so without one a shorthand is not a locator -- a guess would make
+ * `child/3:1` a citation the moment a `child/3-*.md` happened to exist.
+ */
+function shorthandResolves(stem: string, context: ReferenceContext | undefined): boolean {
+  const exists = context?.exists;
+  if (context === undefined || exists === undefined) {
+    return false;
+  }
+  const directory = path.posix.dirname(stem);
+  const prefix = `${path.posix.basename(stem)}-`;
+  if (directory === "." || !exists(directory)) {
+    return false;
+  }
+  return (context.files ?? []).some(
+    (file) => path.posix.dirname(file) === directory && path.posix.basename(file).startsWith(prefix),
+  );
+}
+
+/**
+ * Whether a stem with no `/` and no recognized extension names a repository file (`Dockerfile:16`,
+ * `Makefile:12`). A fixed extension list cannot cover every real filename, so the inventory answers
+ * it instead: the file resolves beside the document, at the root, or uniquely in the inventory.
+ * Without a context nothing resolves here, so a bare stem is never a locator on its own -- which is
+ * what keeps `node:18`, `localhost:8080`, `12:30` and `utf-8:3` out.
+ */
+function bareStemResolves(stem: string, context: ReferenceContext | undefined): boolean {
+  if (context === undefined || context.exists === undefined) {
+    return false;
+  }
+  return resolvesTarget(context.path, stem, context.exists) || basenameCount(context.files, stem) === 1;
+}
+
+/** Whether a code span is a line locator on any of the stems above. */
+function isLineLocator(value: string, context: ReferenceContext | undefined): boolean {
+  const stem = locatorStem(value);
+  if (stem === undefined) {
+    return false;
+  }
+  // `design/103:55` names a real design document by its short form, so the stem is a file and the
+  // span is a locator -- but only when the context says that document exists. `child/3:1` and
+  // `design/02:12` name nothing, so they stay out.
+  if (SHORTHAND_STEM.test(stem) && shorthandResolves(stem, context)) {
+    return hasLocatorTail(value, stem);
+  }
+  if (!(LINE_PATH.test(value) || LINE_BARE.test(value) || LINE_DOTFILE.test(value))) {
+    // No separator and no extension: the stem is a file only if the inventory says so -- and the
+    // rest of the span must still be a line tail, or a resolved file name would make every
+    // `Dockerfile:foo` and `Dockerfile:` a locator.
+    return !stem.includes("/") && bareStemResolves(stem, context) && hasLocatorTail(value, stem);
+  }
+  // A placeholder stem (`path/X.md:123`, `task/N:5`) is documentation, and a predicate indicator
+  // (`child/3:1`) is a signature: neither names a real file, so neither is a locator. The stem is
+  // what those two guards describe, so they are tested against it.
+  return !PREDICATE_INDICATOR.test(stem) && !PLACEHOLDER_SEGMENT.test(stem);
+}
 /** Rule 2: `.md`, or `.md/.yaml`: only extensions, no file. */
 const ONLY_EXTENSIONS = new RegExp(`^\\.(?:${EXTENSIONS})(?:/\\.(?:${EXTENSIONS}))*$`, "i");
 /** `name/3` is a predicate indicator (and `design/02` a shorthand), not a path. */
@@ -168,22 +271,37 @@ const GIT_REF_PREFIX = /^(?:origin|archive|exp|refs)\//;
 
 /**
  * `core.ref` facts: every Markdown link, image or definition target that is not a URL
- * (`link`), and every inline code span that names a repository path (`path`) or a bare file
- * name that is not one (`name`). Code blocks (fenced or indented) and YAML front matter are not
- * read. The rules for a code span, in order (README "Reference facts"):
+ * (`link`), every inline code span that names a repository path (`path`) or a bare file
+ * name that is not one (`name`), and every code span that is a line locator (`line`).
+ * Code blocks (fenced or indented) and YAML front matter are not read. The rules for a code
+ * span, in order (README "Reference facts"):
  *
- * 0. only `[A-Za-z0-9_./-]`, not a predicate indicator (`child/3`), not a placeholder (`path/X.md`);
- * 1. inside the text of a link that resolves, it is the link's label, not a reference;
- * 2. only extensions (`.md`, `.md/.yaml`) is not a path;
- * 3. a leading `/` is a URL route (`/api/build`), not a repository path;
- * 4. a span with a `/` is a Git ref when it is a branch or tag name, or starts `origin/`,
+ * 0. a line locator is a `line`: a position that rots on the next edit above it, never a
+ *    reference. The tail is one or more line numbers or ranges separated by `,` or `/`, so
+ *    `path.ts:123`, `schema.sql:11,16`, `claim-loop.ts:280-289,393-400` and `facade.ts:119/154`
+ *    all qualify. The stem must look like a file: a path with a `/` (`impl/x/queue.ts:312`), a
+ *    bare name ending in a known extension (`types.d.ts:286`), a dotfile (`.gitignore:3`), a bare
+ *    name the repository holds (`Dockerfile:16`), or a short form naming a real document
+ *    (`design/103:55`) -- the last two resolved from the reference context, so neither counts
+ *    without one, and resolving the stem never excuses the value: the span must still be exactly
+ *    the stem, a colon and a line tail (`Dockerfile:foo` and `Dockerfile:` are not locators);
+ *    A colon that is not one of those is no reference at all, so `localhost:8080`,
+ *    `127.0.0.1:5432`, `node:18`, `12:30` and `utf-8:3` stay out; nor is a stem the rules below
+ *    refuse (`path/X.md:123`, `child/3:1`). A tail with no stem (`:178,184`) is out of scope: it
+ *    cannot be told from a port or a ratio list;
+ * 1. only `[A-Za-z0-9_./-]`, not a predicate indicator (`child/3`), not a placeholder (`path/X.md`);
+ * 2. inside the text of a link that resolves, it is the link's label, not a reference (a line
+ *    locator is exempt: rule 0 already claimed it);
+ * 3. only extensions (`.md`, `.md/.yaml`) is not a path;
+ * 4. a leading `/` is a URL route (`/api/build`), not a repository path;
+ * 5. a span with a `/` is a Git ref when it is a branch or tag name, or starts `origin/`,
  *    `archive/`, `exp/` or `refs/` (and that first segment is not a directory);
- * 5. a span with a `/` is a path when it has a known extension, starts `./` or `../`, or its
+ * 6. a span with a `/` is a path when it has a known extension, starts `./` or `../`, or its
  *    first segment is an existing directory (at the root or beside the document);
- * 6. a span with no `/` and a known extension is a path when it resolves beside the document or
+ * 7. a span with no `/` and a known extension is a path when it resolves beside the document or
  *    at the root, or exactly one tracked file has that name; otherwise it is a `name`.
  *
- * Without a context (no `exists`) every span that passes 0, 2 and 3 is a path, as before.
+ * Without a context (no `exists`) every span that passes 0, 3 and 4 is a path, as before.
  */
 export function documentReferences(markdown: string, sections: Section[], context?: ReferenceContext): DocumentReference[] {
   const tree = unified().use(remarkParse).parse(markdown);
@@ -211,9 +329,12 @@ export function documentReferences(markdown: string, sections: Section[], contex
       } else if (target.length > 0) {
         labelOnly = true; // a URL's label names the URL, not a repository file
       }
-    } else if (node.type === "inlineCode" && !inResolvingLink) {
+    } else if (node.type === "inlineCode") {
       const kind = spanKind(node.value.trim(), context);
-      if (kind !== undefined) {
+      // Rule 1 suppresses a span that is only a link's label, so one link yields one ref. A line
+      // locator is NOT suppressed: the label is the reader's visible text and rots like any other
+      // citation, and the link's own target is a different kind, so nothing is counted twice.
+      if (kind !== undefined && (kind === "line" || !inResolvingLink)) {
         found.push({ section: sectionAt(node.position?.start.line), target: node.value.trim(), kind });
       }
     }
@@ -228,6 +349,9 @@ export function documentReferences(markdown: string, sections: Section[], contex
 }
 
 function spanKind(value: string, context: ReferenceContext | undefined): DocumentReference["kind"] | undefined {
+  if (isLineLocator(value, context)) {
+    return "line";
+  }
   if (!PATH_SPAN.test(value) || !/[A-Za-z0-9]/.test(value) || PREDICATE_INDICATOR.test(value) || PLACEHOLDER_SEGMENT.test(value)) {
     return undefined;
   }

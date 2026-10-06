@@ -138,9 +138,120 @@ describe("core.ref path rules", () => {
     const ruled = "---\n# Title\n---\n\ntext\n";
     expect(segmentMarkdown(ruled).some((section) => section.id === "title")).toBe(true);
   });
+
+  it("8: a line locator is its own kind, so a path rule never ranges over it", () => {
+    // A line number is a position that rots, not a path: it is `line`, so `paths-resolve` (which
+    // ranges over `path`) cannot report it, and a consumer opts in with `core.ref(D,S,T,line)`.
+    expect(spans("`src/engine/run.ts:312` and `src/engine/run.ts:10-20`\n")).toEqual([
+      ["src/engine/run.ts:312", "line"], ["src/engine/run.ts:10-20", "line"],
+    ]);
+    expect(spans("`src/engine/run.ts`\n")).toEqual([["src/engine/run.ts", "path"]]);
+    // A bare name carrying an extension is a locator too.
+    expect(spans("`facts.ts:148`\n")).toEqual([["facts.ts:148", "line"]]);
+  });
+
+  it("9: a colon that is not a file locator is not a reference at all", () => {
+    // The stem must look like a file. These are not locators, so they are no reference. A port, a
+    // version and a time are the near misses that make the stem test load-bearing.
+    expect(spans("`node:18`, `12:30`, `utf-8:3`, `sleep:30`, `ratio:2`, `max:3`\n")).toEqual([]);
+    expect(spans("`Step 3:12`\n")).toEqual([]);
+    expect(spans("`localhost:8080`, `127.0.0.1:5432`, `example.com:443`\n")).toEqual([]);
+  });
+
+  it("10: a multi-dot stem and an extensionless stem are still locators", () => {
+    // `types.d.ts` and a bare `Dockerfile` have no single-suffix extension, but the stem of a
+    // locator is a file either way: the first ends in a known extension, the second carries a `/`.
+    expect(spans("`types.d.ts:286`, `foo.test.ts:48`, `migrations-v2.test.ts:49-62`\n")).toEqual([
+      ["types.d.ts:286", "line"], ["foo.test.ts:48", "line"], ["migrations-v2.test.ts:49-62", "line"],
+    ]);
+    expect(spans("`impl/environment/Dockerfile:38`\n")).toEqual([["impl/environment/Dockerfile:38", "line"]]);
+  });
+
+  it("11: a comma-separated list and a multi-range are one locator, not several", () => {
+    // `:11,16` and `:280-289,393-400` name several lines of one file; the citation is the span.
+    expect(spans("`schema.sql:11,16`\n")).toEqual([["schema.sql:11,16", "line"]]);
+    expect(spans("`claim-loop.ts:280-289,393-400`\n")).toEqual([["claim-loop.ts:280-289,393-400", "line"]]);
+    expect(spans("`impl/environment/Dockerfile:38,56-66`\n")).toEqual([
+      ["impl/environment/Dockerfile:38,56-66", "line"],
+    ]);
+  });
+
+  it("12: a dotfile locator is a locator; the dot is not an extension", () => {
+    expect(spans("`.gitignore:3`, `.env:12`\n")).toEqual([[".gitignore:3", "line"], [".env:12", "line"]]);
+  });
+
+  it("13: a slash alt so `:797/826` is one locator, like the comma list", () => {
+    expect(spans("`onboarding.test.ts:797/826`\n")).toEqual([["onboarding.test.ts:797/826", "line"]]);
+    expect(spans("`facade.ts:119/154`\n")).toEqual([["facade.ts:119/154", "line"]]);
+    expect(spans("`facade.ts:118-119`\n")).toEqual([["facade.ts:118-119", "line"]]);
+  });
+
+  it("14: a short-form stem naming a real document is a locator, resolved from context", () => {
+    // `design/103:55` names a real design document by its short form, so the stem is a file. Only
+    // the reference context knows that, so without one the shorthand stays out -- a guess would
+    // make `child/3:1` a citation the moment a `child/3-*.md` existed.
+    const files = ["design/103-pi-provision-surface.md", "design/21-ui-serving-extraction.md"];
+    const context: ReferenceContext = { path: "design/x.md", exists: (file) => files.includes(file) || file === "design", files };
+    const at = (markdown: string): Array<[string, string]> =>
+      documentReferences(markdown, segmentMarkdown(markdown), context).map((r) => [r.target, r.kind]);
+    expect(at("A `design/103:55` span.\n")).toEqual([["design/103:55", "line"]]);
+    expect(at("A `design/21:157` span, and `design/21:157-160` too.\n")).toEqual([
+      ["design/21:157", "line"], ["design/21:157-160", "line"],
+    ]);
+    // No such document: the stem names nothing, so it is not a locator.
+    expect(at("A `design/99:5` span and a `child/3:1` signature.\n")).toEqual([]);
+    // No context at all: the same shorthand stays out.
+    expect(documentReferences("A `design/103:55` span.\n", segmentMarkdown("A `design/103:55` span.\n"))).toEqual([]);
+  });
+
+  it("15: a bare extensionless repository file is a locator, resolved from the inventory", () => {
+    // A fixed extension list cannot cover every real filename (`Dockerfile`, `Makefile`, `.tf`), so
+    // the inventory answers whether the bare stem is a file -- beside the document, at the root, or
+    // uniquely in it. Without a context nothing resolves, which is what keeps the near misses out.
+    const files = ["Dockerfile", "Makefile", "src/run.ts"];
+    const context: ReferenceContext = { path: "docs/a.md", exists: (file) => files.includes(file), files };
+    const at = (markdown: string, chosen = context): Array<[string, string]> =>
+      documentReferences(markdown, segmentMarkdown(markdown), chosen).map((r) => [r.target, r.kind]);
+    expect(at("A `Dockerfile:16` span, and `Dockerfile:16-20`.\n")).toEqual([
+      ["Dockerfile:16", "line"], ["Dockerfile:16-20", "line"],
+    ]);
+    expect(at("A `Makefile:12` span.\n")).toEqual([["Makefile:12", "line"]]);
+    // The same span with no context, or with the file absent, names nothing.
+    expect(at("A `Dockerfile:16` span.\n", { path: "docs/a.md", exists: () => false, files: [] })).toEqual([]);
+    expect(documentReferences("A `Dockerfile:16` span.\n", segmentMarkdown("A `Dockerfile:16` span.\n"))).toEqual([]);
+    // A port, a version and a time are still not files.
+    expect(at("`node:18`, `localhost:8080`, `12:30`, `utf-8:3`\n")).toEqual([]);
+    // A resolved file name proves the STEM, not the value: the span must still be a line tail, or
+    // every `Dockerfile:foo` and `Dockerfile:` would be a locator -- the port mistake in another
+    // costume. The colon is taken from the FIRST colon, so a second colon cannot sneak past.
+    expect(at("`Dockerfile:`, `Dockerfile:foo`, `Dockerfile:16abc`, `Dockerfile:x:16`\n")).toEqual([]);
+    expect(at("`Makefile:`, `Makefile:-1`, `Makefile:1-`, `Makefile:1.5`, `Makefile: 1`\n")).toEqual([]);
+  });
+
+  it("16: a placeholder or predicate-indicator stem is not a locator", () => {
+    // The stem is what the placeholder and predicate-indicator guards describe, so the guards are
+    // tested against the stem, not the whole span.
+    expect(spans("`path/X.md:123`, `task/N:5`, `child/3:1`, `design/02:12`\n")).toEqual([]);
+  });
+
+  it("17: a line locator inside a link's label is still a locator", () => {
+    // Rule 1 normally suppresses a span that is only a link's label, so one link yields one ref.
+    // A locator is not suppressed: the label is the reader's visible text and rots like any other
+    // citation, while the link's own target is a different kind, so nothing is counted twice.
+    const context = (extra: Partial<ReferenceContext> = {}): ReferenceContext => ({
+      path: "docs/a.md", exists: (file) => file === "src/run.ts", files: ["src/run.ts"], ...extra,
+    });
+    const at = (markdown: string): Array<[string, string]> =>
+      documentReferences(markdown, segmentMarkdown(markdown), context()).map((r) => [r.target, r.kind]);
+    expect(at("See [`src/run.ts:312`](src/run.ts).\n")).toEqual([["src/run.ts", "link"], ["src/run.ts:312", "line"]]);
+    // A label that is not a locator keeps the rule-1 suppression: one ref, the link.
+    expect(at("See [`src/run.ts`](src/run.ts).\n")).toEqual([["src/run.ts", "link"]]);
+    // A locator labelling a URL is prose, not a URL: it is still a citation.
+    expect(at("See [`src/run.ts:312`](https://example.com).\n")).toEqual([["src/run.ts:312", "line"]]);
+  });
 });
 
-async function repository(files: Record<string, string>): Promise<string> {
+async function repository(files: Record<string, string>, modules = "[doc-verify:references]"): Promise<string> {
   const root = await mkdtemp(path.join(tmpdir(), "doc-verify-refs-"));
   for (const [file, content] of Object.entries(files)) {
     await mkdir(path.dirname(path.join(root, file)), { recursive: true });
@@ -151,7 +262,7 @@ kind: document-verification
 documents:
   - pattern: docs/*.md
     artifact_kind: doc
-    modules: [doc-verify:references]
+    modules: ${modules}
 invalidation_patterns: [.doc-verify.yaml]
 judge:
   kind: jev
@@ -212,6 +323,36 @@ describe("doc-verify:references", () => {
     expect(text).not.toContain("NEEDS-REVIEW");
     expect(text).not.toContain("notes.py");
     expect(text).not.toContain("feat/x");
+    expect(report.verdict).toBe("PASS");
+  });
+});
+
+describe("doc-verify:no-line-citations", () => {
+  const MODULES = "[doc-verify:no-line-citations]";
+
+  it("reddens a real path:line citation, deterministically and without a judge", async () => {
+    const root = await repository(
+      { "docs/a.md": "# Doc\n\n## Body\n\nThe publisher is `src/run.ts:312`.\n" },
+      MODULES,
+    );
+    const report = await checkDocuments({ root, mode: { kind: "paths", paths: ["docs/a.md"] }, profile: "auto" });
+    const artifact = report.artifacts[0];
+    const finding = artifact?.findings.find((item) => item.ruleId === "module.no-line-citations");
+    expect(finding?.verdict).toBe("NO-GO");
+    expect(finding?.message).toContain("src/run.ts:312");
+    expect(artifact?.semanticCalls).toBe(0);
+    expect(report.verdict).toBe("NO-GO");
+  });
+
+  it("stays green on a line-free document, and asks no judge", async () => {
+    const root = await repository(
+      { "docs/a.md": "# Doc\n\n## Body\n\nThe publisher is `src/run.ts` in `publish`.\n" },
+      MODULES,
+    );
+    const report = await checkDocuments({ root, mode: { kind: "paths", paths: ["docs/a.md"] }, profile: "auto" });
+    const artifact = report.artifacts[0];
+    expect(artifact?.findings.find((item) => item.ruleId === "module.no-line-citations")).toBeUndefined();
+    expect(artifact?.semanticCalls).toBe(0);
     expect(report.verdict).toBe("PASS");
   });
 });
