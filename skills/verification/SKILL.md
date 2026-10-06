@@ -49,15 +49,47 @@ does not prove unrelated semantics.
 
 When the repository has `.doc-verify.yaml`, use its `doc-verify` executable.
 
-- Use `doc-verify segments FILE` to inspect stable Markdown section IDs.
-- Use `doc-verify check --paths FILE --profile draft` while authoring; add
-  `--section ID` to restrict the modules' `selected` sections.
-- Use `--profile promotion` for a review or lifecycle decision that depends on
-  semantic evidence. Do not treat `auto` as proof that a draft was reviewed.
-- Use the repository's `prek` hook for the staged changed-file closure. CI must
-  repeat the committed range check.
-- Treat `NO-GO`, `BLOCKED`, and `NEEDS-REVIEW` as distinct outcomes. Never turn
-  model confidence into `PASS`.
+Commands (v2):
+
+- `doc-verify check --all` — every configured document; exit 0 pass, 1 no-go, 3 blocked.
+- `doc-verify check FILE [FILE...]` — named documents; a bare file works (`--paths` is the explicit form).
+- `doc-verify check --staged` / `--range A..B` — the staged or ranged closure; the `prek` hook runs `--staged`.
+- `--section ID` restricts to a section; `--profile draft|promotion|auto` chooses which constraints run (default `auto`).
+- `--verbose` adds the proof tree and snapshot to the text report; `--format json` writes the record.
+- `doc-verify segments FILE` — the stable section ids and their line ranges.
+
+Do not treat `auto` as proof that a draft was reviewed. Treat `NO-GO`, `BLOCKED` and
+`NEEDS-REVIEW` as distinct outcomes, and never turn model confidence into `PASS`.
+
+### Type library
+
+A document rule names a default `modules` list and may declare named `types:`. A
+companion's `document.type` selects exactly one type, replacing the default; with no
+`type` the default modules apply; an unknown type is refused, naming the declared
+ones. The engine ships a type library (`doc-verify/lib/`), each type a module plus a
+worked example (`doc-verify/lib/examples/`) to copy:
+
+| Type | What it checks | Use it for |
+|---|---|---|
+| `doc-verify:references` | every link resolves (error); every backtick path resolves (warning) | any document; the base every type extends |
+| `doc-verify:design` | a status word, a `## Goal`, a verification section whose claims name falsifiers, and altitude | a design / change contract |
+| `doc-verify:goal` | the same shape for a goal file (status from the title) | an epic / goal file |
+| `doc-verify:module-contract` | a `Public surface` section; current law, not history | a package's contract |
+| `doc-verify:module-model` | content, as current law rather than history | a package's model |
+| `doc-verify:module-properties` | properties stated as checkable claims | a package's properties |
+| `doc-verify:module-verification` | every claimed property paired with its witnessing check and that check's limit | a package's verification |
+| `doc-verify:worklog-record` | a dated record, not a standing rule (opt-in) | a worklog that must not become law |
+| `doc-verify:runbook` | a `Commands` section, as current instructions | a project runbook |
+
+Worklogs are opt-in. The `worklog/**` rule defaults to `doc-verify:references`; a
+worklog whose companion sets `type: record` runs `doc-verify:worklog-record`. An
+untyped worklog whose links resolve is decided without the judge key; the other types
+ask the judge on `promotion`.
+
+A `module-*` type holds current law only, so dated or progress prose (`2026-10-01`,
+`round 5`, "we tried" / "then changed") is a structural **error**, keyless included.
+A literal example of such a form belongs in a code span or a fenced block, which the
+check skips.
 
 ### Bringing a repository under contract
 

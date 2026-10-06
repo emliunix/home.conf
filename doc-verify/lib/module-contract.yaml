@@ -1,0 +1,32 @@
+# doc-verify:module-contract - a package's current public contract: the stable surface callers
+# rely on, stated as law, not as history. Extends doc-verify:references, so its links resolve.
+# Dated or progress prose (a date, "round N", "we tried" / "then changed") is a structural NO-GO;
+# a literal date or phrase inside a code span or fenced block is a format example and is skipped.
+# A worked example lives at doc-verify/lib/examples/module-contract.md.
+schema_version: 2
+kind: verification-module
+module: doc-verify.module-contract
+extends: [doc-verify:references]
+oracles:
+  current_not_history(D, S):
+    ask: This states the contract as it is now, not how it came to be, not a round number, not "we tried", not a dated decision or a progress note; dated history belongs in a worklog.
+    evidence: core.body(D, S)
+    threshold: 0.5
+    max_bytes: 12000
+rules:
+  sections(D, S): core.section(D, S, _)
+  heading(D, S, H): core.heading(D, S, H)
+constraints:
+  module-contract-has-surface:
+    forall: core.meta(D, kind, 'module-contract')
+    require: heading(D, S, 'Public surface')
+    severity: error
+    message: "{D} states no 'Public surface' section"
+    repair: "List the stable exports and the rules callers rely on."
+  module-contract-is-current:
+    forall: core.meta(D, kind, 'module-contract'), sections(D, S)
+    require: current_not_history(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{S} in {D} narrates history instead of stating current law"
+    repair: "State what is true now; the decision trail belongs in a design or the worklog."

@@ -189,6 +189,20 @@ async function checkArtifact(input: {
         `missing required section -- ${explainSectionMatch(required, sections.map((s) => s.id))} [${documentSectionsNote(sections.map((s) => s.id))}]`));
     }
   }
+  // A deterministic pre-check, no judge: a canon module page holds current law only, so dated or
+  // progress prose is NO-GO. A literal date or phrase inside a code span or fenced block is a
+  // format example, not history, and is skipped. The judge's `current_not_history` covers the
+  // subtle cases.
+  if (input.rule.artifact_kind.startsWith("module-")) {
+    for (const section of sections) {
+      const prose = section.content.replace(/```[\s\S]*?```/g, "").replace(/`[^`]*`/g, "");
+      const hit = DATED_PROSE.map((pattern) => pattern.exec(prose)).find((match) => match !== null);
+      if (hit !== undefined) {
+        findings.push(finding(input.file, section, "structure.dated-prose", "NO-GO",
+          `section '${section.id}' carries dated or progress prose ('${hit[0]}'); canon holds current law only — reword it, or put a literal example in a code span or fenced block`));
+      }
+    }
+  }
   const companionPath = repoPath(input.file.replace(/\.md$/i, ".yaml"));
   const companion = await optionalCompanion(input.readCandidate, companionPath);
   if (companion === undefined) {
@@ -465,6 +479,9 @@ function finding(pathValue: RepoPath, section: Section | undefined, ruleId: stri
     evidenceId: section?.contentHash ?? "tombstone",
   };
 }
+
+/** Dated or progress prose a current-law module page must not carry (a deterministic pre-check). */
+const DATED_PROSE = [/\b20\d\d-\d\d-\d\d\b/, /\bround\s+\d+\b/i, /\bwe tried\b/i, /\bthen changed\b/i];
 
 function warning(pathValue: RepoPath, ruleId: string, message: string): WarningDiagnostic {
   return {

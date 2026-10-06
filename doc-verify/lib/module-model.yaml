@@ -1,0 +1,31 @@
+# doc-verify:module-model - a package's model: the concepts and state it rests on, as current
+# law. Extends doc-verify:references.
+# Dated or progress prose (a date, "round N", "we tried" / "then changed") is a structural NO-GO;
+# a literal date or phrase inside a code span or fenced block is a format example and is skipped.
+# A worked example lives at doc-verify/lib/examples/module-model.md.
+schema_version: 2
+kind: verification-module
+module: doc-verify.module-model
+extends: [doc-verify:references]
+oracles:
+  current_not_history(D, S):
+    ask: This states the model as it is now, not how it came to be, not a round number, not "we tried", not a dated decision or a progress note.
+    evidence: core.body(D, S)
+    threshold: 0.5
+    max_bytes: 12000
+rules:
+  sections(D, S): core.section(D, S, _)
+constraints:
+  module-model-has-content:
+    forall: core.meta(D, kind, 'module-model')
+    require: sections(D, S)
+    severity: error
+    message: "{D} has no content"
+    repair: "Describe the concepts and state the package rests on."
+  module-model-is-current:
+    forall: core.meta(D, kind, 'module-model'), sections(D, S)
+    require: current_not_history(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{S} in {D} narrates history instead of stating current law"
+    repair: "State what is true now; the decision trail belongs in a design or the worklog."
