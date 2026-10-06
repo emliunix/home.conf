@@ -15,6 +15,19 @@ documents:
     artifact_kind: goal
     modules: [doc-verify:goal]
     status_from: title
+  # doc-verify's own module docs, dogfooding the engine's module-* types.
+  - pattern: docs/modules/*/contract.md
+    artifact_kind: module-contract
+    modules: [doc-verify:module-contract]
+  - pattern: docs/modules/*/model.md
+    artifact_kind: module-model
+    modules: [doc-verify:module-model]
+  - pattern: docs/modules/*/properties.md
+    artifact_kind: module-properties
+    modules: [doc-verify:module-properties]
+  - pattern: docs/modules/*/verification.md
+    artifact_kind: module-verification
+    modules: [doc-verify:module-verification]
 invalidation_patterns:
   - .doc-verify.yaml
   - doc-verify/**
