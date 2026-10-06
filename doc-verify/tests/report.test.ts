@@ -73,11 +73,13 @@ describe("text report", () => {
   it("prints an oracle-decided NEEDS-REVIEW with its repair and the deciding answer", async () => {
     const report = await check(GOOD, 0.6);
     const text = renderText(report);
-    expect(text).toContain("design/a.md:7 [verification] module.verification-falsifies NEEDS-REVIEW undetermined: verification in design/a.md names no failing check (sections: verification)\n"
+    expect(text).toContain("design/a.md:7-10 [verification] module.verification-falsifies NEEDS-REVIEW undetermined: verification in design/a.md names no failing check (sections: verification)\n"
+      + "  span: section (not judged) — lines 7-10\n"
+      + "  reason: below the oracle's threshold\n"
       + "  repair: Name the test and what it observes.\n"
       + "  answered holds (p=0.6 < threshold 0.8) over verification\n");
     expect(text).not.toContain("evidence:");
-    expect(text).toMatch(/^NEEDS-REVIEW: 1 artifact\(s\), 3 section\(s\), 1 warning\(s\), 1 semantic call\(s\), 0 cache hit\(s\)$/m);
+    expect(text).toMatch(/^NEEDS-REVIEW: 1 artifact\(s\), 3 section\(s\), 1 warning\(s\), 2 semantic call\(s\), 0 cache hit\(s\)$/m);
   });
 
   it("prints a structural NO-GO with the literal that is missing", async () => {
@@ -89,7 +91,7 @@ describe("text report", () => {
   it("keeps the evidence hash and adds the proof tree under --verbose", async () => {
     const report = await check(GOOD, 0.6);
     const text = renderText(report, { verbose: true });
-    expect(text).toMatch(/finding: design\/a\.md:7 \[verification\] module\.verification-falsifies NEEDS-REVIEW .*\(evidence: [0-9a-f]{64}\)/);
+    expect(text).toMatch(/finding: design\/a\.md:7-10 \[verification\] module\.verification-falsifies NEEDS-REVIEW .*\(evidence: [0-9a-f]{64}\)/);
     expect(text).toContain("    proof:\n      binding verification-falsifies: undetermined\n");
     expect(text).toContain("oracle sample.falsifies(design/a.md, verification) -> unknown (answered holds, distribution [0.6, 0.4, 0]");
   });

@@ -323,15 +323,31 @@ function core(name: string, args: Term[]): Term {
   return compound(`core::${name}`, args);
 }
 
+/**
+ * One contiguous slice of the document an evidence expression read. Its `startLine` is the
+ * first line of `text` in the document and `offset` is where it begins in the concatenated
+ * evidence text, so a sentence inside the evidence maps back to a real line range.
+ */
+export interface EvidencePiece {
+  id: string;
+  startLine: number;
+  offset: number;
+  text: string;
+}
+
 export interface EvidenceText {
   sections: string[];
   text: string;
+  pieces: EvidencePiece[];
 }
 
 /** `core.body(D, S)`: the heading plus the whole subtree. */
 export function bodyEvidence(document: DocumentFacts, sectionId: string): EvidenceText | undefined {
   const section = document.sections.find((candidate) => candidate.id === sectionId);
-  return section === undefined ? undefined : { sections: [sectionId], text: section.content };
+  return section === undefined
+    ? undefined
+    : { sections: [sectionId], text: section.content,
+        pieces: [{ id: sectionId, startLine: section.startLine, offset: 0, text: section.content }] };
 }
 
 /** `core.own(D, S)`: the heading plus the text before the first child. */
@@ -342,11 +358,10 @@ export function ownEvidence(document: DocumentFacts, sectionId: string): Evidenc
     return undefined;
   }
   const firstChild = document.sections.slice(index + 1).find((candidate) => document.parents.get(candidate.id) === sectionId);
-  if (firstChild === undefined) {
-    return { sections: [sectionId], text: section.content };
-  }
-  const ownBytes = Buffer.from(section.content).subarray(0, firstChild.startByte - section.startByte);
-  return { sections: [sectionId], text: ownBytes.toString() };
+  const text = firstChild === undefined
+    ? section.content
+    : Buffer.from(section.content).subarray(0, firstChild.startByte - section.startByte).toString();
+  return { sections: [sectionId], text, pieces: [{ id: sectionId, startLine: section.startLine, offset: 0, text }] };
 }
 
 /** `core.union(D, [S1, ...])`: listed bodies in document order; a nested section adds nothing. */
@@ -366,5 +381,11 @@ export function unionEvidence(document: DocumentFacts, sectionIds: string[]): Ev
     return chain;
   };
   const outer = chosen.filter((section) => [...ancestors(section.id)].every((ancestor) => !wanted.has(ancestor)));
-  return { sections: outer.map((section) => section.id), text: outer.map((section) => section.content).join("") };
+  const pieces: EvidencePiece[] = [];
+  let offset = 0;
+  for (const section of outer) {
+    pieces.push({ id: section.id, startLine: section.startLine, offset, text: section.content });
+    offset += section.content.length;
+  }
+  return { sections: outer.map((section) => section.id), text: pieces.map((piece) => piece.text).join(""), pieces };
 }

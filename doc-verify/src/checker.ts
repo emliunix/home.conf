@@ -18,13 +18,16 @@ import { loadDocVerifyEnv } from "./local-env.js";
 import { productionBackend } from "./judge.js";
 import {
   bindingBasis,
+  bindingReason,
   bindingSections,
+  bindingSpan,
   composeModules,
   ModuleError,
   renderProof,
   renderReport,
   runProgram,
   type BindingReport,
+  type EngineReport,
 } from "./engine/index.js";
 import { segmentMarkdown } from "./segments.js";
 import { MissingBlobError, SnapshotMode, captureSnapshots } from "./snapshot.js";
@@ -314,7 +317,9 @@ async function checkWithModules(input: {
       const verdict: FindingVerdict = binding.status === "violated"
         ? constraint.severity === "error" ? "NO-GO" : "WARN"
         : unasked ? "BLOCKED" : "NEEDS-REVIEW";
-      findings.push(bindingFinding(input.file, input.sections, `module.${constraint.id}`, verdict, binding));
+      const item = bindingFinding(input.file, input.sections, `module.${constraint.id}`, verdict, binding, report.oracles);
+      const reason = unasked ? report.failure?.message ?? "evidence not resolved" : item.reason;
+      findings.push(reason === undefined ? item : { ...item, reason });
     }
   }
   // An engine failure that decided nothing (every constraint was decided without the judge)
@@ -392,18 +397,41 @@ function deletedReport(
  * A finding for one binding that did not hold. It sits at the binding's section (`S`, else `C`,
  * else the first section an oracle read), or at the document's first section when it names none.
  */
-function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, verdict: FindingVerdict, binding: BindingReport): Finding {
+function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, verdict: FindingVerdict, binding: BindingReport, oracles: EngineReport["oracles"]): Finding {
   const read = bindingSections(binding);
   const named = [binding.values.S, binding.values.C].filter((value): value is string =>
     value !== undefined && sections.some((section) => section.id === value));
   const ids = [...new Set([...named, ...read])];
   const anchor = sections.find((section) => section.id === ids[0]) ?? sections[0];
+  // The span and reason usually come from the binding's own proof; when a violated require's
+  // proof omits the oracle leaf (a certain-false oracle is a structural miss), take them from the
+  // report's oracle leaves on the same sections. A confident `fails` carries no `reason` (the
+  // answer line does); only an `unknown` label is `below the oracle's threshold`.
+  const basis = bindingBasis(binding);
+  const proofSpan = bindingSpan(binding);
+  const onSections = oracles.filter((oracle) =>
+    (oracle.label === "fails" || oracle.label === "unknown") && oracle.sections.some((section) => ids.includes(section)));
+  const oracle = proofSpan === undefined ? onSections.find((entry) => entry.span !== undefined) ?? onSections[0] : undefined;
+  const span = proofSpan ?? oracle?.span;
+  if (oracle !== undefined && !basis.some((line) => line.startsWith("answered "))) {
+    const distribution = oracle.distribution;
+    const peak = distribution.length === 0 ? undefined : Math.max(...distribution);
+    const where = oracle.sections.join(", ") || "no section";
+    basis.push(distribution.length === 0
+      ? `answered ${oracle.label} (no distribution; threshold ${String(oracle.threshold)}) over ${where}`
+      : `answered ${oracle.label} (p=${String(peak)} ${(peak ?? 0) >= oracle.threshold ? ">=" : "<"} threshold ${String(oracle.threshold)}) over ${where}`);
+  }
+  const reason = bindingReason(binding) ?? (oracle?.label === "unknown"
+    ? (oracle.distribution.length === 0 ? "no distribution from the judge" : "below the oracle's threshold")
+    : undefined);
   return {
     ...finding(file, anchor, ruleId, verdict, binding.message),
     status: binding.status,
     ...(binding.repair === undefined ? {} : { repair: binding.repair }),
     sections: ids,
-    basis: bindingBasis(binding),
+    ...(span === undefined ? {} : { span }),
+    ...(reason === undefined ? {} : { reason }),
+    basis,
     proof: renderProof(binding.proof, ""),
   };
 }
