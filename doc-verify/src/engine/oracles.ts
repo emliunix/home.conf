@@ -14,7 +14,7 @@ import { PolicyViolationError } from "../judge.js";
 import { BlockedError } from "../types.js";
 import type { Oracle } from "./checker.js";
 import { UNKNOWN, type Demand, type OracleView } from "./evaluate.js";
-import { bodyEvidence, ownEvidence, unionEvidence, type DocumentFacts, type EvidencePiece, type EvidenceText } from "./facts.js";
+import { bodyEvidence, ownEvidence, unionEvidence, type DocumentFacts, type EvidenceText } from "./facts.js";
 import { listItems, termText, type Term } from "./terms.js";
 
 /**
@@ -286,35 +286,65 @@ export function sectionSpan(evidence: EvidenceText): OracleSpan {
   return { kind: "section", startLine, endLine: Math.max(startLine, endLine), quote: "", judged: false };
 }
 
-/** The evidence's sentences as candidate spans, each with its document line range (option B). */
+/**
+ * The evidence's sentences as candidate spans, each with its document line range (option B).
+ * A sentence ends at `.`, `!` or `?`, or at a blank line, a heading or the start of a list item;
+ * a plain line break is a soft wrap and joins the sentence, so a wrapped sentence is one option
+ * spanning several lines rather than one fragment per line.
+ */
 export function sentenceSpans(evidence: EvidenceText): OracleSpan[] {
   const spans: OracleSpan[] = [];
-  const push = (piece: EvidencePiece, from: number, to: number): void => {
-    const raw = piece.text.slice(from, to);
-    const quote = raw.replace(/\s+/g, " ").trim();
+  const emit = (block: { text: string; startLine: number }, from: number, to: number): void => {
+    const quote = block.text.slice(from, to).replace(/\s+/g, " ").trim();
     if (quote.length === 0) {
       return;
     }
-    const lead = raw.length - raw.replace(/^\s+/, "").length;
-    const startLine = piece.startLine + countNewlines(piece.text.slice(0, from + lead));
-    const endLine = piece.startLine + countNewlines(piece.text.slice(0, to));
-    spans.push({ kind: "sentence", startLine, endLine: Math.max(startLine, endLine), quote: quote.slice(0, 400), judged: true });
+    const lineAt = (offset: number): number => block.startLine + countNewlines(block.text.slice(0, offset));
+    const startLine = lineAt(from);
+    const endLine = Math.max(startLine, lineAt(to));
+    spans.push({ kind: "sentence", startLine, endLine, quote: quote.slice(0, 400), judged: true });
   };
   for (const piece of evidence.pieces) {
-    const text = piece.text;
-    let start = 0;
-    for (let index = 0; index < text.length; index += 1) {
-      const char = text[index] as string;
-      const atEnd = index + 1 >= text.length || /\s/.test(text[index + 1] as string);
-      if (char === "\n") {
-        push(piece, start, index);
-        start = index + 1;
-      } else if ((char === "." || char === "!" || char === "?") && atEnd) {
-        push(piece, start, index + 1);
-        start = index + 1;
+    // Blocks: a blank line, a heading, or the start of a list item ends the previous block.
+    const blocks: Array<{ text: string; startLine: number }> = [];
+    let parts: string[] = [];
+    let blockStart = piece.startLine;
+    const flushBlock = (): void => {
+      if (parts.length > 0) {
+        blocks.push({ text: parts.join("\n"), startLine: blockStart });
+        parts = [];
       }
+    };
+    piece.text.split("\n").forEach((line, index) => {
+      const lineNo = piece.startLine + index;
+      const trim = line.trim();
+      if (trim.length === 0) {
+        flushBlock();
+      } else if (/^#{1,6}\s/.test(trim)) {
+        flushBlock();
+        blocks.push({ text: trim, startLine: lineNo });
+      } else if (/^([-*+]|\d+[.)])\s/.test(trim)) {
+        flushBlock();
+        parts = [trim];
+        blockStart = lineNo;
+      } else {
+        if (parts.length === 0) {
+          blockStart = lineNo;
+        }
+        parts.push(trim);
+      }
+    });
+    flushBlock();
+    for (const block of blocks) {
+      const boundary = /[.!?]["')\]]*(?=\s|$)/g;
+      let start = 0;
+      let match: RegExpExecArray | null;
+      while ((match = boundary.exec(block.text)) !== null) {
+        emit(block, start, match.index + match[0].length);
+        start = boundary.lastIndex;
+      }
+      emit(block, start, block.text.length);
     }
-    push(piece, start, text.length);
   }
   return spans;
 }
