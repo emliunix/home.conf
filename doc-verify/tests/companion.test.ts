@@ -140,3 +140,69 @@ policy:
   execFileSync("git", ["init"], { cwd: root, stdio: "ignore" });
   return root;
 }
+
+const RECORD_MODULE = `schema_version: 2
+kind: verification-module
+module: companion.record
+constraints:
+  has-title:
+    forall: core.meta(D, kind, design)
+    require: core.section(D, S, _), core.heading(D, S, 'A')
+    severity: error
+    message: "{D} has no A section"
+`;
+
+/** The same fixture, with a `types:` rule set and a second module. */
+async function typesRepository(): Promise<string> {
+  const root = await mkdtemp(path.join(tmpdir(), "doc-verify-types-"));
+  await mkdir(path.join(root, "design"), { recursive: true });
+  await mkdir(path.join(root, "modules"), { recursive: true });
+  await writeFile(path.join(root, ".doc-verify.yaml"), `schema_version: 1
+kind: document-verification
+documents:
+  - pattern: design/*.md
+    artifact_kind: design
+    modules: [modules/design.yaml]
+    types:
+      record:
+        modules: [modules/record.yaml]
+invalidation_patterns: [.doc-verify.yaml]
+judge:
+  kind: jev
+  model: jev-1.13.0
+  client_sha256: ce983f8de97d5b30d527a7116f0c49ad3d17e098d2c3f17c9600041260c65dcb
+  attestation_max_age_seconds: 3600
+policy:
+  kind: semantic-boundary
+  version: 1
+  max_evidence_bytes: 12000
+  forbidden_literals: []
+`);
+  await writeFile(path.join(root, "modules/design.yaml"), MODULE);
+  await writeFile(path.join(root, "modules/record.yaml"), RECORD_MODULE);
+  await writeFile(path.join(root, "design/a.md"), "# A\n## Problem\nA concrete problem.\n");
+  execFileSync("git", ["init"], { cwd: root, stdio: "ignore" });
+  return root;
+}
+
+describe("document types", () => {
+  it("uses the rule's default modules when the companion names no type", async () => {
+    const root = await typesRepository();
+    await writeFile(path.join(root, "design/a.yaml"), contract("design/a.md"));
+    const report = await check(root, "draft");
+    expect(report.artifacts[0]?.engine?.modules).toEqual(["modules/design.yaml"]);
+  });
+
+  it("a type selects exactly its own modules", async () => {
+    const root = await typesRepository();
+    await writeFile(path.join(root, "design/a.yaml"), contract("design/a.md").replace("  kind: design\n", "  kind: design\n  type: record\n"));
+    const report = await check(root, "draft");
+    expect(report.artifacts[0]?.engine?.modules).toEqual(["modules/record.yaml"]);
+  });
+
+  it("refuses an unknown type, naming the declared ones", async () => {
+    const root = await typesRepository();
+    await writeFile(path.join(root, "design/a.yaml"), contract("design/a.md").replace("  kind: design\n", "  kind: design\n  type: nope\n"));
+    await expect(check(root, "draft")).rejects.toThrow("document.type \"nope\" is not one of record");
+  });
+});

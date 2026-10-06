@@ -200,8 +200,26 @@ async function checkArtifact(input: {
     warnings.push(warning(input.file, "metadata.legacy-verification",
       `${companionPath} carries a v1 verification: block, which is ignored; the rule's modules verify this document`));
   }
-  return checkWithModules({ ...input, modules: input.rule.modules, sections, findings, warnings,
+  return checkWithModules({ ...input, modules: modulesFor(input.rule, companion, companionPath), sections, findings, warnings,
     ...(companion?.document.status === undefined ? {} : { companionStatus: companion.document.status }) });
+}
+
+/**
+ * The rule's modules for this document. A companion's `document.type` selects one of the rule's
+ * named types, replacing its default `modules`; with no `type` the default applies. An unknown
+ * type is refused, naming the declared ones.
+ */
+function modulesFor(rule: DocumentIncludeRule, companion: CompanionMetadata | undefined, companionPath: RepoPath): string[] {
+  const type = companion?.document.type;
+  if (type === undefined) {
+    return rule.modules;
+  }
+  const chosen = rule.types?.[type];
+  if (chosen === undefined) {
+    const known = Object.keys(rule.types ?? {});
+    throw new UsageError(`invalid ${companionPath}: document.type ${JSON.stringify(type)} is not one of ${known.length === 0 ? "(the rule declares no types)" : known.join(", ")}`);
+  }
+  return chosen.modules;
 }
 
 /**

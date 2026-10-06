@@ -4,6 +4,11 @@ import { z } from "zod";
 import { documentSelectorTrace, resolveDocumentSelector } from "./selection.js";
 import { RepoPath, TextBlob, UsageError, repoPath } from "./types.js";
 
+/** One named type a companion may select; it overrides the rule's default `modules`. */
+const ruleTypeSchema = z.object({
+  modules: z.array(z.string().min(1)).min(1),
+}).strict();
+
 const documentIncludeRuleSchema = z.object({
   pattern: z.string().min(1),
   exclude: z.literal(false).optional(),
@@ -13,6 +18,11 @@ const documentIncludeRuleSchema = z.object({
    * defined twice is refused). Each is a repository path or an engine library `doc-verify:NAME`.
    */
   modules: z.array(z.string().min(1)).min(1),
+  /**
+   * Named type rule sets. A companion's `document.type` selects exactly one, replacing the
+   * default `modules`; a document with no `type` keeps the default. An unknown type is refused.
+   */
+  types: z.record(z.string().min(1), ruleTypeSchema).optional(),
   /** Where the document keeps its status for the `meta(D, status, W)` fact: a `## Status` section (default) or its title suffix. */
   status_from: z.enum(["section", "title"]).optional(),
   required_sections: z.array(z.string().min(1)).default([]),
@@ -110,6 +120,8 @@ const documentMetadataSchema = z.object({
   path: z.string().min(1),
   kind: z.string().min(1),
   status: z.string().min(1).optional(),
+  /** One of the rule's `types`; absent means the rule's default modules apply. */
+  type: z.string().min(1).optional(),
   depends_on: z.array(z.string().min(1)).optional(),
 }).loose();
 
@@ -131,6 +143,7 @@ export interface CompanionMetadata {
     path: RepoPath;
     kind: string;
     status?: string;
+    type?: string;
     depends_on?: RepoPath[];
   };
   /** The companion still carries a v1 `verification:` block, which is ignored. */
@@ -161,6 +174,7 @@ export function parseCompanion(blob: TextBlob): CompanionMetadata {
       path: repoPath(parsed.data.document.path),
       kind: parsed.data.document.kind,
       ...(parsed.data.document.status === undefined ? {} : { status: parsed.data.document.status }),
+      ...(parsed.data.document.type === undefined ? {} : { type: parsed.data.document.type }),
       ...(dependsOn === undefined ? {} : { depends_on: dependsOn.map(repoPath) }),
     },
   };
