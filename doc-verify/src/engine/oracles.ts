@@ -225,7 +225,7 @@ export async function askRound(input: {
         ? sentenceSpans(entry.evidence) : [];
       return spans.length === 0 ? [] : [{ entry, spans }];
     });
-    const chosen = await askSpans(input, candidates, state);
+    const chosen = await askSpans(input, candidates, state, document, records);
     for (const entry of prepared) {
       const leaf = input.store.leaves.get(entry.demand.key);
       if (leaf === undefined || (leaf.label !== "fails" && leaf.label !== UNKNOWN) || leaf.span !== undefined) {
@@ -255,7 +255,7 @@ export async function askRound(input: {
       evidence: Object.fromEntries(candidates.map((candidate) =>
         [candidate.entry.key, { sections: candidate.entry.evidence.sections, text: candidate.entry.evidence.text }])),
     };
-    const chosen = await askSpans(input, candidates, state);
+    const chosen = await askSpans(input, candidates, state, document, records);
     for (const candidate of candidates) {
       const leaf = input.store.leaves.get(candidate.entry.demand.key);
       if (leaf === undefined) {
@@ -364,6 +364,8 @@ async function askSpans(
   input: { backend: JudgeBackend | undefined; model: string; policy: OutboundPolicy; cache: OracleCache | undefined },
   candidates: Array<{ entry: Prepared; spans: OracleSpan[] }>,
   state: JsonValue,
+  document: string,
+  records: RequestRecord[],
 ): Promise<Map<string, string>> {
   const chosen = new Map<string, string>();
   if (input.backend === undefined || candidates.length === 0) {
@@ -384,8 +386,15 @@ async function askSpans(
   if (pending.length === 0) {
     return chosen;
   }
+  const questions = pending.map((entry) => entry.question);
   try {
-    const answers = (await input.backend.complete({ state, questions: pending.map((entry) => entry.question), model: input.model })).answers;
+    const answers = (await input.backend.complete({ state, questions, model: input.model })).answers;
+    // A real follow-up call is a request the report accounts for, exactly like a main batch.
+    records.push({
+      round: 0, document, questions: questions.length, keys: pending.map((entry) => entry.key),
+      stateBytes: Buffer.byteLength(canonicalJson(state)),
+      id: sha256(canonicalJson({ state, questions, model: input.model })),
+    });
     const byId = new Map(answers.map((answer) => [answer.id, answer]));
     for (const entry of pending) {
       const answer = byId.get(entry.question.id);

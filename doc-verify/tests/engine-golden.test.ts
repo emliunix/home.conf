@@ -166,7 +166,11 @@ describe("design 04 golden path", () => {
     // Rounds: purpose for all 6 sections, then the 2 scope children and the problem section.
     // Round 1 (6), round 2 (3), then one follow-up over the non-passing atom's sentences.
     expect(requests.map((request) => request.questions.length)).toEqual([6, 3, 1]);
-    expect(report.requests.map((request) => request.round)).toEqual([1, 2]);
+    // Round 1 (6), round 2 (3), plus one follow-up batch (round 0) over the non-passing atom.
+    const mainRounds = report.requests.filter((request) => request.round !== 0);
+    expect(mainRounds.map((request) => request.round)).toEqual([1, 2]);
+    expect(mainRounds.map((request) => request.questions)).toEqual([6, 3]);
+    expect(report.requests.filter((request) => request.round === 0).map((request) => request.questions)).toEqual([1]);
     for (const request of requests) {
       const state = (typeof request.state === "string" ? JSON.parse(request.state) : request.state) as
         { evidence: Record<string, unknown> };

@@ -418,8 +418,8 @@ function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, ver
     const peak = distribution.length === 0 ? undefined : Math.max(...distribution);
     const where = oracle.sections.join(", ") || "no section";
     basis.push(distribution.length === 0
-      ? `answered ${oracle.answered} (no distribution; threshold ${String(oracle.threshold)}) over ${where}`
-      : `answered ${oracle.answered} (p=${String(peak)} ${(peak ?? 0) >= oracle.threshold ? ">=" : "<"} threshold ${String(oracle.threshold)}) over ${where}`);
+      ? `answered ${oracle.label} (no distribution; threshold ${String(oracle.threshold)}) over ${where}`
+      : `answered ${oracle.label} (p=${String(peak)} ${(peak ?? 0) >= oracle.threshold ? ">=" : "<"} threshold ${String(oracle.threshold)}) over ${where}`);
   }
   const reason = bindingReason(binding) ?? (oracle?.label === "unknown"
     ? (oracle.distribution.length === 0 ? "no distribution from the judge" : "below the oracle's threshold")
