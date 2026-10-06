@@ -79,7 +79,7 @@ describe("text report", () => {
       + "  repair: Name the test and what it observes.\n"
       + "  answered holds (p=0.6 < threshold 0.8) over verification\n");
     expect(text).not.toContain("evidence:");
-    expect(text).toMatch(/^NEEDS-REVIEW: 1 artifact\(s\), 3 section\(s\), 1 warning\(s\), 1 semantic call\(s\), 0 cache hit\(s\)$/m);
+    expect(text).toMatch(/^NEEDS-REVIEW: 1 artifact\(s\), 3 section\(s\), 1 warning\(s\), 2 semantic call\(s\), 0 cache hit\(s\)$/m);
   });
 
   it("prints a structural NO-GO with the literal that is missing", async () => {

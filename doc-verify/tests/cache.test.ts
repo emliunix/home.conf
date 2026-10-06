@@ -105,8 +105,8 @@ describe("persistent oracle cache", () => {
     await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "promotion", backend: holds.backend });
     const fails = scriptedJudge(() => ({ value: "fails" }));
     const refreshed = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "promotion", backend: fails.backend });
-    expect(refreshed).toMatchObject({ verdict: "NO-GO", semanticCalls: 1, cacheHits: 0 });
-    // One main request, then one follow-up over the non-passing atom's sentences.
+    // The main atom (refreshed) plus the follow-up over its sentences: two semantic calls.
+    expect(refreshed).toMatchObject({ verdict: "NO-GO", semanticCalls: 2, cacheHits: 0 });
     expect(fails.requests).toHaveLength(2);
     // The draft profile has no refresh setting, so it reuses the rewritten entry.
     const draft = await checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "draft", backend: holds.backend });
