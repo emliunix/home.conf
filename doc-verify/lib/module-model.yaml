@@ -1,5 +1,7 @@
 # doc-verify:module-model - a package's model: the concepts and state it rests on, as current
 # law. Extends doc-verify:references.
+# Dated or progress prose (a date, "round N", "we tried" / "then changed") is a structural NO-GO;
+# a literal date or phrase inside a code span or fenced block is a format example and is skipped.
 # A worked example lives at doc-verify/lib/examples/module-model.md.
 schema_version: 2
 kind: verification-module

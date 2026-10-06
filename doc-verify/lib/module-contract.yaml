@@ -1,5 +1,7 @@
 # doc-verify:module-contract - a package's current public contract: the stable surface callers
 # rely on, stated as law, not as history. Extends doc-verify:references, so its links resolve.
+# Dated or progress prose (a date, "round N", "we tried" / "then changed") is a structural NO-GO;
+# a literal date or phrase inside a code span or fenced block is a format example and is skipped.
 # A worked example lives at doc-verify/lib/examples/module-contract.md.
 schema_version: 2
 kind: verification-module

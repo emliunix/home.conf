@@ -1,6 +1,8 @@
 # doc-verify:module-verification - a package's checks: every claimed property is paired with the
 # check that witnesses it and that check's limit, as current law. Queries every section at every
 # depth, so a title-plus-table page is checked. Extends references.
+# A date, "round N" or "we tried" / "then changed" is a structural NO-GO; a literal date or phrase
+# inside a code span or fenced block is a format example and is skipped.
 # A worked example and counterexample: doc-verify/lib/examples/module-verification{,-bad}.md.
 schema_version: 2
 kind: verification-module

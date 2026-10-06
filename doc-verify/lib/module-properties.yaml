@@ -1,6 +1,8 @@
 # doc-verify:module-properties - a package's properties: each load-bearing property stated as a
 # checkable claim with a stable id, as current law. Queries every section at every depth, so a
 # title-plus-table page is checked and dated or progress prose is refused. Extends references.
+# A date, "round N" or "we tried" / "then changed" is a structural NO-GO; a literal date or phrase
+# inside a code span or fenced block is a format example and is skipped.
 # A worked example and its counterexample: doc-verify/lib/examples/module-properties{,-bad}.md.
 schema_version: 2
 kind: verification-module
