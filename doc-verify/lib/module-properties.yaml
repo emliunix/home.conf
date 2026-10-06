@@ -1,33 +1,34 @@
 # doc-verify:module-properties - a package's properties: each load-bearing property stated as a
-# checkable claim with a stable id, as current law. Extends doc-verify:references.
-# A worked example lives at doc-verify/lib/examples/module-properties.md.
+# checkable claim with a stable id, as current law. Queries every section at every depth, so a
+# title-plus-table page is checked and dated or progress prose is refused. Extends references.
+# A worked example and its counterexample: doc-verify/lib/examples/module-properties{,-bad}.md.
 schema_version: 2
 kind: verification-module
 module: doc-verify.module-properties
 extends: [doc-verify:references]
 oracles:
   properties_are_claims(D, S):
-    ask: Each property here is a checkable claim with a stable id and a statement that could be false, not prose that cannot be witnessed.
+    ask: Each property here is a checkable claim with a stable id and a statement that could be false, not prose that cannot be witnessed, not a round number, not "we tried", not a dated decision or a progress note.
     evidence: core.body(D, S)
     threshold: 0.5
     max_bytes: 24000
   current_not_history(D, S):
-    ask: This section states the properties as they are now, not how they came to be.
-    evidence: core.own(D, S)
+    ask: This states the properties as they are now, not how they came to be, not a round number, not "we tried", not a dated decision or a progress note.
+    evidence: core.body(D, S)
     threshold: 0.5
     max_bytes: 12000
 rules:
-  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  sections(D, S): core.section(D, S, _)
 constraints:
   module-properties-are-claims:
-    forall: core.meta(D, kind, 'module-properties'), top(D, S)
+    forall: core.meta(D, kind, 'module-properties'), sections(D, S)
     require: properties_are_claims(D, S)
     severity: error
     profiles: [promotion]
-    message: "{S} in {D} states properties that cannot be witnessed"
-    repair: "Give each property a stable id and a statement a check could falsify."
+    message: "{S} in {D} states properties that cannot be witnessed, or carries history"
+    repair: "Give each property a stable id and a statement a check could falsify; move dated history to the worklog."
   module-properties-are-current:
-    forall: core.meta(D, kind, 'module-properties'), top(D, S)
+    forall: core.meta(D, kind, 'module-properties'), sections(D, S)
     require: current_not_history(D, S)
     severity: error
     profiles: [promotion]

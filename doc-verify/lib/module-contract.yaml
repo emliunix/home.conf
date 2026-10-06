@@ -7,12 +7,12 @@ module: doc-verify.module-contract
 extends: [doc-verify:references]
 oracles:
   current_not_history(D, S):
-    ask: This section states the contract as it is now, not how it came to be, what was tried, or a dated decision.
-    evidence: core.own(D, S)
+    ask: This states the contract as it is now, not how it came to be, not a round number, not "we tried", not a dated decision or a progress note; dated history belongs in a worklog.
+    evidence: core.body(D, S)
     threshold: 0.5
     max_bytes: 12000
 rules:
-  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  sections(D, S): core.section(D, S, _)
   heading(D, S, H): core.heading(D, S, H)
 constraints:
   module-contract-has-surface:
@@ -22,7 +22,7 @@ constraints:
     message: "{D} states no 'Public surface' section"
     repair: "List the stable exports and the rules callers rely on."
   module-contract-is-current:
-    forall: core.meta(D, kind, 'module-contract'), top(D, S)
+    forall: core.meta(D, kind, 'module-contract'), sections(D, S)
     require: current_not_history(D, S)
     severity: error
     profiles: [promotion]

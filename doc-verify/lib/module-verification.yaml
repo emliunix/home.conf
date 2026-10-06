@@ -1,33 +1,34 @@
 # doc-verify:module-verification - a package's checks: every claimed property is paired with the
-# check that witnesses it and that check's limit, as current law. Extends doc-verify:references.
-# A worked example lives at doc-verify/lib/examples/module-verification.md.
+# check that witnesses it and that check's limit, as current law. Queries every section at every
+# depth, so a title-plus-table page is checked. Extends references.
+# A worked example and counterexample: doc-verify/lib/examples/module-verification{,-bad}.md.
 schema_version: 2
 kind: verification-module
 module: doc-verify.module-verification
 extends: [doc-verify:references]
 oracles:
   pairs_every_property(D, S):
-    ask: Every property id of the form P-<package>-NN this package claims is either named here with the check that witnesses it and that check's limit, or the section honestly names the gap. No claimed property is silently missing its check.
+    ask: Every property id of the form P-<package>-NN this package claims is either named here with the check that witnesses it and that check's limit, or the section honestly names the gap. No claimed property is silently missing its check, and nothing here is a round number, a "we tried", a dated decision or a progress note.
     evidence: core.body(D, S)
     threshold: 0.5
     max_bytes: 24000
   current_not_history(D, S):
-    ask: This section states the checks as they are now, not how they came to be.
-    evidence: core.own(D, S)
+    ask: This states the checks as they are now, not how they came to be, not a round number, not "we tried", not a dated decision or a progress note.
+    evidence: core.body(D, S)
     threshold: 0.5
     max_bytes: 12000
 rules:
-  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  sections(D, S): core.section(D, S, _)
 constraints:
   module-verification-pairs:
-    forall: core.meta(D, kind, 'module-verification'), top(D, S)
+    forall: core.meta(D, kind, 'module-verification'), sections(D, S)
     require: pairs_every_property(D, S)
     severity: error
     profiles: [promotion]
-    message: "{D} leaves a claimed property without its witnessing check"
-    repair: "Pair every P-<pkg>-NN property with the check that witnesses it, and its limit."
+    message: "{D} leaves a claimed property without its witnessing check, or carries history"
+    repair: "Pair every P-<pkg>-NN property with the check that witnesses it, and its limit; move dated history to the worklog."
   module-verification-is-current:
-    forall: core.meta(D, kind, 'module-verification'), top(D, S)
+    forall: core.meta(D, kind, 'module-verification'), sections(D, S)
     require: current_not_history(D, S)
     severity: error
     profiles: [promotion]

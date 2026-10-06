@@ -306,4 +306,26 @@ describe("the type library's worked examples", () => {
       expect(only(report).verdict, JSON.stringify(only(report).findings)).toBe("PASS");
     });
   }
+
+  // A counterexample per canon type: dated and progress prose (a title+table page and a depth-3
+  // note among them). The deterministic structural check refuses it with the same judge that
+  // passes the example, so no judge answer is needed for the obvious cases.
+  const BAD: Array<[string, string, string]> = [
+    ["doc-verify:module-contract", "module-contract", "module-contract-bad.md"],
+    ["doc-verify:module-model", "module-model", "module-model-bad.md"],
+    ["doc-verify:module-properties", "module-properties", "module-properties-bad.md"],
+    ["doc-verify:module-verification", "module-verification", "module-verification-bad.md"],
+  ];
+  for (const [library, kind, example] of BAD) {
+    it(`${library} refuses its counterexample with no judge answer`, async () => {
+      const text = readFileSync(new URL(`../lib/examples/${example}`, import.meta.url), "utf8");
+      const root = await repository({ "docs/a.md": text },
+        `  - pattern: docs/*.md
+    artifact_kind: ${kind}
+    modules: [${library}]`);
+      const report = await checkDocuments({ root, mode: { kind: "paths", paths: ["docs/a.md"] }, profile: "promotion", backend: holds.backend });
+      expect(only(report).findings.map((entry) => entry.ruleId), JSON.stringify(only(report).findings)).toContain("structure.dated-prose");
+      expect(only(report).verdict).toBe("NO-GO");
+    });
+  }
 });

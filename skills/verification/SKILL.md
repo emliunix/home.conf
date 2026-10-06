@@ -86,6 +86,11 @@ worklog whose companion sets `type: record` runs `doc-verify:worklog-record`. An
 untyped worklog whose links resolve is decided without the judge key; the other types
 ask the judge on `promotion`.
 
+A `module-*` type holds current law only, so dated or progress prose (`2026-10-01`,
+`round 5`, "we tried" / "then changed") is a structural **error**, keyless included.
+A literal example of such a form belongs in a code span or a fenced block, which the
+check skips.
+
 ### Bringing a repository under contract
 
 Setup, not invocation, is where adoption fails. Do these in order; details and

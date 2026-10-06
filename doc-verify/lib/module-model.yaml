@@ -7,21 +7,21 @@ module: doc-verify.module-model
 extends: [doc-verify:references]
 oracles:
   current_not_history(D, S):
-    ask: This section states the model as it is now, not how it came to be or a dated decision.
-    evidence: core.own(D, S)
+    ask: This states the model as it is now, not how it came to be, not a round number, not "we tried", not a dated decision or a progress note.
+    evidence: core.body(D, S)
     threshold: 0.5
     max_bytes: 12000
 rules:
-  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  sections(D, S): core.section(D, S, _)
 constraints:
   module-model-has-content:
     forall: core.meta(D, kind, 'module-model')
-    require: top(D, S)
+    require: sections(D, S)
     severity: error
     message: "{D} has no content"
     repair: "Describe the concepts and state the package rests on."
   module-model-is-current:
-    forall: core.meta(D, kind, 'module-model'), top(D, S)
+    forall: core.meta(D, kind, 'module-model'), sections(D, S)
     require: current_not_history(D, S)
     severity: error
     profiles: [promotion]
