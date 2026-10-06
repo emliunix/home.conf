@@ -99,12 +99,40 @@ Reference facts (added 2026-10-05; path rules revised the same day). For each do
   beside neither the document nor the root, and the tracked files hold it zero times or several
   times (`local-env.md`, or `ir.py` in two packages). `paths-resolve` reads only `path`, so a name
   is never a finding; it resolves when some tracked file has it.
+- `Kind = line`: an inline code span naming a position by line number (`path.ts:123`,
+  `path.ts:123-456`). A line is a position that rots on the next edit above it, so it is never a
+  reference; a repository that wants no line locators in its prose ranges over this kind
+  (`line_cite(D, S, T): core.ref(D, S, T, line)`). Its stem must look like a file, so `node:18`,
+  `12:30` and `utf-8:3` are not locators. `paths-resolve` reads only `path`, so a line is never a
+  finding by itself.
 
 A code span is a candidate only when it is made of `[A-Za-z0-9_./-]` and is not a predicate
 indicator (`child/3`, `design/02`) or a placeholder (`path/X.md`, `task/N`). Then, in order:
 
+0. A span that is a line locator is a `line`, before any path rule runs. The tail is one or more
+   line numbers or ranges, separated by `,` or `/`, so `impl/x/queue.ts:312`, `path.ts:10-20`,
+   `schema.sql:11,16`, `claim-loop.ts:280-289,393-400` and `facade.ts:119/154` are all locators of
+   one file each. The stem must look like a file: a path with a `/`
+   (`impl/environment/Dockerfile:38`), a bare name ending in a known extension (`types.d.ts:286`,
+   `foo.test.ts:48`), a dotfile (`.gitignore:3`), a **bare name with no extension that the
+   repository actually holds** (`Dockerfile:16`, `Makefile:12` — a fixed extension list cannot
+   cover every real filename, so the inventory decides), or a **short form naming a real document**
+   (`design/103:55`). The last two are resolved from the reference context: with no context, or when
+   no such file exists, they stay out. Resolving the stem does not prove the value, so the span
+   must still be exactly the stem, a colon and a line tail -- with `Dockerfile` present,
+   `Dockerfile:16` is a locator while `Dockerfile:`, `Dockerfile:foo` and `Dockerfile:16abc` are not. A colon that is none of those is no reference at
+   all, so `localhost:8080`, `127.0.0.1:5432`, `node:18`, `12:30` and `utf-8:3` fall through to the
+   rules below and produce nothing; nor is a stem the rules below refuse — a placeholder
+   (`path/X.md:123`, `task/N:5`) or a signature (`child/3:1`) — since the guards are applied to the
+   stem. `PATH_SPAN` is unchanged: this test runs first. A line locator **inside a link's label** is
+   also a `line` (rule 1 below does not suppress it), so `[`src/run.ts:312`](src/run.ts)` yields the
+   `link` and the `line`. A tail with no stem at all (`:178,184`) is deliberately NOT a locator: it
+   cannot be told from a port or a ratio sequence, so it is out of this rule's scope.
+
 1. A span inside the text of a link that resolves (or of a URL link) is the link's label, not a
    second reference: ``[`x.py`](x.py)`` gives one `link` ref. Inside a broken link the span counts.
+   A line locator is exempt (rule 0): it is a `line` whether or not it labels a link, because it
+   is a position that rots wherever it is written.
 2. A span that is only extensions (`.md`, `.md/.yaml`) is not a path.
 3. A span starting with `/` is a URL route (`/api/build`, `/step`), not a repository path;
    repository paths are written relative.
