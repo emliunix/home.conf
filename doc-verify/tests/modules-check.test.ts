@@ -1,6 +1,7 @@
 // `doc-verify check` on design-04 modules (doc-verify-v2): a document rule names `modules`, the
 // checker composes them (with `extends`), derives the document's facts, and runs the engine.
 import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -216,8 +217,12 @@ describe("engine libraries (doc-verify:NAME)", () => {
     return { value: purpose };
   });
 
-  it("ships artifact, design and goal with the engine", () => {
-    expect(engineLibraries()).toEqual(["doc-verify:artifact", "doc-verify:design", "doc-verify:goal", "doc-verify:references"]);
+  it("ships the type library with the engine", () => {
+    expect(engineLibraries()).toEqual([
+      "doc-verify:artifact", "doc-verify:design", "doc-verify:goal", "doc-verify:module-contract",
+      "doc-verify:module-model", "doc-verify:module-properties", "doc-verify:module-verification",
+      "doc-verify:references", "doc-verify:runbook", "doc-verify:worklog-record",
+    ]);
   });
 
   it("resolves doc-verify:design from the engine, with the library it extends", async () => {
@@ -271,11 +276,34 @@ params:
     artifact_kind: design
     modules: [doc-verify:nope]`);
     await expect(checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend }))
-      .rejects.toThrow("doc-verify:nope: no such engine library; this engine ships doc-verify:artifact, doc-verify:design, doc-verify:goal, doc-verify:references");
+      .rejects.toThrow("doc-verify:nope: no such engine library; this engine ships doc-verify:artifact, doc-verify:design, doc-verify:goal, doc-verify:module-contract, doc-verify:module-model, doc-verify:module-properties, doc-verify:module-verification, doc-verify:references, doc-verify:runbook, doc-verify:worklog-record");
     const escape = await repository({ "design/a.md": GOOD }, `  - pattern: design/*.md
     artifact_kind: design
     modules: [doc-verify:../../package]`);
     await expect(checkDocuments({ root: escape, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend }))
       .rejects.toThrow("no such engine library");
   });
+});
+
+describe("the type library's worked examples", () => {
+  const EXAMPLES: Array<[string, string, string]> = [
+    ["doc-verify:module-contract", "module-contract", "module-contract.md"],
+    ["doc-verify:module-model", "module-model", "module-model.md"],
+    ["doc-verify:module-properties", "module-properties", "module-properties.md"],
+    ["doc-verify:module-verification", "module-verification", "module-verification.md"],
+    ["doc-verify:runbook", "runbook", "runbook.md"],
+    ["doc-verify:worklog-record", "worklog", "worklog-record.md"],
+  ];
+  for (const [library, kind, example] of EXAMPLES) {
+    it(`${library} passes its worked example`, async () => {
+      // The oracle half runs on promotion; the shared judge answers every `ask` oracle `holds`.
+      const text = readFileSync(new URL(`../lib/examples/${example}`, import.meta.url), "utf8");
+      const root = await repository({ "docs/a.md": text },
+        `  - pattern: docs/*.md
+    artifact_kind: ${kind}
+    modules: [${library}]`);
+      const report = await checkDocuments({ root, mode: { kind: "paths", paths: ["docs/a.md"] }, profile: "promotion", backend: holds.backend });
+      expect(only(report).verdict, JSON.stringify(only(report).findings)).toBe("PASS");
+    });
+  }
 });

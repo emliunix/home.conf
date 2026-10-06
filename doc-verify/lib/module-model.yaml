@@ -1,0 +1,29 @@
+# doc-verify:module-model - a package's model: the concepts and state it rests on, as current
+# law. Extends doc-verify:references.
+# A worked example lives at doc-verify/lib/examples/module-model.md.
+schema_version: 2
+kind: verification-module
+module: doc-verify.module-model
+extends: [doc-verify:references]
+oracles:
+  current_not_history(D, S):
+    ask: This section states the model as it is now, not how it came to be or a dated decision.
+    evidence: core.own(D, S)
+    threshold: 0.5
+    max_bytes: 12000
+rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+constraints:
+  module-model-has-content:
+    forall: core.meta(D, kind, 'module-model')
+    require: top(D, S)
+    severity: error
+    message: "{D} has no content"
+    repair: "Describe the concepts and state the package rests on."
+  module-model-is-current:
+    forall: core.meta(D, kind, 'module-model'), top(D, S)
+    require: current_not_history(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{S} in {D} narrates history instead of stating current law"
+    repair: "State what is true now; the decision trail belongs in a design or the worklog."

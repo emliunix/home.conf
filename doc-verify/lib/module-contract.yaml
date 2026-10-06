@@ -1,0 +1,30 @@
+# doc-verify:module-contract - a package's current public contract: the stable surface callers
+# rely on, stated as law, not as history. Extends doc-verify:references, so its links resolve.
+# A worked example lives at doc-verify/lib/examples/module-contract.md.
+schema_version: 2
+kind: verification-module
+module: doc-verify.module-contract
+extends: [doc-verify:references]
+oracles:
+  current_not_history(D, S):
+    ask: This section states the contract as it is now, not how it came to be, what was tried, or a dated decision.
+    evidence: core.own(D, S)
+    threshold: 0.5
+    max_bytes: 12000
+rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  heading(D, S, H): core.heading(D, S, H)
+constraints:
+  module-contract-has-surface:
+    forall: core.meta(D, kind, 'module-contract')
+    require: heading(D, S, 'Public surface')
+    severity: error
+    message: "{D} states no 'Public surface' section"
+    repair: "List the stable exports and the rules callers rely on."
+  module-contract-is-current:
+    forall: core.meta(D, kind, 'module-contract'), top(D, S)
+    require: current_not_history(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{S} in {D} narrates history instead of stating current law"
+    repair: "State what is true now; the decision trail belongs in a design or the worklog."
