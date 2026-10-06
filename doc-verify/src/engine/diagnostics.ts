@@ -10,7 +10,7 @@
 import type { Verdict } from "../types.js";
 import type { Constraint, Program } from "./checker.js";
 import { atomText, type BindingStatus, type ConstraintEvaluation, type Evaluation, type Mode, type Premise } from "./evaluate.js";
-import type { OracleLeaf, OracleStore, RequestRecord } from "./oracles.js";
+import type { OracleLeaf, OracleSpan, OracleStore, RequestRecord } from "./oracles.js";
 import { termText, type Term } from "./terms.js";
 
 export interface ProofOracle {
@@ -26,6 +26,10 @@ export interface ProofOracle {
   threshold: number;
   round: number;
   cacheHit: boolean;
+  /** The oracle's own note (a missing or misaligned distribution, a tie, a threshold demotion). */
+  finding?: string | undefined;
+  /** The deciding span for a non-passing atom (option B), or the section fallback (option C). */
+  span?: OracleSpan | undefined;
 }
 
 export interface ProofNode {
@@ -193,7 +197,22 @@ function proofOracle(leaf: OracleLeaf): ProofOracle {
     key: leaf.key, atom: leaf.atom, question: leaf.question, sections: leaf.sections, bytes: leaf.bytes,
     label: leaf.label, answered: leaf.answered, options: leaf.options, distribution: leaf.distribution,
     threshold: leaf.threshold, round: leaf.round, cacheHit: leaf.cacheHit,
+    ...(leaf.finding === undefined ? {} : { finding: leaf.finding }),
+    ...(leaf.span === undefined ? {} : { span: leaf.span }),
   };
+}
+
+/** The first span a binding's oracles carry, in proof order (option B, else the C fallback). */
+export function bindingSpan(binding: BindingReport): OracleSpan | undefined {
+  let found: OracleSpan | undefined;
+  const visit = (node: ProofNode): void => {
+    if (found === undefined && node.oracle?.span !== undefined) {
+      found = node.oracle.span;
+    }
+    (node.children ?? []).forEach(visit);
+  };
+  visit(binding.proof);
+  return found;
 }
 
 function literalsText(constraint: Constraint, which: "forall" | "goal"): string {
@@ -329,6 +348,33 @@ export function bindingBasis(binding: BindingReport): string[] {
   return lines;
 }
 
+/**
+ * Why a non-satisfied binding is undetermined, one short phrase: the first oracle leaf's own
+ * finding (a threshold demotion, a missing distribution, a tie), or `evidence not resolved`
+ * for an unasked atom. `bindingBasis` prints the same facts in long form.
+ */
+export function bindingReason(binding: BindingReport): string | undefined {
+  const reasons: string[] = [];
+  const visit = (node: ProofNode): void => {
+    if (reasons.length > 0) {
+      return;
+    }
+    if (node.kind === "unasked") {
+      reasons.push("evidence not resolved");
+    } else if (node.oracle !== undefined) {
+      const oracle = node.oracle;
+      if (oracle.finding !== undefined) {
+        reasons.push(oracle.finding);
+      } else if (oracle.answered === "unknown" || oracle.label === "unknown") {
+        reasons.push(oracle.distribution.length === 0 ? "no distribution from the judge" : "below the oracle's threshold");
+      }
+    }
+    (node.children ?? []).forEach(visit);
+  };
+  visit(binding.proof);
+  return reasons[0];
+}
+
 /** The section ids a binding's oracles read, in proof order. */
 export function bindingSections(binding: BindingReport): string[] {
   const sections: string[] = [];
@@ -353,5 +399,7 @@ export function renderProof(node: ProofNode, indent: string): string[] {
 
 function oracleSummary(leaf: ProofOracle): string {
   const distribution = leaf.distribution.length === 0 ? "none" : `[${leaf.distribution.join(", ")}]`;
-  return `${leaf.label} (answered ${leaf.answered}, distribution ${distribution} over [${leaf.options.join(", ")}], threshold ${String(leaf.threshold)}, key ${leaf.key}, sections ${leaf.sections.join(", ") || "none"}, ${String(leaf.bytes)} bytes, round ${String(leaf.round)}${leaf.cacheHit ? ", cache hit" : ""})`;
+  const span = leaf.span === undefined ? ""
+    : `, span ${String(leaf.span.startLine)}-${String(leaf.span.endLine)} ${leaf.span.judged ? "sentence" : "section (not judged)"}${leaf.span.quote.length > 0 ? ` "${leaf.span.quote}"` : ""}`;
+  return `${leaf.label} (answered ${leaf.answered}, distribution ${distribution} over [${leaf.options.join(", ")}], threshold ${String(leaf.threshold)}, key ${leaf.key}, sections ${leaf.sections.join(", ") || "none"}, ${String(leaf.bytes)} bytes, round ${String(leaf.round)}${leaf.cacheHit ? ", cache hit" : ""}${span})`;
 }

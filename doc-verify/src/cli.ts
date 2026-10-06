@@ -15,15 +15,41 @@ import {
 } from "./types.js";
 import { readFile } from "node:fs/promises";
 
+const USAGE = `usage: doc-verify <segments|check> [options]
+
+  doc-verify check FILE...              check the named documents
+  doc-verify check --paths FILE...      the same, explicitly
+  doc-verify check --staged             check documents staged in Git
+  doc-verify check --range A..B         check documents changed in a Git range
+  doc-verify check --all                check every configured document
+  doc-verify segments DOCUMENT          list a document's sections (--format text|json)
+
+  --profile draft|promotion|auto   which constraints run (default auto)
+  --format text|json               output form (default text)
+  --section ID                     restrict to a section
+  --output FILE                    write the report to a file
+  --verbose                        add the proof tree and snapshot (requires --format text)
+  --no-cache                       neither read nor write the oracle cache
+  -h, --help                       this message
+`;
+
 async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
+  if (command === undefined || command === "--help" || command === "-h") {
+    process.stdout.write(USAGE);
+    return 0;
+  }
+  if (rest.includes("--help") || rest.includes("-h")) {
+    process.stdout.write(USAGE);
+    return 0;
+  }
   if (command === "segments") {
     return runSegments(rest);
   }
   if (command === "check") {
     return runCheck(rest);
   }
-  throw new UsageError("usage: doc-verify <segments|check> [options]");
+  throw new UsageError(`unknown command ${JSON.stringify(command)}; ${USAGE.split("\n")[0] ?? ""}`);
 }
 
 /** Runs `parseArgs`, reporting an unknown or malformed option as a usage error (exit 64). */
@@ -84,12 +110,10 @@ async function runCheck(argv: string[]): Promise<number> {
       "no-cache": { type: "boolean" },
     },
   }));
+  // A bare positional file is a path: `doc-verify check FILE` works without `--paths`.
   const pathValues = parsed.values.paths === undefined
-    ? undefined
+    ? (parsed.positionals.length > 0 ? [...parsed.positionals] : undefined)
     : [...parsed.values.paths, ...parsed.positionals];
-  if (parsed.values.paths === undefined && parsed.positionals.length > 0) {
-    throw new UsageError("positional paths require --paths");
-  }
   const modes = [pathValues !== undefined, parsed.values.staged === true, parsed.values.range !== undefined, parsed.values.all === true];
   if (modes.filter(Boolean).length !== 1) {
     throw new UsageError("choose exactly one of --paths, --staged, --range, or --all");

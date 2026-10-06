@@ -59,6 +59,10 @@ export interface Finding {
   sections?: string[];
   /** What decided it: oracle answers against thresholds, or the structural fact found or missing. */
   basis?: string[];
+  /** The deciding span for a non-passing semantic finding: the judge's sentence, or a section fallback. */
+  span?: { kind: "sentence" | "section"; startLine: number; endLine: number; quote: string; judged: boolean };
+  /** Why an undetermined or blocked finding is so: no key, over budget, a low-confidence answer, unasked evidence. */
+  reason?: string;
   /** The engine's proof tree for the binding, rendered. */
   proof?: string[];
 }

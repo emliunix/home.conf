@@ -88,7 +88,7 @@ describe("keyless structural checks", () => {
     expect(result.stdout).toMatch(/constraint verification-falsifies \[error, require\][^]*?status undetermined/);
     const text = keyless(root);
     expect(text.stdout).toContain("semantic.prerequisite BLOCKED TYPESAFE_API_KEY is unavailable");
-    expect(text.stdout).toMatch(/module\.verification-falsifies BLOCKED undetermined: verification names no failing check \(sections: verification\)\n {2}unasked keyless\.falsifies\(design\/a\.md, verification\)\n/);
+    expect(text.stdout).toMatch(/module\.verification-falsifies BLOCKED undetermined: verification names no failing check \(sections: verification\)\n {2}reason: TYPESAFE_API_KEY is unavailable\n {2}unasked keyless\.falsifies\(design\/a\.md, verification\)\n/);
   });
 
   it("passes a document whose module asks no oracle, with no key", () => {

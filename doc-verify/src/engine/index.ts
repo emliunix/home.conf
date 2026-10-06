@@ -16,7 +16,7 @@ import { documentFacts, type DocumentFacts, type DocumentInput } from "./facts.j
 import { loadModule } from "./module.js";
 import { askRound, OracleStore, type OracleCache, type OutboundPolicy, type RequestRecord } from "./oracles.js";
 
-export { bindingBasis, bindingSections, renderProof, renderReport } from "./diagnostics.js";
+export { bindingBasis, bindingReason, bindingSections, bindingSpan, renderProof, renderReport } from "./diagnostics.js";
 export type { BindingReport, ConstraintReport, EngineReport, ProofNode, ProofOracle } from "./diagnostics.js";
 export { ModuleError } from "./module.js";
 export { composeModules, engineLibraries, type ComposedModule } from "./compose.js";

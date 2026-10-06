@@ -164,7 +164,8 @@ describe("design 04 golden path", () => {
     const report = await run(MODULE, backend);
 
     // Rounds: purpose for all 6 sections, then the 2 scope children and the problem section.
-    expect(requests.map((request) => request.questions.length)).toEqual([6, 3]);
+    // Round 1 (6), round 2 (3), then one follow-up over the non-passing atom's sentences.
+    expect(requests.map((request) => request.questions.length)).toEqual([6, 3, 1]);
     expect(report.requests.map((request) => request.round)).toEqual([1, 2]);
     for (const request of requests) {
       const state = (typeof request.state === "string" ? JSON.parse(request.state) : request.state) as

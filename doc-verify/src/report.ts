@@ -69,9 +69,23 @@ function renderVerboseText(report: VerificationReport): string {
  */
 function findingLines(finding: Finding, verbose: boolean): string[] {
   const status = finding.status === undefined ? "" : `${finding.status}: `;
+  const span = finding.span;
+  const location = span === undefined
+    ? `${finding.path}:${String(finding.line)}`
+    : `${finding.path}:${String(span.startLine)}-${String(span.endLine)}`;
   const sections = finding.sections === undefined || finding.sections.length === 0 ? "" : ` (sections: ${finding.sections.join(", ")})`;
   const evidence = verbose ? ` (evidence: ${finding.evidenceId})` : "";
-  const lines = [`${finding.path}:${String(finding.line)} [${finding.sectionId}] ${finding.ruleId} ${finding.verdict} ${status}${finding.message}${sections}${evidence}`];
+  const lines = [`${location} [${finding.sectionId}] ${finding.ruleId} ${finding.verdict} ${status}${finding.message}${sections}${evidence}`];
+  // The deciding span (also in the default form: it is what a reader acts on), its reason, the
+  // judge's answer and distribution (in `basis`), and the repair.
+  if (span !== undefined) {
+    const what = span.judged ? "deciding sentence" : "section (not judged)";
+    const where = span.quote.length > 0 ? `"${span.quote}"` : `lines ${String(span.startLine)}-${String(span.endLine)}`;
+    lines.push(`  span: ${what} — ${where}`);
+  }
+  if (finding.reason !== undefined) {
+    lines.push(`  reason: ${finding.reason}`);
+  }
   if (finding.repair !== undefined) {
     lines.push(`  repair: ${finding.repair}`);
   }

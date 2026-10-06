@@ -18,7 +18,9 @@ import { loadDocVerifyEnv } from "./local-env.js";
 import { productionBackend } from "./judge.js";
 import {
   bindingBasis,
+  bindingReason,
   bindingSections,
+  bindingSpan,
   composeModules,
   ModuleError,
   renderProof,
@@ -314,7 +316,9 @@ async function checkWithModules(input: {
       const verdict: FindingVerdict = binding.status === "violated"
         ? constraint.severity === "error" ? "NO-GO" : "WARN"
         : unasked ? "BLOCKED" : "NEEDS-REVIEW";
-      findings.push(bindingFinding(input.file, input.sections, `module.${constraint.id}`, verdict, binding));
+      const item = bindingFinding(input.file, input.sections, `module.${constraint.id}`, verdict, binding);
+      const reason = unasked ? report.failure?.message ?? "evidence not resolved" : bindingReason(binding);
+      findings.push(reason === undefined ? item : { ...item, reason });
     }
   }
   // An engine failure that decided nothing (every constraint was decided without the judge)
@@ -403,6 +407,7 @@ function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, ver
     status: binding.status,
     ...(binding.repair === undefined ? {} : { repair: binding.repair }),
     sections: ids,
+    ...(() => { const span = bindingSpan(binding); return span === undefined ? {} : { span }; })(),
     basis: bindingBasis(binding),
     proof: renderProof(binding.proof, ""),
   };
