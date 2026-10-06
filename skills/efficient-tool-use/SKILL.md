@@ -30,7 +30,8 @@ the topic files are the durable rulebook, not this routing surface.
 - **`efficient-tool-use/reuse-and-protection`** -
   [reuse-and-protection.md](references/reuse-and-protection.md): save repeated
   operations, measure a guard's reach and activation, require identity rather
-  than liveness, and record the read time for live evidence.
+  than liveness, record the read time for live evidence, and capture raw output
+  with its revision for hand-over instead of hand-typed transcripts.
 
 Open the matching topic immediately when a result will be counted, parsed,
 compared, or used as evidence. Do not rely on remembering a rule.

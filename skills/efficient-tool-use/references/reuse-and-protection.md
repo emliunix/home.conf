@@ -35,3 +35,15 @@ or a controlled check.
 A count from a live transcript or changing log is only reproducible with its
 read time. If the source can append, record the path, hash when stable, and
 the timestamp of the measurement.
+
+## Capture once, hand over the file
+
+When a result will be read by someone else, capture the raw output once,
+together with the revision or input identity that produced it and the exit
+code, and hand over that file instead of a hand-typed transcript. A capture is
+evidence only for the revision in its header: a later revision needs a new
+capture, and the file is never edited to look current.
+
+Status: candidate. One project adopted it with a capture harness (owner ruling,
+2026-10-05); the general rule still needs a second corpus or a controlled
+check.
