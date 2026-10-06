@@ -7,13 +7,18 @@
 # ///
 """Herdr group chat: a pane Herdr treats as an agent, fanning messages out to the team.
 
-  group.py serve [--group NAME] [--kind KIND] [--all-workspaces]   run the seat in this pane
+  group.py serve [--group NAME] [--kind KIND] [--all-workspaces] [--web PORT]   run the seat in this pane
 
 Peers post with Herdr itself: ``herdr agent prompt group "<message>"``. The seat
 reads its terminal, delivers each message unchanged with ``herdr agent prompt``
 to every member except the sender, prints it once on screen, and appends it to
 ``$XDG_STATE_HOME/herdr-group/<workspace>/<group>.jsonl``. Only pane-mechanic
 messages bypass the seat: an agent sends those with ``herdr agent prompt <peer>``.
+
+``--web PORT`` also serves the human seat on ``http://127.0.0.1:PORT/``: a page
+(``group-web.html``) that shows the group log live and posts as ``user``. A
+posted message is handed to the seat's own loop, so it is parsed, routed,
+echoed and logged exactly like a line typed into the seat pane.
 
 Message grammar: ``[from:<name>; to:<name>[,<name>...]; re:<topic>] <body>``;
 ``to:`` and ``re:`` are optional, and fields may also be separated by commas or
@@ -40,6 +45,8 @@ from __future__ import annotations
 
 import codecs
 import json
+import queue
+import threading
 import os
 import re
 import selectors
@@ -49,7 +56,9 @@ import socket
 import sys
 import termios
 import time
+import urllib.parse
 from dataclasses import dataclass, replace
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from enum import Enum
 from typing import Annotated, Any, TextIO
@@ -60,8 +69,8 @@ import typer
 # ---------------------------------------------------------------- protocol
 
 NAME_RE = re.compile(r"^[a-z][a-z0-9_-]{0,31}$")
-# The human at the keyboard. Not an agent seat: it reads the group screen and
-# can only post by typing into the group pane.
+# The human. Not an agent seat: it reads the group screen (or the web page) and
+# posts by typing into the group pane or through the web page.
 USER = "user"
 TOPIC_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,47}$")
 
@@ -496,8 +505,13 @@ class Outcome:
 
 
 class Seat:
-    def __init__(self, herdr: Herdr, name: str, kind: str, all_workspaces: bool, out: TextIO) -> None:
+    def __init__(
+        self, herdr: Herdr, name: str, kind: str, all_workspaces: bool, out: TextIO, web_port: int = 0
+    ) -> None:
         self.herdr = herdr
+        self.web_port = web_port
+        # Web posts wait here for the seat loop: (text, reply queue).
+        self.web_inbox: queue.Queue[tuple[str, queue.Queue[dict[str, Any]]]] = queue.Queue()
         self.name = name
         self.kind = kind
         self.all_workspaces = all_workspaces
@@ -595,6 +609,15 @@ class Seat:
         if outcome.failed:
             self._notify(outcome.message.sender, _failure_text(outcome))
 
+    def handle_web(self, text: str) -> dict[str, Any]:
+        """A message posted from the web page as ``user``; the answer goes back to the page."""
+        try:
+            outcome = self.route(text)
+        except FormatError as err:
+            self._error(text, str(err))
+            return {"error": str(err)}
+        return {"delivered": list(outcome.delivered), "failed": outcome.failed, "skipped": list(outcome.skipped)}
+
     def _feedback(self, text: str, error: str) -> None:
         """Tell a self-declared sender their message was rejected, if we can tell who they are."""
         claimed = _declared_sender(text)
@@ -686,6 +709,9 @@ class Seat:
         signal.signal(signal.SIGHUP, _raise_exit)
         selector = selectors.DefaultSelector()
         selector.register(stdin_fd, selectors.EVENT_READ, "tty")
+        wake_r, wake_w = os.pipe()
+        selector.register(wake_r, selectors.EVENT_READ, "web")
+        web = self._start_web(wake_w) if self.web_port else None
         self.out.write(PASTE_ON)
         self._line(
             f"{DIM}herdr-group seat '{self.name}' on {self.pane_id} · members: "
@@ -693,11 +719,18 @@ class Seat:
             f"  post: herdr agent prompt {self.name} \"[from:<you>; to:<name>] <msg>\"  (team messages go here; DM only pane mechanics)\n"
             f"  {USAGE}\n  log: {self.log}"
             + (f"\n  muted: {', '.join(sorted(self.muted))}" if self.muted else "")
+            + (f"\n  human seat: http://127.0.0.1:{self.web_port}/" if web else "")
             + RESET
         )
         try:
             while True:
-                for _ in selector.select():
+                for key, _ in selector.select():
+                    if key.data == "web":
+                        os.read(wake_r, 4096)
+                        while not self.web_inbox.empty():
+                            text, reply = self.web_inbox.get_nowait()
+                            reply.put(self.handle_web(text))
+                        continue
                     data = os.read(stdin_fd, 65536)
                     if not data:
                         return
@@ -708,6 +741,8 @@ class Seat:
         except KeyboardInterrupt:
             pass
         finally:
+            if web is not None:
+                web.shutdown()
             self.out.write(PASTE_OFF + "\n")
             self.out.flush()
             if saved_tty is not None:
@@ -716,6 +751,11 @@ class Seat:
                 self.herdr.release_agent(self.pane_id, SOURCE, self.kind)
             except (HerdrError, OSError):
                 pass
+
+    def _start_web(self, wake_w: int) -> ThreadingHTTPServer:
+        server = ThreadingHTTPServer(("127.0.0.1", self.web_port), _web_handler(self, wake_w))
+        threading.Thread(target=server.serve_forever, name="group-web", daemon=True).start()
+        return server
 
     def _register(self) -> None:
         # Herdr picks up the HERDR_AGENT process hint on its own poll, so the
@@ -731,6 +771,76 @@ class Seat:
                 if err.code != "agent_not_found" or time.monotonic() > deadline:
                     raise
             time.sleep(0.5)
+
+WEB_PAGE = Path(__file__).resolve().with_name("group-web.html")
+
+
+def compose_user(recipients: list[str], topic: str, body: str) -> str:
+    """The header the web page posts under: always ``from:user``."""
+    keys = [f"from:{USER}"]
+    if recipients:
+        keys.append("to:" + ",".join(recipients))
+    if topic:
+        keys.append("re:" + topic)
+    return f"[{'; '.join(keys)}] {body}"
+
+
+def _web_handler(seat: Seat, wake_w: int) -> type[BaseHTTPRequestHandler]:
+    class Handler(BaseHTTPRequestHandler):
+        def _send(self, code: int, payload: Any, kind: str = "application/json") -> None:
+            data = payload.encode() if isinstance(payload, str) else json.dumps(payload, ensure_ascii=False).encode()
+            self.send_response(code)
+            self.send_header("content-type", f"{kind}; charset=utf-8")
+            self.send_header("content-length", str(len(data)))
+            self.send_header("cache-control", "no-store")
+            self.end_headers()
+            self.wfile.write(data)
+
+        def do_GET(self) -> None:
+            path, _, query = self.path.partition("?")
+            if path == "/":
+                self._send(200, WEB_PAGE.read_text(encoding="utf-8"), "text/html")
+            elif path == "/members":
+                members = sorted(seat.members())
+                self._send(200, {"group": seat.name, "workspace": seat.workspace_id, "members": members, "muted": sorted(seat.muted)})
+            elif path == "/log":
+                after = urllib.parse.parse_qs(query).get("after", [""])[0]
+                records = [r for r in seat._records() if r.get("ts", "") >= after]
+                self._send(200, {"records": records[-500:]})
+            else:
+                self._send(404, {"error": "not found"})
+
+        def do_POST(self) -> None:
+            # JSON only: a cross-site form post cannot send it without a preflight.
+            if self.path != "/send" or self.headers.get("content-type", "").split(";")[0].strip() != "application/json":
+                self._send(404, {"error": "not found"})
+                return
+            try:
+                req = json.loads(self.rfile.read(int(self.headers.get("content-length") or 0)) or b"{}")
+                body = str(req.get("body", "")).strip()
+                topic = str(req.get("re", "")).strip()
+                recipients = [str(n) for n in req.get("to", [])]
+            except (ValueError, TypeError, AttributeError):
+                self._send(400, {"error": "bad request"})
+                return
+            if not body:
+                self._send(400, {"error": "empty message"})
+                return
+            reply: queue.Queue[dict[str, Any]] = queue.Queue()
+            seat.web_inbox.put((compose_user(recipients, topic, body), reply))
+            os.write(wake_w, b"w")
+            try:
+                result = reply.get(timeout=60)
+            except queue.Empty:
+                self._send(504, {"error": "the seat did not answer"})
+                return
+            self._send(400 if "error" in result else 200, result)
+
+        def log_message(self, format: str, *args: Any) -> None:
+            pass
+
+    return Handler
+
 
 def _failure_text(outcome: Outcome) -> str:
     failures = ", ".join(f"{name} ({code})" for name, code in outcome.failed.items())
@@ -791,13 +901,14 @@ def serve(
     group: GroupOption = "group",
     kind: Annotated[str, typer.Option(help="agent kind Herdr sees")] = DEFAULT_KIND,
     all_workspaces: Annotated[bool, typer.Option(help="members span every workspace, not just this one")] = False,
+    web: Annotated[int, typer.Option(help="also serve the human seat web page on 127.0.0.1:PORT (0 = off)")] = 0,
 ) -> None:
     """Run the group seat in this pane."""
     _workspace(group)
     if os.environ.get("HERDR_AGENT") != kind:
         env = {**os.environ, "HERDR_AGENT": kind}
         os.execvpe(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]], env)
-    Seat(Herdr(), group, kind, all_workspaces, sys.stdout).run()
+    Seat(Herdr(), group, kind, all_workspaces, sys.stdout, web).run()
 
 
 if __name__ == "__main__":
