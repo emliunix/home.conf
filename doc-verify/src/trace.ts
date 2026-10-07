@@ -75,6 +75,8 @@ class Kit {
     this.globs = classes;
     this.sinks = sinks;
     this.cache.clear();
+    this.counter = 0;
+    this.stack.length = 0;
   }
 
   enabled(name: string): boolean {
@@ -190,7 +192,7 @@ export class ChromeSink implements TraceSink {
   }
 
   remark(record: TraceRecord): void {
-    this.events.push({ ph: "i", ts: record.ts_us, pid: 1, tid: 0, name: "remark", cat: record.cls ?? "", args: ChromeSink.args(record) });
+    this.events.push({ ph: "i", ts: record.ts_us, pid: 1, tid: 0, name: "remark", cat: firstSegment(record.code ?? ""), args: ChromeSink.args(record) });
   }
 
   flush(): void {
