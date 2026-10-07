@@ -387,7 +387,11 @@ describe("core.ref spec (revision-qualified references)", () => {
 
 describe("doc-verify:references", () => {
 
-  it("references: an unresolved spec reddens with the component named, and a resolved one stays PASS", async () => {
+  // ⚠ AN EXPLICIT TIMEOUT, because this case now builds FIVE git fixture repositories (each a real
+  // `git add` + `git commit`) and sits on the 5 s default: measured 2.9-5.2 s on an idle host, so it
+  // was passing by a margin rather than by design. Raising the budget states the real cost instead of
+  // letting host load decide whether the case runs.
+  it("references: an unresolved spec reddens with the component named, and a resolved one stays PASS", { timeout: 30000 }, async () => {
     // ⚠ END TO END THROUGH THE CONSTRAINT, NOT THE FACTS. A facts-only case cannot see which
     // `spec_unresolved` COMPONENT the constraint forbids -- swapping `revision` for `path` in
     // `references.yaml` left a facts-level case green, which is the "the case cannot redden its own
