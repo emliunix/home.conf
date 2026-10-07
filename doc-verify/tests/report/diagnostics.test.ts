@@ -4,8 +4,8 @@
 
 import { describe, expect, it } from "vitest";
 
-import { renderReport, type ProofNode } from "../src/engine/index.js";
-import { byHeading, moduleText, PURPOSE_ORACLE, PURPOSES, run, scriptedJudge } from "./engine-helpers.js";
+import { renderReport, type ProofNode } from "../../src/engine/index.js";
+import { byHeading, moduleText, PURPOSE_ORACLE, PURPOSES, run, scriptedJudge } from "../engine-helpers.js";
 
 function nodes(node: ProofNode | undefined): ProofNode[] {
   return node === undefined ? [] : [node, ...(node.children ?? []).flatMap(nodes)];

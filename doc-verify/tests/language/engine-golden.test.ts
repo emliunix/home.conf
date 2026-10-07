@@ -7,7 +7,7 @@
 import { createMockJevJudgeBackend, type JudgeBackend, type JudgeBackendRequest } from "deepclause-sdk";
 import { describe, expect, it } from "vitest";
 
-import { renderReport, runProgram } from "../src/engine/index.js";
+import { renderReport, runProgram } from "../../src/engine/index.js";
 
 const MARKDOWN = [
   "# 04 - Example",

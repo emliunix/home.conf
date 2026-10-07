@@ -5,8 +5,8 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { affectedClosure, captureSnapshots } from "../src/snapshot.js";
-import { repoPath } from "../src/types.js";
+import { affectedClosure, captureSnapshots } from "../../src/snapshot.js";
+import { repoPath } from "../../src/types.js";
 
 describe("snapshot and graph behavior", () => {
   it("reads staged bytes and ignores later unstaged edits", async () => {

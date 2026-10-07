@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { segmentMarkdown } from "../src/segments.js";
+import { segmentMarkdown } from "../../src/segments.js";
 
 describe("Markdown segments", () => {
   it("uses AST headings, parent paths, and stable duplicate slugs", () => {

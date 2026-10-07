@@ -3,9 +3,9 @@
 
 import { describe, expect, it } from "vitest";
 
-import { memoryOracleCache } from "../src/engine/index.js";
-import { sentenceSpans } from "../src/engine/oracles.js";
-import { moduleText, run, scriptedJudge } from "./engine-helpers.js";
+import { memoryOracleCache } from "../../src/engine/index.js";
+import { sentenceSpans } from "../../src/engine/oracles.js";
+import { moduleText, run, scriptedJudge } from "../engine-helpers.js";
 
 const MODULE = moduleText(`oracles:
   falsifies(D, S):

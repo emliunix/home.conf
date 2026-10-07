@@ -4,9 +4,9 @@ import { defineConfig } from "vitest/config";
 // CLI. Subprocess tests need a longer timeout than the 5 s default, so they are their own
 // project and a slow spawn does not flake the logic tier.
 const SUBPROCESS = [
-  "doc-verify/tests/cli.test.ts",
-  "doc-verify/tests/keyless.test.ts",
-  "doc-verify/tests/task61-selector-gate.test.ts",
+  "doc-verify/tests/report/cli.test.ts",
+  "doc-verify/tests/report/keyless.test.ts",
+  "doc-verify/tests/selection/task61-selector-gate.test.ts",
 ];
 
 export default defineConfig({

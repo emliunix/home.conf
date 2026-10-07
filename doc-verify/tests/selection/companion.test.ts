@@ -8,11 +8,11 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { checkDocuments } from "../src/checker.js";
-import { parseCompanion } from "../src/config.js";
-import { sha256 } from "../src/hash.js";
-import { repoPath } from "../src/types.js";
-import { scriptedJudge } from "./engine-helpers.js";
+import { checkDocuments } from "../../src/checker.js";
+import { parseCompanion } from "../../src/config.js";
+import { sha256 } from "../../src/hash.js";
+import { repoPath } from "../../src/types.js";
+import { scriptedJudge } from "../engine-helpers.js";
 
 const MODULE = `schema_version: 2
 kind: verification-module

@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import { byHeading, moduleText, PURPOSE_ORACLE, PURPOSES, run, scriptedJudge, type SeenQuestion } from "./engine-helpers.js";
+import { byHeading, moduleText, PURPOSE_ORACLE, PURPOSES, run, scriptedJudge, type SeenQuestion } from "../engine-helpers.js";
 
 type Report = Awaited<ReturnType<typeof run>>;
 
