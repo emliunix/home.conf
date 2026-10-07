@@ -33,9 +33,14 @@ Preserve the status by one of:
 
 - running the checked command without a pipe;
 - reading the checked command's `${PIPESTATUS[...]}` entry immediately after the
-  pipeline;
-- enabling `set -o pipefail`; or
+  pipeline; or
 - using a wrapper whose result is the checked command's status.
+
+`set -o pipefail` is not an equivalent substitute. It makes the pipeline report
+failure if any stage fails or dies by signal, so a downstream no-match or a
+truncation SIGPIPE can red a successful check. Use it only when the pipeline as
+a whole is the subject. When the status must belong to the checked command, read
+its `${PIPESTATUS[...]}` entry or use the wrapper.
 
 When output must be truncated, the receipt names the command that decided the
 result and the status that command returned. The downstream formatter's status
