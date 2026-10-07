@@ -15,7 +15,7 @@ description: >-
 4. **Reuse keyed by topic and task kind** — the same kind of work on the same subject goes back to the child that holds the context. A fresh child is earned by blinding, independence or a new topic — never by convenience.
 5. **Freeze while it measures** — the parent edits nothing and commits nothing until the last child returns.
 6. **Fan out with a shared lever** — write the recipe once, as the artifact every delegate reads, and keep it outside their write scope.
-7. **Bind identity before mutation** — a read-only child asserts its own identity before touching any mutation channel. If the credential resolves to the parent or another unexpected identity and the harness cannot scrub or override it, the wrapper refuses the mutation. The dispatch envelope names the child's write path, or says `read-only`.
+7. **Bind identity before mutation** — a read-only child asserts its own identity before touching any mutation channel. If the credential resolves to the parent or another unexpected identity and the harness cannot scrub or override it, the wrapper refuses the mutation. The dispatch envelope names the child's write path, or says `read-only`. The reusable wrapper is `scripts/assert-child-identity.mjs`; it exits `1` before invoking the command on a missing or mismatched `SLOCK_AGENT_ID`, and its focused test includes a removal-red.
 
 ## Why each rule holds
 
@@ -62,6 +62,19 @@ measurement, and two runs against one path are not two runs.
 parent's credentials, so a nominal reviewer can post messages, claim tasks, or move refs as the parent.
 Before any mutation, the child asserts its own identity; if the harness cannot provide it, the wrapper
 refuses the mutation rather than trusting the prompt.
+
+For a child with a named write path, invoke a mutation only through the identity
+boundary:
+
+```sh
+node skills/subagent-dispatch/scripts/assert-child-identity.mjs \
+  --expected <child-agent-id> --channel <raft|git|file|...> -- <command> [args...]
+```
+
+The wrapper compares `SLOCK_AGENT_ID` to the expected child id and refuses
+before the command runs when they differ. The test runner is
+`skills/subagent-dispatch/tests/check-child-identity.mjs`; its mutation removes
+the comparison and demonstrates the mismatch red.
 
 **A forked session does not own its parent's children.** After a fork, only the children spawned since the
 fork are addressable; messaging an earlier one fails. So a handover that says "send your report to the
