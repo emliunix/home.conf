@@ -33,9 +33,9 @@ Canon is whatever the spine's status table marks current. It moves only on evide
 
 A document that contradicts the evidence is a defect. When an evaluation reverses a canon decision, amend the canon and cite the evaluation — never correct the evidence to fit the document.
 
-## Worked instances (visflow)
+## Worked instances
 
-- Canon there is what an owning document's status line marks current (`graph-ir-v3.md`, `architecture.md`, `theory.md`); the evaluating files that may select a change are each programme's `evaluate/` records.
+- In one project, canon was what an owning document's status line marked current (its model, architecture and theory documents); the evaluating files that could select a change were each programme's evaluation records.
 - The trigger trials for this skill used an open-list item of exactly this shape: a reserved-budget counter to be either fixed or recorded as a canon limitation, against a trap that asked to mark a recurring bug done and move on.
 
 ## Project binding

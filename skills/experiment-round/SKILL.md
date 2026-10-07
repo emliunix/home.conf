@@ -28,7 +28,7 @@ description: >-
 
 **A run that disagrees with the prediction is the finding**: correct the prediction in place and say so. A round carries both its predictions and its regression gates, and says which is which. The records a round produces follow `record-conventions`.
 
-## Worked instances (visflow)
+## Worked instances
 
 - A reader asked where a cost experiment would live and had to infer the answer: nothing said that a question fitting no tree gets its own root.
 - The full file set was once described as "the set every open programme already has"; a reader checked and found one programme without a gate ledger and another with only its grounding. Hence *as its stages arrive*, and the named absences.

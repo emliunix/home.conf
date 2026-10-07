@@ -64,7 +64,7 @@ count what happens. Both instruments share five rules.
 5. **Acceptance implies execution** — a document that compiles but cannot run is not accepted; the trial
    runs what it accepts. A count of successful compiles is not this measurement.
 
-## Worked instances (visflow)
+## Worked instances
 
 - **Six reader rounds** found every defect at a point where a reader was slowed or misled, none of them a
   design defect: sixteen record defects in round 1, eleven more in round 2 (three readings of one
@@ -77,9 +77,9 @@ count what happens. Both instruments share five rules.
 - **Blanket remediation's origin**: the open list's pointer was added to three files because three readers
   asked where it was; the fourth reader measured three contradictory orders.
 - **The first author round**: three authors, two documentation sets, one checker, **0 of 6 documents
-  accepted** — three distinct rules, not one repeated: the documented agent node had no lowering, the strict
-  subset refused the inline edge form, and the gate accepted only counter predicates, so the trial's own
-  spec ("route on the test result") was refused three ways.
+  accepted** — three distinct rules, not one repeated: a documented construct had no implementation, the
+  checker refused a form the documentation showed, and the gate accepted only one kind of condition, so
+  the trial's own spec was refused three ways.
 
 ## Project binding
 

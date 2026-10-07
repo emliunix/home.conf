@@ -1,10 +1,10 @@
 {
  "files": {
   "README.md": "3afb1da31e2b9276b1a30f996750a169969b219273074e49d0eed24e3fec8487",
-  "SKILL.md": "96a3f78ea86640d53212e5c809c5ce7672667faa46d66c8d46047289d5f8b049",
+  "SKILL.md": "3c88358aa524fdfaad3cfe132bb373d47213eef5b3d2934fd62d09abeeb938ce",
   "tests/cases/trigger.yaml": "fe427973a21bdeda8986c2c921dc5f1ca0aaaa436dc28f04085b817ee8783386",
   "tests/rubric.yaml": "d9a8fe6a59690b5b6c1064bcb732a94dc6aeccd11e23778657181f558ff6784e"
  },
  "skill": "subagent-dispatch",
- "version": 1
+ "version": 2
 }

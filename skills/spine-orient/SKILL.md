@@ -27,7 +27,7 @@ Read in this order, and do not act on a diff before the owning document is read:
 
 Verify environment facts empirically: run the command, read the port, list the process. Never carry a prior session's runtime assumptions forward — a port, a server or a model route that held yesterday is a hypothesis today.
 
-## Worked instances (visflow)
+## Worked instances
 
 - The reading order was once stated in three files; a blinded reader measured three contradictory orders. The order now lives once, in the README, and everything else points at it — the reason step 2 owns it.
 - A later reader found a clause above the reading order telling them to start with the method instead: a second statement of one fact, in the same file, drifting from the first.

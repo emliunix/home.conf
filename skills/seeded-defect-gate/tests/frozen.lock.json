@@ -1,10 +1,10 @@
 {
  "files": {
   "README.md": "6b2723d6fa71d506e1d9095f2ecd13dee053ef3e08ae65e8f12fd4c88126872c",
-  "SKILL.md": "60193bb33716fd2532ecae2f07601762b3d0386468d1d345b8d032d41a7da1c6",
+  "SKILL.md": "5a70b2c007f815944f03f3980128521e0008ee59e16a33a6b867e6f23ecff7f8",
   "tests/cases/trigger.yaml": "c8db455db703d4e3aa1198ef419357fd93a59b646725ca539ba7e7271d1be435",
   "tests/rubric.yaml": "b5138942c68f8f39978b32d4b31e8a615ce0191429cd1c0ba1e937f6fea2c7c4"
  },
  "skill": "seeded-defect-gate",
- "version": 1
+ "version": 2
 }

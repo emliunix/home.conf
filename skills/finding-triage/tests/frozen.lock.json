@@ -1,10 +1,10 @@
 {
  "files": {
   "README.md": "a16fcc8b68d1eb76316468182c0e109de0734faf861767e5c9b2eb3978e22d82",
-  "SKILL.md": "419058cf77aef272b6f4c298ff008eacfa0a58b03fa973e23c180a5e19854b16",
+  "SKILL.md": "237c2bbc093b5ab85cc1ea34e294ec2bbd6fde9bf9e6b7e064ae8978963c09dd",
   "tests/cases/trigger.yaml": "46cf2caad4dbfe0df47f620c6f4e3880c40dcf00688f31f4e54e6df0115a95d4",
   "tests/rubric.yaml": "b13ba34ae3ca208481bed6fb22429fda484ac195de4d4377c4dd7f552d7095ac"
  },
  "skill": "finding-triage",
- "version": 1
+ "version": 2
 }

@@ -23,9 +23,9 @@ A claim that lives only in a probe is decoration: re-home it into a named layer'
 
 Which boundary a check exercises, and the evidence level it can therefore support, belongs to `verification`; this skill owns whether the check can fail at all.
 
-## Worked instances (visflow)
+## Worked instances
 
-- The sharpest ledger pairs a verification document with a mutations table: one row per gate, each with the defect that breaks it (`graph-flow-v3/verification.md` + `mutations.md`). A layer rubric names which layer each cell belongs to (`taskboard-v3/evaluation.md`).
+- The sharpest ledger pairs a verification document with a mutations table: one row per gate, each with the defect that breaks it. A layer rubric names which layer each cell belongs to.
 - That mutations table is hand-maintained while two sibling trees generate theirs: the "hand-maintained page that looks generated" class that `record-conventions` lists among its mismatches.
 
 ## Project binding

@@ -44,12 +44,12 @@ The dated layer a reader enumerates before any programme carries a convention to
 - **Forward-only** — files named before the convention keep their names; renaming them breaks citations for no gain. The grandfather list lives in the checker, not in a document that would drift from it.
 - **The convention has a check**: a script that fails on a top-level name that is neither dated nor on the living-or-grandfathered list, or on a dated name that disagrees with its `created:`. A rule with no check is speculation — this one included.
 
-## Worked instances (visflow)
+## Worked instances
 
 - A round produced four per-question evaluations and a decision row but no round verdict; enumerating by convention found the parts and not the whole. Two other streams ran without a verdict file until readers noticed.
 - A gate ledger with no generator looked generated; a generated corpus page was still one edit stale when a reader checked it.
 - The experiment manifest had two stale cells within a day of being written — why it is a convenience and not the contract.
-- Three review rounds over the same seats collided on bare `{seat}.md` names (`kimi-k3.md` beside `kimi-k3-r2.md`), which is why the round number belongs in the name.
+- Three review rounds over the same seats collided on bare `{seat}.md` names (`seat-a.md` beside `seat-a-r2.md`), which is why the round number belongs in the name.
 - The extend-a-record procedure was written down only after a reader reconstructed it from the code and reported it missing.
 
 ## Project binding

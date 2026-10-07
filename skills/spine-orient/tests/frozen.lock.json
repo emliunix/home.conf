@@ -1,10 +1,10 @@
 {
  "files": {
   "README.md": "27f930f85cc4c2b4efb0250f7b4db89e6d2e1f20b271c3669e3b4fa2da070e9f",
-  "SKILL.md": "e6c955cab60518a293d8f2f9fbe1e6d45b1d5eeb1e82c6982512e0a72d207e91",
+  "SKILL.md": "66b8766621e195b8aac78e998c2c3eb9d7597a5c2f3c2f0429d6d3083aab79cd",
   "tests/cases/trigger.yaml": "c4f7d30d7f0a6091ea67097f22e560324fde2ca8d1c19aa5eb51c316e3b7ae8a",
   "tests/rubric.yaml": "3a2b7442f97d65e7d20af313a50426af77653494398916487488ed8fad21cf20"
  },
  "skill": "spine-orient",
- "version": 1
+ "version": 2
 }

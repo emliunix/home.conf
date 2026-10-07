@@ -59,13 +59,13 @@ design document, whose claims are about a tree rather than about a run. Before c
 an example of a case, check that it was produced by this method — several seats, one shared instrument, a
 pooled verdict — and not by one author reading and reproducing.
 
-## Worked instances (visflow)
+## Worked instances
 
-- **A round's evidence — run by this method**: `loop-surface/evaluate/interrogation-1.md`, three seats,
+- **A round's evidence — run by this method**: an interrogation record with three seats,
   one prompt each, pooled by a lead. It also seated a model whose defects had landed inside the range
   under review, mitigated only by "reported before the panel opened" — the source of step 2's second
   exclusion. Of four interrogation records, two named no commit range at all.
-- **A plan before the run — run by this method**: `worklog/parallel-plan-review/`, a plan and a protocol,
+- **A plan before the run — run by this method**: a plan-review tree holding a plan and a protocol,
   three seats over three rounds, an adjudication per round; the seats reproduced claims at HEAD instead of
   reading prose.
 - **A design document, a tree's record — not yet run by this method.** The reviews offered as examples

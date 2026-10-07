@@ -68,7 +68,7 @@ the claim each finding contradicts, and what it could not check. A child's summa
 verdict: its findings are accepted or refused by the same rule as anyone's — reproduce the claim, cite the
 check (see `finding-triage`).
 
-## Worked instances (visflow)
+## Worked instances
 
 - **Reuse**: one subagent did a teach-back and the adversarial review of a proof-of-understanding report,
   and then the same subagent re-read the fixed report.
@@ -78,7 +78,7 @@ check (see `finding-triage`).
   again where re-asking cost a message.
 - **The race**: two verifiers were dispatched with permission to regenerate a use case's results file
   while the parent was still editing the case file they were reading. The fix was a scratch results
-  directory (`CASE_RESULTS_DIR` for the case harnesses).
+  directory, set per child by an environment variable the case harnesses read.
 - **The fork** (observed 2026-09-18): after a fork, `list_agents` showed only the children spawned since
   the fork, and `send_message` to an earlier one failed with `subagent "<id>" belongs to another parent
   session` — including children messaged successfully minutes before.
