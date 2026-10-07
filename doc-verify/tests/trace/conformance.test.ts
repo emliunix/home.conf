@@ -9,9 +9,9 @@ import { ChromeSink, TreeSink, configure, event, remark, span } from "../../src/
 import type { TraceRecord, TraceSink } from "../../src/trace.js";
 
 /**
- * The shared fixture (visflow design/19-tracing-kit.md § Verification). The copy under
- * `tests/fixtures/trace/` is vendored from visflow `tests/fixtures/trace/`; the hash pins below turn
- * red on whichever side drifts.
+ * The shared fixture (visflow design/19-tracing-kit.md § Verification). This copy under
+ * `tests/fixtures/trace/` is the source of truth (H3): visflow vendors it, pinned to the
+ * engine revision its doc-verify pin names. The hash pins below turn red on an accidental edit.
  */
 const FIXTURE = join(dirname(fileURLToPath(import.meta.url)), "..", "fixtures", "trace");
 
@@ -71,7 +71,7 @@ function newChromePath(): string {
 
 const fixture = (name: string): string => readFileSync(join(FIXTURE, name), "utf8");
 
-describe("the vendored fixture is pinned to its source revision", () => {
+describe("the fixture is pinned against accidental edits", () => {
   for (const [name, digest] of Object.entries(SOURCE_SHA256)) {
     it(`${name} matches the recorded sha256`, () => {
       expect(createHash("sha256").update(fixture(name)).digest("hex")).toBe(digest);
