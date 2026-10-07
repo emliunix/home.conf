@@ -1,0 +1,5 @@
+  surface.elab.step n=1
+  remark surface.elab.lower.edge at=x.flow.md:3 why="edge lowered to filter"
+    interp.turn.step
+  interp.turn dur=<N>us
+surface.elab.lower dur=<N>us
