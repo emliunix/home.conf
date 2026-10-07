@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { ChromeSink, TreeSink, configure, enabled, event, parseClasses, remark, sinksFor, span } from "../../src/trace.js";
+import type { TraceRecord, TraceSink } from "../../src/trace.js";
 
 function runScript(lines: string[]): void {
   const tree = new TreeSink((line) => { lines.push(line); });
@@ -33,6 +34,21 @@ describe("trace filter", () => {
     span("interp.turn").end();
     event("interp.turn.step");
     expect(lines).toEqual([]);
+  });
+});
+
+describe("trace record shape", () => {
+  it("emits span: null for an event outside any span, as the Python half does", () => {
+    const records: TraceRecord[] = [];
+    const sink: TraceSink = {
+      begin: (record) => { records.push(record); }, end: (record) => { records.push(record); },
+      event: (record) => { records.push(record); }, remark: (record) => { records.push(record); },
+    };
+    configure(["dv"], [sink]);
+    event("dv.oracles.ask.step");
+    expect(Object.keys(records[0] ?? {})).toContain("span");
+    expect(records[0]?.["span"]).toBeNull();
+    expect(JSON.stringify(records[0])).toContain('"span":null');
   });
 });
 

@@ -18,7 +18,7 @@ export interface TraceRecord {
   kind: "begin" | "end" | "event" | "remark";
   id?: string | undefined;
   parent?: string | null | undefined;
-  span?: string | undefined;
+  span?: string | null | undefined;
   name?: string | undefined;
   cls?: string | undefined;
   code?: string | undefined;
@@ -84,7 +84,10 @@ class Kit {
     if (known !== undefined) {
       return known;
     }
-    const value = classEnabled(this.globs ?? parseClasses(this.env() ?? ""), name);
+    if (this.globs === undefined) {
+      this.globs = parseClasses(this.env() ?? "");
+    }
+    const value = classEnabled(this.globs, name);
     this.cache.set(name, value);
     return value;
   }
@@ -115,7 +118,7 @@ class Kit {
     if (!this.enabled(name)) {
       return;
     }
-    this.emit({ kind: "event", span: this.stack[this.stack.length - 1]?.id ?? undefined, name,
+    this.emit({ kind: "event", span: this.stack[this.stack.length - 1]?.id ?? null, name,
       cls: firstSegment(name), fields, ts_us: nowMicros() });
   }
 
@@ -123,7 +126,7 @@ class Kit {
     if (!this.enabled(code)) {
       return;
     }
-    this.emit({ kind: "remark", span: this.stack[this.stack.length - 1]?.id ?? undefined, code, at, why,
+    this.emit({ kind: "remark", span: this.stack[this.stack.length - 1]?.id ?? null, code, at, why,
       fields, ts_us: nowMicros() });
   }
 
