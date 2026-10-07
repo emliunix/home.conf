@@ -48,6 +48,13 @@ export const moduleSchema = z.object({
   exports: z.array(z.string()).optional(),
   rounds: z.number().int().min(1).optional(),
   warning_threshold: z.number().min(0).max(1).optional(),
+  /**
+   * How one round's demanded atoms are shaped into judge requests. `batched` (the default)
+   * packs a document's atoms into one keyed request, split only by the outbound and judge
+   * budgets. `per-atom` asks each demanded atom in its own request, so an answer cannot
+   * depend on which other atoms the document happened to demand in the same round.
+   */
+  request_shape: z.enum(["batched", "per-atom"]).optional(),
   oracles: z.record(z.string(), oracleSchema).optional(),
   rules: z.record(z.string(), z.string().min(1)).optional(),
   constraints: z.record(z.string().regex(/^[a-z][a-z0-9-]*$/), constraintSchema).optional(),
@@ -64,11 +71,18 @@ export class ModuleError extends Error {
   }
 }
 
+/**
+ * How a round's demanded atoms become judge requests. `batched` is the shipped behaviour and
+ * the default; `per-atom` is opted into by a module that needs each atom asked alone.
+ */
+export type RequestShape = "batched" | "per-atom";
+
 /** A module whose texts the Prolog reader has parsed; the checker consumes it. */
 export interface ParsedModule {
   source: ModuleSource;
   hash: string;
   rounds: number;
+  requestShape: RequestShape;
   params: Record<string, Term>;
   oracles: Array<{ name: string; head: Term; source: OracleSource; evidence: Term }>;
   rules: Array<{ head: Term; body: Term; text: string }>;
@@ -140,7 +154,7 @@ export async function loadModule(yamlText: string): Promise<ParsedModule> {
     mode: constraint.require === undefined ? "forbid" as const : "require" as const,
     source: constraint,
   }));
-  return { source, hash: sha256(yamlText), rounds: source.rounds ?? 1, params, oracles, rules, constraints };
+  return { source, hash: sha256(yamlText), rounds: source.rounds ?? 1, requestShape: source.request_shape ?? "batched", params, oracles, rules, constraints };
 }
 
 function paramTerm(value: string | number | Array<string | number>): Term {

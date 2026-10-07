@@ -15,6 +15,7 @@ import { BlockedError } from "../types.js";
 import type { Oracle } from "./checker.js";
 import { UNKNOWN, type Demand, type OracleView } from "./evaluate.js";
 import { bodyEvidence, ownEvidence, unionEvidence, type DocumentFacts, type EvidenceText } from "./facts.js";
+import type { RequestShape } from "./module.js";
 import { listItems, termText, type Term } from "./terms.js";
 
 /**
@@ -120,6 +121,11 @@ export async function askRound(input: {
   unavailable?: string | undefined;
   model: string;
   policy: OutboundPolicy;
+  /**
+   * How this round's demanded atoms become requests. `per-atom` asks each atom alone, so no
+   * answer can depend on which other atoms the document demanded in the same round.
+   */
+  requestShape: RequestShape;
   cache: OracleCache | undefined;
 }): Promise<RequestRecord[]> {
   const byDocument = new Map<string, Prepared[]>();
@@ -285,7 +291,12 @@ export async function askRound(input: {
  * document larger than the budget is still decided across several calls. One atom that alone
  * exceeds the budget is BLOCKED over-budget, named; a single atom is never split.
  */
-function partitionBatches(document: string, prepared: Prepared[], input: { policy: OutboundPolicy; backend: JudgeBackend | undefined }): Prepared[][] {
+function partitionBatches(document: string, prepared: Prepared[], input: { policy: OutboundPolicy; backend: JudgeBackend | undefined; requestShape: RequestShape }): Prepared[][] {
+  // `per-atom`: every demanded atom is its own keyed request. The outbound and judge budgets
+  // still apply per request, through the same single-atom check below.
+  if (input.requestShape === "per-atom") {
+    return prepared.map((entry) => [entry]);
+  }
   const size = (list: Prepared[]): number => Buffer.byteLength(canonicalJson({
     schema_version: 2, document, round: 0,
     evidence: Object.fromEntries(list.map((entry) => [entry.key, { sections: entry.evidence.sections, text: entry.evidence.text }])),
