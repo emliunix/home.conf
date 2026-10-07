@@ -26,7 +26,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn, spawnSync } from "node:child_process";
 import { planMigration, verifyPreservation } from "../scripts/memory-migrate.mjs";
-import { appendFact, republish, acquireLock, releaseHeld } from "../scripts/memory-append.mjs";
+import { appendFact, republish, acquireLock, releaseHeld, factKey } from "../scripts/memory-append.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LINT = join(ROOT, "scripts", "memory-lint.mjs");
@@ -313,30 +313,37 @@ function caseMigration() {
 }
 
 // --- 8. a LIVE lock is never evicted (this case found a real bug) ---------------------------
-// The stale-lock recovery used to read the holder's start time OUT OF the lock file, but the lock
-// is created empty, so `Number("") || 0` was 0 and every waiter computed an age of ~1.7e12 ms. It
-// evicted a live lock and entered the critical section. Two writers then appended one fact twice.
+// The stale-lock recovery used to evict a lock whose holder was still running, which let two writers
+// enter the critical section and duplicate an append. Liveness is now checked BEFORE age, so a live
+// holder is never a candidate for eviction.
 //
-// This is asserted DETERMINISTICALLY rather than by racing, because the race only reproduced it in
-// about one trial in six: a live lock must be respected and must still be there afterwards. Both
-// arms were measured directly -- the fixed code refuses with ELOCKED in ~200 ms and leaves the lock
-// in place; the content-based version appends in ~8 ms and steals it.
+// THIS CASE ASSERTS THE HARD PROPERTY, ON A HELD LOCK: while a holder is alive, its lock must still
+// be THE SAME LOCK afterwards -- not moved aside, not replaced. (What the displaced writer then DOES
+// is different: because the lock is a contention tool rather than a correctness dependency, a writer
+// that cannot take it proceeds and the atomic claim keeps the append unique. That behaviour is
+// covered by `lock-unavailable`.)
 function caseLiveLock() {
   const dir = workspace();
-  const index = join(dir, "MEMORY.md");
-  const lock = join(dir, "memory-append.lock");
-  // Exactly what acquire() creates: the path exists, its mtime is NOW, and it has no content.
-  writeFileSync(lock, "");
-  let outcome = null;
+  const lockPath = join(dir, "memory-append.lock");
+  const held = acquireLock(dir, { timeoutMs: 1_000, staleMs: 60_000 });
+  const before = statSync(lockPath);
+
+  // A second writer that would consider the lock stale by age must NOT move a live lock.
+  let took = null;
   try {
-    appendFact(index, "a fact", { timeoutMs: 300, pollMs: 10 });
-    outcome = "appended";
+    took = acquireLock(dir, { timeoutMs: 200, staleMs: 0, pollMs: 10 });
   } catch (error) {
-    outcome = error?.code ?? "threw";
+    took = error?.code ?? "threw";
   }
-  check(outcome === "ELOCKED", `a live lock must be respected (expected ELOCKED, got ${String(outcome)})`);
-  check(existsSync(lock), "a live lock must NOT be evicted by a waiter");
-  check(!existsSync(logFileFor(dir)), "a refused writer must not have written a log entry");
+  check(took === "ELOCKED", `a LIVE lock must not be evicted by age, got ${String(took)}`);
+
+  const after = existsSync(lockPath) ? statSync(lockPath) : null;
+  check(after !== null, "a live lock must still exist after a failed waiter");
+  if (after !== null) {
+    check(after.ino === before.ino, "a live lock must be the SAME lock, not moved aside and replaced");
+  }
+  releaseHeld(held);
+  check(!existsSync(lockPath), "releasing the holder must remove the lock");
   rmSync(dir, { recursive: true, force: true });
 }
 
@@ -380,8 +387,11 @@ async function caseStaleLockRace() {
   const dir = workspace();
   const index = join(dir, "MEMORY.md");
   const lock = join(dir, "memory-append.lock");
-  mkdirSync(lock, { recursive: true });
-  writeFileSync(join(lock, "owner"), "12345\n");
+  // A crashed holder: a pid that cannot exist, with a COMPLETE owner record (pid + start time). An
+  // incomplete record reads as "unknown" and falls back to age, which would make this fixture
+  // exercise the age path rather than the crashed-holder path it is named for. The lock is a FILE
+  // whose whole content is the owner record.
+  writeFileSync(lock, "999999 1000000000000\n");
   const old = (Date.now() - 300_000) / 1000;
   utimesSync(lock, old, old);                      // older than the 60 s stale threshold
 
@@ -504,18 +514,27 @@ function caseCrashRetry() {
     // RETRY THE SAME FACT. This is the assertion the old suite could not make.
     // Read defensively: a regression here must produce a FAIL, not an ENOENT crash. A case that
     // throws instead of reporting measures nothing on exactly the runs that matter.
-    const retry = appendFact(index, fact);
+    let retry = null;
+    let retryError = null;
+    try {
+      retry = appendFact(index, fact);
+    } catch (error) {
+      retryError = error?.code ?? "threw";
+    }
+    check(retryError === null, `${name}: retry must not throw, got ${String(retryError)}`);
     const logPath = logFileFor(dir);
     const log = existsSync(logPath) ? readFileSync(logPath, "utf8") : "";
     const entries = log.split("\n").filter((l) => l.includes(fact)).length;
     check(entries === 1, `${name}: retry must leave EXACTLY ONE log entry, got ${String(entries)}`);
     check(readFileSync(index, "utf8").includes(fact), `${name}: retry must leave the fact VISIBLE in the index`);
     // And the retry must be honest about which of the two situations it was in.
-    if (expectLogged) {
-      check(retry.appended === false, `${name}: the fact was already durable, so retry must not append again`);
-      check(retry.indexRepaired === true, `${name}: retry must report that it FINISHED the publication`);
-    } else {
-      check(retry.appended === true, `${name}: the fact was never recorded, so retry must actually append it`);
+    if (retry !== null) {
+      if (expectLogged) {
+        check(retry.appended === false, `${name}: the fact was already durable, so retry must not append again`);
+        check(retry.indexRepaired === true, `${name}: retry must report that it FINISHED the publication`);
+      } else {
+        check(retry.appended === true, `${name}: the fact was never recorded, so retry must actually append it`);
+      }
     }
     rmSync(dir, { recursive: true, force: true });
   }
@@ -529,7 +548,11 @@ function caseCrashRetry() {
 function caseSuccessorRelease() {
   const dir = workspace();
   const a = acquireLock(dir, { timeoutMs: 1_000, staleMs: 60_000 });
-  // staleMs 0 makes every waiter treat A as stale, so B evicts A and takes the lock.
+  // A live holder is never evicted (that is the fix that stopped eight writers cascading into
+  // mutual eviction). So eviction is made reachable the way the protocol allows it: A's owner record
+  // becomes UNATTRIBUTABLE, which is the case where AGE applies because identity cannot be proved.
+  // A is still running -- exactly the situation where a careless release removes a successor's lock.
+  writeFileSync(join(dir, "memory-append.lock"), "unreadable\n");
   const b = acquireLock(dir, { timeoutMs: 2_000, staleMs: 0, pollMs: 5 });
   check(a.ino !== b.ino, "the evicting waiter must hold a different lock");
 
@@ -557,6 +580,207 @@ function caseSuccessorRelease() {
   rmSync(dir, { recursive: true, force: true });
 }
 
+// --- 15. a TORN log entry is refused, not mistaken for the fact (body, not just key) -------------
+// The key alone proves an entry STARTED. A partial write can leave the marker with a truncated body,
+// so matching on the key alone would report success for a fact never fully stored. The log is parsed
+// and the BODY compared exactly.
+function caseTornEntry() {
+  const dir = workspace();
+  const index = join(dir, "MEMORY.md");
+  const body = "the real fact";
+  const key = factKey(body);
+  mkdirSync(join(dir, "notes"), { recursive: true });
+  // A torn entry: the key is present, the body is truncated.
+  writeFileSync(logFileFor(dir), `\n## 2026-01-01T00:00:00Z <!-- ${key} -->\n\nthe rea`);
+  let code = null;
+  try {
+    appendFact(index, body);
+  } catch (error) {
+    code = error?.code ?? "threw";
+  }
+  check(code === "ETORN", `a torn entry must be refused, not treated as recorded; got ${String(code)}`);
+  check(!readFileSync(index, "utf8").includes(body), "a refused torn append must not put the fact in the index");
+
+  // Control: the SAME key with the COMPLETE body IS this fact, and must report already-present.
+  writeFileSync(logFileFor(dir), `\n## 2026-01-01T00:00:00Z <!-- ${key} -->\n\n${body}\n`);
+  const receipt = appendFact(index, body);
+  check(receipt.alreadyPresent === true, "a complete matching entry must report already present");
+  check(readFileSync(index, "utf8").includes(body), "an already-present fact must be published to the index");
+  rmSync(dir, { recursive: true, force: true });
+}
+
+// --- 16. holder identity: unknown is NOT dead, and a provably dead holder IS reclaimed ----------
+// A bare pid is not an identity (pids are recycled), so the owner record carries pid AND start time.
+// The rule that matters: "could not prove the holder dead" must NEVER become a success.
+function caseHolderIdentity() {
+  const dir = workspace();
+  const index = join(dir, "MEMORY.md");
+
+  // (a) MALFORMED claim -> identity unknown -> refuse. This is the boundary that prevents an
+  // unattributable claim being silently overwritten.
+  const badBody = "fact behind a malformed claim";
+  const badKey = factKey(badBody);
+  mkdirSync(join(dir, "notes", ".claims"), { recursive: true });
+  writeFileSync(join(dir, "notes", ".claims", badKey), "not-a-pid\n");
+  let badCode = null;
+  try {
+    appendFact(index, badBody);
+  } catch (error) {
+    badCode = error?.code ?? "threw";
+  }
+  check(badCode === "EINPROGRESS", `a malformed claim must refuse rather than assume death; got ${String(badCode)}`);
+
+  // (b) A pid that cannot exist -> provably dead -> reclaimed and appended for real.
+  const dead = workspace();
+  const deadIndex = join(dead, "MEMORY.md");
+  const deadBody = "fact behind a dead holder";
+  const deadKey = factKey(deadBody);
+  mkdirSync(join(dead, "notes", ".claims"), { recursive: true });
+  writeFileSync(join(dead, "notes", ".claims", deadKey), "999999 1000000000000\n");
+  const receipt = appendFact(deadIndex, deadBody);
+  check(receipt.appended === true, "a provably dead holder must be reclaimed and the fact appended");
+  check(readFileSync(deadIndex, "utf8").includes(deadBody), "the reclaimed append must be visible in the index");
+
+  rmSync(dir, { recursive: true, force: true });
+  rmSync(dead, { recursive: true, force: true });
+}
+
+// --- 17. an UNAVAILABLE lock must not lose the append ----------------------------------------
+// The lock reduces contention; it is NOT what makes an append correct. Correctness comes from the
+// atomic per-fact CLAIM and from the index being a fold of the log. An earlier revision treated the
+// lock as a correctness dependency and FAILED the append when it could not be taken, which under
+// contention meant every writer failing together -- measured at 3 of 30 trials with all eight
+// writers refused. Writing nothing is worse than racing, so an unavailable lock now proceeds.
+//
+// This case asserts the consequence: with another holder on the lock, the append STILL completes,
+// writes exactly one log entry, and is visible in the index.
+function caseLockUnavailableStillAppends() {
+  const dir = workspace();
+  const index = join(dir, "MEMORY.md");
+  const body = "fact under contention";
+  const held = acquireLock(dir, { timeoutMs: 1_000, staleMs: 60_000 });
+  let receipt = null;
+  let failure = null;
+  try {
+    receipt = appendFact(index, body, { lockTimeoutMs: 150 });
+  } catch (error) {
+    failure = error?.code ?? "threw";
+  }
+  releaseHeld(held);
+  check(failure === null, `an unavailable lock must not fail the append, got ${String(failure)}`);
+  check(receipt !== null && receipt.appended === true, "the append must still record the fact");
+  // Read defensively: if the append failed there is no log, and an ENOENT here would ABORT the run
+  // instead of reporting the FAIL above -- hiding every case after this one.
+  const logPath = logFileFor(dir);
+  const log = existsSync(logPath) ? readFileSync(logPath, "utf8") : "";
+  const entries = log.split("\n").filter((l) => l.includes(`<!-- ${factKey(body)} -->`)).length;
+  check(entries === 1, `exactly one log entry, got ${String(entries)}`);
+  check(readFileSync(index, "utf8").includes(body), "the fact must be visible in the index");
+  rmSync(dir, { recursive: true, force: true });
+}
+
+// --- 18. a claim is released only if it is still OURS ------------------------------------------
+// The claim's state is freed on every exit path, but removing it BY PATH can delete a successor's
+// live claim -- the same defect class as a path-only lock release, and it produced a real duplicate
+// in 1 of 30 trials: a writer that FAILED to take the claim still removed the live holder's claim,
+// letting a third writer append the same fact. This asserts the invariant directly: a claim owned by
+// someone else survives a failed claimant's cleanup.
+function caseClaimOwnership() {
+  const dir = workspace();
+  const index = join(dir, "MEMORY.md");
+  const body = "contended fact";
+  const key = factKey(body);
+  const claimPath = join(dir, "notes", ".claims", key);
+
+  // Writer A holds the claim; writer B fails to take it and runs its cleanup.
+  const a = acquireLock(dir, { timeoutMs: 1_000, staleMs: 60_000 });
+  mkdirSync(dirname(claimPath), { recursive: true });
+  writeFileSync(claimPath, `${String(process.pid)} ${String(Math.round(Date.now() - process.uptime() * 1_000))}\n`);
+  const ownedByA = statSync(claimPath).ino;
+
+  let refused = null;
+  try {
+    appendFact(index, body, { lockTimeoutMs: 150 });
+  } catch (error) {
+    refused = error?.code ?? "threw";
+  }
+  check(refused === "EINPROGRESS", `a live claim must refuse a second writer, got ${String(refused)}`);
+  check(existsSync(claimPath), "a failed claimant must NOT remove another writer's live claim");
+  if (existsSync(claimPath)) {
+    check(statSync(claimPath).ino === ownedByA, "the surviving claim must be the original one");
+  }
+  releaseHeld(a);
+  rmSync(dir, { recursive: true, force: true });
+}
+
+// --- 19. the RELEASE replacement window (the interleaving the earlier case never entered) -------
+// `successor-release` replaces the holder BEFORE `releaseHeld` starts, so it never reaches the window
+// INSIDE the release where a successor can appear. This case drives that interleaving directly by
+// swapping the lock between A's acquisition and its release -- the exact sequence CowBoy reproduced.
+function caseReleaseReplacementWindow() {
+  const dir = workspace();
+  const lockPath = join(dir, "memory-append.lock");
+  const a = acquireLock(dir, { timeoutMs: 1_000, staleMs: 60_000 });
+
+  // A successor replaces the lock while A still intends to release it: remove A's lock and install
+  // B's, exactly as an eviction would.
+  rmSync(lockPath, { force: true });
+  writeFileSync(lockPath, "999999 1000000000000\n");
+  const bIno = statSync(lockPath).ino;
+  check(bIno !== a.ino, "the successor lock must be a different lock");
+
+  releaseHeld(a);                                   // A releases, but B owns the path now
+  check(existsSync(lockPath), "A's release must NOT remove the successor's lock");
+  if (existsSync(lockPath)) {
+    check(statSync(lockPath).ino === bIno, "the surviving lock must still be the successor's");
+    check(readFileSync(lockPath, "utf8").includes("999999"), "the successor's OWNER RECORD must survive");
+  }
+  rmSync(dir, { recursive: true, force: true });
+}
+
+// --- 20. a lock that EXISTS always carries its holder's identity (the successor-acquire window) --
+// This is the observable consequence of creating and writing the lock in ONE atomic call. The earlier
+// `mkdirSync` + path-write left a window where a successor could replace the directory and the first
+// writer's record landed in the SUCCESSOR's lock -- both then believing they owned it. With an
+// exclusive create-and-write there is no instant at which the lock exists without a complete owner
+// record, so identity can never be overwritten by a writer that does not own it.
+//
+// Asserting the INVARIANT (existence implies a complete record) rather than a race: it is what the
+// mechanism guarantees, and it is checkable without load.
+function caseLockIdentityInseparable() {
+  const dir = workspace();
+  const lockPath = join(dir, "memory-append.lock");
+  const held = acquireLock(dir, { timeoutMs: 1_000, staleMs: 60_000 });
+
+  // The lock exists and its record is COMPLETE -- pid AND start time -- with no window in between.
+  const raw = readFileSync(lockPath, "utf8").trim();
+  const parts = raw.split(/\s+/);
+  check(parts.length === 2, `the lock must carry a complete owner record, got ${JSON.stringify(raw)}`);
+  check(Number.isInteger(Number.parseInt(parts[0], 10)) && Number.parseInt(parts[0], 10) > 0,
+    "the owner record must begin with a pid");
+  check(Number.isInteger(Number.parseInt(parts[1], 10)) && Number.parseInt(parts[1], 10) > 0,
+    "the owner record must carry a start time, which is what distinguishes a recycled pid");
+
+  // And the token's inode IS the lock's inode, so a release can prove ownership later.
+  check(statSync(lockPath).ino === held.ino, "the returned token must name the lock actually created");
+
+  // A second writer cannot get in, and CRUCIALLY cannot leave ITS identity in the lock.
+  const before = readFileSync(lockPath, "utf8");
+  let second = null;
+  try {
+    second = acquireLock(dir, { timeoutMs: 150, pollMs: 10, staleMs: 60_000 });
+  } catch (error) {
+    second = error?.code ?? "threw";
+  }
+  check(second === "ELOCKED", `a live lock must refuse a second writer, got ${String(second)}`);
+  check(readFileSync(lockPath, "utf8") === before,
+    "a refused writer must not modify the holder's owner record");
+
+  releaseHeld(held);
+  check(!existsSync(lockPath), "releasing the holder must remove the lock");
+  rmSync(dir, { recursive: true, force: true });
+}
+
 // --- run them in order, then report once ----------------------------------------------------
 const cases = [
   ["over-cap", caseOverCap],
@@ -573,6 +797,12 @@ const cases = [
   ["fold-convergence", caseFoldConvergence],
   ["crash-retry", caseCrashRetry],
   ["successor-release", caseSuccessorRelease],
+  ["torn-entry", caseTornEntry],
+  ["holder-identity", caseHolderIdentity],
+  ["lock-unavailable", caseLockUnavailableStillAppends],
+  ["claim-ownership", caseClaimOwnership],
+  ["release-replacement-window", caseReleaseReplacementWindow],
+  ["lock-identity-inseparable", caseLockIdentityInseparable],
 ];
 const ran = [];
 for (const [name, run] of cases) {

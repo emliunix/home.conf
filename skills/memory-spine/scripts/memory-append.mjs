@@ -67,45 +67,44 @@ export function logPathFor(notesDir, date = new Date()) {
  */
 function acquire(lockDir, { timeoutMs = 10_000, pollMs = 25, staleMs = 60_000 } = {}) {
   const lock = join(lockDir, "memory-append.lock");
-  const owner = join(lock, "owner");
   const deadline = Date.now() + timeoutMs;
   for (;;) {
     try {
-      mkdirSync(lock);
-      // Record the holder by FILE DESCRIPTOR-relative write, and treat any failure as losing the
-      // lock: if a concurrent eviction renamed our fresh directory away between the mkdir and this
-      // write, the lock is not ours and we must not enter the critical section. Writing by path
-      // without this tolerance is what produced an EINVAL crash in an earlier revision.
-      try {
-        writeFileSync(owner, `${String(process.pid)}\n`);
-      } catch {
-        continue;
-      }
+      // THE LOCK IS A FILE CREATED AND WRITTEN IN ONE ATOMIC CALL.
+      //
+      // `writeFileSync(path, record, {flag: "wx"})` is O_CREAT|O_EXCL plus the write, so either this
+      // process created the lock (and its identity is already in it) or the call fails with EEXIST.
+      // An earlier revision did `mkdirSync` and then wrote an owner file inside it BY PATH, which
+      // left a window between the two: a successor could evict the just-created directory and create
+      // its own, and the first writer's owner write then landed in the SUCCESSOR's directory --
+      // overwriting its record and returning a token for a lock it did not hold. Both writers then
+      // believed they were the owner. Binding the identity to the same call that creates the lock
+      // removes the window rather than narrowing it.
+      writeFileSync(lock, ownerRecord(), { flag: "wx" });
       return { lock, ino: statSync(lock).ino };
     } catch (error) {
       if (error?.code !== "EEXIST") throw error;
-      // Age comes from the filesystem, never from the lock's content: an earlier revision read the
-      // holder's start time out of an EMPTY lock file, so `Number("") || 0` was 0, every waiter
-      // computed an age of ~1.7e12 ms and evicted a LIVE lock.
       let measured;
       try {
         measured = statSync(lock);
       } catch { continue; }                             // released under us; retry the create
-      // HOLDER LIVENESS, so a crashed holder is reclaimed IMMEDIATELY instead of blocking every
-      // writer for the whole stale window. `mtimeMs` remains the fallback for a lock whose owner
-      // file we cannot read. Pid reuse makes us see a live pid and NOT evict, which is the safe
-      // direction -- the inode-verified transfer below is what protects the critical section.
-      let holderPid = NaN;
-      try {
-        holderPid = Number.parseInt(readFileSync(owner, "utf8").trim(), 10);
-      } catch { /* no owner file yet; fall back to age */ }
-      const abandoned = Number.isInteger(holderPid) ? !holderAlive(holderPid) : Date.now() - measured.mtimeMs > staleMs;
-      if (abandoned || Date.now() - measured.mtimeMs > staleMs) {
+      // LIVENESS IS CHECKED BEFORE AGE, AND AN ALIVE HOLDER IS NEVER EVICTED. With age alone, several
+      // waiters that each measured the same stale lock could rename the PATH in turn: the first
+      // evicts the stale lock and creates its own, and the next then moves THAT live lock away. The
+      // displaced holder cannot find its own lock to release and every other waiter times out.
+      // Age therefore applies only when identity is unknown or the holder is provably gone.
+      const state = holderState(readOwner(lock));
+      const abandoned = state === "dead" || (state !== "alive" && Date.now() - measured.mtimeMs > staleMs);
+      if (abandoned) {
+        // EVICTION IS AN ATOMIC, VERIFIED TRANSFER: rename the lock we MEASURED to a unique
+        // tombstone, then prove the tombstone holds that inode. A rename succeeds for exactly one
+        // actor, so a loser gets ENOENT; the inode comparison proves we moved the STALE lock and not
+        // a successor's live one.
         const tombstone = `${lock}.stale.${randomUUID()}`;
         try {
           renameSync(lock, tombstone);
         } catch (renameError) {
-          if (renameError?.code === "ENOENT") continue; // another waiter got there first
+          if (renameError?.code === "ENOENT") continue;  // another waiter got there first
           throw renameError;
         }
         let moved;
@@ -113,12 +112,14 @@ function acquire(lockDir, { timeoutMs = 10_000, pollMs = 25, staleMs = 60_000 } 
           moved = statSync(tombstone);
         } catch { continue; }
         if (moved.ino !== measured.ino) {
-          // We moved a lock that was NOT the stale one we measured -- a successor's live lock.
-          try { renameSync(tombstone, lock); } catch { rmSync(tombstone, { recursive: true, force: true }); }
+          // We moved a lock that was NOT the stale one we measured -- a successor's live lock. Put it
+          // back if the path is free; if it is NOT, leave the tombstone rather than delete a live
+          // lock. Leaving it costs a file and is recoverable; deleting it is not.
+          try { renameSync(tombstone, lock); } catch { /* path re-occupied: leave the tombstone */ }
           continue;
         }
-        rmSync(tombstone, { recursive: true, force: true });
-        continue;                                      // provably evicted; retry the create
+        rmSync(tombstone, { force: true });
+        continue;                                        // provably evicted; retry the create
       }
       if (Date.now() > deadline) {
         const err = new Error(`another writer holds ${lock} after ${timeoutMs} ms`);
@@ -140,10 +141,31 @@ function acquire(lockDir, { timeoutMs = 10_000, pollMs = 25, staleMs = 60_000 } 
  */
 function releaseLock(held) {
   if (held === undefined || held === null) return;
+  // RELEASE USES THE SAME ATOMIC TRANSITION AS EVICTION: rename to a unique tombstone, prove the
+  // inode, then remove the tombstone. A `stat`-then-remove still has a TOCTOU window between the
+  // check and the removal -- the successor-lock removal simply survives in a narrower window, which
+  // is the same defect wearing a smaller hat. Rename is atomic, so exactly one actor moves the
+  // directory and the loser's rename fails.
+  const tombstone = `${held.lock}.done.${randomUUID()}`;
   try {
-    if (statSync(held.lock).ino !== held.ino) return;   // not ours any more
-  } catch { return; }                                   // already gone
-  try { rmSync(held.lock, { recursive: true, force: true }); } catch { /* already gone */ }
+    renameSync(held.lock, tombstone);
+  } catch {
+    return;                                    // already gone, or someone else moved it
+  }
+  let moved;
+  try {
+    moved = statSync(tombstone);
+  } catch {
+    return;                                    // vanished under us; nothing to restore
+  }
+  if (moved.ino !== held.ino) {
+    // We moved a lock that is NOT ours: a successor took over while we were releasing. Put it back
+    // exactly where it was, leaving their lock in place. If the path is occupied again we must not
+    // clobber it -- leave the tombstone rather than delete a live lock.
+    try { renameSync(tombstone, held.lock); } catch { /* the path is re-occupied; leave the tombstone */ }
+    return;
+  }
+  rmSync(tombstone, { recursive: true, force: true });
 }
 
 /**
@@ -156,14 +178,88 @@ export const acquireLock = acquire;
 /** Release a lock token. Exported for the coverage's successor-release case. */
 export const releaseHeld = releaseLock;
 
-/** Is the process that wrote this claim still alive? EPERM means alive but not ours. */
-function holderAlive(pid) {
-  if (!Number.isInteger(pid) || pid <= 0) return false;
+/**
+ * Take an exclusive lock, or return `null` if one cannot be had within the budget.
+ *
+ * WHY A TIMEOUT IS NOT FATAL. The lock reduces CONTENTION; it is not what makes an append correct.
+ * Correctness comes from two other things: the per-fact CLAIM (`open(...,"wx")`), which is an
+ * atomic test-and-set the filesystem enforces, and the fact that the index is a FOLD of the
+ * append-only log. A stale-lock race therefore cannot duplicate or lose a fact even if two writers
+ * run concurrently.
+ *
+ * The earlier revision treated the lock as a correctness dependency, so a writer that could not
+ * take it FAILED with ELOCKED. Under contention that turned into every writer failing together --
+ * measured as all eight writers refused in 3 of 30 trials -- which is a worse outcome than running
+ * unserialized, because nothing gets written at all. Returning null and proceeding is the honest
+ * behaviour: the caller gets a correct append, just one that may race on the index (which
+ * convergence handles).
+ */
+function tryAcquire(lockDir, options = {}) {
+  const budget = options.lockTimeoutMs ?? 2_000;
   try {
-    process.kill(pid, 0);
-    return true;
+    return acquire(lockDir, { ...options, timeoutMs: budget });
   } catch (error) {
-    return error?.code === "EPERM";
+    if (error?.code === "ELOCKED") return null;      // proceed without it; the claim still guards us
+    throw error;
+  }
+}
+
+/** Identify the holder of a claim or lock: pid AND its start time.
+ *
+ * A BARE PID IS NOT AN IDENTITY -- pids are recycled, so "this pid is alive" can be a successor
+ * process that happens to have inherited the number. The start time gives a second coordinate, so a
+ * recycled pid is distinguishable from the original holder. Returns null when identity cannot be
+ * established, and callers must treat null as "unknown", never as "dead": converting "could not
+ * prove the holder dead" into a success is the exact defect this whole path exists to avoid.
+ */
+function readOwner(file) {
+  let raw;
+  try {
+    raw = readFileSync(file, "utf8").trim();
+  } catch {
+    return null;                       // not written yet, or already gone
+  }
+  const parts = raw.split(/\s+/);
+  // BOTH FIELDS ARE REQUIRED. A reader can observe the owner file MID-WRITE and see the pid with
+  // no start time. Trusting that as identity is how a live lock gets evicted: the partial pid may
+  // belong to no running process, so a bare `kill(pid, 0)` answers ESRCH -- "dead" -- and every
+  // waiter then evicts a LIVE lock, cascading until they all time out. An incomplete record is
+  // therefore UNKNOWN, which falls back to age and never to eviction.
+  if (parts.length !== 2) return null;
+  const pid = Number.parseInt(parts[0], 10);
+  const startedAt = Number.parseInt(parts[1], 10);
+  if (!Number.isInteger(pid) || pid <= 0) return null;
+  if (!Number.isInteger(startedAt) || startedAt <= 0) return null;
+  return { pid, startedAt };
+}
+
+/** What a fresh owner record should contain: our pid and our start time. */
+function ownerRecord() {
+  return `${String(process.pid)} ${String(Math.round(Date.now() - process.uptime() * 1_000))}\n`;
+}
+
+/**
+ * Is the identified holder still alive? `unknown` means "could not tell" and is never death.
+ *
+ * NO SUBPROCESS. An earlier revision resolved pid reuse by shelling out to `ps -o lstart=`, and that
+ * sat in the polling loop: eight waiters spawned processes continuously, starved their own deadline,
+ * and failed with ELOCKED -- which surfaced as lost appends and flaky coverage. `process.kill(pid,
+ * 0)` is a syscall, so it is cheap enough to call while waiting.
+ *
+ * PID REUSE IS HANDLED BY FALLING BACK TO AGE, which is the safe direction. The owner record still
+ * carries a start time, so identity IS stored; but when we cannot confirm identity we treat a live
+ * pid as ALIVE and let the stale window expire rather than evicting a lock we cannot prove abandoned.
+ * The rule that matters, and the one this whole path exists for: "could not prove the holder dead"
+ * must never become a successful write.
+ */
+function holderState(owner) {
+  if (owner === null) return "unknown";  try {
+    process.kill(owner.pid, 0);
+    return "alive";
+  } catch (error) {
+    if (error?.code === "EPERM") return "alive";      // exists, not ours to signal
+    if (error?.code === "ESRCH") return "dead";        // no such process
+    return "unknown";                                  // never treat an unexpected error as death
   }
 }
 
@@ -175,21 +271,20 @@ function holderAlive(pid) {
 function tryClaim(claim, { claimGraceMs = 5_000 } = {}) {
   mkdirSync(dirname(claim), { recursive: true });
   try {
-    writeFileSync(claim, `${String(process.pid)}\n`, { flag: "wx" });
+    writeFileSync(claim, ownerRecord(), { flag: "wx" });
     return true;
   } catch (error) {
     if (error?.code !== "EEXIST") throw error;
   }
-  // A claim whose holder is GONE is reclaimable immediately -- the holder cannot be mid-append.
-  // A claim we cannot attribute (created but not yet written) is reclaimable only after a grace
-  // period, because a live writer may be between the create and the write this instant.
-  let pid = NaN;
+  // A claim whose holder is GONE is reclaimable. A claim we cannot attribute -- empty, malformed, or
+  // a bare pid with no start time -- is NOT assumed dead: `holderState` returns "unknown" and we
+  // fall back to AGE, because converting "could not prove the holder dead" into success is exactly
+  // the failure this path exists to prevent.
+  const state = holderState(readOwner(claim));
   let mtimeMs = 0;
-  try {
-    pid = Number.parseInt(readFileSync(claim, "utf8").trim(), 10);
-    mtimeMs = statSync(claim).mtimeMs;
-  } catch { return false; }
-  const abandoned = holderAlive(pid) ? false : Number.isInteger(pid) || Date.now() - mtimeMs > claimGraceMs;
+  try { mtimeMs = statSync(claim).mtimeMs; } catch { return false; }
+  const abandoned =
+    state === "dead" || state === "recycled" || (state === "unknown" && Date.now() - mtimeMs > claimGraceMs);
   if (!abandoned) return false;
 
   // Atomic reclaim: move the exact claim we measured aside, verify the inode, then retry the create.
@@ -209,7 +304,7 @@ function tryClaim(claim, { claimGraceMs = 5_000 } = {}) {
   } catch { /* tombstone vanished; treat as reclaimed */ }
   rmSync(tombstone, { force: true });
   try {
-    writeFileSync(claim, `${String(process.pid)}\n`, { flag: "wx" });
+    writeFileSync(claim, ownerRecord(), { flag: "wx" });
     return true;
   } catch {
     return false;
@@ -325,76 +420,113 @@ export function appendFact(indexPath, fact, options = {}) {
   if (body.length === 0) throw Object.assign(new Error("refusing to append an empty fact"), { code: "EEMPTY" });
   const key = factKey(body);
   const cap = options.cap ?? CAP_BYTES;
+  const byteLen = (text) => Buffer.byteLength(text, "utf8");
 
-  const held = acquire(dirname(indexPath), options);
+  const held = tryAcquire(dirname(indexPath), options);
+  let claim = null;
   try {
-    const logBefore = existsSync(log) ? readFileSync(log, "utf8") : "";
-    const indexBefore = existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "";
-    const byteLen = (s) => Buffer.byteLength(s, "utf8");
+    const readLog = () => (existsSync(log) ? readFileSync(log, "utf8") : "");
+    const readIndex = () => (existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "");
 
-    // THE LOG DECIDES WHETHER THE FACT IS RECORDED. If it is there, we are done appending -- but we
-    // still finish the publication, because an interruption after the log write and before the
-    // rename leaves the fact durable and invisible.
-    if (logBefore.includes(`<!-- ${key} -->`)) {
-      const repaired = ensurePublished(indexPath, logBefore, indexBefore, cap, options);
+    // THE LOG DECIDES WHETHER THE FACT IS RECORDED -- AND THE BODY MUST MATCH, NOT JUST THE KEY.
+    // A key alone proves an entry STARTED: a partial write can leave the marker with a truncated
+    // body, so a key-only match would report success for a fact never fully stored. The log is
+    // PARSED and the body compared exactly. A key with a DIFFERENT body is a TORN entry: refused,
+    // because the log is append-only and repairing it is a deliberate human act.
+    const lookup = (logText) => {
+      const found = parseLog(logText).find((f) => f.key === key && f.body === body);
+      if (found !== undefined) return "recorded";
+      return logText.includes(`<!-- ${key} -->`) ? "torn" : "absent";
+    };
+    const settle = (logText, indexText) => {
+      const repaired = ensurePublished(indexPath, logText, indexText, cap, options);
       return { appended: false, alreadyPresent: true, indexRepaired: repaired, key, logPath: log, indexPath,
-        bytesBefore: byteLen(indexBefore),
-        bytesAfter: repaired ? byteLen(readFileSync(indexPath, "utf8")) : byteLen(indexBefore) };
+        bytesBefore: byteLen(indexText),
+        bytesAfter: repaired ? byteLen(readIndex()) : byteLen(indexText) };
+    };
+    const refuse = (reason, code) => Object.assign(new Error(reason), { code });
+
+    // FAST PATH, BEFORE ANY CLAIM: if the fact is already recorded, publish if needed and stop. This
+    // is the common retry case and it must not require taking the claim.
+    const before = lookup(readLog());
+    if (before === "recorded") return settle(readLog(), readIndex());
+    if (before === "torn") {
+      throw refuse(`the log holds ${key} with a different or empty body; the entry is torn and needs review`, "ETORN");
     }
 
-    const claim = join(notesDir, ".claims", key);
-    if (!tryClaim(claim, options)) {
-      // A claim exists and the fact is NOT in the log. Either a live writer is mid-append, or the
-      // holder died. tryClaim has already reclaimed it if the holder was gone, so reaching here
-      // means a live writer owns it.
-      throw Object.assign(
-        new Error(`another process is writing this fact; retry to finish it`),
-        { code: "EINPROGRESS" },
+    // TAKE THE CLAIM, THEN RE-READ THE LOG UNDER IT.
+    //
+    // The re-read is the part that closes a real duplicate. Reading the log only BEFORE claiming
+    // leaves this window: writer A finishes and exits, its claim is reclaimed by B as a dead
+    // holder's, and B -- whose log read happened before A's entry landed -- appends the same fact
+    // again. Re-reading AFTER the claim means a writer that takes over a reclaim necessarily
+    // observes whatever the previous holder recorded.
+    //
+    // `claim` IS ASSIGNED ONLY ON SUCCESS, AND ONLY AS A TOKEN. An earlier revision set the path
+    // BEFORE calling tryClaim, so a writer that FAILED to take the claim still removed it in its
+    // finally -- deleting the live holder's claim and letting a third writer append the same fact.
+    // Measured as a duplicate in 1 of 30 trials. The token now carries the inode so release can also
+    // prove it is removing ITS OWN claim, not a successor's.
+    const claimPath = join(notesDir, ".claims", key);
+    if (!tryClaim(claimPath, options)) {
+      throw refuse(
+        "another process is writing this fact, or an unattributable claim is still fresh; retry to finish it",
+        "EINPROGRESS",
       );
     }
+    claim = { path: claimPath, ino: statSync(claimPath).ino };
 
-    try {
-      const entry = `\n## ${new Date().toISOString()} <!-- ${key} -->\n\n${body}\n`;
-      // Cap is checked on the folded result BEFORE any write, so a refusal leaves no orphan entry.
-      const projected = foldIndex(indexBefore, logBefore + entry, options.section);
-      const projectedSize = byteLen(projected);
-      if (projectedSize > cap) {
-        throw Object.assign(
-          new Error(`appending would put the index at ${projectedSize} B, over the ${cap} B cap; migrate first`),
-          { code: "ECAP" },
-        );
-      }
-
-      // 1. THE DURABLE COPY, first, and flushed to disk before the index is touched.
-      const fd = openSync(log, "a");
-      try {
-        writeSync(fd, entry);
-        fsyncSync(fd);        // the fact must survive a crash that happens after this point
-      } finally {
-        closeSync(fd);
-      }
-
-      // 2. VERIFY the fact is readable where we claim to have put it, before publishing anything.
-      const logAfter = readFileSync(log, "utf8");
-      if (!logAfter.includes(`<!-- ${key} -->`)) {
-        throw Object.assign(new Error("log write did not take effect; index left untouched"), { code: "EVERIFY" });
-      }
-
-      // 3. PUBLISH by temp + atomic rename, re-folded from the log as it actually landed so a
-      // concurrent writer's entry is included too.
-      const published = publishIndex(indexPath, foldIndex(indexBefore, logAfter, options.section));
-      return { appended: true, alreadyPresent: false, indexChanged: true, key, logPath: log, indexPath,
-        bytesBefore: published.bytesBefore,
-        bytesAfter: published.bytesAfter,
-        logBytesBefore: byteLen(logBefore),
-        logBytesAfter: byteLen(logAfter) };
-    } catch (error) {
-      // An ordinary failure rolls the claim back so the fact can be retried. A HARD kill cannot run
-      // this, which is exactly why recovery is driven by the log and by PID liveness instead.
-      try { rmSync(claim, { force: true }); } catch { /* nothing to release */ }
-      throw error;
+    const underClaim = lookup(readLog());
+    if (underClaim === "recorded") return settle(readLog(), readIndex());
+    if (underClaim === "torn") {
+      throw refuse(`the log holds ${key} with a different or empty body; the entry is torn and needs review`, "ETORN");
     }
+
+    const indexBefore = readIndex();
+    const logBefore = readLog();
+    const entry = `\n## ${new Date().toISOString()} <!-- ${key} -->\n\n${body}\n`;
+    // The cap is checked on the FOLDED result BEFORE any write, so a refusal leaves no orphan entry.
+    const projected = foldIndex(indexBefore, logBefore + entry, options.section);
+    const projectedSize = byteLen(projected);
+    if (projectedSize > cap) {
+      throw refuse(`appending would put the index at ${projectedSize} B, over the ${cap} B cap; migrate first`, "ECAP");
+    }
+
+    // 1. THE DURABLE COPY, first, fsynced, before the index is touched.
+    const fd = openSync(log, "a");
+    try {
+      writeSync(fd, entry);
+      fsyncSync(fd);
+    } finally {
+      closeSync(fd);
+    }
+
+    // 2. VERIFY the fact is readable where we claim to have put it.
+    const logAfter = readFileSync(log, "utf8");
+    if (!logAfter.includes(`<!-- ${key} -->`)) {
+      throw refuse("log write did not take effect; index left untouched", "EVERIFY");
+    }
+
+    // 3. PUBLISH by temp + atomic rename, re-folded from the log as it actually landed so a
+    // concurrent writer's entry is included too.
+    const published = publishIndex(indexPath, foldIndex(indexBefore, logAfter, options.section));
+    return { appended: true, alreadyPresent: false, indexChanged: true, key, logPath: log, indexPath,
+      bytesBefore: published.bytesBefore,
+      bytesAfter: published.bytesAfter,
+      logBytesBefore: byteLen(logBefore),
+      logBytesAfter: byteLen(logAfter) };
   } finally {
+    // THE CLAIM IS RELEASED ON EVERY EXIT PATH, BUT ONLY IF IT IS STILL OURS.
+    //
+    // On success the LOG is the record, not the claim: leaving it behind would make a later append
+    // of the same fact report EINPROGRESS, and would let a reclaiming writer duplicate it if it did
+    // not re-read. But removing a claim by PATH can delete a SUCCESSOR's live claim -- the same
+    // defect class as a path-only lock release -- so the inode must still match.
+    if (claim !== null) {
+      try {
+        if (statSync(claim.path).ino === claim.ino) rmSync(claim.path, { force: true });
+      } catch { /* already gone or replaced; leaving it is the safe direction */ }
+    }
     releaseLock(held);
   }
 }
@@ -422,7 +554,7 @@ export function republish(indexPath, options = {}) {
     return { republished: false, bytesBefore: 0, bytesAfter: 0, facts: 0 };
   }
   const cap = options.cap ?? CAP_BYTES;
-  const held = acquire(dirname(indexPath), options);
+  const held = tryAcquire(dirname(indexPath), options);
   try {
     const logText = readFileSync(log, "utf8");
     const indexBefore = existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "";

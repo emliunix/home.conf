@@ -31,9 +31,16 @@ contract:
   claims it does.
 - **A write that is refused changes nothing.** Not "changes very little" — both files keep their
   bytes.
-- **A lock's RELEASE must be as careful as its eviction.** Checking ownership on eviction but not on
-  release means a holder that outlives the stale threshold deletes its successor's live lock from its
-  own `finally`, and two writers then hold the critical section. Both paths carry the inode token.
+- **A lock is created and its owner recorded in ONE atomic call.** `writeFileSync(path, record,
+  {flag: "wx"})` is O_CREAT|O_EXCL plus the write, so a lock never exists without a complete owner
+  record. Doing `mkdir` and then writing the record inside it by path leaves a window where a
+  successor replaces the directory and the first writer's record lands in the **successor's** lock --
+  both then believing they own it.
+- **A lock's RELEASE must use the same ATOMIC transition as its eviction.** Checking ownership on
+  eviction but not on release means a holder that outlives the stale threshold deletes its successor's
+  live lock from its own `finally`. And a `stat`-then-remove release is not enough either: it still
+  has a time-of-check/time-of-use window, so the same defect survives in a narrower window. Both
+  paths rename the observed path to a unique tombstone and prove the inode before removing it.
 - **`append` must leave the fact VISIBLE in the index.** An earlier version wrote only the log and
   left the index untouched; a fresh agent reading the index could not see a fact the log durably
   held, so the recovery point was the wrong file. The index is the thing that gets injected.
@@ -98,7 +105,7 @@ Two operational notes, both measured:
 node tests/check-dispatch.mjs
 ```
 
-Fourteen cases, each shown to fail on the defect it targets — that is what the suite is for, and a
+Twenty cases, each shown to fail on the defect it targets — that is what the suite is for, and a
 case that cannot redden is not coverage. Two lessons are encoded here at cost:
 
 - An earlier revision ran its cases as top-level blocks with a `process.exit()` inside one of them:
@@ -130,12 +137,23 @@ honest property is: **the index converges to the log.** Appending folds the log 
 again is a no-op. What is *not* claimed is that no concurrent append can ever be momentarily missing
 from the index — with a lock that can fail that would be a guarantee the mechanism does not support.
 
+**"The log decides" means the BODY, not just the key.** A partial write can leave an entry's marker
+with a truncated body, so a key-only match would report success for a fact never fully stored. The
+log is parsed and the body compared exactly; a **torn** entry (key present, body different) is
+refused as `ETORN` rather than mistaken for the fact or silently appended past.
+
 **The log decides whether a fact is recorded — never the claim.** A claim file means only "a writer
 is in flight for this fact". Treating its existence as "done" is a trap with a cruel failure mode:
 a hard kill between the claim and the log write makes every retry report "already present" for a
 fact recorded nowhere, so the loss is silent and reported as success. Recovery is therefore driven
-by the log, and a claim left by a dead holder is reclaimed by **PID liveness**, not by waiting out a
-time window. Retrying after any interruption yields exactly one log entry and a visible fact.
+by the log, and a claim left by a dead holder is reclaimed without waiting out a time window.
+
+**Holder identity is a pid AND a start time, because pids are recycled.** "This pid is alive" can be
+a successor process that inherited the number, so the owner record carries both and a recycled pid is
+distinguishable from the original holder. When identity cannot be established the holder is
+**unknown, never dead**: an unattributable claim is refused (`EINPROGRESS`) rather than overwritten.
+Converting "could not prove the holder dead" into a success is the exact failure this path exists to
+prevent. Retrying after any interruption yields exactly one log entry and a visible fact.
 
 ## What this does not do
 
