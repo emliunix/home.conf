@@ -406,15 +406,28 @@ to right through rules. The checker's depth bound guarantees that no possible at
 left unasked after `rounds` rounds. The example has depth 2, because `scope_category` is asked only about
 children of sections that could be classified as `scope`.
 
-**Judge requests.** One artifact makes at most `rounds` judge requests. The default is
-1. Each request is one keyed batch, and each one separately has:
+**Judge requests.** One artifact makes at most `rounds` rounds, and each round's atoms
+are asked together or one per request as `request_shape` declares. Each request is one
+keyed batch, and each one separately has:
 - a capability check;
 - an outbound-policy check;
 - a byte budget.
 
-An over-budget batch is `BLOCKED` and is never split. A round with no atoms to ask makes
-no request. The attestation records each request's identity in order. A depth-1 program
-keeps design 02's one-request boundary.
+A round's atoms are packed into as few requests as its `request_shape` allows, and a
+round is split across requests when it must be. `request_shape: batched` is the
+default and packs a round's demanded atoms into one keyed request. `request_shape:
+per-atom` asks each demanded atom in its own request, so no answer depends on which
+other atoms the document demanded in the same round; it is opted into by the module
+that needs it, and an unknown value is rejected when the module loads. An atom whose
+evidence alone exceeds the effective budget is `BLOCKED` and named; a single atom's
+evidence is never split. A round whose batched evidence exceeds the effective budget
+is sub-batched, each sub-batch satisfying the outbound policy and the judge's own
+state budget, so a document larger than the budget is still decided. The effective
+budget is the smaller of `max_evidence_bytes` and the judge's state budget. A round
+with no atoms to ask makes no request. The attestation records each request's identity
+in order. A depth-1 program under `batched` keeps design 02's one-request boundary; a
+program that opts into `per-atom` makes one request per demanded atom, still bounded
+by `rounds` rounds.
 
 The verdict is a module over `result(Constraint, Status, Severity, Weight)` facts.
 `doc-verify:verdict/strict` carries design 02's outcome table:
@@ -457,6 +470,8 @@ Each v1 item becomes one oracle and one constraint:
 - `critical: true` becomes `severity: error`.
 - A noncritical item becomes `severity: warning` with its weight.
 - A required section becomes a constraint over `heading` or `section` facts.
+- A module whose atoms must not share a request sets `request_shape: per-atom`; the default is
+  `batched`.
 
 - A migrated oracle has `threshold: 0`, so the argmax label stands as it does in v1.
   Calibration sets a real threshold later, which counts as a threshold change and
@@ -487,7 +502,9 @@ This design replaces three sections of design 02:
 
 It also replaces design 03's clause that TypeScript owns the deterministic verdict
 rules. It replaces design 02's "One request contains all questions" and design 03's
-"multiple JEV calls" witness with the per-artifact bound of `rounds` requests. It is a rule language, not the workflow language that design 03 excluded:
+"multiple JEV calls" witness with a bound of `rounds` rounds per artifact, and of the
+requests each round's atoms need under the chosen `request_shape`: one per sub-batch
+under the default `batched`, and one per demanded atom under `per-atom`. It is a rule language, not the workflow language that design 03 excluded:
 modules cannot run commands or choose pipeline stages. Everything else in both designs
 stays as it is. That covers snapshots, the affected closure, segmentation, the
 outbound policy, attestation, the Prek path, and CLI modes. When this design lands,
@@ -502,14 +519,15 @@ designs 02 and 03 gain `Superseded by:` lines for those sections.
 | Three-valued soundness | `forbid` or `require` over an unknown atom is `satisfied`, or `not` of an unknown atom is true | `npm test -- evaluate` |
 | Static checks | An unsafe variable, a negation cycle, recursion through an oracle, a non-ground oracle call, a predicate outside the whitelist, or an oracle deeper than `rounds` is accepted | `npm test -- language` |
 | Modules compose | Two libraries defining `problem` collide, a param change has no effect, a diamond creates two instances, an import cycle or repository escape resolves, or weakening without `waive` is accepted | `npm test -- modules` |
-| Rounds bounded | A depth-2 program makes a number of calls other than 2, a depth-1 program makes more than 1, or an over-budget round is split | `npm test -- evaluate` |
+| Rounds bounded | A depth-2 program makes a number of rounds other than 2, a depth-1 `batched` program makes more than 1 round, or a single atom's evidence is split across requests | `npm test -- evaluate` |
+| Requests shaped as declared | Under `batched`, a round's atoms do not share one request; under `per-atom`, an atom shares its request with another; an unknown `request_shape` loads; or the default stops being `batched` | `npm test -- request-shape` |
 | Extends law | A child that raises an inherited threshold, changes an inherited oracle, or adds or widens a `warning` loads without `waive:`, or any waiver-free change improves a seeded document's verdict | `npm test -- modules` |
 | Diagnostics complete | A violation report lacks bindings, the population, a proof leaf with label and distribution, or the repair hint | `npm test -- diagnostics` |
 | Nesting baseline | Against sandbox-deploy `c9edcf0` the populations are not 19 documents, 298 section facts, 104 selected facts, and 0 nested pairs, or the seeded case does not give exactly 1 | `node doc-verify/dist/cli.js check --paths 'design/*.md' --verbose --format json` run from a sandbox-deploy worktree at `c9edcf0` |
 | R2 and R3 live | The fixture with a `scope` parent and a misclassified child does not give exactly one violation naming both sections | `DOC_VERIFY_LIVE=1 npm test -- live`, gated like `doc-verify/tests/remote-hook.sh` |
 | Migration parity | A migrated home.conf contract's verdict differs from its v1 verdict at the parent commit, uncached and live, except for the named exception | `check --paths` over the nine consumers' documents with `--profile promotion --refresh`, run at the parent and at the change |
 | Each migrated constraint separates | For some migrated constraint, a known-good document and a known-bad document land on the same side (both pass or both fail), uncached and live | `DOC_VERIFY_LIVE=1 npm test -- separation`, one committed good/bad pair per constraint |
-| Trust boundary holds | An LLM fallback, a split batch, more requests than `rounds`, unsafe outbound evidence, or a PASS driven by confidence becomes reachable | `npm test -- semantic confidentiality` |
+| Trust boundary holds | An LLM fallback, a split atom's evidence, more requests than the chosen `request_shape` allows, unsafe outbound evidence, or a PASS driven by confidence becomes reachable | `npm test -- semantic confidentiality` |
 
 The deterministic gate is `npm test && npm run typecheck && npm run lint`. Each gate
 listed here must first be observed failing on a seeded defect. This prevents a repeat

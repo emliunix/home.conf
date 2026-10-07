@@ -22,7 +22,7 @@ import YAML from "yaml";
 
 import { sha256 } from "../hash.js";
 import { RepoPath, TextBlob, repoPath } from "../types.js";
-import { ModuleError } from "./module.js";
+import { ModuleError, type RequestShape } from "./module.js";
 
 const LIBRARY_PREFIX = "doc-verify:";
 const LIBRARY_NAME = /^[a-z][a-z0-9-]*(\/[a-z][a-z0-9-]*)*$/;
@@ -82,6 +82,7 @@ export async function composeModules(
   const done = new Set<string>();
   const active: string[] = [];
   let rounds = 1;
+  let requestShape: RequestShape | undefined;
   let warningThreshold: number | undefined;
   let name = "composed";
 
@@ -126,6 +127,11 @@ export async function composeModules(
     if (typeof source.rounds === "number") {
       rounds = Math.max(rounds, source.rounds);
     }
+    // `per-atom` is the stricter shape: once any module in the chain asks atoms alone, the
+    // composed module does too, so a child cannot silently re-batch its parent's oracles.
+    if (source.request_shape === "per-atom") {
+      requestShape = "per-atom";
+    }
     if (typeof source.warning_threshold === "number") {
       warningThreshold = warningThreshold === undefined ? source.warning_threshold : Math.max(warningThreshold, source.warning_threshold);
     }
@@ -147,6 +153,7 @@ export async function composeModules(
     module: name,
     imports: { core: "doc-verify:core" },
     rounds,
+    ...(requestShape === undefined ? {} : { request_shape: requestShape }),
     ...(warningThreshold === undefined ? {} : { warning_threshold: warningThreshold }),
   };
   for (const key of MERGED) {
