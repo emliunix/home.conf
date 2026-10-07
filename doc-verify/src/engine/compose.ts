@@ -129,8 +129,20 @@ export async function composeModules(
     }
     // `per-atom` is the stricter shape: once any module in the chain asks atoms alone, the
     // composed module does too, so a child cannot silently re-batch its parent's oracles.
-    if (source.request_shape === "per-atom") {
-      requestShape = "per-atom";
+    //
+    // An unrecognised value is refused HERE, not only by `moduleSchema`, because composition
+    // rebuilds the module from a known key list (`MERGED`) and would otherwise drop the key
+    // before the schema could see it: `request_shape: bogus` would silently behave as the
+    // `batched` default instead of failing, and the schema's `.strict()` would never run.
+    if (source.request_shape !== undefined) {
+      if (source.request_shape !== "batched" && source.request_shape !== "per-atom") {
+        throw new ModuleError([
+          `${file}: request_shape must be "batched" or "per-atom", not ${JSON.stringify(source.request_shape)}`,
+        ]);
+      }
+      if (source.request_shape === "per-atom") {
+        requestShape = "per-atom";
+      }
     }
     if (typeof source.warning_threshold === "number") {
       warningThreshold = warningThreshold === undefined ? source.warning_threshold : Math.max(warningThreshold, source.warning_threshold);

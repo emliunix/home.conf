@@ -153,3 +153,30 @@ constraints:
     expect(isolated.verdict).toBe("PASS");
   });
 });
+
+// The refusal must hold on the route an operator takes, not only on the one a test can take.
+// `run(moduleYaml)` above feeds `runProgram` a module text directly, but the CLI -- and therefore
+// every pre-commit hook and `pnpm check` -- reaches the schema through `composeModules`, which
+// rebuilds the module from a known key list. A value the schema would reject therefore has to be
+// refused *during composition*, or it is dropped before `.strict()` ever runs and the module
+// silently falls back to the `batched` default. This case is the difference between those two
+// routes; without it the suite is green while `request_shape: bogus` behaves as `batched`.
+describe("request shape: the composed path refuses an unknown value", () => {
+  const compose = async (requestShape: string) => {
+    const read = async (repoPath: string) => {
+      const content = shape(ATOMS, requestShape).replace("module: t", "module: t\n");
+      return { path: repoPath, content, hash: "test" };
+    };
+    const { composeModules } = await import("../../src/engine/compose.js");
+    return composeModules([".doc-verify/modules/t.yaml"], read as never);
+  };
+
+  it("refuses an unknown value during composition, before the schema can drop it", async () => {
+    await expect(compose("bogus")).rejects.toThrow(/request_shape/);
+  });
+
+  it("still carries a legitimate value through composition", async () => {
+    const composed = await compose("per-atom");
+    expect(composed.yaml).toMatch(/request_shape: per-atom/);
+  });
+});
