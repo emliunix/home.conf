@@ -196,7 +196,7 @@ The section carries the common-case mechanical fields:
 - **Artifact:** `<report path>`
 - **Identity:** `<rev>:<path>` resolves to the claimed object
 - **Evidence class:** established | reported | observed | construction-backed
-- **Selected check:** `<command>` → `<result>`; population/scope
+- **Selected check:** `<command>` → `<result>`; `<log path>`; population/scope
 - **Reviewer action:** inspect | ask author | different instrument or population | reproduce
 - **Residual / decision needed:** <one line, or none>
 - **Correction class:** behavior | receipt-only
@@ -207,6 +207,11 @@ and scope rationale are optional judgment fields. If a reviewer cannot act
 because material is missing or unclear, it asks the author once; it does not
 reconstruct the work or rerun the same command merely to fill the gap.
 Silent-wrong-green claims still earn reproduction.
+
+Command output is a shareable artifact: write combined stdout/stderr, working
+directory, start time, and the checked command's exit status to the linked
+`.log` path rather than pasting it into the receipt. The report names the log;
+the log carries the raw evidence.
 
 A receipt-only correction verifies the corrected handoff fields and keeps
 behavior review closed unless a claim, object, or evidence class changes.

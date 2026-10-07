@@ -34,5 +34,8 @@ TEST TIER. focused | full | milestone-e2e | none; reason.
 REPORT. receipts/<topic>/<report>.md §Review handoff — <topic>; or the
 project-selected durable receipt surface.
 
+LOGS. receipts/<topic>/logs/<check>.log; raw stdout/stderr and the checked
+command's exit status.
+
 BOUNDS. Safety, production, ownership, and stop conditions.
 ```

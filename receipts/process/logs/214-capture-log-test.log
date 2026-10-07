@@ -1,0 +1,5 @@
+$ "node" "skills/efficient-tool-use/tests/check-capture-command-log.mjs"
+[cwd: /private/tmp/cb-process-handoff]
+[started: 2026-10-07T18:41:31.013Z]
+capture-command-log: output and exit status preserved
+[exit: 0]

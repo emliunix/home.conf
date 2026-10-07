@@ -1,0 +1,8 @@
+$ "npm" "run" "build"
+[cwd: /private/tmp/cb-process-handoff]
+[started: 2026-10-07T18:41:23.491Z]
+
+> home-conf-doc-verify@0.1.0 build
+> tsc -p doc-verify/tsconfig.build.json
+
+[exit: 0]

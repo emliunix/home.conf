@@ -41,6 +41,17 @@ When output must be truncated, the receipt names the command that decided the
 result and the status that command returned. The downstream formatter's status
 is not evidence about the checked command.
 
+When the command is evidence for a review, capture its combined stdout/stderr,
+working directory, start time, and checked exit status in a shareable log:
+
+```sh
+node skills/efficient-tool-use/scripts/capture-command-log.mjs \
+  --log receipts/<topic>/logs/<check>.log -- <command> [args...]
+```
+
+The wrapper returns the checked command's exit status unchanged. Link the log
+from the receipt instead of copying raw output into the prose.
+
 ## Crash rate is not correctness
 
 An error flag measures crashes and refusals. It does not detect a command that

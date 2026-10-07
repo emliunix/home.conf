@@ -1,0 +1,14 @@
+$ "./node_modules/.bin/vp" "test" "--run"
+[cwd: /private/tmp/cb-process-handoff/flow-skills-eval]
+[started: 2026-10-07T18:41:41.691Z]
+[1m[2mnote:[0m[0m You are running [94m`vp test`[39m as a Vite+ built-in command. If you meant to run the test npm script, use [94m`vpr test`[39m instead.
+
+ RUN  v4.1.10 /private/tmp/cb-process-handoff/flow-skills-eval
+
+
+ Test Files  7 passed (7)
+      Tests  45 passed (45)
+   Start at  02:41:42
+   Duration  353ms (transform 269ms, setup 0ms, import 508ms, tests 38ms, environment 1ms)
+
+[exit: 0]

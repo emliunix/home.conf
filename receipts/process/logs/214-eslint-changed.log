@@ -1,0 +1,4 @@
+$ "npx" "eslint" "doc-verify/src/snapshot.ts" "doc-verify/src/cli.ts" "doc-verify/tests/report/cli.test.ts" "doc-verify/tests/language/modules-check.test.ts"
+[cwd: /private/tmp/cb-process-handoff]
+[started: 2026-10-07T18:41:30.314Z]
+[exit: 0]

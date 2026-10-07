@@ -1,0 +1,6 @@
+$ "node" "doc-verify/dist/cli.js" "check" "--paths" "receipts/**/*.md" "--profile" "draft" "--format" "text"
+[cwd: /private/tmp/cb-process-handoff]
+[started: 2026-10-07T18:41:31.381Z]
+receipts/process/2026-10-08-receipts-and-task-card.md:1 [@document] metadata.missing-companion WARN no adjacent companion; using repository defaults
+PASS: 1 artifact(s), 2 section(s), 1 warning(s), 0 semantic call(s), 0 cache hit(s)
+[exit: 0]

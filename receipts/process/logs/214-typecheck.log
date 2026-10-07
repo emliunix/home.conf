@@ -1,0 +1,8 @@
+$ "npm" "run" "typecheck"
+[cwd: /private/tmp/cb-process-handoff]
+[started: 2026-10-07T18:41:29.928Z]
+
+> home-conf-doc-verify@0.1.0 typecheck
+> tsc -p doc-verify/tsconfig.json --noEmit
+
+[exit: 0]

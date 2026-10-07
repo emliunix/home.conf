@@ -1,0 +1,116 @@
+$ "npm" "test"
+[cwd: /private/tmp/cb-process-handoff]
+[started: 2026-10-07T18:41:44.743Z]
+
+> home-conf-doc-verify@0.1.0 test
+> npm run build && vitest run
+
+
+> home-conf-doc-verify@0.1.0 build
+> tsc -p doc-verify/tsconfig.build.json
+
+
+ RUN  v3.2.4 /private/tmp/cb-process-handoff
+
+ ✓ |unit| doc-verify/tests/report/report.test.ts (5 tests) 2511ms
+   ✓ text report > prints an oracle-decided NEEDS-REVIEW with its repair and the deciding answer  891ms
+   ✓ text report > prints a structural NO-GO with the literal that is missing  340ms
+   ✓ text report > keeps the evidence hash and adds the proof tree under --verbose  309ms
+   ✓ text report > carries the full engine report in JSON  320ms
+   ✓ text report > lists an over-budget round and a policy violation as findings  650ms
+ ✓ |unit| doc-verify/tests/selection/companion.test.ts (9 tests) 3489ms
+   ✓ companion manifests > warns and uses repository defaults when the companion is absent  943ms
+   ✓ companion manifests > ignores a companion's v1 verification block with a warning, and the verdict is the modules' own  317ms
+   ✓ companion manifests > reads the companion's document.status when the document has no Status section  633ms
+   ✓ companion manifests > refuses a companion whose document.kind is not the rule's artifact kind  326ms
+   ✓ companion manifests > reports malformed companion YAML as a usage error  325ms
+   ✓ document types > uses the rule's default modules when the companion names no type  358ms
+ ✓ |unit| doc-verify/tests/oracles/cache.test.ts (4 tests) 3572ms
+   ✓ persistent oracle cache > answers a repeated atom from .doc-verify-cache without asking the judge  1277ms
+   ✓ persistent oracle cache > decides an oracle constraint from the cache with no key  555ms
+   ✓ persistent oracle cache > neither reads nor writes the cache when it is off (--no-cache)  902ms
+   ✓ persistent oracle cache > asks again and rewrites the entry under a profile's cache: refresh  837ms
+ ✓ |subprocess| doc-verify/tests/report/keyless.test.ts (3 tests) 4877ms
+   ✓ keyless structural checks > refuses a seeded missing heading with no key: NO-GO, exit 1  1201ms
+   ✓ keyless structural checks > decides the structural constraint and blocks only the oracle-dependent one  2422ms
+   ✓ keyless structural checks > passes a document whose module asks no oracle, with no key  1253ms
+ ✓ |unit| doc-verify/tests/language/evaluate.test.ts (11 tests) 822ms
+   ✓ three-valued soundness > never satisfies require, forbid or not over an unknown atom  716ms
+ ✓ |unit| doc-verify/tests/selection/snapshots.test.ts (3 tests) 1998ms
+   ✓ snapshot and graph behavior > reads staged bytes and ignores later unstaged edits  727ms
+   ✓ snapshot and graph behavior > follows module references (rule modules and extends) to only their document consumers  1269ms
+ ✓ |unit| doc-verify/tests/language/references.test.ts (26 tests) 3024ms
+   ✓ doc-verify:references > passes when every link and path resolves, with no judge  931ms
+   ✓ doc-verify:references > turns a seeded broken link NO-GO with the library's message and repair  392ms
+   ✓ doc-verify:references > warns on a backtick path that does not exist, without failing the document  303ms
+   ✓ doc-verify:references > 8: labels a violated warning WARN in the text report, and leaves a bare name and a branch alone  545ms
+   ✓ doc-verify:no-line-citations > reddens a real path:line citation, deterministically and without a judge  452ms
+   ✓ doc-verify:no-line-citations > stays green on a line-free document, and asks no judge  329ms
+ ✓ |unit| doc-verify/tests/selection/local-env.test.ts (4 tests) 977ms
+   ✓ local credential file > applies the file during a check and keeps the key out of the report  970ms
+ ✓ |unit| doc-verify/tests/oracles/oracles.test.ts (11 tests) 651ms
+   ✓ oracle thresholds > demotes an answer below its threshold to unknown, never to another label  511ms
+ ✓ |unit| doc-verify/tests/language/present.test.ts (11 tests) 830ms
+   ✓ core.present/3 > binds the present members in document order, ignoring candidate order  718ms
+ ✓ |unit| doc-verify/tests/report/diagnostics.test.ts (9 tests) 717ms
+   ✓ violation report > gives each failing binding its values, message, repair, missing literals and a proof to the leaves  574ms
+ ✓ |unit| doc-verify/tests/oracles/request-shape.test.ts (8 tests) 624ms
+   ✓ request shape > defaults to batching one document's atoms into a single request  574ms
+ ✓ |unit| doc-verify/tests/language/engine-golden.test.ts (3 tests) 568ms
+   ✓ design 04 golden path > classifies children through two bounded rounds and explains the one violation  531ms
+ ✓ |unit| doc-verify/tests/oracles/confidentiality.test.ts (3 tests) 650ms
+   ✓ confidentiality policy > keeps a configured local-only canary outside the adapter  618ms
+ ✓ |unit| doc-verify/tests/oracles/span.test.ts (5 tests) 666ms
+   ✓ the deciding span > asks one follow-up over the sentences and records the judge's chosen span (B)  637ms
+ ✓ |unit| doc-verify/tests/language/language.test.ts (14 tests) 675ms
+   ✓ module loading > accepts a well-formed module and reads its bodies with the runtime's reader  609ms
+ ✓ |unit| doc-verify/tests/language/union-empty.test.ts (5 tests) 548ms
+   ✓ core.union over an empty section list (#191) > refuses a literal empty list at the call site and makes ZERO judge requests  459ms
+ ✓ |unit| doc-verify/tests/trace/conformance.test.ts (7 tests) 9ms
+ ✓ |unit| doc-verify/tests/report/segments.test.ts (2 tests) 7ms
+ ✓ |unit| doc-verify/tests/trace/trace.test.ts (8 tests) 5ms
+ ✓ |unit| doc-verify/tests/oracles/semantic.test.ts (5 tests) 328ms
+   ✓ semantic boundary > blocks a failing judge request without echoing the provider's response  305ms
+ ✓ |unit| doc-verify/tests/language/modules-check.test.ts (25 tests) 9537ms
+   ✓ doc-verify check on design-04 modules > composes extends, judges on promotion, and passes a conforming document  993ms
+   ✓ doc-verify check on design-04 modules > fails a violated constraint with the module's message  334ms
+   ✓ doc-verify check on design-04 modules > reads the status meta from the Status section and refuses one outside the vocabulary  360ms
+   ✓ doc-verify check on design-04 modules > reports how many words the Status line holds, so a module can require exactly one  700ms
+   ✓ doc-verify check on design-04 modules > runs a draft on structural constraints only: no judge request  397ms
+   ✓ engine libraries (doc-verify:NAME) > resolves doc-verify:design from the engine, with the library it extends  712ms
+   ✓ engine libraries (doc-verify:NAME) > asks doc-verify:design's purpose oracle on promotion only, never on draft  725ms
+   ✓ engine libraries (doc-verify:NAME) > lets a repository module extend a library, and composes a library listed twice once  429ms
+   ✓ engine libraries (doc-verify:NAME) > refuses an unknown library and names the ones this engine ships  706ms
+   ✓ the type library's worked examples > doc-verify:module-model passes its worked example  317ms
+   ✓ the type library's worked examples > doc-verify:module-properties passes its worked example  303ms
+   ✓ the type library's worked examples > doc-verify:module-verification passes its worked example  321ms
+   ✓ the type library's worked examples > doc-verify:receipt passes its worked example  320ms
+   ✓ the type library's worked examples > doc-verify:module-model refuses its counterexample with no judge answer  329ms
+ ✓ |subprocess| doc-verify/tests/selection/task61-selector-gate.test.ts (7 tests) 12057ms
+   ✓ #61 arm 1 — ordered last-match-wins: a later exclude removes > removes the matching document from the inventory and the affected set  1544ms
+   ✓ #61 arm 2 — ordered last-match-wins: a later include re-adds > re-adds a path the leading exclude removed, and supplies the include's required sections  1490ms
+   ✓ #61 arm 3 — the same decision governs the working tree > an UNTRACKED file matching an include but excluded later is not selected in --all  2840ms
+   ✓ #61 arm 4 — the --paths refusal consumer > refuses a path the selectors excluded, naming it, and accepts a selected one  3073ms
+   ✓ #61 arm 4 — the --paths refusal consumer > refuses a path matched by NO selector (a third input to the same refusal)  1095ms
+   ✓ #61 arm 5 — the emitted selectorTrace is observable, not inferred > names every matching selector in authored order with its action  1076ms
+   ✓ #61 arm 5 — the emitted selectorTrace is observable, not inferred > prints the same trace in verbose text output  937ms
+ ✓ |subprocess| doc-verify/tests/report/cli.test.ts (13 tests) 12528ms
+   ✓ CLI > prints stable section diagnostics  438ms
+   ✓ CLI > checks a configured document in concise draft mode  1289ms
+   ✓ CLI > prints project impact, modules, and section scope in verbose mode  1296ms
+   ✓ CLI > applies ordered include and exclude selectors in the served CLI  1959ms
+   ✓ CLI > keeps an exclusion out of the affected closure  1478ms
+   ✓ CLI > passes --section into the selected(D, S) fact  2542ms
+   ✓ CLI > accepts --no-cache and writes no cache entry  995ms
+   ✓ CLI > reports a missing config with its expected path and a distinct exit  330ms
+   ✓ CLI > reports a config that is absent from the Git index with a distinct exit  562ms
+   ✓ CLI > reports the underlying cause for an unexpected filesystem error  319ms
+   ✓ CLI > rejects --paths that select no configured document or dependency  390ms
+   ✓ CLI > expands a --paths glob over the governed surface  641ms
+
+ Test Files  24 passed (24)
+      Tests  201 passed (201)
+   Start at  02:41:46
+   Duration  12.94s (transform 667ms, setup 0ms, collect 7.56s, tests 61.67s, environment 35ms, prepare 1.30s)
+
+[exit: 0]
