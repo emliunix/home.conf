@@ -5,6 +5,3 @@ document:
   kind: worklog
   depends_on:
     - goals/00-goal-file-guide.md
-verification:
-  kind: jev-prolog
-  inherits: ../doc-verify/contracts/worklog-strategy.yaml#verification

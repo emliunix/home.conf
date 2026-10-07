@@ -5,6 +5,3 @@ document:
   kind: constitution
   depends_on:
     - docs/index.md
-verification:
-  kind: jev-prolog
-  inherits: doc-verify/contracts/design-strategy.yaml#verification

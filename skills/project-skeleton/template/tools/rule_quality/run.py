@@ -36,7 +36,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
 MODULES = REPO / "doc-verify" / "modules"
-ENGINE_PKG = "github:emliunix/home.conf#a8527868bef6e69a0948380cc20d4cebc064c654"
+ENGINE_PKG = "github:emliunix/home.conf#de99d33dd334c8602a9ccfa8dab7111f1942c8ea"
 EVIDENCE = REPO / "worklog/evidence/rule-quality"
 
 CORPORA = {
@@ -125,16 +125,12 @@ def doc_config_yaml(kind: str) -> str:
 
 def stage(tree: Path, kind: str, text: str, companion_kind: str | None = None) -> None:
     shutil.copytree(MODULES, tree / "docmods")
-    strat = tree / "strategies"
-    strat.mkdir()
-    shutil.copy(REPO / "doc-verify/contracts/design-strategy.yaml", strat / "kind-strategy.yaml")
     (tree / ".doc-verify.yaml").write_text(doc_config_yaml(kind))
     (tree / "doc.md").write_text(text)
     if companion_kind:
         (tree / "doc.yaml").write_text(
             "schema_version: 1\nkind: document-contract\ndocument:\n  path: doc.md\n"
-            f"  kind: {companion_kind}\nverification:\n  kind: jev-prolog\n"
-            "  inherits: strategies/kind-strategy.yaml#verification\n")
+            f"  kind: {companion_kind}\n")
     subprocess.run(["git", "init", "-q", "."], cwd=tree, check=True)
     subprocess.run(["git", "add", "-A"], cwd=tree, check=True)
     subprocess.run(["git", "-c", "user.email=h@x", "-c", "user.name=h", "commit", "-qm", "init"], cwd=tree, check=True)
@@ -161,7 +157,11 @@ import mutations as M  # noqa: E402
 def run_mutations(base_texts: dict, record: list) -> None:
     for case in M.CASES:
         kind = case["kind"]
-        text = base_texts[case["base"]]
+        if kind not in base_texts:
+            record.append({"case": case["name"], "kind": kind, "skipped":
+                           f"no {kind} document in this project"})
+            continue
+        text = base_texts[kind]
         try:
             mutated = case["mutate"](text)
         except Exception as exc:  # a mutation that cannot apply is a harness bug, not a pass
@@ -243,17 +243,16 @@ def run_heldout(record: list, cache: Path, extra_corpora: dict[str, Path], cap: 
 
 
 def run_stability(base_texts: dict, record: list, runs: int) -> None:
-    for name in base_texts:
-        kind = "design" if name.startswith("design/") else "constitution"
+    for kind, text in base_texts.items():
         verdicts_per_run = []
         for i in range(runs):
             with tempfile.TemporaryDirectory(prefix="rq-st-") as tmp:
                 tree = Path(tmp)
-                stage(tree, kind, base_texts[name], companion_kind=kind if kind != "constitution" else None)
+                stage(tree, kind, text, companion_kind=kind if kind != "constitution" else None)
                 rc, findings, out, summary = run_check(tree)
                 verdicts_per_run.append(sorted((f["constraint"], f["verdict"]) for f in findings))
-                (EVIDENCE / f"stability-{Path(name).stem}-{i}.log").write_text(out)
-        record.append({"case": f"stability:{name}", "runs": runs,
+                (EVIDENCE / f"stability-{kind}-{i}.log").write_text(out)
+        record.append({"case": f"stability:{kind}", "runs": runs,
                        "stable": all(v == verdicts_per_run[0] for v in verdicts_per_run),
                        "verdicts": [f"{c}:{v}" for c, v in verdicts_per_run[0]]})
 
@@ -271,12 +270,15 @@ def main() -> int:
     ap.add_argument("--corpus-cache", type=Path, default=Path("/tmp/rule-quality-corpora"))
     args = ap.parse_args()
 
+    # Bases resolve by artifact kind: the first document of each kind in this project
+    # (in a fresh skeleton those are the 00- guides and the constitution itself).
     base = {}
-    for name in ("design/06-durable-delivery.md", "design/09-package-split.md",
-                 "goals/00-v4-service-api.md", "constitution.md"):
-        p = REPO / name
-        if p.exists():
-            base[name] = p.read_text()
+    for kind, pattern in {"design": "design/[0-9][0-9]-*.md",
+                          "goal": "goals/[0-9][0-9]-*.md",
+                          "constitution": "constitution.md"}.items():
+        hits = sorted(REPO.glob(pattern))
+        if hits:
+            base[kind] = hits[0].read_text()
 
     record_path = EVIDENCE / "record.json"
     record = json.loads(record_path.read_text()) if record_path.exists() else []

@@ -1,0 +1,35 @@
+# docs/ pages that are not typed canon: the project's runbook and topic pages beside the
+# four canon files. Migrated from the v1 rubric doc-verify/contracts/docs.yaml (the v1
+# contracts were deleted with this migration):
+#   docs.current_not_history (critical, scope combined over @selected, max_bytes 36000)
+#     -> oracle current_not_history over core.body of each outermost selected section (the
+#        title section when nothing is narrowed, so the whole page in one question, as v1 asked)
+#     -> constraint docs-current-not-history, severity error, threshold 0 (argmax stands),
+#        profiles [promotion]: the v1 strategy's default_profile was promotion, and a docs page
+#        has no status word, so `--profile auto` runs promotion for it.
+# References: every Markdown link resolves (error) and every backtick path resolves (warning).
+# No warning_threshold is set, so a stale path is listed but never changes the verdict.
+schema_version: 2
+kind: verification-module
+module: project.docs
+extends: [doc-verify:references]
+oracles:
+  current_not_history(D, S):
+    ask: >-
+      The document states current behaviour or contract directly, rather than narrating how it
+      came to be. A section explicitly labelled as open questions, a draft, or a non-goal is
+      acceptable; it fails only where dated history or unsettled speculation is presented as if
+      it were current law.
+    evidence: core.body(D, S)
+    threshold: 0
+    max_bytes: 36000
+rules:
+  outermost_selected(D, S): core.selected(D, S), core.section(D, S, P), not core.selected(D, P)
+constraints:
+  docs-current-not-history:
+    forall: core.meta(D, kind, docs), outermost_selected(D, S)
+    require: current_not_history(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{S} in {D} presents dated history or unsettled speculation as current law"
+    repair: "State what is true now; move the history to worklog/ or the design that decided it, and label open questions as open."

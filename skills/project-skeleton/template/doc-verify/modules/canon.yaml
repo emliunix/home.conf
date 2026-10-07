@@ -5,6 +5,7 @@
 schema_version: 2
 kind: verification-module
 module: project.canon
+extends: [doc-verify:references]
 oracles:
   current_not_history(D, S):
     ask: This section states the current contract, model, property list or check table directly, rather than narrating how it came to be or presenting dated history or decisions as current law.

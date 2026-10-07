@@ -5,6 +5,3 @@ document:
   kind: goal
   depends_on:
     - constitution.md
-verification:
-  kind: jev-prolog
-  inherits: ../doc-verify/contracts/goal-strategy.yaml#verification

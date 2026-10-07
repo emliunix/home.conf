@@ -15,7 +15,9 @@ The template directory beside this file is the reference instance; `bootstrap.sh
 | Decision records | `design/00-design-file-guide.md` + `doc-verify/modules/{artifact,design}.yaml` | status vocabulary, heads, claim-level falsification |
 | Epics | `goals/00-goal-file-guide.md` + `doc-verify/modules/goal.yaml` | anchored root, coverage, ledger rules |
 | Typed canon | `docs/modules/<pkg>/{contract,model,properties,verification}.md` + `canon.yaml` | shape rules + current-not-history oracle |
-| Docs gate | `.doc-verify.yaml` + `.pre-commit-config.yaml` (pinned `2381b1f`) | `doc-verify check --all` |
+| Untyped docs | `docs/**` remainder + `doc-verify/modules/docs.yaml` | current-not-history oracle + link/path resolution |
+| Worklog | `worklog/` + `doc-verify:references` (`worklog.yaml` for `type: record` companions) | links resolve; record-typed entries run evidence-not-law |
+| Docs gate | `.doc-verify.yaml` + `.pre-commit-config.yaml` (pinned `de99d33`) | `doc-verify check --all` |
 | Layering gate | `tests/test_layering.py` | import direction between packages |
 | Pairing gate | `tests/test_canon_docs.py` | every P-`<pkg>`-NN has a runnable check row |
 | Rule quality | `tools/rule_quality/` | seeded mutations prove the doc rules bite |
@@ -30,7 +32,7 @@ The template directory beside this file is the reference instance; `bootstrap.sh
 4. Judge key: `ln -s ~/.config/doc-verify/credentials.env .env.doc-verify`, then
    optionally `uv tool install prek && prek install`.
 5. Verify: `uv run --group test python -m pytest -q` and
-   `npm exec --yes --package=github:emliunix/home.conf#2381b1fd3dcb9f02ec7d8bee096ba155e9456266d -- doc-verify check --all`.
+   `npm exec --yes --package=github:emliunix/home.conf#de99d33dd334c8602a9ccfa8dab7111f1942c8ea -- doc-verify check --all`.
 
 ## Validation protocol (how this skill was proven, and how to re-prove it)
 
@@ -52,12 +54,15 @@ Bootstrap a scratch project and require, out of the box:
 - The template's placeholder content passes the gates but is not real law; the first
   real edit should replace it.
 - `tools/rule_quality` needs the judge key and npm; run it with
-  `--only mutations` for the deterministic leg.
+  `--only mutations` for the deterministic leg. Mutations seed against the project's
+  own documents of each kind — in a fresh skeleton those are the 00- guides, whose
+  shapes cover most anchors; rows that find nothing to mutate report
+  `mutation not applicable` or a miss instead of passing.
 - The prek hook stays uninstalled until the key exists (an unkeyed hook refuses every
   document commit).
 
 ## Owning records
 
 - Reference instance: the `template/` directory beside this file.
-- Engine: home.conf `doc-verify-v2` at `2381b1f`; bump deliberately and rerun the
+- Engine: home.conf `doc-verify-v2` at `de99d33`; bump deliberately and rerun the
   baseline (`cfdf457` showed an engine change can silently shift verdicts).

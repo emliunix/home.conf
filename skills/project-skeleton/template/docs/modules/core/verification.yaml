@@ -5,6 +5,3 @@ document:
   kind: module-verification
   depends_on:
     - docs/architecture.md
-verification:
-  kind: jev-prolog
-  inherits: ../../../doc-verify/contracts/docs-strategy.yaml#verification

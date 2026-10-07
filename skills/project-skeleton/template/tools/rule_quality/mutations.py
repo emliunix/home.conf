@@ -27,7 +27,7 @@ def _empty_section_body(text: str, heading: str) -> str:
     return out
 
 
-# --- design-module mutations (base: design/06, a promotion-profile full design)
+# --- design-module mutations (base: the first design document in the project)
 
 def mut_status_word_vocabulary(t):
     return _replace_once(t, "## Status\n\nlanded", "## Status\n\nselected")
@@ -113,27 +113,23 @@ def mut_spine_roots_idle(t):
     return t[:section.start()] + idle + t[section.end():]
 
 
-BASE_DESIGN = "design/06-durable-delivery.md"
-BASE_GOAL = "goals/00-v4-service-api.md"
-BASE_CONST = "constitution.md"
-
 CASES = [
-    {"name": "artifact-status-vocabulary", "kind": "design", "base": BASE_DESIGN, "expect": "artifact-status-in-vocabulary", "mutate": mut_status_word_vocabulary},
-    {"name": "design-status-one-word", "kind": "design", "base": BASE_DESIGN, "expect": "design-status-is-one-word", "mutate": mut_status_not_one_word},
-    {"name": "artifact-has-status", "kind": "design", "base": BASE_DESIGN, "expect": "artifact-has-status", "mutate": mut_status_word_gone},
-    {"name": "design-has-status-section", "kind": "design", "base": BASE_DESIGN, "expect": "design-has-status-section", "mutate": mut_status_section_gone},
-    {"name": "artifact-has-goal", "kind": "design", "base": BASE_DESIGN, "expect": "artifact-has-goal", "mutate": mut_goal_section_gone},
-    {"name": "design-has-verification", "kind": "design", "base": BASE_DESIGN, "expect": "design-has-verification", "mutate": mut_verification_section_gone},
-    {"name": "design-has-decision", "kind": "design", "base": BASE_DESIGN, "expect": "design-has-decision", "mutate": mut_decision_sections_gone},
-    {"name": "design-verification-falsifies", "kind": "design", "base": BASE_DESIGN, "expect": "design-verification-falsifies", "mutate": mut_verification_toothless},
-    {"name": "design-altitude", "kind": "design", "base": BASE_DESIGN, "expect": "design-altitude", "mutate": mut_implementation_steps},
-    {"name": "goal-has-workstreams", "kind": "goal", "base": BASE_GOAL, "expect": "goal-has-workstreams", "mutate": mut_goal_workstreams_gone},
-    {"name": "goal-has-coverage", "kind": "goal", "base": BASE_GOAL, "expect": "goal-has-coverage", "mutate": mut_goal_coverage_gone},
-    {"name": "goal-has-anchored-root", "kind": "goal", "base": BASE_GOAL, "expect": "goal-has-anchored-root", "mutate": mut_goal_root_gone},
-    {"name": "goal-has-design-files", "kind": "goal", "base": BASE_GOAL, "expect": "goal-has-design-files", "mutate": mut_goal_design_files_gone},
-    {"name": "goal-has-worklog", "kind": "goal", "base": BASE_GOAL, "expect": "goal-has-worklog", "mutate": mut_goal_worklog_gone},
-    {"name": "spine-states-purpose", "kind": "constitution", "base": BASE_CONST, "expect": "spine-states-purpose", "mutate": mut_spine_purpose_gone},
-    {"name": "spine-states-falsifiers", "kind": "constitution", "base": BASE_CONST, "expect": "spine-states-falsifiers", "mutate": mut_spine_falsifiers_gone},
-    {"name": "spine-falsifiers-observable", "kind": "constitution", "base": BASE_CONST, "expect": "spine-falsifiers-observable", "mutate": mut_spine_falsifiers_vague},
-    {"name": "spine-roots-do-work", "kind": "constitution", "base": BASE_CONST, "expect": "spine-roots-do-work", "mutate": mut_spine_roots_idle},
+    {"name": "artifact-status-vocabulary", "kind": "design", "expect": "artifact-status-in-vocabulary", "mutate": mut_status_word_vocabulary},
+    {"name": "design-status-one-word", "kind": "design", "expect": "design-status-is-one-word", "mutate": mut_status_not_one_word},
+    {"name": "artifact-has-status", "kind": "design", "expect": "artifact-has-status", "mutate": mut_status_word_gone},
+    {"name": "design-has-status-section", "kind": "design", "expect": "design-has-status-section", "mutate": mut_status_section_gone},
+    {"name": "artifact-has-goal", "kind": "design", "expect": "artifact-has-goal", "mutate": mut_goal_section_gone},
+    {"name": "design-has-verification", "kind": "design", "expect": "design-has-verification", "mutate": mut_verification_section_gone},
+    {"name": "design-has-decision", "kind": "design", "expect": "design-has-decision", "mutate": mut_decision_sections_gone},
+    {"name": "design-verification-falsifies", "kind": "design", "expect": "design-verification-falsifies", "mutate": mut_verification_toothless},
+    {"name": "design-altitude", "kind": "design", "expect": "design-altitude", "mutate": mut_implementation_steps},
+    {"name": "goal-has-workstreams", "kind": "goal", "expect": "goal-has-workstreams", "mutate": mut_goal_workstreams_gone},
+    {"name": "goal-has-coverage", "kind": "goal", "expect": "goal-has-coverage", "mutate": mut_goal_coverage_gone},
+    {"name": "goal-has-anchored-root", "kind": "goal", "expect": "goal-has-anchored-root", "mutate": mut_goal_root_gone},
+    {"name": "goal-has-design-files", "kind": "goal", "expect": "goal-has-design-files", "mutate": mut_goal_design_files_gone},
+    {"name": "goal-has-worklog", "kind": "goal", "expect": "goal-has-worklog", "mutate": mut_goal_worklog_gone},
+    {"name": "spine-states-purpose", "kind": "constitution", "expect": "spine-states-purpose", "mutate": mut_spine_purpose_gone},
+    {"name": "spine-states-falsifiers", "kind": "constitution", "expect": "spine-states-falsifiers", "mutate": mut_spine_falsifiers_gone},
+    {"name": "spine-falsifiers-observable", "kind": "constitution", "expect": "spine-falsifiers-observable", "mutate": mut_spine_falsifiers_vague},
+    {"name": "spine-roots-do-work", "kind": "constitution", "expect": "spine-roots-do-work", "mutate": mut_spine_roots_idle},
 ]

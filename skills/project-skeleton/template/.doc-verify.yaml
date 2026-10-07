@@ -17,7 +17,7 @@ documents:
     required_sections: [goal, design-files, worklog]
   - pattern: docs/**/*.md
     artifact_kind: docs
-    verification: doc-verify/contracts/docs-strategy.yaml#verification
+    modules: [doc-verify/modules/docs.yaml]
     required_sections: []
   - pattern: docs/modules/*/properties.md
     artifact_kind: module-properties
@@ -43,9 +43,13 @@ documents:
     artifact_kind: index
     modules: [doc-verify/modules/canon.yaml]
     required_sections: []
+  # Worklog checks are opt-in: every worklog resolves its links (the references library), and a
+  # worklog whose companion names `type: record` additionally runs the evidence-not-law module.
   - pattern: worklog/**/*.md
     artifact_kind: worklog
-    verification: doc-verify/contracts/worklog-strategy.yaml#verification
+    modules: [doc-verify:references]
+    types:
+      record: {modules: [doc-verify/modules/worklog.yaml]}
     required_sections: []
   - pattern: worklog/evidence/**
     exclude: true

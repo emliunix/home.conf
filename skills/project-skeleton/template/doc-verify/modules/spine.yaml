@@ -2,6 +2,7 @@
 schema_version: 2
 kind: verification-module
 module: project.spine
+extends: [doc-verify:references]
 oracles:
   falsifiers_observable(D, S):
     ask: Each falsifier listed here names an observable outcome that would retire the commitment, rather than a matter of taste or opinion.
