@@ -1,0 +1,230 @@
+#!/usr/bin/env node
+
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { spawn } from "node:child_process";
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const LOCK = join(ROOT, "scripts", "gate-lock.mjs");
+const FIXTURE = join(ROOT, "tests", "gate-fixture.mjs");
+const failures = [];
+
+function fail(message) {
+  failures.push(message);
+}
+
+function read(path) {
+  return readFileSync(join(ROOT, path), "utf8");
+}
+
+function run(command, args) {
+  return new Promise((resolveRun) => {
+    const child = spawn(command, args, {
+      stdio: ["ignore", "pipe", "pipe"],
+      env: process.env,
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk;
+    });
+    child.on("close", (status) => resolveRun({ status, stdout, stderr }));
+  });
+}
+
+async function runLockedPair(state, lockFile) {
+  const runOne = (tag) =>
+    run(process.execPath, [
+      LOCK,
+      "--lock-file",
+      lockFile,
+      "--timeout-ms",
+      "5000",
+      "--stale-ms",
+      "60000",
+      "--poll-ms",
+      "10",
+      "--",
+      process.execPath,
+      FIXTURE,
+      "--state",
+      state,
+      "--hold-ms",
+      "120",
+      "--tag",
+      tag,
+    ]);
+  return Promise.all([runOne("A"), runOne("B")]);
+}
+
+function parseEvents(path) {
+  return readFileSync(path, "utf8")
+    .trim()
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => {
+      const [tag, phase, time, pid] = line.split(" ");
+      return { tag, phase, time: Number(time), pid: Number(pid) };
+    });
+}
+
+function hasOverlap(events) {
+  let active;
+  for (const event of events) {
+    if (event.phase === "start") {
+      if (active) return true;
+      active = event;
+    } else if (active && active.tag === event.tag) {
+      active = undefined;
+    }
+  }
+  return false;
+}
+
+function checkSurface() {
+  const skill = read("SKILL.md");
+  const frontMatter = skill.match(/^---\n([\s\S]*?)\n---\n/);
+  if (!frontMatter) fail("SKILL.md: missing frontmatter");
+  else {
+    if (!/^name:\s*worktree-sop\s*$/m.test(frontMatter[1])) {
+      fail("SKILL.md: frontmatter name is not worktree-sop");
+    }
+    if (!/^description:/m.test(frontMatter[1])) {
+      fail("SKILL.md: frontmatter has no description");
+    }
+  }
+  for (const target of [
+    "references/worktree-lifecycle.md",
+    "references/gate-lock.md",
+  ]) {
+    if (!skill.includes(`(${target})`)) fail(`SKILL.md: missing link to ${target}`);
+    if (!existsSync(join(ROOT, target))) fail(`missing ${target}`);
+  }
+  if (!skill.includes("scripts/gate-lock.mjs")) {
+    fail("SKILL.md: missing gate-lock command surface");
+  }
+}
+
+async function checkRedGreen() {
+  const dir = mkdtempSync(join(tmpdir(), "worktree-sop-"));
+  const lockedState = join(dir, "locked.log");
+  const unlockedState = join(dir, "unlocked.log");
+  const lockFile = join(dir, "gate.lock");
+
+  const lockedRuns = await runLockedPair(lockedState, lockFile);
+  if (lockedRuns.some((result) => result.status !== 0)) {
+    fail(`locked pair failed: ${JSON.stringify(lockedRuns)}`);
+  } else if (hasOverlap(parseEvents(lockedState))) {
+    fail("locked fixture overlapped");
+  }
+
+  const unlocked = await Promise.all([
+    run(process.execPath, [
+      FIXTURE,
+      "--state",
+      unlockedState,
+      "--hold-ms",
+      "120",
+      "--tag",
+      "C",
+    ]),
+    run(process.execPath, [
+      FIXTURE,
+      "--state",
+      unlockedState,
+      "--hold-ms",
+      "120",
+      "--tag",
+      "D",
+    ]),
+  ]);
+  if (unlocked.some((result) => result.status !== 0)) {
+    fail(`unlocked control failed: ${JSON.stringify(unlocked)}`);
+  } else if (!hasOverlap(parseEvents(unlockedState))) {
+    fail("unlocked control did not overlap, so the fixture cannot prove serialization");
+  }
+
+  writeFileSync(
+    lockFile,
+    `${JSON.stringify({
+      token: "stale",
+      pid: 99999999,
+      command: "stale",
+      startedAt: new Date(0).toISOString(),
+    })}\n`,
+  );
+  const staleState = join(dir, "stale.log");
+  const stale = await run(process.execPath, [
+    LOCK,
+    "--lock-file",
+    lockFile,
+    "--timeout-ms",
+    "1000",
+    "--stale-ms",
+    "1",
+    "--poll-ms",
+    "10",
+    "--",
+    process.execPath,
+    FIXTURE,
+    "--state",
+    staleState,
+    "--hold-ms",
+    "1",
+    "--tag",
+    "stale",
+  ]);
+  if (stale.status !== 0 || !existsSync(staleState)) {
+    fail("stale-holder recovery did not acquire the lock");
+  }
+
+  writeFileSync(
+    lockFile,
+    `${JSON.stringify({
+      token: "live",
+      pid: process.pid,
+      command: "test-holder",
+      startedAt: new Date().toISOString(),
+    })}\n`,
+  );
+  const timeout = await run(process.execPath, [
+    LOCK,
+    "--lock-file",
+    lockFile,
+    "--timeout-ms",
+    "50",
+    "--stale-ms",
+    "60000",
+    "--poll-ms",
+    "10",
+    "--",
+    process.execPath,
+    "-e",
+    "process.exit(0)",
+  ]);
+  unlinkSync(lockFile);
+  if (timeout.status !== 75 || !timeout.stdout.includes('"state":"lock_timeout"')) {
+    fail("live holder did not produce a bounded lock timeout");
+  }
+}
+
+checkSurface();
+await checkRedGreen();
+
+if (failures.length) {
+  console.error(`check-dispatch: ${failures.length} failure(s)`);
+  for (const failure of failures) console.error(`  - ${failure}`);
+  process.exit(1);
+}
+console.log("check-dispatch: ok (surface, serialization red/green, stale recovery)");

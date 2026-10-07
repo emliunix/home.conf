@@ -210,6 +210,11 @@ Populate one slot per design in (5). Do not paste grill transcripts, round ledge
 
 Admin-owned, row-oriented. Each design names the rows it **Covers** (a/b/c); the admin maintains which rows are covered by which design(s) across which phase(s). **A row locks when all its covering designs across all phases land**, not when one slice lands. Workers check only their design's covered rows; the admin reconciles full coverage at close. This prevents the "my slice landed, box still unchecked" mismatch.
 
+Repository-editing design slots also carry the worktree decision and lifecycle
+required by [`../worktree-sop/SKILL.md`](../worktree-sop/SKILL.md). The one
+owning definition and its cleanup evidence live there; this file only reserves
+the slot.
+
 ```markdown
 ## AC coverage
 | Row | Covering design(s) | Phase | Locks when |

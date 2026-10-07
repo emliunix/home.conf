@@ -39,6 +39,13 @@ architecture, or an operational policy must carry a `DESIGN.` line in its body.
 "Design authority" means the file that owns the decision. Link to that file and
 name the relevant section when one exists.
 
+Every task that can edit a repository also carries a `WORKTREE.` line:
+`required | not-needed`, the reason, and the base/ref. When a worktree is
+required, merge/replay, target verification, and cleanup are acceptance items.
+The owning definition is
+[`../worktree-sop/SKILL.md`](../worktree-sop/SKILL.md), including the
+heavy-gate lock; this skill does not restate the lifecycle.
+
 - If a numbered design exists, link it and say whether this task amends it or
   implements it.
 - If no numbered design exists, link the project's design staging or archive

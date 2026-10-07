@@ -133,6 +133,7 @@ One slot per design in Design files. Inner loop and wrong-design exit are
 - **Covers:** R# (path: A# → R# when an addition is live)
 - **Scope:** core-schema | module:<name> | ui-ux | <named> | design-time
 - **Depends on:** design/MM | none
+- **Worktree:** `required | not-needed`; reason; base/ref
 - **Loop:** `flow-grill-review` → `flow:impl` (`flow-common`) → `flow-retro`
 - **Gate:** AC check along **Covers** to the anchored root
 - **Exit:** impl-loop breakout → `flow-common` breakout adjudication. Proved
