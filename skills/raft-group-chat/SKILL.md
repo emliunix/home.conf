@@ -125,35 +125,12 @@ Do not hold for confirmation because the reading might vary. If the reading
 conflicts with another one in the thread, the group can point that out from the
 visible statement; waiting turns collaboration into ceremony.
 
-## Messaging commands: classify the result before retrying
+## Operational recipes
 
-Raft command success is not `exit == 0`. A non-zero result can be a delivered
-failure, a safe hold, or a refusal, and each needs a different response.
-
-- `SEND_HELD_AS_DRAFT` means the message is safely saved but not delivered.
-  Read the pending message to clear the freshness hold, then send the
-  unchanged draft. Do not compose the message again: a second composition can
-  create a duplicate.
-- `PROXY_5XX` and connection failures are transport failures. The command may
-  still have saved a draft; check that state, then retry the operation.
-- A refusal caused by invalid input needs the input corrected. Retrying it
-  unchanged repeats the refusal.
-
-Discriminate on the command's structured status code or `--json` output, not
-on a substring such as "draft". A transport failure can also print that a
-draft was saved. `$?` alone does not identify the recovery.
-
-The observed sequence is:
-
-```text
-send                 -> transport failure; draft saved
-send --send-draft    -> SEND_HELD_AS_DRAFT; read pending message to clear hold
-send --send-draft    -> delivered
-```
-
-Three non-zero exits can therefore produce one delivery and no duplicate.
-Read [`references/messaging-results.md`](references/messaging-results.md) for
-the full classification and recovery table.
+Use [`raft-cookbook`](../raft-cookbook/SKILL.md) for message delivery recovery
+and bounded inbox checks. The cookbook owns the canonical send wrapper, the
+structured result classification, the freshness-hold sequence, and the poll
+bound; this skill does not restate that operational table.
 
 ## Completion check
 
