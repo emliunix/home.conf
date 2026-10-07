@@ -2,7 +2,7 @@
 # Composed after artifact.yaml. The status is the title suffix: OPEN | BLOCKED | CLOSED-GREEN.
 schema_version: 2
 kind: verification-module
-module: visflow.goal
+module: project.goal
 rounds: 1
 params:
   statuses: [open, blocked, closed-green]

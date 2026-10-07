@@ -1,5 +1,5 @@
 """Seeded mutations for the rule-quality harness. Each mutation MUST flip its target
-constraint on a real visflow document; collateral firings are allowed but recorded."""
+constraint on a real project document; collateral firings are allowed but recorded."""
 
 import re
 

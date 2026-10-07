@@ -1,7 +1,7 @@
 # The constitution: onboarding and the manifest for every part of the process (design 10).
 schema_version: 2
 kind: verification-module
-module: visflow.spine
+module: project.spine
 oracles:
   falsifiers_observable(D, S):
     ask: Each falsifier listed here names an observable outcome that would retire the commitment, rather than a matter of taste or opinion.

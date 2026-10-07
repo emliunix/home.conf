@@ -5,9 +5,9 @@ For every constraint in doc-verify/modules:
       collateral firings are recorded (a mutation that trips many constraints is fine,
       a constraint nothing flips is toothless);
   (b) good documents from OTHER projects (held-out corpus) MUST NOT trip the semantic
-      (oracle-backed) constraints — false alarms mean the rule is overfit to visflow.
-      Structural constraints (heading names, status placement) are exempt by design:
-      those are visflow conventions. Each held-out firing is classified from the module
+      (oracle-backed) constraints — false alarms mean the rule is overfit to the
+      source project. Structural constraints (heading names, status placement) are
+      exempt by design: those are the source project's conventions. Each held-out firing is classified from the module
       definition as structural-exempt, semantic-violated or semantic-undetermined, and
       the report quotes those counts;
   (c) judge stability: oracle-bearing documents run N times; verdict flips are reported.
@@ -194,7 +194,7 @@ def corpus_checkout(name: str, cache: Path) -> tuple[Path, str]:
 def run_heldout(record: list, cache: Path, extra_corpora: dict[str, Path], cap: int = 8,
                 scratch: Path = Path("/tmp/rule-quality-scratch")) -> None:
     """Per-document held-out rows and raw logs are scratch evidence (owner ruling
-    2026-10-01: other projects' documents stay out of the visflow repo); only the
+    2026-10-01: other projects' documents stay out of the host repo); only the
     per-corpus aggregate is committed to the record and report."""
     corpora = dict(CORPORA)
     for name, path in extra_corpora.items():

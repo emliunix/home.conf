@@ -2,7 +2,7 @@
 # artifact.yaml. Oracle-backed constraints run on the promotion profile; a draft is structural.
 schema_version: 2
 kind: verification-module
-module: visflow.design
+module: project.design
 rounds: 2
 params:
   statuses: [draft, reviewed, pending-retro, landed]

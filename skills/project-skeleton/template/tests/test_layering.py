@@ -1,7 +1,7 @@
 """Layering gate (project skeleton): no import may point against the allowed direction.
 
-Edit PACKAGES, LAYER_OF and MAY_IMPORT for the project's own layout (the visflow
-reference is the full worked example). On a fresh bootstrap the gate is green by
+Edit PACKAGES, LAYER_OF and MAY_IMPORT for the project's own layout (this skeleton
+is the worked minimum). On a fresh bootstrap the gate is green by
 construction; the first split-out package must be listed here in the same PR, and the
 seeded-violation tests keep the parser honest.
 """

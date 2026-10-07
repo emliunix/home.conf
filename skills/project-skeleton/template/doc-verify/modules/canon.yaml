@@ -4,7 +4,7 @@
 # deterministic (heading names); content-class questions are the two oracles.
 schema_version: 2
 kind: verification-module
-module: visflow.canon
+module: project.canon
 oracles:
   current_not_history(D, S):
     ask: This section states the current contract, model, property list or check table directly, rather than narrating how it came to be or presenting dated history or decisions as current law.

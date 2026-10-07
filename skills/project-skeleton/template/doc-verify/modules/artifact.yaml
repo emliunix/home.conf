@@ -4,7 +4,7 @@
 # Composed with a kind module that supplies `$statuses`.
 schema_version: 2
 kind: verification-module
-module: visflow.artifact
+module: project.artifact
 oracles:
   purpose(D, S, P):
     choose: [goal, problem, scope, out_of_scope, rationale, model, decision, assumptions, owner_input, verification, evidence, review, status, handoff, workstreams, coverage, dependencies, record, other]
