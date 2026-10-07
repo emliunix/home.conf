@@ -31,6 +31,9 @@ contract:
   claims it does.
 - **A write that is refused changes nothing.** Not "changes very little" — both files keep their
   bytes.
+- **A lock's RELEASE must be as careful as its eviction.** Checking ownership on eviction but not on
+  release means a holder that outlives the stale threshold deletes its successor's live lock from its
+  own `finally`, and two writers then hold the critical section. Both paths carry the inode token.
 - **`append` must leave the fact VISIBLE in the index.** An earlier version wrote only the log and
   left the index untouched; a fresh agent reading the index could not see a fact the log durably
   held, so the recovery point was the wrong file. The index is the thing that gets injected.
@@ -95,10 +98,18 @@ Two operational notes, both measured:
 node tests/check-dispatch.mjs
 ```
 
-Nine cases, each shown to fail on the defect it targets — that is what the suite is for, and a
-case that cannot redden is not coverage. The suite exists because an earlier revision ran its cases
-as top-level blocks with a `process.exit()` inside one of them: it printed "all pass" while
-measuring four of nine.
+Fourteen cases, each shown to fail on the defect it targets — that is what the suite is for, and a
+case that cannot redden is not coverage. Two lessons are encoded here at cost:
+
+- An earlier revision ran its cases as top-level blocks with a `process.exit()` inside one of them:
+  it printed "all pass" while measuring four of nine.
+- Two later revisions passed `14/14` while **the cases could not fail** — one asserted the defect as
+  the requirement, and two threw an `ENOENT`/`statSync` error instead of reporting a FAIL, which
+  aborts the run so a regression shows as a crash rather than a red. A case that throws measures
+  nothing on exactly the runs that matter; assert defensively.
+
+The crash cases use a `--require` preload that calls `process.exit(9)`, so no cleanup handler runs
+and the interruption is a real hard kill rather than a simulated one.
 
 To confirm the suite really runs what it defines, enumerate:
 
@@ -119,9 +130,12 @@ honest property is: **the index converges to the log.** Appending folds the log 
 again is a no-op. What is *not* claimed is that no concurrent append can ever be momentarily missing
 from the index — with a lock that can fail that would be a guarantee the mechanism does not support.
 
-Idempotence is enforced by an **atomic claim keyed by the fact** (`open(claim, "wx")`), not by the
-lock. The lock serializes writers; the claim is what makes a duplicate impossible even if the lock
-does not hold, because the filesystem enforces that exactly one caller creates the claim file.
+**The log decides whether a fact is recorded — never the claim.** A claim file means only "a writer
+is in flight for this fact". Treating its existence as "done" is a trap with a cruel failure mode:
+a hard kill between the claim and the log write makes every retry report "already present" for a
+fact recorded nowhere, so the loss is silent and reported as success. Recovery is therefore driven
+by the log, and a claim left by a dead holder is reclaimed by **PID liveness**, not by waiting out a
+time window. Retrying after any interruption yields exactly one log entry and a visible fact.
 
 ## What this does not do
 

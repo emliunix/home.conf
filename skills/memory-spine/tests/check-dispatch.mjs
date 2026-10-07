@@ -20,13 +20,13 @@
 //   6. the doc-verify profile fails closed on a broken pointer and a missing section
 // Plus the mutation the card requires: removing the cap check must redden case 1.
 
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, utimesSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, statSync, utimesSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn, spawnSync } from "node:child_process";
 import { planMigration, verifyPreservation } from "../scripts/memory-migrate.mjs";
-import { appendFact, republish } from "../scripts/memory-append.mjs";
+import { appendFact, republish, acquireLock, releaseHeld } from "../scripts/memory-append.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LINT = join(ROOT, "scripts", "memory-lint.mjs");
@@ -448,6 +448,115 @@ function caseFoldConvergence() {
   rmSync(dir, { recursive: true, force: true });
 }
 
+// --- 13. a HARD crash (process.exit) leaves no silent loss and retry finishes the pair ----------
+// The claim may only mean "in flight". An earlier revision let it mean "done", so a SIGKILL between
+// the claim and the log write made EVERY retry report "already present" for a fact recorded nowhere.
+// That is silent permanent loss reported as success, and it is worse than an ordinary interrupted
+// write. These arms use a preload that calls process.exit(9), so no cleanup handler can run.
+//
+//   crash-before-log  -> the fact is NOT recorded; retry must append it (not claim "already present")
+//   crash-before-rename -> the fact IS durable; retry must finish publication, not duplicate it
+function crashArm(dir, index, fact, preload) {
+  const run = spawnSync(process.execPath, ["--require", preload, "-e",
+    `import(${JSON.stringify(APPEND)}).then((m) => { try { m.appendFact(${JSON.stringify(index)}, ${JSON.stringify(fact)}); } catch {} });`],
+    { encoding: "utf8", timeout: 60_000 });
+  return run;
+}
+
+function caseCrashRetry() {
+  // Written to a TEMP dir, not into the package: a suite that litters the repository it tests is a
+  // suite whose own artifacts show up as uncommitted changes and get mistaken for work.
+  const preloads = mkdtempSync(join(tmpdir(), "memory-spine-preloads-"));
+  // A: hard-exit the instant the claim file is written -- i.e. before any durable state exists.
+  const preA = join(preloads, "exit-at-claim.cjs");
+  // Exit AFTER the claim file exists but BEFORE the log write. Injecting on the claim WRITE exits
+  // before it lands, which leaves no claim and therefore cannot test the claim path at all -- my
+  // first version did exactly that and the case silently proved nothing.
+  writeFileSync(preA, [
+    'const fs = require("node:fs");',
+    "const real = fs.writeFileSync;",
+    "fs.writeFileSync = (p, ...rest) => {",
+    '  const result = real(p, ...rest);',
+    '  if (String(p).includes(".claims")) { process.exit(9); }',
+    "  return result;",
+    "};",
+  ].join("\n"));
+  // B: hard-exit after the log entry is fsynced, before the index rename.
+  const preB = join(preloads, "exit-before-rename.cjs");
+  writeFileSync(preB, [
+    'const fs = require("node:fs");',
+    "const real = fs.renameSync;",
+    "fs.renameSync = (a, b) => {",
+    '  if (String(b).endsWith("MEMORY.md")) { process.exit(9); }',
+    "  return real(a, b);",
+    "};",
+  ].join("\n"));
+
+  for (const [name, preload, expectLogged] of [["crash-before-log", preA, false], ["crash-before-rename", preB, true]]) {
+    const dir = workspace();
+    const index = join(dir, "MEMORY.md");
+    const fact = `fact for ${name}`;
+    const crashed = crashArm(dir, index, fact, preload);
+    check(crashed.status === 9, `${name}: the injected crash should exit 9, got ${String(crashed.status)}`);
+    const loggedAfterCrash = existsSync(logFileFor(dir)) && readFileSync(logFileFor(dir), "utf8").includes(fact);
+    check(loggedAfterCrash === expectLogged, `${name}: log durable after the crash should be ${String(expectLogged)}`);
+
+    // RETRY THE SAME FACT. This is the assertion the old suite could not make.
+    // Read defensively: a regression here must produce a FAIL, not an ENOENT crash. A case that
+    // throws instead of reporting measures nothing on exactly the runs that matter.
+    const retry = appendFact(index, fact);
+    const logPath = logFileFor(dir);
+    const log = existsSync(logPath) ? readFileSync(logPath, "utf8") : "";
+    const entries = log.split("\n").filter((l) => l.includes(fact)).length;
+    check(entries === 1, `${name}: retry must leave EXACTLY ONE log entry, got ${String(entries)}`);
+    check(readFileSync(index, "utf8").includes(fact), `${name}: retry must leave the fact VISIBLE in the index`);
+    // And the retry must be honest about which of the two situations it was in.
+    if (expectLogged) {
+      check(retry.appended === false, `${name}: the fact was already durable, so retry must not append again`);
+      check(retry.indexRepaired === true, `${name}: retry must report that it FINISHED the publication`);
+    } else {
+      check(retry.appended === true, `${name}: the fact was never recorded, so retry must actually append it`);
+    }
+    rmSync(dir, { recursive: true, force: true });
+  }
+  rmSync(preloads, { recursive: true, force: true });
+}
+
+// --- 14. release removes ONLY the lock it was given (the successor-release case) ---------------
+// Eviction compares inodes, but release must too. If holder A outlives the stale threshold, B
+// correctly evicts A and takes the lock; A's `finally` must then NOT remove B's live lock, or two
+// writers hold the critical section at once. The eight-writer stale race cannot catch this.
+function caseSuccessorRelease() {
+  const dir = workspace();
+  const a = acquireLock(dir, { timeoutMs: 1_000, staleMs: 60_000 });
+  // staleMs 0 makes every waiter treat A as stale, so B evicts A and takes the lock.
+  const b = acquireLock(dir, { timeoutMs: 2_000, staleMs: 0, pollMs: 5 });
+  check(a.ino !== b.ino, "the evicting waiter must hold a different lock");
+
+  releaseHeld(a);                                   // A's finally, after B took over
+  const lockPath = join(dir, "memory-append.lock");
+  // Assert without crashing: a path-only release removes the lock, and statSync on a missing path
+  // would THROW instead of reporting a FAIL -- so a regression would abort the whole suite and the
+  // remaining cases would silently not run. Read defensively and let `check` do the reporting.
+  check(existsSync(lockPath), "A's release must NOT remove the lock B now holds");
+  if (existsSync(lockPath)) {
+    check(statSync(lockPath).ino === b.ino, "the surviving lock must still be B's");
+  }
+
+  // B still owns the critical section: a third writer must be refused while B holds it.
+  let blocked = null;
+  try {
+    acquireLock(dir, { timeoutMs: 200, staleMs: 60_000, pollMs: 10 });
+  } catch (error) {
+    blocked = error?.code ?? "threw";
+  }
+  check(blocked === "ELOCKED", `a third writer must be blocked by B's live lock, got ${String(blocked)}`);
+
+  releaseHeld(b);
+  check(!existsSync(lockPath), "releasing the true owner must remove the lock");
+  rmSync(dir, { recursive: true, force: true });
+}
+
 // --- run them in order, then report once ----------------------------------------------------
 const cases = [
   ["over-cap", caseOverCap],
@@ -462,6 +571,8 @@ const cases = [
   ["cap-refusal", caseCapRefusal],
   ["stale-lock-race", caseStaleLockRace],
   ["fold-convergence", caseFoldConvergence],
+  ["crash-retry", caseCrashRetry],
+  ["successor-release", caseSuccessorRelease],
 ];
 const ran = [];
 for (const [name, run] of cases) {
