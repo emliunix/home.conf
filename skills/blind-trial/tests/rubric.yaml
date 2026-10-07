@@ -1,0 +1,101 @@
+# blind-trial - rubrics by dimension
+# An item names the defect that must flip it; a property item says so.
+skill: blind-trial
+dimensions:
+  trigger:
+    rubrics:
+      - id: selection
+        arms: [entry-only]
+        control_substitutes: [distractor_set, excluded_shapes, route_repetition]
+        pass_bar: fires on measuring onboarding or authoring; silent on a single impression, compile counts and summary material
+        items:
+          - id: T-SELECT
+            claim: "measuring onboarding or authoring selects this surface"
+            red_when: "a distractor is selected instead"
+          - id: T-SILENT
+            claim: "the excluded shapes stay silent"
+            red_when: "any surface fires on them"
+      - id: generalisation
+        arms: [entry-only]
+        pass_bar: trap and paraphrase score alike
+        items:
+          - id: T-TRAP
+            claim: "the excluded case dressed in trial vocabulary stays silent"
+            red_when: "the surface fires on the words \"reader\", \"author\" or \"measure\""
+          - id: T-PARA
+            claim: "the same case without the vocabulary stays silent"
+            red_when: "silence depends on the clause wording appearing in the task"
+  procedure:
+    rubrics:
+      - id: shared
+        arms: [control, entry-only, full]
+        pass_bar: the five shared rules hold for the whole trial
+        items:
+          - id: P-OWNFILES
+            claim: "participants get the repository's own files"
+            red_when: "a parent-written summary is handed over and the record does not say so"
+          - id: P-BLIND
+            claim: "participants are fresh and unprimed"
+            red_when: "a participant is reused or given a guided tour"
+          - id: P-BATCH
+            claim: "three to five participants per batch"
+            red_when: "one participant's report is treated as the result"
+          - id: P-TAG
+            claim: "the tree is tagged at dispatch in the instrument's tag family and the tag is recorded"
+            red_when: "no tag, or a tag outside the family"
+          - id: P-FREEZE
+            claim: "nothing is committed until the last participant returns"
+            red_when: "the commit log shows a commit inside the trial window"
+          - id: P-DISPO
+            claim: "every finding is dispositioned, single-participant ones included"
+            red_when: "a finding is dropped because only one participant reported it"
+          - id: P-NOBLANKET
+            claim: "a fix lands once at the owner"
+            red_when: "one fix is copied into every document a participant complained about"
+      - id: readers
+        arms: [control, entry-only, full]
+        pass_bar: the reader steps in order
+        items:
+          - id: P-CORPUS
+            claim: "the corpus under test is named and frozen"
+            red_when: "the corpus is unnamed"
+          - id: P-TRAJ
+            claim: "each report carries a bounded trajectory"
+            red_when: "a report has no trajectory or exceeds the bound"
+          - id: P-METRICS
+            claim: "metrics are reported per reader"
+            red_when: "metrics are averaged across readers"
+      - id: authors
+        arms: [control, entry-only, full]
+        pass_bar: the author steps in order
+        items:
+          - id: P-ARMS
+            claim: "blind and assisted arms both run"
+            red_when: "only one arm runs and the record claims both measurements"
+          - id: P-RUNLOG
+            claim: "one line per run per document records the diagnostic and the change"
+            red_when: "the run log is missing"
+  production:
+    rubrics:
+      - id: acceptance
+        arms: [full]
+        pass_bar: acceptance implies execution, and the record attributes to a revision
+        items:
+          - id: R-EXEC
+            claim: "every accepted document was run"
+            red_when: "the record asserts acceptance no run produced"
+          - id: R-REV
+            claim: "every finding attributes to the tagged revision"
+            red_when: "a finding cites a file state that differs from the tag"
+  ablation:
+    rubrics:
+      - id: steps
+        arms: [full, full-minus-one-step]
+        pass_bar: each step either degrades the outcome or is deleted
+        items:
+          - id: A-STEP
+            claim: "a step whose removal changes nothing on a trial that exercised it is decoration"
+            red_when: "it survives a fair test"
+          - id: A-UNPRICED
+            claim: "a step the trial never exercised is recorded unpriced"
+            red_when: "it is deleted on that evidence"

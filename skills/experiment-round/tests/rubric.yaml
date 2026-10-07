@@ -1,0 +1,88 @@
+# experiment-round - rubrics by dimension
+# An item names the defect that must flip it; a property item says so.
+skill: experiment-round
+dimensions:
+  trigger:
+    rubrics:
+      - id: selection
+        arms: [entry-only]
+        control_substitutes: [distractor_set, excluded_shapes, route_repetition]
+        pass_bar: fires on a question that needs an experiment, in an existing tree or a new one; silent on a finished run
+        items:
+          - id: T-SELECT
+            claim: "a question needing an experiment selects this surface"
+            red_when: "a distractor is selected instead"
+          - id: T-SILENT
+            claim: "tabulating or summarising a finished run stays silent"
+            red_when: "any surface fires on it"
+      - id: generalisation
+        arms: [entry-only]
+        pass_bar: trap and paraphrase score alike
+        items:
+          - id: T-TRAP
+            claim: "the finished-run case dressed in experiment vocabulary stays silent"
+            red_when: "the surface fires on the words \"experiment\", \"round\" or \"programme\""
+          - id: T-PARA
+            claim: "the same case without the vocabulary stays silent"
+            red_when: "silence depends on the clause wording appearing in the task"
+  procedure:
+    rubrics:
+      - id: placement
+        arms: [control, entry-only, full]
+        pass_bar: the question is placed before the round is designed
+        items:
+          - id: P-ROOT
+            claim: "a question fitting no tree, or spanning two, gets its own root"
+            red_when: "it becomes a round inside a tree that answers only half of it"
+          - id: P-ABSENT
+            claim: "the files not yet created are named with the reason"
+            red_when: "the skeleton is silent about what is missing, or is created all at once"
+      - id: steps
+        arms: [control, entry-only, full]
+        pass_bar: every round stage observed in order, each with its evidence
+        items:
+          - id: P-HYP
+            claim: "the hypothesis is one sentence with the cell that would refute it"
+            red_when: "no refuting cell is named"
+          - id: P-AXIS
+            claim: "the candidates differ along one axis the hypothesis turns on"
+            red_when: "candidates vary along several dimensions at once"
+          - id: P-CAND
+            claim: "two or three genuine candidates are recorded"
+            red_when: "one design appears in two flavours"
+          - id: P-PREREG
+            claim: "each candidate's expected outcome is committed before the first run"
+            red_when: "an expectation's commit is later than the run it predicts"
+          - id: P-PLANREVIEW
+            claim: "an independent seat reads the plan before the first run and the plan and review are committed together"
+            red_when: "the first independent read of the plan happens after the measurement"
+          - id: P-EVAL
+            claim: "the evaluation names the selected candidate, what is unmeasured and which expectations were contradicted"
+            red_when: "a contradicted expectation is not reported"
+          - id: P-PRED
+            claim: "one committed command per track, each with an honest complete flag"
+            red_when: "a skipped track counts as a pass, or one command stands for all tracks"
+  production:
+    rubrics:
+      - id: acceptance
+        arms: [full]
+        pass_bar: the predicate runs and the verdict is honest about the prediction
+        items:
+          - id: R-RUN
+            claim: "what the round claims, its committed commands produced"
+            red_when: "the record asserts an outcome no run produced"
+          - id: R-CORRECT
+            claim: "a contradicted prediction is corrected in place with the record saying so"
+            red_when: "the prediction is silently rewritten or the evidence is adjusted to fit it"
+  ablation:
+    rubrics:
+      - id: steps
+        arms: [full, full-minus-one-step]
+        pass_bar: each step either degrades the outcome or is deleted
+        items:
+          - id: A-STEP
+            claim: "a step whose removal changes nothing on a trial that exercised it is decoration"
+            red_when: "it survives a fair test"
+          - id: A-UNPRICED
+            claim: "a step the trial never exercised is recorded unpriced"
+            red_when: "it is deleted on that evidence"

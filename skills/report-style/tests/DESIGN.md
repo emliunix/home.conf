@@ -5,9 +5,9 @@ record/brief shape selected from the artifact's lifetime. `SKILL.md` routes; `re
 set per kind; this design states how the package is checked. r2 remains the measured baseline. r3 adds
 smoke-checkable routing and chronology cases; their production effect is open until a new blinded trial.
 
-## Why this skill is not the same as the eleven
+## Why this skill is not the same as the method skills
 
-The `visflow-*` skills produce records whose acceptance is structural. `report-style` produces prose in
+The method skills (`seeded-defect-gate`, `record-conventions`, `experiment-round` and their siblings) produce records whose acceptance is structural. `report-style` produces prose in
 seven kinds and two shapes, so its hardest problem is still the **production oracle**: what counts as an
 accepted written artifact when a checklist over prose is close to self-grading.
 
@@ -69,7 +69,7 @@ and an element with no carrier is **cut from the rubric**, not assumed.
   the answer key is not a judge.
 - **Aggregation and pass bar**: full must be **strictly better on ≥2 of 3 axes and never worse on any**; a
   tie is decoration; judges who disagree on a **fact** go to the lead to reproduce, not to an average
-  (**never averaged**, the `visflow-evaluate` rule).
+  (**never averaged**, the `adversarial-evaluate` rule).
 - **No self-grading**: a subject that writes and scores its own brief measures nothing.
 
 ## Items - r3
@@ -108,12 +108,12 @@ and an element with no carrier is **cut from the rubric**, not assumed.
 
 **Settled 2026-09-20 by the trigger trial** (`worklog/report-style-trials/round-1.md`, two routes): prose
 polish stayed silent on both routes, so the flag is not needed for `T1`; the review case **fired
-`visflow-evaluate` on route 2 and stayed silent on route 1**, so the description gained the explicit clause
+the evaluation skill (now `adversarial-evaluate`) on route 2 and stayed silent on route 1**, so the description gained the explicit clause
 *"not for reviewing someone else's report"* rather than the surface being hidden. **No flag is added** — the
 defect was a missing exclusion, not excessive visibility, and hiding the surface would have removed the six
 must-fire tasks that passed on both routes. The review trap was re-run on both routes after the clause
 landed, **and it now returns `none` on the route that had fired** (`round-1.md`, *Confirmation results*).
-One item remains route-dependent for a different reason — `T2` is contested on route 2 by `visflow-records`'
+One item remains route-dependent for a different reason — `T2` is contested on route 2 by the records skill's (now `record-conventions`)
 positively-claimed "record", which is a catalog collision rather than a defect in this description.
 
 ## Review dispositions (r1 → r2)

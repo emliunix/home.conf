@@ -3,9 +3,9 @@
   "CHANGELOG.md": "6f77b3e211700070afeae2982467ba983dc61a5e60e564add9c0186ff4bc3888",
   "README.md": "23bfe2ec01db38dfe9605383ab8ce0001ae07cb5d2821492fee58949cef73257",
   "SKILL.md": "6971054ffb0bcb11a7176955c380331beae0c7e43dfeb6cbe349f2215592e8c7",
-  "tests/cases/trigger.yaml": "da0da4bace550a10d0fb7b19b789a69de022361d6cf9fccb453c02ccca9eba61",
+  "tests/cases/trigger.yaml": "6b0e63a7c6de4c0f30b4d7392dd108e7f79e355aedd75a6af36522525b619d07",
   "tests/rubric.yaml": "07edb348a43c80b1f3433bca8e268bde258a8d73381691bdddc30b10d17a3253"
  },
  "skill": "eval-prompt",
- "version": 1
+ "version": 2
 }

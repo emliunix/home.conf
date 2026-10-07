@@ -1,0 +1,10 @@
+{
+ "files": {
+  "README.md": "929ead3560c21013d055fa5104cb624a67e9bdd8a94524fe14cd3718d16578d0",
+  "SKILL.md": "2960910f05ecd178b98fcb9a0b0fa7711f555449146e7ce1782bbf30c6fb1dff",
+  "tests/cases/trigger.yaml": "699fd9bcad07edc1b9712a79cf6a58dd297509fa70159c632813e08d3fa16f4d",
+  "tests/rubric.yaml": "ce974700731977d550aa785c5976240abf357cfea62bdf4344fc1622f97ea500"
+ },
+ "skill": "adversarial-evaluate",
+ "version": 1
+}

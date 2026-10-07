@@ -1,0 +1,10 @@
+{
+ "files": {
+  "README.md": "6b332f47fe661677f5349115478723c76d3f7bb8a85ab177d14ed49195563489",
+  "SKILL.md": "6ed2548992cffd9e126f47818cdb0c85f753927ac8f4585f2ef2750d8ef37ee2",
+  "tests/cases/trigger.yaml": "e3c7a69e84e9fc9c19323f3426b1c05148faa7aae1f9e84cbfb834bed1a82966",
+  "tests/rubric.yaml": "a8ab29ebd1b85076e2763e28988588b9bc45f7b0fea8e50fb4037efde9fd5b15"
+ },
+ "skill": "blind-trial",
+ "version": 1
+}

@@ -1,0 +1,49 @@
+# spine-orient - trigger cases, as canonical / trap / paraphrase triplets
+# Rewritten without project nouns at the 2026-10-05 consolidation; each case cites the SKILL.md line
+# that makes its expectation correct.
+skill: spine-orient
+dimension: trigger
+triplets:
+  - behavior: two documents disagree about what governs
+    canonical:
+      prompt: "The README says the retry limit is a policy, but the design document says it is mandatory - which one governs?"
+      expected: [spine-orient]
+      cites: "SKILL.md:6-7, 22 - two documents disagree; the stated precedence, else the status table's owner, decides"
+    trap:
+      prompt: "The two documents disagree, but the status table already names design/04-retry.md as the owner of the retry rule - apply its rule to the client."
+      expected: []
+      cites: "SKILL.md:7 - not when the owning document is already named"
+    paraphrase:
+      prompt: "Make the client follow what design/04-retry.md says about retries."
+      expected: []
+      cites: "SKILL.md:7 - the same situation without the vocabulary: the owner is named in the task"
+  - behavior: entering a repository that keeps a spine
+    canonical:
+      prompt: "I have just cloned this repository - it has a constitution, a README and a design folder. Where do I start before I touch the open pull request?"
+      expected: [spine-orient]
+      cites: "SKILL.md:6, 12-18 - entering the repository; read the spine in order before acting on a diff"
+    trap:
+      prompt: "Onboarding is done and the spine is read; the owning document for this change is design/02-cache.md - implement its step 3."
+      expected: []
+      cites: "SKILL.md:7 - the owning document is already named"
+    paraphrase:
+      prompt: "Implement step 3 of design/02-cache.md."
+      expected: []
+      cites: "SKILL.md:7 - the owner is named; nothing is being entered or disputed"
+  - behavior: a new session would carry runtime facts forward
+    canonical:
+      prompt: "New session in this repository: yesterday's notes say the database listens on 5433 and the model route is the fast one - carry on from there."
+      expected: [spine-orient]
+      cites: "SKILL.md:6, 28 - entering the repository again; a prior session's runtime facts are hypotheses to verify by running"
+    trap:
+      prompt: "The environment note is the owning document for ports, and it says 5433 - change the config to match it."
+      expected: []
+      cites: "SKILL.md:7 - the owning document is already named"
+    paraphrase:
+      prompt: "Set the database port in the config file to 5433."
+      expected: []
+      cites: "SKILL.md:7 - a direct edit with its source given; nothing to orient on"
+run_notes:
+  - "Arms: entry-only over the full catalog; the degenerate control is replaced by the distractor set, the excluded shapes, and route repetition."
+  - "Scored items: T-SELECT, T-SILENT, T-TRAP, T-PARA. Ambiguity is a finding, never a miss."
+  - "The trap and the paraphrase are the same situation; if only the trap stays silent, the surface is reading words, not the shape."

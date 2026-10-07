@@ -19,7 +19,7 @@ triplets:
   - behavior: a reader or author measurement
     canonical:
       prompt: "Measure whether the machine-design tree onboards a reader who has never seen the repository."
-      expected: [visflow-instrument-readers, eval-prompt]
+      expected: [blind-trial, eval-prompt]
       cites: "SKILL.md:14 - comprehension case: does a doc get a reader to the right place"
     trap:
       prompt: "A colleague skimmed it and shrugged - proceed?"
