@@ -39,11 +39,18 @@ contract:
   record in exactly the case the restore refused. The cleanup lives inside the helper, not in its
   callers: a separate caller-side step can be wrong on its own, and the gap between the two steps is
   not reachable from outside, so no caller-level case can cover it.
-- **A memo on a polling path must be keyed by the IDENTITY, not the handle.** The start-time lookup
-  is memoized by the raw owner RECORD (pid plus start), never by pid alone: keying on the pid caches
-  the very thing whose change is being tested, so a recycled pid would be served its predecessor's
-  start time and read as alive. Count the real lookups and assert the count — "it is fast here" and
-  "the memo works" are indistinguishable otherwise.
+- **A memo over a TIME-VARYING observation must be scoped to an ATTEMPT, never a process.** The
+  start-time lookup is cached for one `acquire()` attempt and re-taken on the next. Caching it for
+  the process lifetime under any key — the pid OR the owner record — freezes a present-tense
+  observation under something that does not change when the observed thing does. The owner record is
+  a HISTORICAL FACT: it is written once and never changes when its author dies and the pid is
+  recycled, so a recycled pid stays attributed to its predecessor forever and the lock wedges. A
+  record is not an identity; it is evidence of one. Count the real lookups and assert the count —
+  "it is fast here" and "the cache works" are indistinguishable otherwise.
+- **State a residual window instead of hiding it.** A recycled pid inside a single attempt still
+  reads as its predecessor until that attempt ends; death alone is caught per poll by the cheap
+  `kill`, which short-circuits before any lookup. A TTL would need its own measured argument, so the
+  design avoids needing one.
 - **A stored start time must be COMPARED, not merely recorded.** A pid can be recycled, so "this pid
   is alive" is not "the writer that recorded this pid is alive". Without the comparison a recycled
   pid wedges a claim forever, because age applies only to a dead or unparseable identity.
@@ -121,7 +128,7 @@ Two operational notes, both measured:
 node tests/check-dispatch.mjs
 ```
 
-Twenty-three cases, each shown to fail on the defect it targets — that is what the suite is for, and a
+Twenty-four cases, each shown to fail on the defect it targets — that is what the suite is for, and a
 case that cannot redden is not coverage. Two lessons are encoded here at cost:
 
 - An earlier revision ran its cases as top-level blocks with a `process.exit()` inside one of them:

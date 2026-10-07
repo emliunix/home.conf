@@ -20,7 +20,7 @@
 //   6. the doc-verify profile fails closed on a broken pointer and a missing section
 // Plus the mutation the card requires: removing the cap check must redden case 1.
 
-import { existsSync, linkSync, mkdtempSync, readFileSync, renameSync, rmSync, statSync, utimesSync, writeFileSync, mkdirSync } from "node:fs";
+import { chmodSync, existsSync, linkSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, statSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -28,6 +28,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { planMigration, verifyPreservation } from "../scripts/memory-migrate.mjs";
 import { appendFact, republish, acquireLock, releaseHeld, factKey, restoreWithoutClobbering, identityLookupCount } from "../scripts/memory-append.mjs";
 
+const BASE_MS = 1_791_000_000_000;
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LINT = join(ROOT, "scripts", "memory-lint.mjs");
 const APPEND = join(ROOT, "scripts", "memory-append.mjs");
@@ -875,58 +876,112 @@ function caseRecycledPid() {
   rmSync(held, { recursive: true, force: true });
 }
 
-// --- 23. the identity lookup must NOT sit on the polling path --------------------------------
-// `startTimeOf` spawns `ps`. Calling it for every live owner on every poll reintroduces exactly the
-// waiter-starvation the polling design removed: eight waiters polling at 25 ms each spawn a process,
-// starve their own deadlines, and the whole group times out. The lookup is gated behind an ALIVE
-// answer from `kill` and MEMOIZED BY OWNER RECORD, so repeated observations of one holder cost one
-// lookup. Asserted by COUNTING real spawns, which is the only observable that separates a memo from
-// "it happens to be fast here".
+// --- 23. within ONE attempt, polling must not multiply identity lookups ------------------------
+// `startTimeOf` spawns `ps`. Doing that once per poll reintroduces the waiter starvation the polling
+// design removed. The cache is scoped to a single `acquire()` attempt, so the assertion is made
+// WITHIN one attempt: a real timeout makes the poll loop iterate, and the loop must ask at most once
+// for the same holder. Counting real spawns is the only observable that separates a working cache
+// from "it happened to be quick".
 function caseIdentityLookupIsMemoized() {
   const dir = workspace();
   const lockPath = join(dir, "memory-append.lock");
   // A LIVE holder, so `holderState` takes the alive branch and WOULD reach the lookup.
   writeFileSync(lockPath, `${String(process.pid)} ${String(Math.round(Date.now() - process.uptime() * 1_000))}\n`);
+
   const before = identityLookupCount();
-  // Observe the same lock many times, as a waiter polling would.
-  const observations = 25;
-  for (let i = 0; i < observations; i += 1) {
-    let code = null;
-    try {
-      acquireLock(dir, { timeoutMs: 0, staleMs: 60_000 });
-    } catch (error) {
-      code = error?.code ?? "threw";
-    }
-    check(code !== "threw", `a live lock must produce a bounded refusal, got ${String(code)}`);
+  let code = null;
+  try {
+    // ONE attempt that actually polls: a real timeout, a short poll interval.
+    acquireLock(dir, { timeoutMs: 250, pollMs: 20, staleMs: 600_000 });
+  } catch (error) {
+    code = error?.code ?? "threw";
   }
   const spent = identityLookupCount() - before;
+  check(code === "ELOCKED", `a live lock must end in ELOCKED, got ${String(code)}`);
+  check(spent >= 1, "one attempt must take at least one identity observation");
   check(spent <= 2,
-    `${String(observations)} observations of ONE holder must cost at most one lookup, spent ${String(spent)}`);
-
-  // THE MEMO MUST BE KEYED BY THE RECORD, NOT THE PID. Keying on the pid would cache the very thing
-  // whose change we are testing: a RECYCLED pid would be served the PREVIOUS holder's start time and
-  // read as alive, which is the wedge this identity check exists to break. Same pid, different
-  // record, must therefore force a fresh lookup.
-  // ⚠ THE MEMO IS PROCESS-GLOBAL, SO THIS CASE MUST USE A RECORD NO EARLIER CASE TOUCHED. Test
-  // isolation here is by record-uniqueness, not by fixture: a start time another case already
-  // observed is already memoized, and the lookup count then reads 0 for the right reason and the
-  // wrong one. This originally used `<pid> 1`, which the recycled-pid case writes first, so the
-  // assertion failed with no mutation present.
-  const UNIQUE_START = 1_791_999_999_999;                    // no other case uses this value
-  writeFileSync(lockPath, `${String(process.pid)} ${String(UNIQUE_START)}\n`);
-  const beforeRecycled = identityLookupCount();
-  try {
-    acquireLock(dir, { timeoutMs: 0, staleMs: 60_000 });
-  } catch { /* whether it reclaims is the age policy's business, not this case's */ }
-  const recycledSpent = identityLookupCount() - beforeRecycled;
-  // ONLY THE LOOKUP is asserted here. Whether a RECYCLED holder is reclaimed immediately or after the
-  // age bound is the lock's staleness policy -- a lock path requires age for it, a claim path does
-  // not. What this case owns is the memo's KEY: the same pid under a different record must not be
-  // served the predecessor's answer.
-  check(recycledSpent >= 1,
-    "a DIFFERENT owner record must force its own lookup, not reuse the memo for the same pid");
+    `one attempt polling ~12 times over ONE holder must cost at most one lookup, spent ${String(spent)}`);
 
   rmSync(dir, { recursive: true, force: true });
+}
+
+// --- 24. a RECYCLED pid must be re-observed on a NEW attempt -----------------------------------
+// The identity cache must live for ONE attempt and no longer. A process-lifetime cache keyed by the
+// owner record freezes the answer, because the record is a HISTORICAL FACT that does not change when
+// its author dies and the pid is recycled -- so the successor is permanently attributed to its
+// predecessor and the already-recycled lock wedges forever.
+//
+// `ps` is supplied through a PATH shim whose start time ADVANCES on each invocation, which is exactly
+// what a recycled pid looks like from here. The assertion is the consequence, not the mechanism: a
+// fresh attempt must SEE the changed identity and reclaim.
+function caseRecycledPidReobserved() {
+  const dir = workspace();
+  const lockPath = join(dir, "memory-append.lock");
+  const shimDir = mkdtempSync(join(tmpdir(), "memory-spine-shim-"));
+  const statePath = join(shimDir, "count");
+  writeFileSync(statePath, "0");
+
+  // A portable shim: emit `ps -o lstart=` shape from a counter, so the reported start time changes.
+  const shim = [
+    "#!/usr/bin/env node",
+    'const fs = require("fs");',
+    `const state = ${JSON.stringify(statePath)};`,
+    "let n = 0; try { n = Number(fs.readFileSync(state, \"utf8\")); } catch { n = 0; }",
+    "n += 1; fs.writeFileSync(state, String(n));",
+    `const base = ${String(BASE_MS)};`,
+    "const d = new Date(base + n * 100_000);",
+    'const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];',
+    'const mons = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];',
+    'const pad = (x) => String(x).padStart(2, "0");',
+    "console.log(`${days[d.getDay()]} ${mons[d.getMonth()]} ${String(d.getDate()).padStart(2, \" \")} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} ${d.getFullYear()}`);",
+    "",
+  ].join("\n");
+  const shimPath = join(shimDir, "ps");
+  writeFileSync(shimPath, shim);
+  chmodSync(shimPath, 0o755);
+
+  const savedPath = process.env.PATH;
+  try {
+    process.env.PATH = `${shimDir}:${String(savedPath)}`;
+    // The record names the ORIGINAL holder: this pid, at the shim's FIRST reported start time.
+    writeFileSync(lockPath, `${String(process.pid)} ${String(BASE_MS + 100_000)}\n`);
+    // The lock path evicts a RECYCLED holder only once AGE also says so, so the lock is backdated.
+    // Without this the case would assert the wrong policy -- a fresh lock is never evicted, recycled
+    // or not -- and would fail for a reason unrelated to the cache lifetime.
+    const longAgo = new Date(Date.now() - 600_000);
+    utimesSync(lockPath, longAgo, longAgo);
+
+    const before = identityLookupCount();
+    // ATTEMPT 1: the shim reports the ORIGINAL holder's start time, so identity MATCHES -> alive.
+    // An alive holder is never evicted, whatever the age, so this must refuse.
+    let first = null;
+    try {
+      acquireLock(dir, { timeoutMs: 0, staleMs: 30_000 });
+    } catch (error) {
+      first = error?.code ?? "threw";
+    }
+    // ATTEMPT 2: the shim reports a start time 100 s later -- the pid was RECYCLED. A fresh attempt
+    // must SEE that; a process-lifetime cache returns attempt 1's answer and refuses forever.
+    let second = null;
+    try {
+      const held = acquireLock(dir, { timeoutMs: 0, staleMs: 30_000 });
+      releaseHeld(held);
+      second = "acquired";
+    } catch (error) {
+      second = error?.code ?? "threw";
+    }
+    const spent = identityLookupCount() - before;
+
+    check(first === "ELOCKED", `the original holder must be seen as alive, got ${String(first)}`);
+    check(second === "acquired",
+      `a NEW attempt must re-observe and reclaim the recycled holder, got ${String(second)}`);
+    check(spent >= 2,
+      `each attempt must take its own observation, spent ${String(spent)} for two attempts`);
+  } finally {
+    if (savedPath === undefined) delete process.env.PATH; else process.env.PATH = savedPath;
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(shimDir, { recursive: true, force: true });
+  }
 }
 
 // --- run them in order, then report once ----------------------------------------------------
@@ -954,6 +1009,7 @@ const cases = [
   ["restore-no-clobber", caseRestoreDoesNotClobber],
   ["recycled-pid", caseRecycledPid],
   ["identity-lookup-memoized", caseIdentityLookupIsMemoized],
+  ["recycled-pid-reobserved", caseRecycledPidReobserved],
 ];
 const ran = [];
 for (const [name, run] of cases) {

@@ -40,15 +40,6 @@ import {
 import { dirname, join, resolve } from "node:path";
 import { CAP_BYTES } from "./memory-lint.mjs";
 
-/**
- * Per-process memo for `startTimeOf`, keyed by the RAW OWNER RECORD.
- *
- * Bounded implicitly: one entry per distinct holder observed in this process's lifetime, and each
- * entry is a string plus a number. It is deliberately NOT cleared on a timer -- the record is the
- * identity, so a stale entry is unreachable once a successor writes a different record.
- */
-const startTimeCache = new Map();
-
 /** Counts REAL `ps` spawns, so the suite can prove the memo holds. */
 let lookupCount = 0;
 
@@ -122,6 +113,10 @@ export function identityLookupCount() {
 
 
 function acquire(lockDir, { timeoutMs = 10_000, pollMs = 25, staleMs = 60_000 } = {}) {
+  // ONE IDENTITY CACHE PER ATTEMPT. This is the cache's whole lifetime, so the poll loop cannot
+  // accumulate subprocess spawns across polls, and a caller that retries gets a fresh observation
+  // rather than a verdict frozen by its predecessor.
+  const identityCache = new Map();
   const lock = join(lockDir, "memory-append.lock");
   const deadline = Date.now() + timeoutMs;
   for (;;) {
@@ -149,7 +144,7 @@ function acquire(lockDir, { timeoutMs = 10_000, pollMs = 25, staleMs = 60_000 } 
       // evicts the stale lock and creates its own, and the next then moves THAT live lock away. The
       // displaced holder cannot find its own lock to release and every other waiter times out.
       // Age therefore applies only when identity is unknown or the holder is provably gone.
-      const state = holderState(readOwner(lock));
+      const state = holderState(readOwner(lock), identityCache);
       const abandoned = state === "dead" || (state !== "alive" && Date.now() - measured.mtimeMs > staleMs);
       if (abandoned) {
         // EVICTION IS AN ATOMIC, VERIFIED TRANSFER: rename the lock we MEASURED to a unique
@@ -314,7 +309,7 @@ function ownerRecord() {
  * The rule that matters, and the one this whole path exists for: "could not prove the holder dead"
  * must never become a successful write.
  */
-function holderState(owner) {
+function holderState(owner, cache) {
   if (owner === null) return "unknown";
   let alive = true;
   try {
@@ -332,7 +327,7 @@ function holderState(owner) {
   // so a recycled pid wedged the claim forever, because age applies only when identity is dead or
   // unparseable. Comparing the live process's start time to the recorded one distinguishes the
   // original holder (alive) from a successor that happens to own the number (recycled).
-  const started = startTimeOf(owner.pid, owner.raw);
+  const started = startTimeOf(owner.pid, owner.raw, cache);
   if (started === null) return "alive";                // cannot confirm identity; do not evict
   // THE TOLERANCE MUST COVER `ps`'s TRUNCATION, WHICH GROWS WITH UPTIME.
   // `ps -o lstart=` reports whole seconds, truncated, while the record uses `Date.now() - uptime`.
@@ -347,25 +342,32 @@ function holderState(owner) {
 /**
  * A pid's start time in ms since epoch, from `ps -o lstart=`, or null when unavailable.
  *
- * THIS IS A SUBPROCESS, SO IT MUST NOT SIT ON THE POLLING PATH. An earlier revision called it (via
- * holderState) on every poll, and eight waiters spawning processes continuously starved their own
- * deadlines. Callers reach it only for a lock that is ALREADY suspect -- a dead-or-recycled identity
- * check runs once per lock under contention, not once per 25 ms per waiter.
+ * THE CACHE IS SCOPED TO ONE `acquire()` ATTEMPT, AND THAT SCOPE IS THE POINT.
+ *
+ * An earlier revision memoized this in a PROCESS-LIFETIME map keyed by the owner record, reasoning
+ * that "the record IS the identity". That reasoning was backwards. The record is a HISTORICAL FACT:
+ * it is written once by the original holder and never changes when that holder dies and its pid is
+ * recycled. The process answering to the pid is PRESENT-TENSE. Caching a live observation under a
+ * stable historical key freezes the answer, so after one observation a recycled pid returns the
+ * predecessor's start time forever and `holderState` reports `alive` without ever consulting the
+ * live process -- recreating the exact wedge this comparison exists to break. The record's
+ * stability is precisely why it cannot key a time-varying observation.
+ *
+ * Scoping to the attempt keeps the cost bounded where it mattered -- within one attempt the set of
+ * records observed is small, so the poll loop asks at most once per holder instead of once per poll
+ * -- while every NEW attempt takes a FRESH identity observation.
+ *
+ * RESIDUAL WINDOW, stated rather than hidden: if a holder dies AND its pid is recycled by another
+ * process WITHIN one attempt, that attempt keeps serving the cached start time until it ends. Death
+ * alone is still detected per poll through the cheap `kill(pid, 0)`, which short-circuits before
+ * this call, so only the genuine recycle-inside-one-attempt case is affected, and the next attempt
+ * re-observes. The alternative -- a TTL -- would need its own measured argument against the stale
+ * boundary, which this design avoids needing.
  */
-function startTimeOf(pid, rawOwner) {
-  // MEMOIZED PER OWNER RECORD, AND ONLY FOR A SUSPECT OWNER.
-  //
-  // A subprocess must not sit on the polling path: eight waiters polling at 25 ms and each spawning
-  // `ps` starved their own deadlines in an earlier revision. Two gates keep it off that path.
-  //
-  //  1. `holderState` calls this ONLY after `kill(pid, 0)` says the pid is ALIVE. "Dead" returns
-  //     without a subprocess, and a dead holder is the common eviction case.
-  //  2. The result is memoized by the owner RECORD -- pid plus start time -- so a waiter that
-  //     observes the SAME lock once per poll asks at most once for that holder, not once per poll.
-  //     Keying on the record rather than the pid is what makes the memo safe: the record IS the
-  //     identity, so a recycled pid produces a different key and cannot be served a stale answer.
-  //     Keying on the pid alone would cache the very thing whose change we are testing.
-  if (rawOwner !== undefined && startTimeCache.has(rawOwner)) return startTimeCache.get(rawOwner);
+function startTimeOf(pid, rawOwner, cache) {
+  if (cache !== undefined && rawOwner !== undefined && cache.has(rawOwner)) {
+    return cache.get(rawOwner);
+  }
   let value = null;
   lookupCount += 1;
   try {
@@ -378,9 +380,10 @@ function startTimeOf(pid, rawOwner) {
   } catch {
     value = null;
   }
-  if (rawOwner !== undefined) startTimeCache.set(rawOwner, value);
+  if (cache !== undefined && rawOwner !== undefined) cache.set(rawOwner, value);
   return value;
 }
+
 
 
 
