@@ -1,0 +1,34 @@
+# agent-memory:index -- the personal-memory index contract (task #198, requirement 3).
+#
+# WHY THIS MODULE EXISTS RATHER THAN NAMING `doc-verify:references` DIRECTLY. The engine's
+# references library already detects a dangling backticked path, but it classes it as a WARNING
+# (`paths-resolve`), because in a repository a stale path mention is usually a comment. For a
+# memory INDEX it is not a comment: a pointer is the only route to the detail, so a pointer that
+# does not resolve is a broken recovery path. This module extends that library and re-declares the
+# rule at `severity: error`, which is what "fail closed" means here.
+#
+# IT ADDS NO PARSER. Every fact it reads (`core.ref`, `core.dangling`) comes from the engine. It
+# changes the SEVERITY of an existing check for this one artifact kind, which is exactly the
+# extension mechanism the engine ships (see doc-verify/lib/module-contract.yaml for the same shape).
+#
+# IDEMPOTENT UNDER EXTENSION: `doc-verify:references` still runs, so a repository that names both
+# gets the warning and the error; naming only this module gets the error.
+schema_version: 2
+kind: verification-module
+module: agent-memory.index
+extends: [doc-verify:references]
+constraints:
+  memory-index-pointers-resolve:
+    # Same facts as references.paths-resolve, promoted to error: a memory pointer is a route, not a
+    # mention. Both link and path refs are covered so a Markdown link in the index fails closed too.
+    forall: core.ref(D, S, T, path)
+    forbid: core.dangling(D, S, T, path)
+    severity: error
+    message: "{D} §{S} points at {T}, which does not resolve; a memory pointer is the only route to that detail"
+    repair: "Fix the path, create the note, or drop the pointer if the detail is inlined"
+  memory-index-links-resolve:
+    forall: core.ref(D, S, T, link)
+    forbid: core.dangling(D, S, T, link)
+    severity: error
+    message: "{D} §{S} links to {T}, which does not resolve"
+    repair: "Fix the path or remove the link"

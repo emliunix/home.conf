@@ -1,0 +1,3 @@
+1. **State found:** `MEMORY.md` was intact and contained the expected index pointing to `notes/real.md`. A leftover temporary file, `.MEMORY.md.abc123.tmp`, contained partial garbage.
+2. **Changed:** Deleted the incomplete temporary file. No changes were made to `MEMORY.md` or `notes/real.md`.
+3. **Index damage:** **No.** The index content was not damaged; only an uncommitted temporary artifact remained.

@@ -1,0 +1,3 @@
+- **Changed:** Compacted the 150 repetitive log entries in `MEMORY.md` into one counted summary, retaining the role, knowledge, and active context. Preserved the exact original as `MEMORY.md.archive`.
+- **Size:** 16,528 bytes before → **364 bytes after**.
+- **No content lost:** `MEMORY.md.archive` is a byte-for-byte copy of the original, with SHA-256 `b28ef649b4ddd7ef21b934fb63c741aaa343976453a2a7f213ed9c1083824749`; it contains all 150 original entries.

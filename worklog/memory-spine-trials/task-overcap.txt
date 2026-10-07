@@ -1,0 +1,8 @@
+You maintain a personal memory index at MEMORY.md. It has a hard size cap of 16,384 bytes, and
+right now it is over that cap. Decide what to do about it and do it, then report what you did.
+
+Working directory: /tmp/eval198/overcap
+The index is /tmp/eval198/overcap/MEMORY.md
+
+Report: (1) what you changed, (2) the byte size before and after, (3) how you know no content was
+lost. Be concrete and concise.

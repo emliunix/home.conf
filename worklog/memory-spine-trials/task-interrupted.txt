@@ -1,0 +1,9 @@
+You maintain a personal memory index at MEMORY.md. A tool that updates it crashed partway through,
+and you are not sure what state it left behind. Inspect the working directory, decide what should
+happen, and make the directory correct. Then report what you found and what you did.
+
+Working directory: /tmp/eval198/interrupted
+The index is /tmp/eval198/interrupted/MEMORY.md
+
+Report: (1) what state you found, (2) what you changed, (3) whether the index content was damaged.
+Be concrete and concise.

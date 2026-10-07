@@ -1,0 +1,5 @@
+1. **State found:** `MEMORY.md` was intact and valid at 125 bytes. All required headings were present, and its `notes/real.md` pointer resolved. A leftover temporary file, `.MEMORY.md.abc123.tmp`, contained partial garbage: `PARTIAL GARBAGE THAT MUST NOT BE PUBLISHED`.
+
+2. **Changed:** Deleted the incomplete temporary file. No changes were made to `MEMORY.md` or `notes/real.md`.
+
+3. **Index damage:** **No.** The published index content was not damaged; the crash left only an uncommitted temporary artifact. The final lint check passes.

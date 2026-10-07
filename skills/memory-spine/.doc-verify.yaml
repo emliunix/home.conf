@@ -1,0 +1,44 @@
+# The contract for a personal-memory index and its notes surface (task #198, requirement 3).
+#
+# WHY THIS REUSES THE ENGINE. "Every declared pointer resolves and every required heading is
+# present" is already expressible: `doc-verify:references` forbids `core.dangling` on a Markdown
+# link or a backticked path, and a rule's `required_sections` names the headings. A second parser
+# for the same facts would give two answers to one question, and the second one would drift.
+#
+# WHAT THIS PROFILE DOES NOT DO. It does not enforce the byte cap. A cap is a property of the whole
+# FILE, not of a section, and reporting the exact bytes over is something `scripts/memory-lint.mjs`
+# does and a section rule cannot. The two are complementary; the lint is the one that fails closed.
+#
+# RUNNING IT. The engine requires a Git repository, and an agent workspace is not one. So this
+# profile is used by pointing the engine at the workspace from a repo checkout, or by initialising
+# the workspace. It is deliberately NOT wired into home.conf's root config: a personal memory file
+# is not a repository document, and adding it there would make one workspace's private index a
+# build dependency of the shared repo.
+#
+# REFERENCES ONLY. The module extends `doc-verify:references`, a deterministic library: it reads
+# `core.ref` / `core.dangling` and asks no judge, so this profile decides with or without a key. It
+# promotes a dangling pointer from warning to ERROR, because a memory pointer is the only route to
+# that detail -- a broken one is a broken recovery path, not a stale mention.
+schema_version: 1
+kind: document-verification
+documents:
+  - pattern: MEMORY.md
+    artifact_kind: memory-index
+    modules: [module.yaml]
+    # Section ids are the slugified headings the engine derives, so the spine is named by id.
+    required_sections:
+      - role
+      - key-knowledge
+      - active-context
+invalidation_patterns:
+  - .doc-verify.yaml
+judge:
+  kind: jev
+  model: jev-1.13.0
+  client_sha256: ce983f8de97d5b30d527a7116f0c49ad3d17e098d2c3f17c9600041260c65dcb
+  attestation_max_age_seconds: 86400
+policy:
+  kind: semantic-boundary
+  version: 1
+  max_evidence_bytes: 24000
+  forbidden_literals: []
