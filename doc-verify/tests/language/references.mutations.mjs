@@ -27,6 +27,8 @@ import { fileURLToPath } from "node:url";
 /** The repository root, derived from this file's location -- never a hard-coded host path. */
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const FOCUSED = "doc-verify/tests/language/references.test.ts";
+/** Non-RED statuses, so the summary counts them as unscored rather than as evidence. */
+const SCORED = "RED";
 /** Copied into the scratch tree so the focused suite can run without the rest of the repository. */
 const NEEDED = ["doc-verify/src", "doc-verify/lib", "doc-verify/tests", "doc-verify/tsconfig.json", "doc-verify/tsconfig.build.json", "package.json"];
 
@@ -51,7 +53,10 @@ const MUTATIONS = [
   { id: "M4", file: "doc-verify/src/engine/facts.ts",
     from: '  if (reference.kind === "spec") {\n    return context.resolveSpec === undefined || context.resolveSpec(reference.target) === "ok";\n  }',
     to: '  if (reference.kind === "spec") {\n    return true;\n  }',
-    name: "spec: the failure NAMES ITS COMPONENT" },
+    // ⚠ MEASURED, and it corrected this row: the mutation reddens the `dangling` case, NOT the
+    // "NAMES ITS COMPONENT" case the first version named. Scoring on "did anything fail" could not
+    // see the difference; scoring on "which case failed" found it immediately.
+    name: "spec: an unresolved spec emits `dangling`, and a resolved one does not" },
   { id: "M5", file: "doc-verify/src/engine/facts.ts",
     from: '        if (context.resolveSpec !== undefined) {\n          const verdict = context.resolveSpec(reference.target);\n          if (verdict !== "ok") {\n            facts.push(core("spec_unresolved", [D, atom(reference.section), atom(reference.target), atom(verdict)]));\n          }\n        }',
     to: '        if (context.resolveSpec === undefined) {\n          facts.push(core("spec_unresolved", [D, atom(reference.section), atom(reference.target), atom("unresolved")]));\n        } else {\n          const verdict = context.resolveSpec(reference.target);\n          if (verdict !== "ok") {\n            facts.push(core("spec_unresolved", [D, atom(reference.section), atom(reference.target), atom(verdict)]));\n          }\n        }',
@@ -100,22 +105,48 @@ for (const mutation of MUTATIONS) {
     }
     writeFileSync(target, text.replace(mutation.from, mutation.to));
 
+    // ⚠⚠ ASK WHICH TEST FAILED, NOT WHETHER SOMETHING FAILED. An earlier version scored `RED` on any
+    // non-zero exit, so a mutation that reddened an UNRELATED test was scored as if it had reddened the
+    // named one -- and the `name` field was printed but never checked, which made the claim that a
+    // rename "breaks this file loudly" false. The JSON reporter is used because the human reporter's
+    // lines are wrapped and abbreviated; the machine report carries each assertion's own title.
+    const reportPath = join(scratch, "vitest-report.json");
     let out = "";
-    let failed = false;
     try {
-      out = execFileSync("npx", ["vitest", "run", FOCUSED, "--reporter=basic"],
+      out = execFileSync("npx", ["vitest", "run", FOCUSED, "--reporter=json", `--outputFile=${reportPath}`],
         { cwd: scratch, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
     } catch (error) {
-      failed = true;
       out = `${error.stdout ?? ""}${error.stderr ?? ""}`;
     }
-    // A run that produced no test line did not measure anything: report it, never score it.
-    const ran = /Tests\s+\d+/.exec(out);
-    if (ran === null) {
-      results.push({ id: mutation.id, status: "HARNESS", detail: "no test line in the output" });
+    let report = null;
+    try {
+      report = JSON.parse(readFileSync(reportPath, "utf8"));
+    } catch {
+      results.push({ id: mutation.id, status: "HARNESS", detail: "no readable JSON report" });
       continue;
     }
-    results.push({ id: mutation.id, status: failed ? "RED" : "GREEN", name: mutation.name });
+    if (!(report.numTotalTests > 0)) {
+      results.push({ id: mutation.id, status: "HARNESS", detail: "the report carries no test result" });
+      continue;
+    }
+    const failedNames = (report.testResults ?? [])
+      .flatMap((file) => file.assertionResults ?? [])
+      .filter((assertion) => assertion.status === "failed")
+      .map((assertion) => assertion.title);
+    // The mutation must redden THE CASE ITS ROW NAMES. A different failure is not this row's evidence.
+    if (failedNames.length === 0) {
+      results.push({ id: mutation.id, status: "GREEN", name: mutation.name });
+      continue;
+    }
+    if (!failedNames.some((name) => name.includes(mutation.name))) {
+      results.push({
+        id: mutation.id,
+        status: "WRONG-CASE",
+        detail: `reddened ${failedNames.map((n) => JSON.stringify(n.slice(0, 60))).join(", ")} -- not ${JSON.stringify(mutation.name)}`,
+      });
+      continue;
+    }
+    results.push({ id: mutation.id, status: "RED", name: mutation.name });
   } finally {
     rmSync(scratch, { recursive: true, force: true });
   }
@@ -123,8 +154,8 @@ for (const mutation of MUTATIONS) {
 
 let unscored = 0;
 for (const result of results) {
-  console.log(`  ${result.status.padEnd(6)} ${result.id}  ${result.detail ?? result.name ?? ""}`);
-  if (result.status !== "RED") unscored++;
+  console.log(`  ${result.status.padEnd(11)} ${result.id}  ${result.detail ?? result.name ?? ""}`);
+  if (result.status !== SCORED) unscored++;
 }
-console.log(`\n${results.length - unscored}/${results.length} mutations redden a named case`);
+console.log(`\n${results.length - unscored}/${results.length} mutations redden the case their row names`);
 process.exit(unscored === 0 ? 0 : 1);

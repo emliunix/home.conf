@@ -13,10 +13,10 @@ The runner exits non-zero unless every row reddens.
 ⚠⚠ **THE RUNNER IS COMMITTED, AND IT WAS NOT ALWAYS.** This table previously described a harness that
 reported `BROKEN` / `HARNESS` — and no such artefact was committed or reachable, so the sentence
 promised an enforcement mechanism that was really the author's host-side script. Two reviewers
-measured that gap. **A claim about a mechanism must be inspectable, or it is prose.** The runner is now
-`references.mutations.mjs` beside this file, and both of its non-RED paths are live rather than
-asserted: a deliberately-broken anchor reports `BROKEN (anchor not found)` and a broken test file
-reports `HARNESS (no test line)`, **neither scored as a pass** — each exits 1.
+measured that gap. **A claim about a mechanism must be inspectable, or it is prose.** The runner is `doc-verify/tests/language/references.mutations.mjs`, committed beside this file, and all
+three of its non-RED paths are live rather than asserted: a deliberately-broken anchor reports `BROKEN (anchor not found)`, a broken test file reports
+`HARNESS (no test line)`, and a mutation that reddens the *wrong* test reports `WRONG-CASE` — **none
+scored as a pass**, each exiting 1.
 
 | # | mutation | must redden |
 |---|---|---|
@@ -25,7 +25,7 @@ reports `HARNESS (no test line)`, **neither scored as a pass** — each exits 1.
 | M3 | `facts.ts`: in `specParts`, return the parts for a bare right side too (drop the `file.includes("/") \|\| FILE_EXTENSION` guard) | "spec: an UNLISTED ref name is not a spec…" — `1c71b248:main` becomes a spec naming a file called `main` |
 | M4 | `facts.ts`: in `referenceResolves`, return `true` for a `spec` instead of asking the resolver | "spec: an unresolved spec emits `dangling`, and a resolved one does not" |
 | M5 | `facts.ts`: emit `spec_unresolved(…, unresolved)` when `context.resolveSpec` is undefined | "spec: with no resolver the span is classified but RESOLUTION IS NOT CLAIMED" — an absent capability becomes a failure |
-| M6 | `facts.ts`: move the `specParts` arm BELOW `isLineLocator`'s callers (i.e. let `PATH_SPAN` run first) | "spec: a line locator is still a line locator…" and every spec case — the `:` is refused before the arm is reached |
+| M6 | `facts.ts`: remove the `specParts` arm **and its ordering marker**, so the `:` reaches `PATH_SPAN` first | **five cases redden** (measured): the four spec cases plus the end-to-end one. ⚠ **This row previously named "a line locator is still a line locator…", which M6 does NOT redden** — that case survives because M6 deletes the spec arm rather than reordering it behind the locator. The claim was wrong until the runner checked *which* case failed. |
 | M7 | `doc-verify/src/checker.ts`: make `specResolver` test the revision with a bare `cat-file -e <rev>` instead of `^{tree}` | **"references: an unresolved spec reddens with the component named…"** — via the **blob-shaped revision** row. ⚠⚠ **This row measured NOTHING until review caught it**: the suite had **no blob case**, so M7 stayed **GREEN 34/34** and the "9/9" below was false as written. A blob IS a git object, so the bare form passes the revision test and then reports the **path** as wrong, for a reference that can never have one. The missing case was added (blob id read from `git rev-parse HEAD:<path>`, not hard-coded); base reddens **1 failed / 33 passed**. |
 | M8 | `references.yaml`: change `specs-resolve`'s `forbid` to `core.spec_unresolved(D, S, T, path)` | "references: an unresolved spec reddens with the component named…" — the bad-revision case would no longer redden |
 | M9 | `doc-verify/src/checker.ts`: test the revision with `git rev-parse --verify -q <rev>` instead of `cat-file -e <rev>^{tree}` | "references: an unresolved spec reddens with the component named…" — **but ONLY because the case carries a fabricated 40-hex id.** `--verify` asserts FORMAT, not existence: measured, a fabricated 8-hex id fails it, while a fabricated **40-hex** id and a real-but-foreign commit hash both **exit 0**. Without the full-length row this mutation is GREEN. |
@@ -90,9 +90,21 @@ added. Re-verified: removing that row makes M9 green again.
 
 ## Verified, not asserted
 
-Every row above was applied and observed. **M1–M9 redden a `references.test.ts` spec case (9/9), measured by
-`scripts/check-a4-mutations.mjs`-style runner — M7 included.** M10 is driven through a different file
-(`modules-check.test.ts`) and was verified by hand.
+Every row above was applied and observed. **M1–M9 redden a `references.test.ts` spec case (9/9), measured
+by the committed runner `doc-verify/tests/language/references.mutations.mjs` — M7 included.** M10 is
+driven through a different file (`modules-check.test.ts`) and was verified by hand.
+
+⚠⚠ **THE RUNNER CHECKS WHICH CASE FAILED, NOT WHETHER ANYTHING FAILED.** Its first version scored `RED`
+on any non-zero exit, so a mutation that reddened an *unrelated* test was scored as if it had reddened
+the named one, and the per-row `name` was printed but never compared — which made the claim that a
+rename "breaks this file loudly" false. The runner now parses each failing case's title from Vitest's
+JSON report and requires the row's own `name` to be among them; anything else is `WRONG-CASE`, unscored,
+and exits 1. `git mv`-style renames of a named case therefore fail the runner.
+
+**The stronger check found two rows in this table that named the wrong case, and both are corrected
+above rather than deleted:** M4 reddens the `dangling` case (not "the failure NAMES ITS COMPONENT"),
+and M6 reddens five cases but **not** "a line locator is still a line locator". Neither was visible
+while the runner only asked whether something failed.
 
 ⚠⚠ **M7 and M9 were both GREEN when this table was first returned, and both for the same reason: the
 table listed a mutation the SUITE COULD NOT SEE.** Neither mutation was bad; each case was missing.
