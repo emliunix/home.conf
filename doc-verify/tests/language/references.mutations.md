@@ -12,7 +12,7 @@ is applied alone to `doc-verify/src/engine/facts.ts` (or the named file), then
 | M4 | `facts.ts`: in `referenceResolves`, return `true` for a `spec` instead of asking the resolver | "spec: an unresolved spec emits `dangling`, and a resolved one does not" |
 | M5 | `facts.ts`: emit `spec_unresolved(…, unresolved)` when `context.resolveSpec` is undefined | "spec: with no resolver the span is classified but RESOLUTION IS NOT CLAIMED" — an absent capability becomes a failure |
 | M6 | `facts.ts`: move the `specParts` arm BELOW `isLineLocator`'s callers (i.e. let `PATH_SPAN` run first) | "spec: a line locator is still a line locator…" and every spec case — the `:` is refused before the arm is reached |
-| M7 | `doc-verify/src/checker.ts`: make `specResolver` test the revision with a bare `cat-file -e <rev>` instead of `^{tree}` | a blob-shaped revision would be reported as a bad PATH rather than a bad revision |
+| M7 | `doc-verify/src/checker.ts`: make `specResolver` test the revision with a bare `cat-file -e <rev>` instead of `^{tree}` | **"references: an unresolved spec reddens with the component named…"** — via the **blob-shaped revision** row. ⚠⚠ **This row measured NOTHING until review caught it**: the suite had **no blob case**, so M7 stayed **GREEN 34/34** and the "9/9" below was false as written. A blob IS a git object, so the bare form passes the revision test and then reports the **path** as wrong, for a reference that can never have one. The missing case was added (blob id read from `git rev-parse HEAD:<path>`, not hard-coded); base reddens **1 failed / 33 passed**. |
 | M8 | `references.yaml`: change `specs-resolve`'s `forbid` to `core.spec_unresolved(D, S, T, path)` | "references: an unresolved spec reddens with the component named…" — the bad-revision case would no longer redden |
 | M9 | `doc-verify/src/checker.ts`: test the revision with `git rev-parse --verify -q <rev>` instead of `cat-file -e <rev>^{tree}` | "references: an unresolved spec reddens with the component named…" — **but ONLY because the case carries a fabricated 40-hex id.** `--verify` asserts FORMAT, not existence: measured, a fabricated 8-hex id fails it, while a fabricated **40-hex** id and a real-but-foreign commit hash both **exit 0**. Without the full-length row this mutation is GREEN. |
 
@@ -76,6 +76,12 @@ added. Re-verified: removing that row makes M9 green again.
 
 ## Verified, not asserted
 
-Every row above was applied and observed. **M1–M9 redden a `references.test.ts` spec case (9/9).**
-M10 is driven through a different file (`modules-check.test.ts`) and was verified by hand. The two green rows from the
+Every row above was applied and observed. **M1–M9 redden a `references.test.ts` spec case (9/9), measured by
+`scripts/check-a4-mutations.mjs`-style runner — M7 included.** M10 is driven through a different file
+(`modules-check.test.ts`) and was verified by hand.
+
+⚠⚠ **M7 and M9 were both GREEN when this table was first returned, and both for the same reason: the
+table listed a mutation the SUITE COULD NOT SEE.** Neither mutation was bad; each case was missing.
+**A count in this table is a measurement, not an intention** — the runner now contains every row it
+scores, so "9/9" is the number of rows *executed and observed*, not the number of rows written. The two green rows from the
 first attempt are recorded above with the cases that were added to make them redden.
