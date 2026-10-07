@@ -9,8 +9,8 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { checkDocuments } from "../src/checker.js";
-import { scriptedJudge } from "./engine-helpers.js";
+import { checkDocuments } from "../../src/checker.js";
+import { scriptedJudge } from "../engine-helpers.js";
 
 const MODULE = `schema_version: 2
 kind: verification-module

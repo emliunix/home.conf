@@ -8,11 +8,11 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { checkDocuments, titleStatus } from "../src/checker.js";
-import { engineLibraries } from "../src/engine/index.js";
-import { renderText } from "../src/report.js";
-import { UsageError } from "../src/types.js";
-import { scriptedJudge } from "./engine-helpers.js";
+import { checkDocuments, titleStatus } from "../../src/checker.js";
+import { engineLibraries } from "../../src/engine/index.js";
+import { renderText } from "../../src/report.js";
+import { UsageError } from "../../src/types.js";
+import { scriptedJudge } from "../engine-helpers.js";
 
 const BASE = `schema_version: 2
 kind: verification-module
@@ -298,7 +298,7 @@ describe("the type library's worked examples", () => {
   for (const [library, kind, example] of EXAMPLES) {
     it(`${library} passes its worked example`, async () => {
       // The oracle half runs on promotion; the shared judge answers every `ask` oracle `holds`.
-      const text = readFileSync(new URL(`../lib/examples/${example}`, import.meta.url), "utf8");
+      const text = readFileSync(new URL(`../../lib/examples/${example}`, import.meta.url), "utf8");
       const root = await repository({ "docs/a.md": text },
         `  - pattern: docs/*.md
     artifact_kind: ${kind}
@@ -319,7 +319,7 @@ describe("the type library's worked examples", () => {
   ];
   for (const [library, kind, example] of BAD) {
     it(`${library} refuses its counterexample with no judge answer`, async () => {
-      const text = readFileSync(new URL(`../lib/examples/${example}`, import.meta.url), "utf8");
+      const text = readFileSync(new URL(`../../lib/examples/${example}`, import.meta.url), "utf8");
       const root = await repository({ "docs/a.md": text },
         `  - pattern: docs/*.md
     artifact_kind: ${kind}

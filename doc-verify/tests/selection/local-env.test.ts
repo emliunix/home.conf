@@ -6,9 +6,9 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { checkDocuments } from "../src/checker.js";
-import { loadDocVerifyEnv } from "../src/local-env.js";
-import { BlockedError } from "../src/types.js";
+import { checkDocuments } from "../../src/checker.js";
+import { loadDocVerifyEnv } from "../../src/local-env.js";
+import { BlockedError } from "../../src/types.js";
 
 describe("local credential file", () => {
   it("reads API_KEY from a symlinked .env.doc-verify and ignores every other name", () => {

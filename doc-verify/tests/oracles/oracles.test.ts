@@ -3,8 +3,8 @@
 
 import { describe, expect, it } from "vitest";
 
-import { applyThreshold, memoryOracleCache, runProgram } from "../src/engine/index.js";
-import { byHeading, moduleText, PURPOSE_ORACLE, PURPOSES, run, scriptedJudge } from "./engine-helpers.js";
+import { applyThreshold, memoryOracleCache, runProgram } from "../../src/engine/index.js";
+import { byHeading, moduleText, PURPOSE_ORACLE, PURPOSES, run, scriptedJudge } from "../engine-helpers.js";
 
 const KNOWN = moduleText(`oracles:
 ${PURPOSE_ORACLE.replace("threshold: 0.5", "threshold: 0.8")}constraints:

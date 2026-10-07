@@ -3,7 +3,7 @@
 import { createMockJevJudgeBackend } from "deepclause-sdk";
 import { describe, expect, it } from "vitest";
 
-import { DOC, moduleText, PURPOSE_ORACLE, run } from "./engine-helpers.js";
+import { DOC, moduleText, PURPOSE_ORACLE, run } from "../engine-helpers.js";
 
 const ASKS = moduleText(`oracles:
 ${PURPOSE_ORACLE}constraints:

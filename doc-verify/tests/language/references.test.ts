@@ -7,11 +7,11 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { checkDocuments } from "../src/checker.js";
-import { documentFacts, documentReferences, resolvesTarget, type ReferenceContext } from "../src/engine/facts.js";
-import { writeTerm } from "../src/engine/terms.js";
-import { renderText } from "../src/report.js";
-import { segmentMarkdown } from "../src/segments.js";
+import { checkDocuments } from "../../src/checker.js";
+import { documentFacts, documentReferences, resolvesTarget, type ReferenceContext } from "../../src/engine/facts.js";
+import { writeTerm } from "../../src/engine/terms.js";
+import { renderText } from "../../src/report.js";
+import { segmentMarkdown } from "../../src/segments.js";
 
 const DOC = [
   "Intro links [the readme](../README.md).",

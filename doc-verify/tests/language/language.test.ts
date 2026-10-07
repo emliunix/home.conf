@@ -3,8 +3,8 @@
 
 import { describe, expect, it } from "vitest";
 
-import { compileModule, ModuleError } from "../src/engine/index.js";
-import { moduleText, PURPOSE_ORACLE } from "./engine-helpers.js";
+import { compileModule, ModuleError } from "../../src/engine/index.js";
+import { moduleText, PURPOSE_ORACLE } from "../engine-helpers.js";
 
 async function issues(body: string, rounds = 1): Promise<string> {
   try {

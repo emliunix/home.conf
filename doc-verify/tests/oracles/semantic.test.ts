@@ -4,11 +4,11 @@
 import { createMockJevJudgeBackend } from "deepclause-sdk";
 import { describe, expect, it } from "vitest";
 
-import { productionBackend } from "../src/judge.js";
-import { runProgram } from "../src/engine/index.js";
-import { assertRestrictedDml, runPureDml } from "../src/engine/prolog.js";
-import { BlockedError } from "../src/types.js";
-import { moduleText, PURPOSE_ORACLE, run } from "./engine-helpers.js";
+import { productionBackend } from "../../src/judge.js";
+import { runProgram } from "../../src/engine/index.js";
+import { assertRestrictedDml, runPureDml } from "../../src/engine/prolog.js";
+import { BlockedError } from "../../src/types.js";
+import { moduleText, PURPOSE_ORACLE, run } from "../engine-helpers.js";
 
 const ASKS = moduleText(`oracles:
 ${PURPOSE_ORACLE}constraints:
