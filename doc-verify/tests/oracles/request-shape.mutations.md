@@ -27,11 +27,13 @@ route.** `refuses an unknown value during composition` is the test the first obj
 hands `runProgram` a module text directly, but the CLI — and therefore every pre-commit hook and
 `pnpm check` — reaches the schema through `composeModules`, which rebuilds the module from a known
 key list (`MERGED = [params, oracles, rules, constraints]`). `request_shape` is not on that list, so
-before this fix an unknown value was **dropped before `.strict()` could see it** and the module
-silently fell back to `batched`: measured against the pinned engine, `request_shape: bogus` on
-design/121 exited 0 with `PASS`, byte-indistinguishable from `batched`, while `per-atom` was
-correctly `PASS` on design/101 and `NO-GO` when batched. The green M3 test proved only that the
-schema *would* reject the value on a route the operator never takes. M4 makes the design 04 sentence
+before this fix an unknown value was **dropped before `.strict()` could see it**: on the pinned engine
+`absent`, `batched`, `bogus` and `per-atom` are behaviourally identical, because the key never reaches
+the schema the operator's route is meant to check. The stable witness is **design/101**, whose verdict
+is deterministic where design/121's alternates run to run — **`NO-GO` in 8 of 8 runs under each of the
+four values on the pin, and `PASS` 8 of 8 under `per-atom` on the fixed engine**, with semantic calls
+moving **1 → 5**. The green M3 test proved only that the schema *would* reject the value on a route the
+operator never takes. M4 makes the design 04 sentence
 ("an unknown value is rejected when the module loads") true on the route that loads it.
 
 **The label consequence is a test, not an inference.** The last case is a scripted judge that reads
