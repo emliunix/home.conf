@@ -163,9 +163,9 @@ constraints:
 // routes; without it the suite is green while `request_shape: bogus` behaves as `batched`.
 describe("request shape: the composed path refuses an unknown value", () => {
   const compose = async (requestShape: string) => {
-    const read = async (repoPath: string) => {
+    const read = (repoPath: string) => {
       const content = shape(ATOMS, requestShape).replace("module: t", "module: t\n");
-      return { path: repoPath, content, hash: "test" };
+      return Promise.resolve({ path: repoPath, content, hash: "test" });
     };
     const { composeModules } = await import("../../src/engine/compose.js");
     return composeModules([".doc-verify/modules/t.yaml"], read as never);
