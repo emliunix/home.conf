@@ -12,19 +12,22 @@ name the rule they earned.
   revision, and a second agent opens it there and spot-reviews it; no rerun and no separate record
   proving a review happened. If a handoff field is missing or unclear, ask the author once; do not
   reconstruct the work or rerun the same command merely to fill the gap. **Level 2 —
-  confirmation:** independent establishment or re-derivation, earned when the claim is the only
-  evidence for a canon/gate/contract/authority change, is a population or count a decision rests
-  on, establishes a release baseline, migration, or guard deletion, would be checked by reading or
-  running the same artifact whose output it reports, cannot be checked by one named command, is
-  given as a summary, or is disputed. Confirmation names a different instrument or population, or
-  independently re-derives the claim through a named check; the same command on the same bytes is
-  not independent confirmation. A claim quoted from a report is a pointer, not evidence; the
-  artifact and the tip are the evidence. A fresh checkout is required only when the claim is about
-  clean-checkout, lockfile, or cold-install reproducibility. When a claim cannot be re-derived at
-  all, state its evidence class instead of adding effort. A silent-wrong-green claim still earns
-  reproduction; asking the author never waives that risk. A receipt-only correction verifies the
-  corrected fields and keeps behavior review closed unless a claim, object, or evidence class
-  changes.
+  confirmation:** independent establishment or re-derivation. Before earning Level 2, ask whether
+  a seat other than the author can measure a **different value**. A claim about one machine's
+  environment — its symlink, working tree, hooks, installed runtime, or other local state — is not
+  falsifiable by a second seat measuring the same value: `inspect` it as `observed`; do not label
+  a same-machine reread as independent reproduction. When the claim has an independent evidence
+  space, Level 2 is earned when it is the only evidence for a canon/gate/contract/authority change,
+  is a population or count a decision rests on, establishes a release baseline, migration, or
+  guard deletion, cannot be checked by one named command, is given as a summary, or is disputed.
+  Confirmation names a different instrument or population, or independently re-derives the claim
+  through a named check; the same command on the same bytes is not independent confirmation. A
+  claim quoted from a report is a pointer, not evidence; the artifact and the tip are the
+  evidence. A fresh checkout is required only when the claim is about clean-checkout, lockfile, or
+  cold-install reproducibility. When a claim cannot be re-derived at all, state its evidence class
+  instead of adding effort. A silent-wrong-green claim still earns reproduction; asking the author
+  never waives that risk. A receipt-only correction verifies the corrected fields and keeps
+  behavior review closed unless a claim, object, or evidence class changes.
 - **Final review and collaborative debugging are separate jobs.** A final review is a verdict on
   a frozen tip; it does not require a new worktree. Collaborative debugging is shared
   investigation in the common checkout, handed over as an evidence pack, and it does not acquire
