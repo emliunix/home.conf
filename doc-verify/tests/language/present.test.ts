@@ -11,8 +11,6 @@
 
 import { describe, expect, it } from "vitest";
 
-import { describe, expect, it } from "vitest";
-
 import { DOC_PATH, moduleText, scriptedJudge } from "../engine-helpers.js";
 import { runProgram, type EngineReport } from "../../src/engine/index.js";
 
