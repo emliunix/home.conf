@@ -60,6 +60,36 @@ contracts, in order. Each step says what failure looks like when it is skipped.
   `depends_on` closure, so an old failure several links away can block an
   unrelated commit.
 
+## 3a. When a rule and a document disagree
+
+Do not decide the defect from the authored constraint message alone. Read the
+proof tree and the engine report first: a generic message can describe only one
+branch of a rule, while the deciding path may be the populated oracle path.
+Classify the mismatch as:
+
+- the document is missing or contradicts the intended contract;
+- the rule's predicate, selected sections, or required shape describes an older
+  structure;
+- both moved, or the intended contract itself is unresolved.
+
+One common shape is a rule that requires at least one named section and then
+hands the present sections to an oracle. An empty population emits the engine's
+own empty-population message; an authored message that says the sections are
+missing can therefore print only on the path where at least one section is
+present and the oracle refuted it. Restating that message is a rule-surface
+change; making the engine choose a cause-appropriate message is an engine change;
+removing the authored message is another rule-surface change. Diagnose which
+surface owns the mismatch before deciding whether a consumer pin move is needed.
+
+If the document is wrong, repair the document. If the rule is wrong, amend the
+rule and the document in one reviewed object, record the old intent and the
+smallest changed predicate or shape, and add a case for each path the rule can
+take: empty or missing population, and populated or oracle-decided. If the rule
+needs new engine behavior, land a separate reviewed engine object first, then
+move the consumer pin in its own object. Never weaken a rule merely to pass a
+document, and never force a document to imitate a rule that no longer states the
+intended structure.
+
 ## 4. Hook
 
 - `.pre-commit-config.yaml` declares the hook but does not run it. Something
