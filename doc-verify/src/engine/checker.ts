@@ -114,8 +114,13 @@ export function checkModule(parsed: ParsedModule): Program {
     return { predicate, args: rule.head.args };
   });
 
-  const resolve = (term: Term, where: string): Literal | undefined => resolveLiteral(term, where, qualify, known, oracleNames, issues);
   const oracleInputs = new Map(oracles.map((oracle) => [oracle.predicate, oracle.inputs]));
+  // A `core.union` oracle asked over a literal empty list would bind no evidence at all
+  // (`unionEvidence` returns the empty object: `chosen.length === wanted.size` is `0 === 0`),
+  // so the judge would be asked to label nothing. Refused at the call site, where the list
+  // is written; the declaration shape is validated separately in `checkOracleHead`.
+  const oracleUnionArgs = new Map(oracles.filter((oracle) => oracle.evidence.form === "union").map((oracle) => [oracle.predicate, (oracle.evidence as { form: "union"; sections: number }).sections]));
+  const resolve = (term: Term, where: string): Literal | undefined => resolveLiteral(term, where, qualify, known, oracleNames, oracleUnionArgs, issues);
   const rules: Rule[] = [];
   for (const [index, rule] of parsed.rules.entries()) {
     const head = ruleHeads[index];
@@ -255,6 +260,7 @@ function resolveLiteral(
   qualify: (name: string) => string,
   known: Map<string, number>,
   oracleNames: Set<string>,
+  oracleUnionArgs: Map<string, number>,
   issues: string[],
 ): Literal | undefined {
   if (term.kind === "atom" && term.name === "true") {
@@ -265,7 +271,7 @@ function resolveLiteral(
     return undefined;
   }
   if ((term.functor === "not" || term.functor === "\\+") && term.args.length === 1) {
-    const inner = resolveLiteral(term.args[0] as Term, where, qualify, known, oracleNames, issues);
+    const inner = resolveLiteral(term.args[0] as Term, where, qualify, known, oracleNames, oracleUnionArgs, issues);
     if (inner === undefined) {
       return undefined;
     }
@@ -339,7 +345,7 @@ function resolveLiteral(
       issues.push(`${where}: count(V, G, N) takes variables for V and N`);
       return undefined;
     }
-    const inner = resolveBody(goal, where, (candidate, innerWhere) => resolveLiteral(candidate, innerWhere, qualify, known, oracleNames, issues));
+    const inner = resolveBody(goal, where, (candidate, innerWhere) => resolveLiteral(candidate, innerWhere, qualify, known, oracleNames, oracleUnionArgs, issues));
     if (inner.some((literal) => literal.kind === "count")) {
       issues.push(`${where}: count does not nest`);
       return undefined;
@@ -368,6 +374,14 @@ function resolveLiteral(
   if (arity !== args.length) {
     issues.push(`${where}: ${predicate.replace("::", ".")} takes ${String(arity)} arguments, not ${String(args.length)}`);
     return undefined;
+  }
+  const unionArg = oracleUnionArgs.get(predicate);
+  if (unionArg !== undefined) {
+    const listed = listItems(args[unionArg] as Term);
+    if (listed !== undefined && listed.length === 0) {
+      issues.push(`${where}: ${predicate.replace("::", ".")} is asked over an empty section list; core.union over no sections would bind no evidence`);
+      return undefined;
+    }
   }
   for (const arg of args) {
     if (arg.kind === "compound" && listItems(arg) === undefined) {
