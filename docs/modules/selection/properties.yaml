@@ -1,0 +1,5 @@
+schema_version: 1
+kind: document-contract
+document:
+  path: docs/modules/selection/properties.md
+  kind: module-properties

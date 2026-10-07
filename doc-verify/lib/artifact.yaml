@@ -1,0 +1,46 @@
+# doc-verify:artifact - the structure a design and a goal share: a status word in the kind's
+# vocabulary and a '## Goal' section. Where the status is written is kind-specific (a design's
+# '## Status' section, a goal's title suffix, chosen by the rule's `status_from`); the checker
+# reads it into the `status` meta fact. A kind library that extends this one supplies `$statuses`.
+# It extends doc-verify:references (2026-10-05), so every link it governs must resolve.
+#
+# Shipped with the engine and versioned with it. First authored as visflow's
+# doc-verify/modules/artifact.yaml (visflow design 10).
+schema_version: 2
+kind: verification-module
+module: doc-verify.artifact
+extends: [doc-verify:references]
+oracles:
+  purpose(D, S, P):
+    choose: [goal, problem, scope, out_of_scope, rationale, model, decision, assumptions, owner_input, verification, evidence, review, status, handoff, workstreams, coverage, dependencies, record, other]
+    ask: >-
+      What is this section of a design or goal document for? decision = the chosen approach or
+      selected shape and why; rationale = the argument for a decision; model = the concepts and
+      state the design rests on; verification = the checks that would show a claim false;
+      evidence = measurements already taken; owner_input = quoted direction from the owner;
+      scope / out_of_scope = what is and is not touched; record = dated status or history.
+    evidence: core.own(D, S)
+    threshold: 0.5
+rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  goal_section(D, S): top(D, S), core.heading(D, S, 'Goal')
+  has_status_word(D): core.meta(D, status, _)
+constraints:
+  artifact-has-status:
+    forall: core.meta(D, kind, _)
+    require: has_status_word(D)
+    severity: error
+    message: "{D} states no status"
+    repair: "State the status where this kind keeps it: a design's '## Status' section, a goal's title suffix."
+  artifact-status-in-vocabulary:
+    forall: core.meta(D, status, W)
+    require: W in $statuses
+    severity: error
+    message: "{D}: status '{W}' is not one of {statuses}"
+    repair: "Use one of {statuses}; keep any nuance on a 'Note:' line below it."
+  artifact-has-goal:
+    forall: core.meta(D, kind, _)
+    require: goal_section(D, S)
+    severity: error
+    message: "{D} has no '## Goal' section"
+    repair: "Add '## Goal' stating the outcome and its source (the owner direction or requirement)."

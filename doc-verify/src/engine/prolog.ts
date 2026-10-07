@@ -9,7 +9,6 @@
 
 import { createDeepClause, type JudgeBackend } from "deepclause-sdk";
 
-import { assertRestrictedDml } from "../dml.js";
 import { BlockedError } from "../types.js";
 
 const REJECTING_LLM = {
@@ -24,6 +23,16 @@ const REJECTING_JUDGE: JudgeBackend = {
   },
   complete: () => Promise.reject(new Error("the evaluation program may not call the judge")),
 };
+
+/** Refuses a program that names any capability beyond pure Prolog (strings are ignored). */
+export function assertRestrictedDml(source: string): void {
+  const executable = source.replace(/"(?:\\.|[^"\\])*"/g, '""');
+  const prohibited = ["task(", "prompt(", "exec(", "consult(", "use_module(", "read_file(", "write_file(", "http_get(", "http_post("];
+  const found = prohibited.find((token) => executable.includes(token));
+  if (found !== undefined) {
+    throw new Error(`generated DML contains prohibited capability: ${found}`);
+  }
+}
 
 export async function runPureDml(source: string): Promise<string> {
   assertRestrictedDml(source);

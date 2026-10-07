@@ -10,7 +10,7 @@
 import type { Verdict } from "../types.js";
 import type { Constraint, Program } from "./checker.js";
 import { atomText, type BindingStatus, type ConstraintEvaluation, type Evaluation, type Mode, type Premise } from "./evaluate.js";
-import type { OracleLeaf, OracleStore, RequestRecord } from "./oracles.js";
+import type { OracleLeaf, OracleSpan, OracleStore, RequestRecord } from "./oracles.js";
 import { termText, type Term } from "./terms.js";
 
 export interface ProofOracle {
@@ -26,6 +26,10 @@ export interface ProofOracle {
   threshold: number;
   round: number;
   cacheHit: boolean;
+  /** The oracle's own note (a missing or misaligned distribution, a tie, a threshold demotion). */
+  finding?: string | undefined;
+  /** The deciding span for a non-passing atom (option B), or the section fallback (option C). */
+  span?: OracleSpan | undefined;
 }
 
 export interface ProofNode {
@@ -61,7 +65,7 @@ export interface ConstraintReport {
 }
 
 export interface EngineFailure {
-  verdict: Verdict;
+  verdict: Exclude<Verdict, "PASS">;
   message: string;
 }
 
@@ -118,6 +122,20 @@ function constraintReport(program: Program, evaluation: Evaluation, store: Oracl
       proof: { kind: "binding", atom: `${constraint.id}: ${binding.status}`, children },
     };
   });
+  // An empty population is vacuously satisfied unless the author asked for `population: nonempty`.
+  if (constraint.nonempty && bindings.length === 0) {
+    bindings.push({
+      status: "violated",
+      certain: true,
+      values: {},
+      message: `${constraint.id}: the population is empty (population: nonempty)`,
+      repair: constraint.repair === undefined ? undefined : fill(constraint.repair, paramTexts(program.params)),
+      missing: [],
+      proof: { kind: "binding", atom: `${constraint.id}: violated`, children: [
+        { kind: "missing", atom: `${literalsText(constraint, "forall")} binds nothing`, mode: "possible" },
+      ] },
+    });
+  }
   const status: BindingStatus = bindings.some((binding) => binding.status === "violated") ? "violated"
     : bindings.some((binding) => binding.status === "undetermined") ? "undetermined" : "satisfied";
   return {
@@ -126,8 +144,8 @@ function constraintReport(program: Program, evaluation: Evaluation, store: Oracl
     severity: constraint.severity,
     weight: constraint.weight,
     mode: constraint.mode,
-    population: bindings.length,
-    certainPopulation: bindings.filter((binding) => binding.certain).length,
+    population: result.bindings.length,
+    certainPopulation: result.bindings.filter((binding) => binding.certain).length,
     bindings,
   };
 }
@@ -179,7 +197,22 @@ function proofOracle(leaf: OracleLeaf): ProofOracle {
     key: leaf.key, atom: leaf.atom, question: leaf.question, sections: leaf.sections, bytes: leaf.bytes,
     label: leaf.label, answered: leaf.answered, options: leaf.options, distribution: leaf.distribution,
     threshold: leaf.threshold, round: leaf.round, cacheHit: leaf.cacheHit,
+    ...(leaf.finding === undefined ? {} : { finding: leaf.finding }),
+    ...(leaf.span === undefined ? {} : { span: leaf.span }),
   };
+}
+
+/** The first span a binding's oracles carry, in proof order (option B, else the C fallback). */
+export function bindingSpan(binding: BindingReport): OracleSpan | undefined {
+  let found: OracleSpan | undefined;
+  const visit = (node: ProofNode): void => {
+    if (found === undefined && node.oracle?.span !== undefined) {
+      found = node.oracle.span;
+    }
+    (node.children ?? []).forEach(visit);
+  };
+  visit(binding.proof);
+  return found;
 }
 
 function literalsText(constraint: Constraint, which: "forall" | "goal"): string {
@@ -197,11 +230,12 @@ function fill(template: string, values: Record<string, string>): string {
 }
 
 /**
- * `doc-verify:verdict/strict`: a violated error is NO-GO; an engine failure is its own
- * verdict (BLOCKED, or NO-GO for an outbound-policy violation); an undetermined error
- * is NEEDS-REVIEW; a warning ratio of satisfied weight to total weight below the
- * threshold is NEEDS-REVIEW; otherwise PASS. Precedence is NO-GO, BLOCKED,
- * NEEDS-REVIEW, PASS.
+ * `doc-verify:verdict/strict`: a violated error is NO-GO; an outbound-policy violation is
+ * NO-GO; an engine failure that left some constraint undetermined (no judge, a failed or
+ * over-budget round) is BLOCKED; an undetermined error is NEEDS-REVIEW; a warning ratio of
+ * satisfied weight to total weight below the threshold is NEEDS-REVIEW; otherwise PASS.
+ * Precedence is NO-GO, BLOCKED, NEEDS-REVIEW, PASS. A constraint whose goal reads no oracle is
+ * always decided, so a structural NO-GO stands whether or not the judge could be asked.
  */
 export function decideVerdict(constraints: ConstraintReport[], failure: EngineFailure | undefined, warningThreshold: number): { verdict: Verdict; decidedBy: string } {
   const errors = constraints.filter((constraint) => constraint.severity === "error");
@@ -209,7 +243,10 @@ export function decideVerdict(constraints: ConstraintReport[], failure: EngineFa
   if (violated !== undefined) {
     return { verdict: "NO-GO", decidedBy: violated.id };
   }
-  if (failure !== undefined) {
+  if (failure !== undefined && failure.verdict === "NO-GO") {
+    return { verdict: failure.verdict, decidedBy: "engine" };
+  }
+  if (failure !== undefined && constraints.some((constraint) => constraint.status === "undetermined")) {
     return { verdict: failure.verdict, decidedBy: "engine" };
   }
   const undetermined = errors.find((constraint) => constraint.status === "undetermined");
@@ -270,7 +307,90 @@ export function renderReport(report: EngineReport): string {
   return `${lines.join("\n")}\n`;
 }
 
-function renderProof(node: ProofNode, indent: string): string[] {
+/**
+ * What decided a non-satisfied binding, one line each: every oracle leaf in its proof as
+ * `answered <label> (p=<value> <|>= threshold <t>) over <sections>` (or `unasked <atom>`), and,
+ * for a structural result, `structural: missing <literal>` for a violated require or
+ * `structural: <atoms>` for the facts a violated forbid found.
+ */
+export function bindingBasis(binding: BindingReport): string[] {
+  const lines: string[] = [];
+  const seen = new Set<string>();
+  const visit = (node: ProofNode): void => {
+    if (node.oracle !== undefined && !seen.has(node.oracle.key)) {
+      seen.add(node.oracle.key);
+      const leaf = node.oracle;
+      const sections = leaf.sections.join(", ") || "no section";
+      if (leaf.distribution.length === 0) {
+        lines.push(`answered ${leaf.answered} (no distribution; threshold ${String(leaf.threshold)}) over ${sections}`);
+      } else {
+        const p = Math.max(...leaf.distribution);
+        lines.push(`answered ${leaf.answered} (p=${String(p)} ${p >= leaf.threshold ? ">=" : "<"} threshold ${String(leaf.threshold)}) over ${sections}`);
+      }
+    } else if (node.kind === "unasked" && !seen.has(node.atom)) {
+      seen.add(node.atom);
+      lines.push(`unasked ${node.atom}`);
+    }
+    for (const child of node.children ?? []) {
+      visit(child);
+    }
+  };
+  visit(binding.proof);
+  for (const missing of binding.missing) {
+    lines.push(`structural: missing ${missing}`);
+  }
+  if (lines.length === 0) {
+    const goal = binding.proof.children?.find((child) => child.kind === "goal");
+    const gap = binding.proof.children?.find((child) => child.kind === "missing");
+    const atoms = goal?.children?.map((child) => child.atom) ?? [];
+    lines.push(`structural: ${atoms.length > 0 ? atoms.join(", ") : gap?.atom ?? binding.proof.atom}`);
+  }
+  return lines;
+}
+
+/**
+ * Why a non-satisfied binding is undetermined, one short phrase: the first oracle leaf's own
+ * finding (a threshold demotion, a missing distribution, a tie), or `evidence not resolved`
+ * for an unasked atom. `bindingBasis` prints the same facts in long form.
+ */
+export function bindingReason(binding: BindingReport): string | undefined {
+  const reasons: string[] = [];
+  const visit = (node: ProofNode): void => {
+    if (reasons.length > 0) {
+      return;
+    }
+    if (node.kind === "unasked") {
+      reasons.push("evidence not resolved");
+    } else if (node.oracle !== undefined) {
+      const oracle = node.oracle;
+      if (oracle.finding !== undefined) {
+        reasons.push(oracle.finding);
+      } else if (oracle.answered === "unknown" || oracle.label === "unknown") {
+        reasons.push(oracle.distribution.length === 0 ? "no distribution from the judge" : "below the oracle's threshold");
+      }
+    }
+    (node.children ?? []).forEach(visit);
+  };
+  visit(binding.proof);
+  return reasons[0];
+}
+
+/** The section ids a binding's oracles read, in proof order. */
+export function bindingSections(binding: BindingReport): string[] {
+  const sections: string[] = [];
+  const visit = (node: ProofNode): void => {
+    for (const section of node.oracle?.sections ?? []) {
+      if (!sections.includes(section)) {
+        sections.push(section);
+      }
+    }
+    (node.children ?? []).forEach(visit);
+  };
+  visit(binding.proof);
+  return sections;
+}
+
+export function renderProof(node: ProofNode, indent: string): string[] {
   const head = node.oracle === undefined
     ? `${indent}${node.kind} ${node.atom}${node.mode === undefined ? "" : ` [${node.mode}]`}`
     : `${indent}oracle ${node.atom} -> ${oracleSummary(node.oracle)}`;
@@ -279,5 +399,7 @@ function renderProof(node: ProofNode, indent: string): string[] {
 
 function oracleSummary(leaf: ProofOracle): string {
   const distribution = leaf.distribution.length === 0 ? "none" : `[${leaf.distribution.join(", ")}]`;
-  return `${leaf.label} (answered ${leaf.answered}, distribution ${distribution} over [${leaf.options.join(", ")}], threshold ${String(leaf.threshold)}, key ${leaf.key}, sections ${leaf.sections.join(", ") || "none"}, ${String(leaf.bytes)} bytes, round ${String(leaf.round)}${leaf.cacheHit ? ", cache hit" : ""})`;
+  const span = leaf.span === undefined ? ""
+    : `, span ${String(leaf.span.startLine)}-${String(leaf.span.endLine)} ${leaf.span.judged ? "sentence" : "section (not judged)"}${leaf.span.quote.length > 0 ? ` "${leaf.span.quote}"` : ""}`;
+  return `${leaf.label} (answered ${leaf.answered}, distribution ${distribution} over [${leaf.options.join(", ")}], threshold ${String(leaf.threshold)}, key ${leaf.key}, sections ${leaf.sections.join(", ") || "none"}, ${String(leaf.bytes)} bytes, round ${String(leaf.round)}${leaf.cacheHit ? ", cache hit" : ""}${span})`;
 }

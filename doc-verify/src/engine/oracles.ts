@@ -7,15 +7,28 @@
  * demote an answer to unknown.
  */
 
-import type { JudgeAnswer, JudgeBackend, JudgeQuestion } from "deepclause-sdk";
+import type { JudgeAnswer, JudgeBackend, JudgeQuestion, JsonValue } from "deepclause-sdk";
 
 import { canonicalJson, sha256 } from "../hash.js";
-import { PolicyViolationError } from "../semantic.js";
+import { PolicyViolationError } from "../judge.js";
 import { BlockedError } from "../types.js";
 import type { Oracle } from "./checker.js";
 import { UNKNOWN, type Demand, type OracleView } from "./evaluate.js";
 import { bodyEvidence, ownEvidence, unionEvidence, type DocumentFacts, type EvidenceText } from "./facts.js";
 import { listItems, termText, type Term } from "./terms.js";
+
+/**
+ * The span a non-passing finding rests on. `sentence` is the judge's chosen span
+ * (option B); `section` is the deterministic fallback (option C) and is labelled
+ * `not judged` so it never reads as the judge's choice.
+ */
+export interface OracleSpan {
+  kind: "sentence" | "section";
+  startLine: number;
+  endLine: number;
+  quote: string;
+  judged: boolean;
+}
 
 /** One answered (or unaskable) oracle atom, as a proof leaf shows it. */
 export interface OracleLeaf {
@@ -36,6 +49,8 @@ export interface OracleLeaf {
   round: number;
   cacheHit: boolean;
   finding: string | undefined;
+  /** Set for a non-passing atom: the deciding sentence, or the section fallback. */
+  span?: OracleSpan;
 }
 
 /** A per-atom answer cache keyed by (model, question, labels, evidence hash, policy version). */
@@ -100,12 +115,17 @@ export async function askRound(input: {
   demands: Demand[];
   documents: Map<string, DocumentFacts>;
   store: OracleStore;
-  backend: JudgeBackend;
+  backend: JudgeBackend | undefined;
+  /** Why there is no backend; the round fails BLOCKED with it once a question must be sent. */
+  unavailable?: string | undefined;
   model: string;
   policy: OutboundPolicy;
   cache: OracleCache | undefined;
 }): Promise<RequestRecord[]> {
   const byDocument = new Map<string, Prepared[]>();
+  // Non-passing atoms whose main answer came from the cache still need a span: their follow-up
+  // is asked (or replayed from its own cache) in the pass after the fresh batches.
+  const cachedCandidates = new Map<string, Array<{ entry: Prepared; spans: OracleSpan[] }>>();
   const usedKeys = new Map<string, string>();
   for (const demand of [...input.demands].sort((a, b) => a.key.localeCompare(b.key))) {
     const oracle = demand.oracle;
@@ -133,7 +153,18 @@ export async function askRound(input: {
     }));
     const cached = await input.cache?.get(cacheKey);
     if (cached !== undefined) {
-      input.store.leaves.set(demand.key, thresholdLeaf({ demand, key, question, options, evidence, cacheKey }, cached, input.round, true));
+      const leaf = thresholdLeaf({ demand, key, question, options, evidence, cacheKey }, cached, input.round, true);
+      if (leaf.label === "fails" || leaf.label === UNKNOWN) {
+        const spans = sentenceSpans(evidence);
+        if (spans.length === 0) {
+          leaf.span = sectionSpan(evidence);
+        } else {
+          const list = cachedCandidates.get(documentId) ?? [];
+          list.push({ entry: { demand, key, question, options, evidence, cacheKey }, spans });
+          cachedCandidates.set(documentId, list);
+        }
+      }
+      input.store.leaves.set(demand.key, leaf);
       continue;
     }
     const list = byDocument.get(documentId) ?? [];
@@ -151,6 +182,9 @@ export async function askRound(input: {
     };
     const stateJson = canonicalJson(state);
     enforceOutboundPolicy(stateJson, input.policy);
+    if (input.backend === undefined) {
+      throw new BlockedError(input.unavailable ?? "no judge is available");
+    }
     enforceCapabilities(input.backend, prepared, Buffer.byteLength(stateJson));
     const questions: JudgeQuestion[] = prepared.map((entry) => ({
       id: entry.key,
@@ -182,6 +216,25 @@ export async function askRound(input: {
         await input.cache?.set(entry.cacheKey, { answered: leaf.answered, distribution: leaf.distribution });
       }
     }
+    // Option B/C: a non-passing atom gets a span. One follow-up `choose` over the evidence's
+    // sentences is asked (B); when that cannot be judged, the section span, labelled
+    // `not judged`, is attached (C). The follow-ups are one keyed batch per document.
+    const candidates = prepared.flatMap((entry) => {
+      const leaf = input.store.leaves.get(entry.demand.key);
+      const spans = leaf !== undefined && (leaf.label === "fails" || leaf.label === UNKNOWN)
+        ? sentenceSpans(entry.evidence) : [];
+      return spans.length === 0 ? [] : [{ entry, spans }];
+    });
+    const chosen = await askSpans(input, candidates, state, document, records);
+    for (const entry of prepared) {
+      const leaf = input.store.leaves.get(entry.demand.key);
+      if (leaf === undefined || (leaf.label !== "fails" && leaf.label !== UNKNOWN) || leaf.span !== undefined) {
+        continue;
+      }
+      const spans = candidates.find((candidate) => candidate.entry.key === entry.key)?.spans;
+      const index = spans === undefined ? -1 : spans.findIndex((_span, i) => `s${String(i)}` === chosen.get(entry.key));
+      leaf.span = (index >= 0 ? spans?.[index] : undefined) ?? sectionSpan(entry.evidence);
+    }
     records.push({
       round: input.round,
       document,
@@ -191,7 +244,179 @@ export async function askRound(input: {
       id: sha256(canonicalJson({ state, questions, model: input.model })),
     });
   }
+
+  // A cached non-passing atom still gets its span: ask the follow-up (or replay it from the
+  // follow-up cache), one keyed batch per document, exactly as for a freshly answered atom.
+  for (const [document, candidates] of cachedCandidates) {
+    const state = {
+      schema_version: 2,
+      document,
+      round: input.round,
+      evidence: Object.fromEntries(candidates.map((candidate) =>
+        [candidate.entry.key, { sections: candidate.entry.evidence.sections, text: candidate.entry.evidence.text }])),
+    };
+    const chosen = await askSpans(input, candidates, state, document, records);
+    for (const candidate of candidates) {
+      const leaf = input.store.leaves.get(candidate.entry.demand.key);
+      if (leaf === undefined) {
+        continue;
+      }
+      const index = candidate.spans.findIndex((_span, i) => `s${String(i)}` === chosen.get(candidate.entry.key));
+      leaf.span = (index >= 0 ? candidate.spans[index] : undefined) ?? sectionSpan(candidate.entry.evidence);
+    }
+  }
   return records;
+}
+
+/** The follow-up's cache key: model, question, sentence ids, evidence hash, policy, and the span marker. */
+function spanCacheKey(model: string, policy: OutboundPolicy, key: string, evidence: EvidenceText, spans: OracleSpan[]): string {
+  return sha256(canonicalJson({
+    model, question: `Judge ONLY state.evidence.${key}. Which sentence decides it?`,
+    labels: spans.map((_span, index) => `s${String(index)}`),
+    evidence: sha256(evidence.text), policy: policy.version ?? 1, span: true,
+  }));
+}
+
+/** The deterministic section span (option C): the evidence's own piece, quoted, `not judged`. */
+export function sectionSpan(evidence: EvidenceText): OracleSpan {
+  const first = evidence.pieces[0];
+  const last = evidence.pieces[evidence.pieces.length - 1];
+  const startLine = first?.startLine ?? 1;
+  const endLine = last === undefined ? startLine : last.startLine + countNewlines(last.text);
+  return { kind: "section", startLine, endLine: Math.max(startLine, endLine), quote: "", judged: false };
+}
+
+/**
+ * The evidence's sentences as candidate spans, each with its document line range (option B).
+ * A sentence ends at `.`, `!` or `?`, or at a blank line, a heading or the start of a list item;
+ * a plain line break is a soft wrap and joins the sentence, so a wrapped sentence is one option
+ * spanning several lines rather than one fragment per line.
+ */
+export function sentenceSpans(evidence: EvidenceText): OracleSpan[] {
+  const spans: OracleSpan[] = [];
+  const emit = (block: { text: string; startLine: number }, from: number, to: number): void => {
+    const quote = block.text.slice(from, to).replace(/\s+/g, " ").trim();
+    if (quote.length === 0) {
+      return;
+    }
+    const lineAt = (offset: number): number => block.startLine + countNewlines(block.text.slice(0, offset));
+    const startLine = lineAt(from);
+    const endLine = Math.max(startLine, lineAt(to));
+    spans.push({ kind: "sentence", startLine, endLine, quote: quote.slice(0, 400), judged: true });
+  };
+  for (const piece of evidence.pieces) {
+    // Blocks: a blank line, a heading, or the start of a list item ends the previous block.
+    const blocks: Array<{ text: string; startLine: number }> = [];
+    let parts: string[] = [];
+    let blockStart = piece.startLine;
+    const flushBlock = (): void => {
+      if (parts.length > 0) {
+        blocks.push({ text: parts.join("\n"), startLine: blockStart });
+        parts = [];
+      }
+    };
+    piece.text.split("\n").forEach((line, index) => {
+      const lineNo = piece.startLine + index;
+      const trim = line.trim();
+      if (trim.length === 0) {
+        flushBlock();
+      } else if (/^#{1,6}\s/.test(trim)) {
+        flushBlock();
+        blocks.push({ text: trim, startLine: lineNo });
+      } else if (/^([-*+]|\d+[.)])\s/.test(trim)) {
+        flushBlock();
+        parts = [trim];
+        blockStart = lineNo;
+      } else {
+        if (parts.length === 0) {
+          blockStart = lineNo;
+        }
+        parts.push(trim);
+      }
+    });
+    flushBlock();
+    for (const block of blocks) {
+      const boundary = /[.!?]["')\]]*(?=\s|$)/g;
+      let start = 0;
+      let match: RegExpExecArray | null;
+      while ((match = boundary.exec(block.text)) !== null) {
+        emit(block, start, match.index + match[0].length);
+        start = boundary.lastIndex;
+        // The next sentence starts after the whitespace (and any line break) that follows the
+        // boundary, so its line range does not include the previous line.
+        while (start < block.text.length && /\s/.test(block.text[start] as string)) {
+          start += 1;
+        }
+      }
+      emit(block, start, block.text.length);
+    }
+  }
+  return spans;
+}
+
+/**
+ * One keyed batch of follow-up `choose` questions, one per non-passing atom, over that atom's
+ * evidence sentences. Each answer is cached like any oracle atom. Returns the chosen option id
+ * per atom key; an atom with no answer (or `unknown`) is absent, so the caller uses the section
+ * span.
+ */
+async function askSpans(
+  input: { backend: JudgeBackend | undefined; model: string; policy: OutboundPolicy; cache: OracleCache | undefined },
+  candidates: Array<{ entry: Prepared; spans: OracleSpan[] }>,
+  state: JsonValue,
+  document: string,
+  records: RequestRecord[],
+): Promise<Map<string, string>> {
+  const chosen = new Map<string, string>();
+  if (input.backend === undefined || candidates.length === 0) {
+    return chosen;
+  }
+  const prepared = await Promise.all(candidates.map(async (candidate) => {
+    const options = candidate.spans.map((span, index) => ({ id: `s${String(index)}`, description: span.quote }));
+    const instruction = `Judge ONLY state.evidence.${candidate.entry.key}. Which sentence decides it?`;
+    const cacheKey = spanCacheKey(input.model, input.policy, candidate.entry.key, candidate.entry.evidence, candidate.spans);
+    const cached = await input.cache?.get(cacheKey);
+    if (cached !== undefined) {
+      chosen.set(candidate.entry.key, cached.answered);
+      return undefined;
+    }
+    return { key: candidate.entry.key, cacheKey, question: { id: `${candidate.entry.key}::span`, kind: "choose" as const, instruction, options } };
+  }));
+  const pending = prepared.filter((entry) => entry !== undefined);
+  if (pending.length === 0) {
+    return chosen;
+  }
+  const questions = pending.map((entry) => entry.question);
+  try {
+    const answers = (await input.backend.complete({ state, questions, model: input.model })).answers;
+    // A real follow-up call is a request the report accounts for, exactly like a main batch.
+    records.push({
+      round: 0, document, questions: questions.length, keys: pending.map((entry) => entry.key),
+      stateBytes: Buffer.byteLength(canonicalJson(state)),
+      id: sha256(canonicalJson({ state, questions, model: input.model })),
+    });
+    const byId = new Map(answers.map((answer) => [answer.id, answer]));
+    for (const entry of pending) {
+      const answer = byId.get(entry.question.id);
+      if (answer?.value !== undefined) {
+        chosen.set(entry.key, answer.value);
+        await input.cache?.set(entry.cacheKey, { answered: answer.value, distribution: answer.distribution ?? [] });
+      }
+    }
+  } catch {
+    // A follow-up that cannot be asked (capabilities, budget) leaves every atom on the C fallback.
+  }
+  return chosen;
+}
+
+function countNewlines(text: string): number {
+  let count = 0;
+  for (const char of text) {
+    if (char === "\n") {
+      count += 1;
+    }
+  }
+  return count;
 }
 
 /**

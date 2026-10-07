@@ -5,9 +5,6 @@ document:
   kind: goal
   depends_on:
     - design/04-modular-verification-language.md
-verification:
-  kind: jev-prolog
-  inherits: ../doc-verify/contracts/goal-strategy.yaml#verification
 commands:
   - npm run check
 evidence_level: E1

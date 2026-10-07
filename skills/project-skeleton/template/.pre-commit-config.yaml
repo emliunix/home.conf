@@ -1,0 +1,7 @@
+# Document contracts hook. Run with prek: `uv tool install prek`, then `prek install`.
+# Install the hook only once the judge key (.env.doc-verify) exists.
+repos:
+  - repo: https://github.com/emliunix/home.conf
+    rev: 2381b1fd3dcb9f02ec7d8bee096ba155e9456266d
+    hooks:
+      - id: document-contracts

@@ -51,6 +51,8 @@ export interface Constraint {
   message: string | undefined;
   repair: string | undefined;
   profiles: string[] | undefined;
+  /** Whether an empty population violates the constraint (`population: nonempty`). */
+  nonempty: boolean;
   source: ConstraintSource;
 }
 
@@ -135,6 +137,7 @@ export function checkModule(parsed: ParsedModule): Program {
       id: constraint.id, forall, goal, mode: constraint.mode,
       severity: constraint.source.severity, weight: constraint.source.weight ?? 1,
       message: constraint.source.message, repair: constraint.source.repair, profiles: constraint.source.profiles,
+      nonempty: constraint.source.population === "nonempty",
       source: constraint.source,
     };
   });

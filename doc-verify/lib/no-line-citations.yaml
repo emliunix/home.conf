@@ -1,0 +1,29 @@
+# doc-verify:no-line-citations - a standardized document cites by name, never by line number
+# (design 04; the rule an owner applies when line-number citations are ruled out).
+#
+# WHY. A line locator (`path.ts:123`) is a POSITION: it rots on the next edit anywhere above it,
+# so it couples every unrelated change to every document that cites it, and a reader who follows
+# it after a refactor lands somewhere arbitrary. A symbol, a heading or a list index is the thing
+# a reader actually wants, and it survives edits. The engine classifies a locator as the `line`
+# reference kind (see `core.ref` in the README, "Reference facts"), so this constraint is decided
+# from facts alone: no judge is asked, so it works with or without a key and cannot be defeated by
+# document size.
+#
+# SCOPE IS THE CONSUMER'S. This library defines the constraint; a config rule decides which
+# population runs it. Nothing references it until a consumer names it in `modules:`, so shipping
+# it changes no existing verdict. `design/archived/` and `worklog/` are dated history, not
+# standardized surfaces -- whether they are in the population is the consumer's choice.
+#
+# Shipped with the engine and versioned with it.
+schema_version: 2
+kind: verification-module
+module: doc-verify.no-line-citations
+rules:
+  line_cite(D, S, T): core.ref(D, S, T, line)
+constraints:
+  no-line-citations:
+    forall: line_cite(D, S, T)
+    forbid: line_cite(D, S, T)
+    severity: error
+    message: "{D} §{S} cites {T} by line number; a line is a position that rots, so it is not a reference"
+    repair: "Cite the enclosing symbol or heading instead: `path` in `symbol`, or `path` in `(file)` if no symbol or heading exists"

@@ -1,7 +1,11 @@
 import { z } from "zod";
 
+import type { EngineReport } from "./engine/diagnostics.js";
+
 export const verdictSchema = z.enum(["PASS", "NO-GO", "NEEDS-REVIEW", "BLOCKED"]);
 export type Verdict = z.infer<typeof verdictSchema>;
+/** A finding's label: a verdict, or `WARN` for a violated warning constraint (it does not move the verdict). */
+export type FindingVerdict = Exclude<Verdict, "PASS"> | "WARN";
 
 export const profileSchema = z.enum(["draft", "promotion", "auto"]);
 export type Profile = z.infer<typeof profileSchema>;
@@ -45,9 +49,22 @@ export interface Finding {
   line: number;
   sectionId: SectionId;
   ruleId: string;
-  verdict: Exclude<Verdict, "PASS">;
+  verdict: FindingVerdict;
   message: string;
   evidenceId: string;
+  /** The binding's status for a module constraint (`violated` or `undetermined`). */
+  status?: string;
+  repair?: string;
+  /** The section ids the finding rests on (the binding's sections and its oracles' evidence). */
+  sections?: string[];
+  /** What decided it: oracle answers against thresholds, or the structural fact found or missing. */
+  basis?: string[];
+  /** The deciding span for a non-passing semantic finding: the judge's sentence, or a section fallback. */
+  span?: { kind: "sentence" | "section"; startLine: number; endLine: number; quote: string; judged: boolean };
+  /** Why an undetermined or blocked finding is so: no key, over budget, a low-confidence answer, unasked evidence. */
+  reason?: string;
+  /** The engine's proof tree for the binding, rendered. */
+  proof?: string[];
 }
 
 export interface WarningDiagnostic {
@@ -58,25 +75,6 @@ export interface WarningDiagnostic {
   message: string;
 }
 
-export interface RuleTrace {
-  ruleId: string;
-  verdict: Verdict;
-  facts: string[];
-}
-
-export interface EvaluationDetail {
-  questionId: string;
-  sectionIds: SectionId[];
-  answer?: "supported" | "refuted" | "unknown";
-  /** The judge's confidence in its choice, when it reports one. */
-  confidence?: number;
-  /** Probability per option, in supported, refuted, unknown order. */
-  distribution?: number[];
-  /** Bytes of section text sent for this question, and the rubric budget. */
-  evidenceBytes: number;
-  evidenceBudget: number;
-}
-
 export interface ArtifactReport {
   path: RepoPath;
   artifactKind: string;
@@ -85,15 +83,12 @@ export interface ArtifactReport {
   selectorTrace: Array<{ pattern: string; action: "include" | "exclude" }>;
   requiredSections: string[];
   sections: Array<Omit<Section, "content">>;
-  strategyChain: Array<{ path: RepoPath; fragment: string }>;
-  rubricChain: Array<{ path: RepoPath; fragment: string; hash: string }>;
-  evaluations: EvaluationDetail[];
-  semanticRequestId?: string;
   semanticCalls: number;
   cacheHits: number;
   warnings: WarningDiagnostic[];
   findings: Finding[];
-  trace: RuleTrace[];
+  /** The engine's rendered diagnostics (populations, proofs, oracles, repairs); absent when the run stopped before the engine. */
+  engine?: { modules: RepoPath[]; hash: string; requests: number; text: string; report: EngineReport };
   verdict: Verdict;
 }
 

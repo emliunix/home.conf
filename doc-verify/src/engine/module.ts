@@ -29,6 +29,11 @@ const constraintSchema = z.object({
   message: z.string().optional(),
   repair: z.string().optional(),
   profiles: z.array(z.string()).optional(),
+  /**
+   * `nonempty`: a forall that binds nothing violates the constraint. By default an empty
+   * population is vacuously satisfied and silent.
+   */
+  population: z.literal("nonempty").optional(),
 }).strict();
 
 const importSchema = z.union([z.string(), z.object({ module: z.string(), params: z.record(z.string(), paramValue).optional() }).strict()]);

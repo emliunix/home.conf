@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { documentSectionsNote, explainSectionMatch, sectionIdMatches } from "./normalize.js";
 import path from "node:path";
 import { createMockJevJudgeBackend, type JudgeBackend } from "deepclause-sdk";
@@ -11,20 +12,32 @@ import {
   documentTraceFor,
   parseCompanion,
   parseConfig,
-  resolveProfile,
 } from "./config.js";
+import { fileOracleCache } from "./cache.js";
 import { loadDocVerifyEnv } from "./local-env.js";
-import { evaluateSemantic, PolicyViolationError } from "./semantic.js";
-import { EvidenceBudgetError, MissingCriticalSectionError, expandRubric, resolveRubrics, segmentBytes } from "./rubric.js";
+import { productionBackend } from "./judge.js";
+import {
+  bindingBasis,
+  bindingReason,
+  bindingSections,
+  bindingSpan,
+  composeModules,
+  ModuleError,
+  renderProof,
+  renderReport,
+  runProgram,
+  type BindingReport,
+  type EngineReport,
+} from "./engine/index.js";
 import { segmentMarkdown } from "./segments.js";
 import { MissingBlobError, SnapshotMode, captureSnapshots } from "./snapshot.js";
-import { resolveVerificationStrategy } from "./strategy.js";
 import {
   ArtifactReport,
   BlockedError,
   ConfigNotFoundError,
   ConfigNotStagedError,
   Finding,
+  FindingVerdict,
   Profile,
   RepoPath,
   Section,
@@ -44,10 +57,14 @@ export interface CheckOptions {
   root?: string;
   mode: SnapshotMode;
   profile: Profile;
+  /** Section ids for the `selected(D, S)` fact; every section when absent. */
   sections?: string[];
-  rubric?: string;
   backend?: JudgeBackend;
-  useCache?: boolean;
+  /**
+   * The persistent oracle cache: `use` (default) unless the profile says `cache: refresh`;
+   * `off` (`--no-cache`) neither reads nor writes it.
+   */
+  cache?: "use" | "off";
 }
 
 export async function checkDocuments(options: CheckOptions): Promise<VerificationReport> {
@@ -99,6 +116,8 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
     }
   }
   const selectedIds = options.sections?.map(sectionId);
+  const exists = candidateExists(root, pair.candidateInventory, pair.workingTree);
+  const repository = { exists, files: pair.candidateInventory, gitRefs: pair.gitRefs };
   const artifacts: ArtifactReport[] = [];
   for (const file of pair.candidatePaths) {
     const rule = findDocumentRule(config, file);
@@ -120,11 +139,11 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
       impactPath,
       selectorTrace: documentTraceFor(config.documents, file),
       readCandidate: pair.readCandidate,
+      repository,
       requestedProfile: options.profile,
+      cacheEnabled: options.cache !== "off",
       ...(selectedIds === undefined ? {} : { selectedIds }),
-      ...(options.rubric === undefined ? {} : { rubricOverride: options.rubric }),
       ...(options.backend === undefined ? {} : { backend: options.backend }),
-      ...(options.useCache === undefined ? {} : { useCache: options.useCache }),
     }));
   }
   const verdict = combineVerdicts(artifacts.map((artifact) => artifact.verdict));
@@ -155,11 +174,11 @@ async function checkArtifact(input: {
   impactPath: RepoPath[];
   selectorTrace: ArtifactReport["selectorTrace"];
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
+  repository: RepositoryView;
   requestedProfile: Profile;
+  cacheEnabled: boolean;
   selectedIds?: SectionId[];
-  rubricOverride?: string;
   backend?: JudgeBackend;
-  useCache?: boolean;
 }): Promise<ArtifactReport> {
   const sections = segmentMarkdown(input.blob.content);
   const findings: Finding[] = [];
@@ -170,6 +189,20 @@ async function checkArtifact(input: {
         `missing required section -- ${explainSectionMatch(required, sections.map((s) => s.id))} [${documentSectionsNote(sections.map((s) => s.id))}]`));
     }
   }
+  // A deterministic pre-check, no judge: a canon module page holds current law only, so dated or
+  // progress prose is NO-GO. A literal date or phrase inside a code span or fenced block is a
+  // format example, not history, and is skipped. The judge's `current_not_history` covers the
+  // subtle cases.
+  if (input.rule.artifact_kind.startsWith("module-")) {
+    for (const section of sections) {
+      const prose = section.content.replace(/```[\s\S]*?```/g, "").replace(/`[^`]*`/g, "");
+      const hit = DATED_PROSE.map((pattern) => pattern.exec(prose)).find((match) => match !== null);
+      if (hit !== undefined) {
+        findings.push(finding(input.file, section, "structure.dated-prose", "NO-GO",
+          `section '${section.id}' carries dated or progress prose ('${hit[0]}'); canon holds current law only — reword it, or put a literal example in a code span or fenced block`));
+      }
+    }
+  }
   const companionPath = repoPath(input.file.replace(/\.md$/i, ".yaml"));
   const companion = await optionalCompanion(input.readCandidate, companionPath);
   if (companion === undefined) {
@@ -177,122 +210,196 @@ async function checkArtifact(input: {
   } else if (companion.document.kind !== input.rule.artifact_kind) {
     throw new UsageError(`invalid ${companionPath}: document.kind must be ${input.rule.artifact_kind}`);
   }
-  const strategy = await resolveVerificationStrategy({
-    root: input.root,
-    readBlob: input.readCandidate,
-    source: companion === undefined
-      ? { kind: "reference", reference: input.rule.verification }
-      : { kind: "inline", strategy: companion.verification, declaringPath: companionPath },
-  });
-  const status = sectionBody(sections.find((section) => section.id === "status")) ?? companion?.document.status;
-  const profile = resolveProfile({ requested: input.requestedProfile, configured: strategy.defaultProfile, ...(status === undefined ? {} : { status }) });
-  const companionProfile = strategy.profiles[profile];
-  const selectedIds = input.selectedIds ?? companionProfile.sections?.map(sectionId);
-  const roots = input.rubricOverride !== undefined
-    ? [{ reference: input.rubricOverride }]
-    : companionProfile.rubric !== undefined
-      ? [{ reference: companionProfile.rubric }]
-      : strategy.rubricRoots;
-  const rubric = await resolveRubrics({
-    root: input.root,
-    roots,
-    readBlob: input.readCandidate,
-  });
-  let semanticRequestId: string | undefined;
-  let semanticCalls = 0;
-  let cacheHits = 0;
-  let evaluations: ArtifactReport["evaluations"] = [];
-  const trace = [];
-
-  if (findings.length === 0 && (profile === "promotion" || selectedIds !== undefined)) {
-    try {
-      const questions = expandRubric({
-        rubric,
-        artifactKind: input.rule.artifact_kind,
-        artifactPath: input.file,
-        sections,
-        ...(selectedIds === undefined ? {} : { selectedIds }),
-      });
-      const size = (question: (typeof questions)[number]) => ({
-        evidenceBytes: segmentBytes(question.segments),
-        evidenceBudget: question.item.evidence.max_bytes,
-      });
-      evaluations = questions.map((question) => ({
-        questionId: question.id, sectionIds: question.sectionIds, ...size(question),
-      }));
-      if (profile === "promotion") {
-        const semantic = await evaluateSemantic({
-          root: input.root,
-          artifactKind: input.rule.artifact_kind,
-          questions,
-          rubric,
-          model: input.config.judge.model,
-          policyVersion: input.config.policy.version,
-          maxEvidenceBytes: input.config.policy.max_evidence_bytes,
-          forbiddenLiterals: input.config.policy.forbidden_literals,
-          maxAgeSeconds: input.config.judge.attestation_max_age_seconds,
-          ...(input.backend === undefined ? {} : { backend: input.backend }),
-          ...(input.useCache !== undefined
-            ? { useCache: input.useCache }
-            : companionProfile.cache === "refresh"
-              ? { useCache: false }
-              : {}),
-        });
-        semanticRequestId = semantic.requestId;
-        semanticCalls = semantic.calls;
-        cacheHits = semantic.cacheHits;
-        evaluations = questions.map((question, index) => ({
-          questionId: question.id,
-          sectionIds: question.sectionIds,
-          ...size(question),
-          ...(semantic.outcome.answers[index] === undefined ? {} : { answer: semantic.outcome.answers[index] }),
-          ...semantic.details[index],
-        }));
-        trace.push({ ruleId: semantic.outcome.ruleId, verdict: semantic.outcome.verdict, facts: semantic.outcome.answers });
-        if (semantic.outcome.verdict !== "PASS") {
-          const first = questions[0];
-          findings.push(finding(
-            input.file,
-            sections.find((section) => section.id === first?.sectionIds[0]),
-            semantic.outcome.ruleId,
-            semantic.outcome.verdict,
-            "semantic rubric did not pass",
-          ));
-        }
-      }
-    } catch (error) {
-      if (error instanceof MissingCriticalSectionError) {
-        findings.push(finding(input.file, sections[0], error.itemId, "NO-GO", error.message));
-      } else if (error instanceof PolicyViolationError) {
-        findings.push(finding(input.file, sections[0], "policy.outbound", "NO-GO", error.message));
-      } else if (error instanceof EvidenceBudgetError || error instanceof BlockedError) {
-        findings.push(finding(input.file, sections[0], "semantic.prerequisite", "BLOCKED", error.message));
-      } else {
-        throw error;
-      }
-    }
+  if (companion?.legacyVerification === true) {
+    warnings.push(warning(input.file, "metadata.legacy-verification",
+      `${companionPath} carries a v1 verification: block, which is ignored; the rule's modules verify this document`));
   }
+  return checkWithModules({ ...input, modules: modulesFor(input.rule, companion, companionPath), sections, findings, warnings,
+    ...(companion?.document.status === undefined ? {} : { companionStatus: companion.document.status }) });
+}
 
-  const verdict = combineVerdicts(findings.map((item) => item.verdict));
-  return {
+/**
+ * The rule's modules for this document. A companion's `document.type` selects one of the rule's
+ * named types, replacing its default `modules`; with no `type` the default applies. An unknown
+ * type is refused, naming the declared ones.
+ */
+function modulesFor(rule: DocumentIncludeRule, companion: CompanionMetadata | undefined, companionPath: RepoPath): string[] {
+  const type = companion?.document.type;
+  if (type === undefined) {
+    return rule.modules;
+  }
+  const chosen = rule.types?.[type];
+  if (chosen === undefined) {
+    const known = Object.keys(rule.types ?? {});
+    throw new UsageError(`invalid ${companionPath}: document.type ${JSON.stringify(type)} is not one of ${known.length === 0 ? "(the rule declares no types)" : known.join(", ")}`);
+  }
+  return chosen.modules;
+}
+
+/**
+ * The design-04 path: compose the rule's modules, derive the document's facts, and run the
+ * engine. A draft runs only the constraints without `profiles` (the structural ones);
+ * every other status runs the `promotion` profile. The verdict and findings are the engine's.
+ */
+async function checkWithModules(input: {
+  root: string;
+  file: RepoPath;
+  blob: TextBlob;
+  rule: DocumentIncludeRule;
+  config: DocVerifyConfig;
+  impactPath: RepoPath[];
+  selectorTrace: ArtifactReport["selectorTrace"];
+  readCandidate: (path: RepoPath) => Promise<TextBlob>;
+  repository: RepositoryView;
+  requestedProfile: Profile;
+  cacheEnabled: boolean;
+  selectedIds?: SectionId[];
+  backend?: JudgeBackend;
+  modules: string[];
+  sections: Section[];
+  findings: Finding[];
+  warnings: WarningDiagnostic[];
+  companionStatus?: string;
+}): Promise<ArtifactReport> {
+  const statusSection = input.sections.find((section) => section.id === "status");
+  const status = input.rule.status_from === "title"
+    ? titleStatus(input.blob.content)
+    : (sectionBody(statusSection) ?? input.companionStatus)?.toLowerCase().replace(/[^a-z-]/g, "");
+  const profile: Exclude<Profile, "auto"> = input.requestedProfile !== "auto"
+    ? input.requestedProfile
+    : status === "draft" ? "draft" : "promotion";
+  const base: Omit<ArtifactReport, "findings" | "verdict" | "semanticCalls"> = {
     path: input.file,
     artifactKind: input.rule.artifact_kind,
     profile,
     impactPath: input.impactPath,
     selectorTrace: input.selectorTrace,
     requiredSections: input.rule.required_sections,
-    sections: sections.map(({ content: _content, ...section }) => section),
-    strategyChain: strategy.chain,
-    rubricChain: rubric.chain,
-    evaluations,
-    ...(semanticRequestId === undefined ? {} : { semanticRequestId }),
-    semanticCalls,
-    cacheHits,
-    warnings,
-    findings,
-    trace,
-    verdict,
+    sections: input.sections.map(({ content: _content, ...section }) => section),
+    cacheHits: 0,
+    warnings: input.warnings,
   };
+  const findings = [...input.findings];
+  if (findings.length > 0) {
+    return { ...base, findings, semanticCalls: 0, verdict: combineVerdicts(findings.map((item) => item.verdict)) };
+  }
+  let composed;
+  try {
+    composed = await composeModules(input.modules, input.readCandidate);
+  } catch (error) {
+    if (error instanceof ModuleError) {
+      throw new UsageError(`invalid modules for ${input.file}: ${error.message}`);
+    }
+    throw error;
+  }
+  // No key is not a reason to skip the structural constraints: the engine runs without a judge,
+  // decides every constraint whose goal reads no oracle, and fails BLOCKED only at the round
+  // that must ask one.
+  let backend = input.backend;
+  let unavailable: string | undefined;
+  if (backend === undefined) {
+    try {
+      backend = productionBackend(input.config.judge.model);
+    } catch (error) {
+      if (!(error instanceof BlockedError)) {
+        throw error;
+      }
+      unavailable = error.message;
+    }
+  }
+  const meta: Record<string, string> = { kind: input.rule.artifact_kind };
+  if (status !== undefined && status.length > 0) {
+    meta.status = status;
+  }
+  // The status word is the line's first token, so `status` alone cannot tell "reviewed" from
+  // "Reviewed — nearly done". `status_words` counts the line's tokens for a module to constrain.
+  const line = input.rule.status_from === "title" ? undefined : statusLine(statusSection);
+  if (line !== undefined) {
+    meta.status_words = String(line.split(/\s+/).length);
+  }
+  const cacheSetting = input.config.profiles?.[profile]?.cache;
+  const cache = input.cacheEnabled ? fileOracleCache(input.root, cacheSetting === "refresh" ? "refresh" : "use") : undefined;
+  const report = await runProgram({
+    moduleYaml: composed.yaml,
+    documents: [{ path: input.file, markdown: input.blob.content, meta, ...input.repository,
+      ...(input.selectedIds === undefined ? {} : { selected: input.selectedIds }) }],
+    backend,
+    ...(unavailable === undefined ? {} : { unavailable }),
+    model: input.config.judge.model,
+    policy: {
+      maxEvidenceBytes: input.config.policy.max_evidence_bytes,
+      forbiddenLiterals: input.config.policy.forbidden_literals,
+      version: input.config.policy.version,
+    },
+    profile,
+    ...(cache === undefined ? {} : { cache }),
+  });
+  // One finding per binding that did not hold: a violated error is NO-GO, a violated warning
+  // WARN, an undetermined binding NEEDS-REVIEW (BLOCKED when its oracle could not be asked). Engine-level notes (unasked atoms, a judge answer
+  // that disagrees with its distribution) follow as NEEDS-REVIEW. An empty population is
+  // vacuously satisfied and adds nothing. The artifact verdict stays the engine's own.
+  for (const constraint of report.constraints) {
+    for (const binding of constraint.bindings) {
+      if (binding.status === "satisfied") {
+        continue;
+      }
+      // An undetermined binding whose oracle was never asked because the engine failed (no
+      // judge, an over-budget round) is BLOCKED, not a judgment to review.
+      const unasked = report.failure !== undefined && bindingBasis(binding).some((line) => line.startsWith("unasked "));
+      const verdict: FindingVerdict = binding.status === "violated"
+        ? constraint.severity === "error" ? "NO-GO" : "WARN"
+        : unasked ? "BLOCKED" : "NEEDS-REVIEW";
+      const item = bindingFinding(input.file, input.sections, `module.${constraint.id}`, verdict, binding, report.oracles);
+      const reason = unasked ? report.failure?.message ?? "evidence not resolved" : item.reason;
+      findings.push(reason === undefined ? item : { ...item, reason });
+    }
+  }
+  // An engine failure that decided nothing (every constraint was decided without the judge)
+  // does not turn a PASS into a finding.
+  if (report.failure !== undefined && report.verdict !== "PASS") {
+    findings.push(finding(input.file, input.sections[0], unavailable !== undefined && report.failure.message === unavailable
+      ? "semantic.prerequisite" : "module.engine", report.failure.verdict, report.failure.message));
+  }
+  for (const note of report.findings) {
+    findings.push(finding(input.file, input.sections[0], "module.engine", "NEEDS-REVIEW", note));
+  }
+  return {
+    ...base,
+    findings,
+    semanticCalls: report.requests.length,
+    cacheHits: report.oracles.filter((leaf) => leaf.cacheHit).length,
+    engine: { modules: composed.sources, hash: report.hash, requests: report.requests.length, text: renderReport(report), report },
+    verdict: report.verdict,
+  };
+}
+
+/** What reference facts may consult about the candidate (`core.ref`, `core.resolves`). */
+interface RepositoryView {
+  exists: (repoPath: string) => boolean;
+  files: readonly string[];
+  gitRefs: readonly string[];
+}
+
+/**
+ * Whether a repository path is a file or directory of the candidate: in its tree (a directory
+ * when some file lies under it) or, when the working tree is part of the candidate, on disk.
+ */
+function candidateExists(root: string, inventory: readonly string[], workingTree: boolean): (repoPath: string) => boolean {
+  const files = new Set(inventory);
+  const directories = new Set<string>();
+  for (const file of inventory) {
+    for (let index = file.indexOf("/"); index > 0; index = file.indexOf("/", index + 1)) {
+      directories.add(file.slice(0, index));
+    }
+  }
+  return (repoPath) => files.has(repoPath) || directories.has(repoPath)
+    || (workingTree && existsSync(path.join(root, repoPath)));
+}
+
+/** A goal keeps its status as the title suffix: `# <goal> — OPEN|BLOCKED|CLOSED-GREEN (<date>)`. */
+export function titleStatus(markdown: string): string | undefined {
+  const match = /^# .*?\s[—–-]\s+([A-Z][A-Z-]*[A-Z])\b/m.exec(markdown);
+  return match?.[1]?.toLowerCase();
 }
 
 function deletedReport(
@@ -310,19 +417,58 @@ function deletedReport(
     selectorTrace,
     requiredSections: rule.required_sections,
     sections: [],
-    strategyChain: [],
-    rubricChain: [],
-    evaluations: [],
     semanticCalls: 0,
     cacheHits: 0,
     warnings: [],
     findings: [item],
-    trace: [],
     verdict: "NO-GO",
   };
 }
 
-function finding(pathValue: RepoPath, section: Section | undefined, ruleId: string, verdict: Exclude<Verdict, "PASS">, message: string): Finding {
+/**
+ * A finding for one binding that did not hold. It sits at the binding's section (`S`, else `C`,
+ * else the first section an oracle read), or at the document's first section when it names none.
+ */
+function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, verdict: FindingVerdict, binding: BindingReport, oracles: EngineReport["oracles"]): Finding {
+  const read = bindingSections(binding);
+  const named = [binding.values.S, binding.values.C].filter((value): value is string =>
+    value !== undefined && sections.some((section) => section.id === value));
+  const ids = [...new Set([...named, ...read])];
+  const anchor = sections.find((section) => section.id === ids[0]) ?? sections[0];
+  // The span and reason usually come from the binding's own proof; when a violated require's
+  // proof omits the oracle leaf (a certain-false oracle is a structural miss), take them from the
+  // report's oracle leaves on the same sections. A confident `fails` carries no `reason` (the
+  // answer line does); only an `unknown` label is `below the oracle's threshold`.
+  const basis = bindingBasis(binding);
+  const proofSpan = bindingSpan(binding);
+  const onSections = oracles.filter((oracle) =>
+    (oracle.label === "fails" || oracle.label === "unknown") && oracle.sections.some((section) => ids.includes(section)));
+  const oracle = proofSpan === undefined ? onSections.find((entry) => entry.span !== undefined) ?? onSections[0] : undefined;
+  const span = proofSpan ?? oracle?.span;
+  if (oracle !== undefined && !basis.some((line) => line.startsWith("answered "))) {
+    const distribution = oracle.distribution;
+    const peak = distribution.length === 0 ? undefined : Math.max(...distribution);
+    const where = oracle.sections.join(", ") || "no section";
+    basis.push(distribution.length === 0
+      ? `answered ${oracle.label} (no distribution; threshold ${String(oracle.threshold)}) over ${where}`
+      : `answered ${oracle.label} (p=${String(peak)} ${(peak ?? 0) >= oracle.threshold ? ">=" : "<"} threshold ${String(oracle.threshold)}) over ${where}`);
+  }
+  const reason = bindingReason(binding) ?? (oracle?.label === "unknown"
+    ? (oracle.distribution.length === 0 ? "no distribution from the judge" : "below the oracle's threshold")
+    : undefined);
+  return {
+    ...finding(file, anchor, ruleId, verdict, binding.message),
+    status: binding.status,
+    ...(binding.repair === undefined ? {} : { repair: binding.repair }),
+    sections: ids,
+    ...(span === undefined ? {} : { span }),
+    ...(reason === undefined ? {} : { reason }),
+    basis,
+    proof: renderProof(binding.proof, ""),
+  };
+}
+
+function finding(pathValue: RepoPath, section: Section | undefined, ruleId: string, verdict: FindingVerdict, message: string): Finding {
   return {
     path: pathValue,
     line: section?.startLine ?? 1,
@@ -333,6 +479,9 @@ function finding(pathValue: RepoPath, section: Section | undefined, ruleId: stri
     evidenceId: section?.contentHash ?? "tombstone",
   };
 }
+
+/** Dated or progress prose a current-law module page must not carry (a deterministic pre-check). */
+const DATED_PROSE = [/\b20\d\d-\d\d-\d\d\b/, /\bround\s+\d+\b/i, /\bwe tried\b/i, /\bthen changed\b/i];
 
 function warning(pathValue: RepoPath, ruleId: string, message: string): WarningDiagnostic {
   return {
@@ -359,6 +508,11 @@ function findDocumentRule(config: DocVerifyConfig, file: RepoPath): DocumentIncl
   return documentRuleFor(config.documents, file);
 }
 
+/** The first non-empty line under a section's heading. */
+function statusLine(section: Section | undefined): string | undefined {
+  return section?.content.split("\n").slice(1).map((line) => line.trim()).find((line) => line.length > 0);
+}
+
 function sectionBody(section: Section | undefined): string | undefined {
   if (section === undefined) {
     return undefined;
@@ -366,7 +520,8 @@ function sectionBody(section: Section | undefined): string | undefined {
   return section.content.split("\n").slice(1).join("\n").trim().split(/\s+/, 1)[0];
 }
 
-export function combineVerdicts(verdicts: Verdict[]): Verdict {
+/** The worst verdict; a `WARN` finding does not move it. */
+export function combineVerdicts(verdicts: Array<Verdict | FindingVerdict>): Verdict {
   const precedence: Verdict[] = ["NO-GO", "BLOCKED", "NEEDS-REVIEW", "PASS"];
   return precedence.find((verdict) => verdicts.includes(verdict)) ?? "PASS";
 }

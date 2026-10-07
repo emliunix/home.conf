@@ -1,0 +1,64 @@
+schema_version: 1
+kind: document-verification
+# Ordered, last-match-wins: put specific typed rules AFTER the generic docs rule.
+documents:
+  - pattern: constitution.md
+    artifact_kind: constitution
+    modules: [doc-verify/modules/spine.yaml]
+    required_sections: [1-purpose, 2-the-commitment-in-one-sentence, 4-the-roots-we-stand-on-and-the-work-each-does, 6-what-would-falsify-the-commitment]
+  - pattern: design/[0-9][0-9]-*.md
+    artifact_kind: design
+    modules: [doc-verify/modules/artifact.yaml, doc-verify/modules/design.yaml]
+    required_sections: [goal, status]
+  - pattern: goals/[0-9][0-9]-*.md
+    artifact_kind: goal
+    modules: [doc-verify/modules/artifact.yaml, doc-verify/modules/goal.yaml]
+    status_from: title
+    required_sections: [goal, design-files, worklog]
+  - pattern: docs/**/*.md
+    artifact_kind: docs
+    verification: doc-verify/contracts/docs-strategy.yaml#verification
+    required_sections: []
+  - pattern: docs/modules/*/properties.md
+    artifact_kind: module-properties
+    modules: [doc-verify/modules/canon.yaml]
+    required_sections: []
+  - pattern: docs/modules/*/verification.md
+    artifact_kind: module-verification
+    modules: [doc-verify/modules/canon.yaml]
+    required_sections: []
+  - pattern: docs/modules/*/contract.md
+    artifact_kind: module-contract
+    modules: [doc-verify/modules/canon.yaml]
+    required_sections: []
+  - pattern: docs/modules/*/model.md
+    artifact_kind: module-model
+    modules: [doc-verify/modules/canon.yaml]
+    required_sections: []
+  - pattern: docs/architecture.md
+    artifact_kind: architecture
+    modules: [doc-verify/modules/canon.yaml]
+    required_sections: []
+  - pattern: docs/index.md
+    artifact_kind: index
+    modules: [doc-verify/modules/canon.yaml]
+    required_sections: []
+  - pattern: worklog/**/*.md
+    artifact_kind: worklog
+    verification: doc-verify/contracts/worklog-strategy.yaml#verification
+    required_sections: []
+  - pattern: worklog/evidence/**
+    exclude: true
+invalidation_patterns:
+  - .doc-verify.yaml
+  - doc-verify/**
+judge:
+  kind: jev
+  model: jev-1.13.0
+  client_sha256: ce983f8de97d5b30d527a7116f0c49ad3d17e098d2c3f17c9600041260c65dcb
+  attestation_max_age_seconds: 86400
+policy:
+  kind: semantic-boundary
+  version: 1
+  max_evidence_bytes: 36000
+  forbidden_literals: []

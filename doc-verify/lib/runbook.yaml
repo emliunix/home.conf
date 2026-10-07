@@ -1,0 +1,30 @@
+# doc-verify:runbook - a project runbook: how to run and verify the project, as current
+# instructions, not as history. Queries every section at every depth. Extends references.
+# A worked example: doc-verify/lib/examples/runbook.md.
+schema_version: 2
+kind: verification-module
+module: doc-verify.runbook
+extends: [doc-verify:references]
+oracles:
+  current_not_history(D, S):
+    ask: This gives current instructions a reader can follow now, not how they came to be, not a round number, not "we tried", not a dated decision or a progress note.
+    evidence: core.body(D, S)
+    threshold: 0.5
+    max_bytes: 12000
+rules:
+  sections(D, S): core.section(D, S, _)
+  heading(D, S, H): core.heading(D, S, H)
+constraints:
+  runbook-has-commands:
+    forall: core.meta(D, kind, runbook)
+    require: heading(D, S, 'Commands')
+    severity: error
+    message: "{D} states no 'Commands' section"
+    repair: "List the commands a reader runs, with what each establishes."
+  runbook-is-current:
+    forall: core.meta(D, kind, runbook), sections(D, S)
+    require: current_not_history(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{S} in {D} narrates history instead of stating current instructions"
+    repair: "State what to run now; the decision trail belongs in a design or the worklog."

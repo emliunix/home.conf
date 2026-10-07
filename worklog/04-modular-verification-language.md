@@ -363,3 +363,27 @@ live.
 The row covers only the home.conf contracts this design migrates. #165 itself, which
 covers sandbox-deploy's items and the C3r/C3+ eval keys, is on hold under the owner's
 ordering ruling and is not touched here.
+
+## C12 - v1 reader decommissioned (2026-10-05)
+
+The owner ruled: "the old rubrics is old, we can decommission it." The v1 reader, its
+contracts, `--rubric`, `--refresh` and `verify:jev` are deleted; a config rule naming
+`verification:` is refused with a message that names the migration, and a companion's
+`verification:` block is ignored with a `metadata.legacy-verification` warning.
+
+- **Engine libraries.** `doc-verify:NAME` resolves to `doc-verify/lib/NAME.yaml`, shipped
+  with the engine. `artifact`, `design` and `goal` are visflow's modules, generalised;
+  `goal` accepts the 'frozen root' and 'AC coverage' spellings.
+- **home.conf consumers.** Goals run `doc-verify:goal`, whose root heading list selects
+  "User requirements - frozen root", so the parity exception design 04 §Migration names
+  (and goal 03 keeps as an open thread) is resolved by heading, not slug. Designs run
+  `doc-verify:artifact` and `doc-verify/modules/design.yaml`, the v1 design contract
+  migrated item by item; design/03's companion item is `doc-verify/modules/design-03.yaml`.
+  `doc-verify:design` is not used here: its `purpose` oracle sends every top-level
+  section, and design/02 and design/03 name the credential variable, which the outbound
+  policy refuses (NO-GO).
+- **Evidence.** `check --all --profile draft` passes all 7 governed documents
+  structurally with 0 judge calls. The live migration-parity and separation rows were
+  not run: no key was used.
+- **Not governed any more.** `goals/2026-09-09-goal-file-funnel.md` predates design/00's
+  `goals/NN-<topic>.md` form and has no `## Goal` or coverage section.
