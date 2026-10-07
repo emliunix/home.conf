@@ -40,6 +40,20 @@ subject under audit:
 A zero from a store whose subject records were never reached is a failed
 measurement, not evidence of absence.
 
+Use the focused boundary before reading a corpus:
+
+```sh
+node skills/audit-agent-tooling/scripts/preflight-corpus.mjs \
+  --since <ISO> [--until <ISO>] <file-or-directory>...
+```
+
+The command emits the active window, recognized and ignored record-type
+censuses, and the per-file counts. It exits `1` with `REFUSED` when the
+selected corpus has zero conversation records in the window. `--allow-empty`
+is the explicit exception; it prints the opt-in in its receipt. Its focused
+cases and seeded removal-red are in
+`skills/audit-agent-tooling/tests/check-preflight.mjs`.
+
 Keep transcript source files read-only. Do not paste large transcript
 payloads into the report; reference the source and show only the relevant
 records or normalized rows.
