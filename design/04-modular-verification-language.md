@@ -502,9 +502,9 @@ This design replaces three sections of design 02:
 
 It also replaces design 03's clause that TypeScript owns the deterministic verdict
 rules. It replaces design 02's "One request contains all questions" and design 03's
-"multiple JEV calls" witness with a bound of `rounds` rounds per artifact, and of
-`rounds` requests under the default `batched` shape (`per-atom` asks one request per
-demanded atom within those rounds). It is a rule language, not the workflow language that design 03 excluded:
+"multiple JEV calls" witness with a bound of `rounds` rounds per artifact, and of the
+requests each round's atoms need under the chosen `request_shape`: one per sub-batch
+under the default `batched`, and one per demanded atom under `per-atom`. It is a rule language, not the workflow language that design 03 excluded:
 modules cannot run commands or choose pipeline stages. Everything else in both designs
 stays as it is. That covers snapshots, the affected closure, segmentation, the
 outbound policy, attestation, the Prek path, and CLI modes. When this design lands,
@@ -519,7 +519,7 @@ designs 02 and 03 gain `Superseded by:` lines for those sections.
 | Three-valued soundness | `forbid` or `require` over an unknown atom is `satisfied`, or `not` of an unknown atom is true | `npm test -- evaluate` |
 | Static checks | An unsafe variable, a negation cycle, recursion through an oracle, a non-ground oracle call, a predicate outside the whitelist, or an oracle deeper than `rounds` is accepted | `npm test -- language` |
 | Modules compose | Two libraries defining `problem` collide, a param change has no effect, a diamond creates two instances, an import cycle or repository escape resolves, or weakening without `waive` is accepted | `npm test -- modules` |
-| Rounds bounded | A depth-2 program makes a number of calls other than 2, a depth-1 `batched` program makes more than 1, or a single atom's evidence is split across requests | `npm test -- evaluate` |
+| Rounds bounded | A depth-2 program makes a number of rounds other than 2, a depth-1 `batched` program makes more than 1 round, or a single atom's evidence is split across requests | `npm test -- evaluate` |
 | Requests shaped as declared | Under `batched`, a round's atoms do not share one request; under `per-atom`, an atom shares its request with another; an unknown `request_shape` loads; or the default stops being `batched` | `npm test -- request-shape` |
 | Extends law | A child that raises an inherited threshold, changes an inherited oracle, or adds or widens a `warning` loads without `waive:`, or any waiver-free change improves a seeded document's verdict | `npm test -- modules` |
 | Diagnostics complete | A violation report lacks bindings, the population, a proof leaf with label and distribution, or the repair hint | `npm test -- diagnostics` |
