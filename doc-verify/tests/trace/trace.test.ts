@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { ChromeSink, TreeSink, configure, enabled, event, remark, span } from "../../src/trace.js";
+import { ChromeSink, TreeSink, configure, enabled, event, parseClasses, remark, sinksFor, span } from "../../src/trace.js";
 
 function runScript(lines: string[]): void {
   const tree = new TreeSink((line) => { lines.push(line); });
@@ -33,6 +33,21 @@ describe("trace filter", () => {
     span("interp.turn").end();
     event("interp.turn.step");
     expect(lines).toEqual([]);
+  });
+});
+
+describe("trace environment wiring", () => {
+  it("strips spaces around the comma list", () => {
+    expect(parseClasses("surface, interp.turn")).toEqual(["surface", "interp.turn"]);
+    expect(parseClasses("")).toEqual([]);
+  });
+
+  it("defaults to the tree sink when classes are on and OUT is unset", () => {
+    expect(sinksFor("surface", undefined)).toEqual([expect.any(TreeSink)]);
+  });
+
+  it("is off (no sinks) when no class is on, whatever OUT says", () => {
+    expect(sinksFor("", "tree")).toEqual([]);
   });
 });
 

@@ -137,7 +137,7 @@ class Kit {
 /** The indented tree on stderr: one line per span end, event and remark (design 19 §3). */
 export class TreeSink implements TraceSink {
   private depth = 0;
-  constructor(private readonly write: (line: string) => void) {}
+  constructor(private readonly write: (line: string) => void = (line) => { process.stderr.write(`${line}\n`); }) {}
 
   private fieldsText(fields: TraceFields): string {
     const keys = Object.keys(fields).sort();
@@ -204,8 +204,16 @@ function firstSegment(name: string): string {
   return name.split(".")[0] ?? name;
 }
 
-function parseClasses(value: string): string[] {
+export function parseClasses(value: string): string[] {
   return value.split(",").map((part) => part.trim()).filter((part) => part.length > 0);
+}
+
+/** The sinks for an environment pair: off (none) unless a class is on, `tree` when OUT is unset. */
+export function sinksFor(classes: string, out: string | undefined): TraceSink[] {
+  if (parseClasses(classes).length === 0) {
+    return [];
+  }
+  return out !== undefined && out.length > 0 ? sinksFromEnv(out) : [new TreeSink()];
 }
 
 function nowMicros(): number {
@@ -227,9 +235,10 @@ export function sinksFromEnv(value: string, write: (line: string) => void = (lin
 
 export const trace = new Kit(() => process.env["DOC_VERIFY_TRACE"]);
 
-const envSinks = process.env["DOC_VERIFY_TRACE_OUT"];
-if (envSinks !== undefined && envSinks.length > 0) {
-  trace.configure(parseClasses(process.env["DOC_VERIFY_TRACE"] ?? ""), sinksFromEnv(envSinks));
+const rawClasses = process.env["DOC_VERIFY_TRACE"] ?? "";
+const envSinks = sinksFor(rawClasses, process.env["DOC_VERIFY_TRACE_OUT"]);
+if (envSinks.length > 0) {
+  trace.configure(parseClasses(rawClasses), envSinks);
 }
 export const span = (name: string, fields?: TraceFields): TraceSpan => trace.span(name, fields ?? {});
 export const event = (name: string, fields?: TraceFields): void => trace.event(name, fields ?? {});
