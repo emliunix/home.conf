@@ -8,7 +8,7 @@
  */
 
 import { CORE_BASE, CORE_DERIVED } from "./facts.js";
-import { ModuleError, type ConstraintSource, type OracleSource, type ParsedModule } from "./module.js";
+import { ModuleError, type ConstraintSource, type OracleSource, type ParsedModule, type RequestShape } from "./module.js";
 import { conjuncts, listItems, variablesOf, type Term } from "./terms.js";
 
 export type Literal =
@@ -61,6 +61,7 @@ export interface Program {
   module: string;
   hash: string;
   rounds: number;
+  requestShape: RequestShape;
   warningThreshold: number;
   rules: Rule[];
   oracles: Oracle[];
@@ -162,6 +163,7 @@ export function checkModule(parsed: ParsedModule): Program {
     module: moduleName,
     hash: parsed.hash,
     rounds: parsed.rounds,
+    requestShape: parsed.requestShape,
     warningThreshold: parsed.source.warning_threshold ?? 0,
     rules, oracles, constraints, strata, oracleDependent, params: parsed.params,
   };

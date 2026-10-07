@@ -76,7 +76,8 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
     try {
       requests.push(...await askRound({
         round, demands: [...demands.values()], documents, store,
-        backend: input.backend, unavailable: input.unavailable, model: input.model, policy: input.policy, cache: input.cache,
+        backend: input.backend, unavailable: input.unavailable, model: input.model, policy: input.policy,
+        requestShape: program.requestShape, cache: input.cache,
       }));
     } catch (error) {
       if (error instanceof PolicyViolationError) {
