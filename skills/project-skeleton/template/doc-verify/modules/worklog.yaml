@@ -1,0 +1,36 @@
+# worklog/: dated records — free working, thinking and decisions; never current law.
+# Migrated from the v1 rubric doc-verify/contracts/worklog.yaml (the v1 contracts were
+# deleted with this migration):
+#   worklog.evidence_not_law (scope combined over @selected)
+#     -> oracle evidence_not_law over core.body of each outermost selected section (the title
+#        section when nothing is narrowed: the whole record in one question, as v1 asked)
+#     -> constraint worklog-evidence-not-law, threshold 0 (argmax stands), profiles [promotion].
+#   v1 marked the item noncritical (weight 1, rubric threshold 0.8, so one refuted answer was
+#   already below threshold); here it is an error: a record that asserts a standing rule is the
+#   one thing the worklog must not do, since the rule belongs in a design or the canon.
+#   max_bytes rises from v1's 16000 to the policy cap 36000 so whole records fit; a record past
+#   the cap is BLOCKED on promotion (never truncated), which says to split it.
+# References: every Markdown link resolves (error) and every backtick path resolves (warning).
+# No warning_threshold is set, so a stale path is listed but never changes the verdict.
+schema_version: 2
+kind: verification-module
+module: project.worklog
+extends: [doc-verify:references]
+oracles:
+  evidence_not_law(D, S):
+    ask: >-
+      The record reports dated work, evidence, commands or decisions with their sources, without
+      asserting new standing rules that belong in a design or the canon.
+    evidence: core.body(D, S)
+    threshold: 0
+    max_bytes: 36000
+rules:
+  outermost_selected(D, S): core.selected(D, S), core.section(D, S, P), not core.selected(D, P)
+constraints:
+  worklog-evidence-not-law:
+    forall: core.meta(D, kind, worklog), outermost_selected(D, S)
+    require: evidence_not_law(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{S} in {D} asserts a standing rule instead of recording dated work with its sources"
+    repair: "Record what was done, measured or decided and where it is evidenced; move the standing rule to the design or the canon file that owns it and cite it here."

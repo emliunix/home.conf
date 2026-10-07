@@ -2,6 +2,6 @@
 # Install the hook only once the judge key (.env.doc-verify) exists.
 repos:
   - repo: https://github.com/emliunix/home.conf
-    rev: 2381b1fd3dcb9f02ec7d8bee096ba155e9456266d
+    rev: de99d33dd334c8602a9ccfa8dab7111f1942c8ea
     hooks:
       - id: document-contracts

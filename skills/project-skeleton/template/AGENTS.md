@@ -22,7 +22,7 @@ not summaries; keep `MEMORY.md` as the recovery index.
 ## Verify
 
 - Python: `uv run --group test python -m pytest -q`.
-- Documents: `npm exec --yes --package=github:emliunix/home.conf#2381b1fd3dcb9f02ec7d8bee096ba155e9456266d -- doc-verify check --all`.
+- Documents: `npm exec --yes --package=github:emliunix/home.conf#de99d33dd334c8602a9ccfa8dab7111f1942c8ea -- doc-verify check --all`.
   The key goes in a gitignored `.env.doc-verify`, a symlink to the protected local
   credential file. Without the key the structural checks still run and the semantic ones
   report BLOCKED (exit 3). The prek hook (`.pre-commit-config.yaml`) is installed only
