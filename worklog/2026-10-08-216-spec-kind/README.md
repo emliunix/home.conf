@@ -70,9 +70,42 @@ Neither mutation was bad; each broke a real rule. What was missing was the case.
 - a case was added that drives `checkDocuments` **end to end** and asserts the finding's `basis`,
   which reddens M8.
 
-**Final: 7/7 mutations redden a spec case.** The two green rows are kept in the table with the cases
+| **M9** — `checker.ts`: test the revision with `git rev-parse --verify -q <rev>` instead of `cat-file -e <rev>^{tree}` | **GREEN** | **an instrument that looks stricter and is not.** `--verify` asserts FORMAT, not existence. Measured in a real worktree: a fabricated 8-hex id exits 1 (wrong reason), but a fabricated **40-hex** id and a real-but-foreign commit hash **both exit 0**. |
+
+**Final: 8/8 mutations redden a spec case.** All three green rows are kept in the table with the cases
 that were added to redden them — a mutation table whose green rows are deleted rather than fixed
 measures the table, not the code.
+
+### ⚠⚠ M9 — an instrument that looks stricter and is not
+
+`git rev-parse --verify -q` is the command a reader reaches for, and it is **weaker** than
+`cat-file -e <rev>^{tree}`. Git's own manual names the gap: add `^{type}` to be sure the object is
+actually in the object database. Measured in an agent-substrate worktree:
+
+| probe | `rev-parse --verify -q` | `cat-file -e <rev>^{tree}` |
+| --- | --- | --- |
+| fabricated 8-hex `deadbeef` (the ORIGINAL fixture) | exit 1 | exit 1 |
+| fabricated **40-hex** `aaaa…` | **exit 0** | exit 1 |
+| a real **foreign** commit (`home.conf` `43a97a73…`) | **exit 0** | exit 1 |
+
+⚠ **The original case set could not catch this**, and that is the point: its fabricated id was 8
+characters, which fails `--verify` for the *other* reason (bad format), so M9 left the suite **green**.
+**A well-formed but ABSENT id is the only shape that discriminates**; a case was added for it
+(`fullHex = "a".repeat(40)`, driven end to end, asserting the finding's message) and **M9 now reddens
+on it**.
+
+⚠ **Verified rather than asserted:** with M9 applied and that row removed, the suite is green; with the
+row present, M9 reddens **1 failed / 33 passed** at the full-length assertion. Independently
+reproduced by two reviewers at this object, same numbers.
+
+### Delivery topology (read this before re-measuring)
+
+⚠⚠ **This object lives in `home.conf`, NOT in `agent-substrate`.** Its base `1c71b248` is a
+`home.conf` main commit, and `doc-verify/src/`, `doc-verify/lib/` and `doc-verify/tests/` exist **only**
+in `home.conf`. `check-skill-mirror.mjs` — the gate that reddened my earlier push attempts — is an
+**agent-substrate** script and does not exist in this repo, so it was never a blocker for this object.
+Access is via `~/.ssh/id_ed25519` (the `emliunix` identity); `~/.ssh/github-zura` is **denied** on
+`emliunix/home.conf`.
 
 ## Evidence
 
@@ -80,8 +113,9 @@ measures the table, not the code.
 - **Typecheck**: `npx tsc -p doc-verify/tsconfig.json --noEmit` → 0.
 - **Build**: `npx tsc -p doc-verify/tsconfig.build.json` → 0. ⚠ The 23 `subprocess` CLI tests fail
   without this, because they invoke `doc-verify/dist/cli.js`; that is a missing build, not a defect.
-- **Repo check**: `npm run check` → **PASS** (4 artifacts / 83 sections).
-- **Mutations**: 7/7 redden a spec case.
+- **Repo check**: `npm run check` → **PASS** (4 artifacts / 83 sections); the document-contracts
+  pre-commit hook passes (24 artifacts / 166 sections).
+- **Mutations**: 8/8 redden a spec case (M9 added after a reviewer measured the instrument gap).
 - **Preservation**: the plain-path, line-locator and URL cases are asserted unchanged, and
   `PATH_SPAN`/`GIT_REF_PREFIX` are untouched.
 - ⚠ **`npx eslint doc-verify/src doc-verify/tests` reports one pre-existing error** at
