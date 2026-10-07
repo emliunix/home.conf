@@ -16,6 +16,8 @@ is applied alone to `doc-verify/src/engine/facts.ts` (or the named file), then
 | M8 | `references.yaml`: change `specs-resolve`'s `forbid` to `core.spec_unresolved(D, S, T, path)` | "references: an unresolved spec reddens with the component named…" — the bad-revision case would no longer redden |
 | M9 | `doc-verify/src/checker.ts`: test the revision with `git rev-parse --verify -q <rev>` instead of `cat-file -e <rev>^{tree}` | "references: an unresolved spec reddens with the component named…" — **but ONLY because the case carries a fabricated 40-hex id.** `--verify` asserts FORMAT, not existence: measured, a fabricated 8-hex id fails it, while a fabricated **40-hex** id and a real-but-foreign commit hash both **exit 0**. Without the full-length row this mutation is GREEN. |
 
+| M10 | `doc-verify/lib/examples/receipt.md`: change the `Identity:` revision from `HEAD` to a fabricated id | **"doc-verify:receipt passes its worked example"** (`modules-check.test.ts`) — the ONLY case that drives the LANDED example end-to-end. It reddens `NO-GO` with `module.specs-resolve`, *"whose revision does not resolve to a Git object"*, `basis` = `core.spec_unresolved(…, revision)`. **Card outcome 5's substance**: the example does not merely *mention* the new predicate, it exercises it. |
+
 ## ⚠⚠ Two files are called `checker.ts`, and only one is the resolver
 
 `doc-verify/src/checker.ts` (**602 lines**, exports `checkDocuments`, consumes `cli.ts`) holds the
@@ -74,5 +76,6 @@ added. Re-verified: removing that row makes M9 green again.
 
 ## Verified, not asserted
 
-Every row above was applied and observed: **8/8 redden a spec case**. The two green rows from the
+Every row above was applied and observed. **M1–M9 redden a `references.test.ts` spec case (9/9).**
+M10 is driven through a different file (`modules-check.test.ts`) and was verified by hand. The two green rows from the
 first attempt are recorded above with the cases that were added to make them redden.
