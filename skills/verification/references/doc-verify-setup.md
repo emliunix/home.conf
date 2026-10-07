@@ -42,7 +42,9 @@ contracts, in order. Each step says what failure looks like when it is skipped.
   v1 rubrics").
 - Before writing a module rule over `core.heading`, run `doc-verify segments`
   across the corpus and list every heading variant. A heading rule that
-  matches no section leaves its constraint's population empty.
+  matches no section leaves its constraint's population empty. By default that
+  is silently satisfied; use `population: nonempty` when an empty population
+  must be a failure.
 - Commit bulk companion conversions as their own commit right away, staging
   explicit paths. In a shared worktree, uncommitted mechanical rewrites get
   swept into someone else's commit.
@@ -73,11 +75,13 @@ Classify the mismatch as:
 - both moved, or the intended contract itself is unresolved.
 
 One common shape is a rule that requires at least one named section and then
-hands the present sections to an oracle. An empty population emits the engine's
-own empty-population message; an authored message that says the sections are
-missing can therefore print only on the path where at least one section is
-present and the oracle refuted it. Restating that message is a rule-surface
-change; making the engine choose a cause-appropriate message is an engine change;
+hands the present sections to an oracle. When the constraint declares
+`population: nonempty`, an empty population emits the engine's own
+empty-population message; an authored message that says the sections are missing
+can therefore print only on the path where at least one section is present and
+the oracle refuted it. Without that declaration, an empty population is
+vacuously satisfied and silent. Restating that message is a rule-surface change;
+making the engine choose a cause-appropriate message is an engine change;
 removing the authored message is another rule-surface change. Diagnose which
 surface owns the mismatch before deciding whether a consumer pin move is needed.
 
