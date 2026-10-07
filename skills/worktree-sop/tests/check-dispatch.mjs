@@ -108,7 +108,8 @@ function checkSurface() {
     "references/worktree-lifecycle.md",
     "references/gate-lock.md",
   ]) {
-    if (!skill.includes(`(${target})`)) fail(`SKILL.md: missing link to ${target}`);
+    if (!skill.includes(`(${target})`))
+      fail(`SKILL.md: missing link to ${target}`);
     if (!existsSync(join(ROOT, target))) fail(`missing ${target}`);
   }
   if (!skill.includes("scripts/gate-lock.mjs")) {
@@ -152,7 +153,9 @@ async function checkRedGreen() {
   if (unlocked.some((result) => result.status !== 0)) {
     fail(`unlocked control failed: ${JSON.stringify(unlocked)}`);
   } else if (!hasOverlap(parseEvents(unlockedState))) {
-    fail("unlocked control did not overlap, so the fixture cannot prove serialization");
+    fail(
+      "unlocked control did not overlap, so the fixture cannot prove serialization",
+    );
   }
 
   writeFileSync(
@@ -214,17 +217,41 @@ async function checkRedGreen() {
     "process.exit(0)",
   ]);
   unlinkSync(lockFile);
-  if (timeout.status !== 75 || !timeout.stdout.includes('"state":"lock_timeout"')) {
+  if (
+    timeout.status !== 75 ||
+    !timeout.stdout.includes('"state":"lock_timeout"')
+  ) {
     fail("live holder did not produce a bounded lock timeout");
+  }
+}
+
+// The lock's own cases live in a sibling file: the landed fixture here writes a FULLY FORMED
+// lock, so it never presents the publish window that the live-holder eviction came from.
+// check-lock.mjs drives that window and the identity-checked transitions directly, and
+// check-lock-mutations.mjs proves each of those cases FIREs on the defect it targets.
+async function checkLockCases() {
+  for (const file of ["check-lock.mjs", "check-lock-mutations.mjs"]) {
+    const result = await run(process.execPath, [join(ROOT, "tests", file)]);
+    if (result.status !== 0) {
+      const detail = `${result.stdout}${result.stderr}`
+        .trim()
+        .split("\n")
+        .filter((line) => line.trim().startsWith("- "))
+        .join(" | ");
+      fail(`${file} failed: ${detail || `exit ${result.status}`}`);
+    }
   }
 }
 
 checkSurface();
 await checkRedGreen();
+await checkLockCases();
 
 if (failures.length) {
   console.error(`check-dispatch: ${failures.length} failure(s)`);
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("check-dispatch: ok (surface, serialization red/green, stale recovery)");
+console.log(
+  "check-dispatch: ok (surface, serialization red/green, stale recovery, lock classification, seeded mutations)",
+);

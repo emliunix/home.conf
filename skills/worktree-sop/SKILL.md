@@ -56,7 +56,13 @@ node skills/worktree-sop/scripts/gate-lock.mjs -- pnpm check
 ```
 
 Each attempt reports its own exit code and receipt. The lock has a bounded
-wait, a stale-holder recovery rule, and a release check tied to the lock token.
+wait, an **atomic publish** so the lock path is never partially written, a
+three-way holder classification (**missing** retries the create, **unparseable** —
+including parseable files that are not lock metadata — is honoured until it ages
+out, **parsed** waits unless the holder is dead or aged), a recovery that serializes
+its decision behind a short exclusive claim (so two reclaimers cannot act on one stale
+observation), claims the entry by rename so it can neither evict a successor nor
+clobber one on restore, and a release that never unlinks the shared path.
 Removing the lock does not make a gate valid; it only removes the serialization
 guarantee.
 
