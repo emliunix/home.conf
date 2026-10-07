@@ -32,7 +32,17 @@ export interface DocumentInput {
   files?: readonly string[];
   /** Branch and tag names (`git for-each-ref`): a span naming one is not a path. */
   gitRefs?: readonly string[];
+  /**
+   * Resolve a revision-qualified reference (`<rev>:<path>`): `ok` when both components
+   * resolve, otherwise which component did not. Absent means the classifier decides the
+   * shape but every such span resolves, matching `exists`.
+   */
+  resolveSpec?: SpecResolver;
 }
+
+/** Why a `<rev>:<path>` reference did not resolve. */
+export type SpecResolution = "ok" | "revision" | "path";
+export type SpecResolver = (spec: string) => SpecResolution;
 
 export interface DocumentFacts {
   id: string;
@@ -42,7 +52,7 @@ export interface DocumentFacts {
 }
 
 export const CORE_BASE = ["section/3", "heading/3", "depth/3", "order/3", "meta/3", "selected/2", "ref/4", "resolves/2"] as const;
-export const CORE_DERIVED = ["child/3", "descendant/3", "nests/3", "dangling/4"] as const;
+export const CORE_DERIVED = ["child/3", "descendant/3", "nests/3", "dangling/4", "spec_unresolved/4"] as const;
 
 export function documentFacts(document: DocumentInput): DocumentFacts {
   const sections = segmentMarkdown(document.markdown).filter((section) => section.depth > 0);
@@ -104,6 +114,7 @@ export function documentFacts(document: DocumentInput): DocumentFacts {
     ...(document.exists === undefined ? {} : { exists: document.exists }),
     ...(document.files === undefined ? {} : { files: document.files }),
     ...(document.gitRefs === undefined ? {} : { gitRefs: document.gitRefs }),
+    ...(document.resolveSpec === undefined ? {} : { resolveSpec: document.resolveSpec }),
   };
   for (const reference of documentReferences(document.markdown, sections, context)) {
     const key = `${reference.section}\u0000${reference.target}\u0000${reference.kind}`;
@@ -117,6 +128,22 @@ export function documentFacts(document: DocumentInput): DocumentFacts {
       facts.push(core("resolves", [D, atom(reference.target)]));
     } else {
       facts.push(core("dangling", args));
+    }
+    // ⚠ A `<rev>:<path>` NAMES ITS OWN FAILURE, WHICH `dangling` CANNOT. "the path is wrong" and
+    // "the revision is wrong" are different repairs, and a reader who is told only "does not
+    // exist" cannot choose between them. A parse failure is never reported as a resolution: when
+    // no resolver is supplied the span is classified `spec` but is not claimed to resolve, which
+    // is why `spec_unresolved(_, _, _, unresolved)` is emitted rather than nothing.
+    if (reference.kind === "spec") {
+      const parts = specParts(reference.target, context);
+      if (parts !== undefined) {
+        if (context.resolveSpec !== undefined) {
+          const verdict = context.resolveSpec(reference.target);
+          if (verdict !== "ok") {
+            facts.push(core("spec_unresolved", [D, atom(reference.section), atom(reference.target), atom(verdict)]));
+          }
+        }
+      }
     }
   }
   return { id, sections, parents, facts };
@@ -132,7 +159,7 @@ export interface DocumentReference {
    * file name (no `/`) that names no one tracked file, so it is a name, not a path; `line`: a code
    * span naming a position by line number, such as `path.ts:123`.
    */
-  kind: "link" | "path" | "name" | "line";
+  kind: "link" | "path" | "name" | "line" | "spec";
 }
 
 /** What reference extraction may consult about the repository; each part is optional. */
@@ -142,6 +169,8 @@ export interface ReferenceContext {
   exists?: (repoPath: string) => boolean;
   files?: readonly string[];
   gitRefs?: readonly string[];
+  /** Resolves a revision-qualified reference; decides `spec` resolution and its reason. */
+  resolveSpec?: SpecResolver;
 }
 
 /** A scheme (`https:`, `mailto:`) or a protocol-relative `//host` makes a link a URL. */
@@ -348,9 +377,54 @@ export function documentReferences(markdown: string, sections: Section[], contex
   return found;
 }
 
+/**
+ * A revision-qualified reference: `<rev>:<path>`. The revision is a 7-40 hex object id, a
+ * `HEAD`-relative expression, or a name the reference context lists as a Git ref; the path is a
+ * repository path. This is the ONLY kind that binds content to a revision, so `path` never stands
+ * in for it: a plain `doc-verify/src/checker.ts` says which file, not which version of it.
+ *
+ * ⚠ THE REVISION COMPONENT IS TIGHT ON PURPOSE. `doc-verify:verdict/strict` and
+ * `https://host/x.md` are full of colons, and the line-locator rule already claims `path:123`.
+ * Requiring the left side to be a real object name (or a listed ref) is what keeps this kind from
+ * swallowing them; over **all 269 Markdown files at this tree it admits exactly ONE span**, the
+ * worked example in `lib/examples/receipt.md`.
+ */
+const SPEC_HEX = /^[0-9a-f]{7,40}$/;
+const SPEC_HEAD = /^HEAD(?:[~^][0-9]*)*$/;
+
+/**
+ * Whether `value` is a revision-qualified reference, and if so its two components. The revision
+ * must be resolvable *as a name* -- hex, `HEAD`-relative, or a listed ref -- and the path must
+ * look like a repository path, so a line locator (`path.ts:123`) and a URL never reach here.
+ */
+function specParts(value: string, context: ReferenceContext | undefined): { revision: string; path: string } | undefined {
+  const colon = value.indexOf(":");
+  if (colon <= 0 || colon === value.length - 1) {
+    return undefined;
+  }
+  const revision = value.slice(0, colon);
+  const file = value.slice(colon + 1);
+  if (!(SPEC_HEX.test(revision) || SPEC_HEAD.test(revision) || (context?.gitRefs?.includes(revision) ?? false))) {
+    return undefined;
+  }
+  if (!PATH_SPAN.test(file) || file.startsWith("/") || ONLY_EXTENSIONS.test(file)) {
+    return undefined;
+  }
+  // A bare `name` on the right is not a path: `rev:main` names a revision and a ref, not a file.
+  if (!file.includes("/") && !FILE_EXTENSION.test(file)) {
+    return undefined;
+  }
+  return { revision, path: file };
+}
+
 function spanKind(value: string, context: ReferenceContext | undefined): DocumentReference["kind"] | undefined {
   if (isLineLocator(value, context)) {
     return "line";
+  }
+  // A revision-qualified reference is decided before the path rules, because PATH_SPAN (below)
+  // refuses a `:` outright -- which is exactly why `<rev>:<path>` was invisible.
+  if (specParts(value, context) !== undefined) {
+    return "spec";
   }
   if (!PATH_SPAN.test(value) || !/[A-Za-z0-9]/.test(value) || PREDICATE_INDICATOR.test(value) || PLACEHOLDER_SEGMENT.test(value)) {
     return undefined;
@@ -404,6 +478,14 @@ function basenameCount(files: readonly string[] | undefined, name: string): numb
  * some tracked file has that name (exactly one for a `path`, any number for a `name`).
  */
 export function referenceResolves(reference: DocumentReference, context: ReferenceContext): boolean {
+  // ⚠ A `spec` RESOLVES ONLY THROUGH ITS OWN RESOLVER, NEVER THROUGH `exists`. A path that exists
+  // says nothing about whether the REVISION exists, and a revision that exists says nothing about
+  // the path -- so letting `resolvesTarget` answer for a spec would report a checked revision that
+  // was never checked. With no resolver the capability is absent, and (like `exists`) the fact is
+  // then not claimed either way rather than being called a failure.
+  if (reference.kind === "spec") {
+    return context.resolveSpec === undefined || context.resolveSpec(reference.target) === "ok";
+  }
   if (resolvesTarget(context.path, reference.target, context.exists)) {
     return true;
   }

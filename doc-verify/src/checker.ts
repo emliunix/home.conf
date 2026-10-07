@@ -117,7 +117,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
   }
   const selectedIds = options.sections?.map(sectionId);
   const exists = candidateExists(root, pair.candidateInventory, pair.workingTree);
-  const repository = { exists, files: pair.candidateInventory, gitRefs: pair.gitRefs };
+  const repository = { exists, files: pair.candidateInventory, gitRefs: pair.gitRefs, resolveSpec: specResolver(root) };
   const artifacts: ArtifactReport[] = [];
   for (const file of pair.candidatePaths) {
     const rule = findDocumentRule(config, file);
@@ -378,6 +378,60 @@ interface RepositoryView {
   exists: (repoPath: string) => boolean;
   files: readonly string[];
   gitRefs: readonly string[];
+  /** Resolves `<rev>:<path>` against the repository's own objects; see `specResolver`. */
+  resolveSpec: (spec: string) => "ok" | "revision" | "path";
+}
+
+/**
+ * Resolve a revision-qualified reference (`<rev>:<path>`) against the repository's objects.
+ *
+ * ⚠ THE TWO COMPONENTS ARE ASKED SEPARATELY, WHICH IS WHY THIS IS NOT ONE `cat-file` CALL. A single
+ * `git cat-file -e <spec>` answers "resolvable" and nothing more: an unknown revision and a bad path
+ * produce the same failure, so the receipt would say "does not exist" without saying what to fix.
+ * Resolving the revision first and the path second makes the failure name its component.
+ *
+ * ⚠ A PARSE FAILURE IS NOT A RESOLUTION. Only `git` is allowed to call a revision unknown; this
+ * function does not decide the grammar (the classifier does, and only for spans that look like a
+ * spec), so anything it cannot ask about is reported as the component that did not resolve rather
+ * than being silently counted as fine.
+ */
+function specResolver(root: string): (spec: string) => "ok" | "revision" | "path" {
+  const cache = new Map<string, "ok" | "revision" | "path">();
+  return (spec) => {
+    const hit = cache.get(spec);
+    if (hit !== undefined) {
+      return hit;
+    }
+    const colon = spec.indexOf(":");
+    const verdict = ((): "ok" | "revision" | "path" => {
+      if (colon <= 0) {
+        return "revision";
+      }
+      const revision = spec.slice(0, colon);
+      const file = spec.slice(colon + 1);
+      // ⚠ `^{tree}`, NOT `^{commit}` AND NOT A BARE `<rev>`. A revision must be able to PREFIX a
+      // path, which only a tree-ish can: `git cat-file -e <blob>` succeeds but `<blob>:<path>` is
+      // meaningless, so a bare existence test would report "the path is wrong" for a reference that
+      // can never have a path at all. `^{tree}` accepts a commit, a tree, or a tag for either, and
+      // refuses a blob -- which is exactly the question this branch needs answered.
+      if (!gitResolves(root, ["cat-file", "-e", `${revision}^{tree}`])) {
+        return "revision";
+      }
+      return gitResolves(root, ["cat-file", "-e", `${revision}:${file}`]) ? "ok" : "path";
+    })();
+    cache.set(spec, verdict);
+    return verdict;
+  };
+}
+
+/** Whether a `git` invocation succeeds, with output discarded. Used for object-existence questions. */
+function gitResolves(root: string, args: string[]): boolean {
+  try {
+    execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
