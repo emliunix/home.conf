@@ -1,8 +1,22 @@
 # `core.ref` spec kind — the committed mutations
 
-A `<rev>:<path>` reference is only worth having if the guards below are load-bearing. Each mutation
-is applied alone to `doc-verify/src/engine/facts.ts` (or the named file), then
-`npx vitest run doc-verify/tests/language/references.test.ts` must REDDEN the named spec case.
+A `<rev>:<path>` reference is only worth having if the guards below are load-bearing. Run them:
+
+```
+node doc-verify/tests/language/references.mutations.mjs
+```
+
+Each mutation is applied **alone** to the file its row names (every target is a **full repository
+path**), then `npx vitest run doc-verify/tests/language/references.test.ts` must REDDEN the named case.
+The runner exits non-zero unless every row reddens.
+
+⚠⚠ **THE RUNNER IS COMMITTED, AND IT WAS NOT ALWAYS.** This table previously described a harness that
+reported `BROKEN` / `HARNESS` — and no such artefact was committed or reachable, so the sentence
+promised an enforcement mechanism that was really the author's host-side script. Two reviewers
+measured that gap. **A claim about a mechanism must be inspectable, or it is prose.** The runner is now
+`references.mutations.mjs` beside this file, and both of its non-RED paths are live rather than
+asserted: a deliberately-broken anchor reports `BROKEN (anchor not found)` and a broken test file
+reports `HARNESS (no test line)`, **neither scored as a pass** — each exits 1.
 
 | # | mutation | must redden |
 |---|---|---|
@@ -29,8 +43,8 @@ is applied alone to `doc-verify/src/engine/facts.ts` (or the named file), then
 **5×** in the root file and **0×** in the engine file, so an unqualified `checker.ts:417` is
 **ambiguous rather than merely mislocated** — and a mutation applied to the wrong one **compiles, runs
 a green suite, and measures an unmutated tree.** Every cite in this file therefore names the directory,
-and the harness targets the full path and reports `BROKEN` (anchor absent) or `HARNESS` (no test line)
-rather than scoring it.
+and the committed runner targets the full path and reports `BROKEN` (anchor not found) or `HARNESS`
+(no test line) rather than scoring it — see the header.
 
 ## Why the ordering arm (M6) is the interesting one
 
