@@ -118,3 +118,23 @@ Fixture digests after seeding must equal the §1 table; `seed-fixtures.sh` also 
 temp (`PARTIAL GARBAGE THAT MUST NOT BE PUBLISHED`), which is the case's whole premise.
 
 Fence material (`preregistration.md`) is landed with this record now that the batch is closed.
+
+---
+
+## Post-review correction (2026-10-07, after CowBoy's NOT ACCEPT at `7c4018b`)
+
+This trial was run against `7c4018b`, which an independent review then found to contain two
+material defects. Recording the consequence honestly, because it bounds this record:
+
+- **Finding 1:** `appendFact` never published the index (it wrote only the log). The T1 full arm
+  never exercised the append path — it ran `memory-migrate`, which does publish — so **this trial's
+  T1 result is unaffected**, but the trap is worth naming: the arm used the tool the trial did not
+  intend to test, and the trial could have read as validating an append path that was broken.
+- **Finding 2:** stale-lock recovery could evict a live lock. T2 does not exercise concurrency, so
+  **both T2 scores stand**.
+
+The corrected tip is `72f142e`. Scores in §3 above are for `7c4018b` and are left as measured; no
+mock data, no retro-fitted numbers. What the review adds to the trial's own findings is a third
+instance of the same lesson: **a green suite is not evidence for a property the suite does not
+assert** — the coverage encoded the defect as the requirement (`append must leave the index
+byte-identical`), and the trial inherited that blind spot.
