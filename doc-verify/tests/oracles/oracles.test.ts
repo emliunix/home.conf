@@ -102,16 +102,27 @@ describe("binding by construction", () => {
 });
 
 describe("outbound checks", () => {
-  it("blocks an over-budget round and never splits it", async () => {
+  it("splits a round larger than the budget across calls", async () => {
+    // Probe the round's size with a huge budget, then set the budget just below it: one atom
+    // fits, the round does not, so it is decided across calls.
+    const probe = scriptedJudge(byHeading(PURPOSES));
+    const big = await run(KNOWN, probe.backend, { policy: { maxEvidenceBytes: 1_000_000, forbiddenLiterals: [] } });
+    const total = big.requests.reduce((sum, record) => sum + record.stateBytes, 0);
     const { backend, requests } = scriptedJudge(byHeading(PURPOSES));
-    const report = await run(KNOWN, backend, { policy: { maxEvidenceBytes: 200, forbiddenLiterals: [] } });
+    const report = await run(KNOWN, backend, { policy: { maxEvidenceBytes: Math.max(1, total - 1), forbiddenLiterals: [] } });
+    expect(requests.length).toBeGreaterThan(1);
+    expect(report.verdict).not.toBe("BLOCKED");
+  });
+
+  it("blocks a single atom whose own evidence is over budget, named", async () => {
+    const { backend, requests } = scriptedJudge(byHeading(PURPOSES));
+    const report = await run(KNOWN, backend, { policy: { maxEvidenceBytes: 40, forbiddenLiterals: [] } });
     expect(requests).toHaveLength(0);
     expect(report.verdict).toBe("BLOCKED");
-    expect(report.failure?.message).toMatch(/never split/);
-    // the numbers, not just the refusal: measured bytes and the configured limit
     const refusal = report.failure?.message ?? "";
-    expect(refusal).toMatch(/the round's evidence is \d+ bytes/);
-    expect(refusal).toContain("above the outbound budget of 200");
+    expect(refusal).toMatch(/evidence for \S+ is \d+ bytes/);
+    expect(refusal).toContain("above the outbound budget of 40");
+    expect(refusal).toMatch(/a single atom is not split/);
   });
 
   it("gives NO-GO when the evidence carries a forbidden literal", async () => {
