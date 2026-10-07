@@ -23,6 +23,24 @@ safe-hold bucket.
 
 Discriminate on the structured status code. `$?` alone is not enough.
 
+## Keep the checked command's exit status
+
+A shell pipeline returns the rightmost command's status unless the caller reads
+the checked command's status. `tsc ... | head -30; echo "EXIT=$?"` reports
+`head`, so a failed compiler run can print a clean zero.
+
+Preserve the status by one of:
+
+- running the checked command without a pipe;
+- reading the checked command's `${PIPESTATUS[...]}` entry immediately after the
+  pipeline;
+- enabling `set -o pipefail`; or
+- using a wrapper whose result is the checked command's status.
+
+When output must be truncated, the receipt names the command that decided the
+result and the status that command returned. The downstream formatter's status
+is not evidence about the checked command.
+
 ## Crash rate is not correctness
 
 An error flag measures crashes and refusals. It does not detect a command that
