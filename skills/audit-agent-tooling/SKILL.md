@@ -26,6 +26,20 @@ Record every transcript path, harness, session ID, file hash when stable, and
 read time. Live sessions change between reads, so a count without its read
 time is not reproducible. State the corpus and time window in every table.
 
+State the active window explicitly in every census, including whether `--since`
+was supplied or defaulted. Before reading the corpus, preflight it for the
+subject under audit:
+
+- a selected file or store with zero recognized subject records in the active
+  window is refused, with the observed record-type census and the window;
+- a mixed store reports which record types were recognized and which were
+  ignored;
+- an intentionally empty corpus requires an explicit opt-in, so a legitimate
+  zero is distinguishable from an instrument that never saw the subject.
+
+A zero from a store whose subject records were never reached is a failed
+measurement, not evidence of absence.
+
 Keep transcript source files read-only. Do not paste large transcript
 payloads into the report; reference the source and show only the relevant
 records or normalized rows.
