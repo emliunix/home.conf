@@ -31,9 +31,10 @@
 //
 // EXIT CODES. 0 appended (or already present); 1 refused, nothing changed; 64 invalid input.
 
+import { spawnSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import {
-  closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync,
+  closeSync, existsSync, fsyncSync, linkSync, mkdirSync, openSync, readFileSync,
   renameSync, rmSync, statSync, writeFileSync, writeSync,
 } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -65,6 +66,29 @@ export function logPathFor(notesDir, date = new Date()) {
  * tombstone, confirm the tombstone holds THAT inode, and either proceed (we evicted the stale lock)
  * or put it back and retry (we moved a successor's live lock).
  */
+/**
+ * Publish a displaced lock back to its path WITHOUT clobbering whatever is there now.
+ *
+ * `renameSync` OVERWRITES its destination, so a third writer that claimed the free path in the gap
+ * between the eviction and this restore would have its live lock destroyed -- a deterministic
+ * reproduction, not a theoretical race. `linkSync` fails with EEXIST instead, so the newcomer
+ * survives and the displaced lock is left at its tombstone. A leftover file is recoverable; a
+ * clobbered live lock is not.
+ *
+ * Extracted and exported so the coverage can drive this transition directly with the path already
+ * occupied. A case that called `linkSync` itself would test JavaScript rather than this behaviour.
+ *
+ * Returns true when the restore published, false when the path was occupied.
+ */
+export function restoreWithoutClobbering(tombstone, target) {
+  try {
+    linkSync(tombstone, target);
+    return true;
+  } catch {
+    return false;                       // EEXIST (occupied) or the tombstone is gone
+  }
+}
+
 function acquire(lockDir, { timeoutMs = 10_000, pollMs = 25, staleMs = 60_000 } = {}) {
   const lock = join(lockDir, "memory-append.lock");
   const deadline = Date.now() + timeoutMs;
@@ -113,9 +137,12 @@ function acquire(lockDir, { timeoutMs = 10_000, pollMs = 25, staleMs = 60_000 } 
         } catch { continue; }
         if (moved.ino !== measured.ino) {
           // We moved a lock that was NOT the stale one we measured -- a successor's live lock. Put it
-          // back if the path is free; if it is NOT, leave the tombstone rather than delete a live
-          // lock. Leaving it costs a file and is recoverable; deleting it is not.
-          try { renameSync(tombstone, lock); } catch { /* path re-occupied: leave the tombstone */ }
+          // back NON-CLOBBERINGLY: `renameSync` OVERWRITES its destination, so a third writer that
+          // took the free path in the meantime would have its live record destroyed. `linkSync` fails
+          // with EEXIST instead of overwriting, which is the behaviour we need; the tombstone stays
+          // if the path is occupied, since a leftover file is recoverable and a clobbered lock is not.
+          restoreWithoutClobbering(tombstone, lock);
+          try { rmSync(tombstone, { force: true }); } catch { /* best effort */ }
           continue;
         }
         rmSync(tombstone, { force: true });
@@ -160,9 +187,11 @@ function releaseLock(held) {
   }
   if (moved.ino !== held.ino) {
     // We moved a lock that is NOT ours: a successor took over while we were releasing. Put it back
-    // exactly where it was, leaving their lock in place. If the path is occupied again we must not
-    // clobber it -- leave the tombstone rather than delete a live lock.
-    try { renameSync(tombstone, held.lock); } catch { /* the path is re-occupied; leave the tombstone */ }
+    // NON-CLOBBERINGLY. `renameSync` overwrites, so a THIRD writer that claimed the free path in the
+    // gap would have its live record destroyed -- reproduced deterministically. `linkSync` fails with
+    // EEXIST rather than overwriting, so the newcomer survives and we leave the tombstone.
+    restoreWithoutClobbering(tombstone, held.lock);
+    try { rmSync(tombstone, { force: true }); } catch { /* best effort */ }
     return;
   }
   rmSync(tombstone, { recursive: true, force: true });
@@ -253,15 +282,55 @@ function ownerRecord() {
  * must never become a successful write.
  */
 function holderState(owner) {
-  if (owner === null) return "unknown";  try {
+  if (owner === null) return "unknown";
+  let alive = true;
+  try {
     process.kill(owner.pid, 0);
-    return "alive";
   } catch (error) {
-    if (error?.code === "EPERM") return "alive";      // exists, not ours to signal
-    if (error?.code === "ESRCH") return "dead";        // no such process
-    return "unknown";                                  // never treat an unexpected error as death
+    if (error?.code === "EPERM") alive = true;         // exists, not ours to signal
+    else if (error?.code === "ESRCH") alive = false;   // no such process
+    else return "unknown";                             // never treat an unexpected error as death
+  }
+  if (!alive) return "dead";
+
+  // PID REUSE IS IMPLEMENTED, NOT JUST STORED. A pid can be recycled, so "this pid is alive" is not
+  // the same as "the writer that recorded this pid is alive". The owner record carries the writer's
+  // start time for exactly this comparison, and an earlier revision parsed it and then IGNORED it --
+  // so a recycled pid wedged the claim forever, because age applies only when identity is dead or
+  // unparseable. Comparing the live process's start time to the recorded one distinguishes the
+  // original holder (alive) from a successor that happens to own the number (recycled).
+  const started = startTimeOf(owner.pid);
+  if (started === null) return "alive";                // cannot confirm identity; do not evict
+  // THE TOLERANCE MUST COVER `ps`'s TRUNCATION, WHICH GROWS WITH UPTIME.
+  // `ps -o lstart=` reports whole seconds, truncated, while the record uses `Date.now() - uptime`.
+  // The gap therefore widens as the process lives: measured 643 ms one second after start and
+  // 1006 ms seven seconds later, so a 1 s tolerance makes a process misread ITSELF as recycled and
+  // a live lock then gets evicted -- observed as a live-lock failure in 3 of 25 suite runs. A
+  // tolerance of two seconds covers the truncation for any ordinary session while still
+  // distinguishing a genuinely recycled pid, whose start time differs by far more.
+  return Math.abs(started - owner.startedAt) > 2_000 ? "recycled" : "alive";
+}
+
+/**
+ * A pid's start time in ms since epoch, from `ps -o lstart=`, or null when unavailable.
+ *
+ * THIS IS A SUBPROCESS, SO IT MUST NOT SIT ON THE POLLING PATH. An earlier revision called it (via
+ * holderState) on every poll, and eight waiters spawning processes continuously starved their own
+ * deadlines. Callers reach it only for a lock that is ALREADY suspect -- a dead-or-recycled identity
+ * check runs once per lock under contention, not once per 25 ms per waiter.
+ */
+function startTimeOf(pid) {
+  try {
+    const out = spawnSync("ps", ["-o", "lstart=", "-p", String(pid)], { encoding: "utf8" });
+    const text = String(out.stdout ?? "").trim();
+    if (text === "") return null;
+    const ms = Date.parse(text);
+    return Number.isFinite(ms) ? ms : null;
+  } catch {
+    return null;
   }
 }
+
 
 /**
  * Claim a fact for this process. The claim is MUTUAL EXCLUSION ONLY -- its existence never means

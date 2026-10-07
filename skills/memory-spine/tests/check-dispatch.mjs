@@ -20,13 +20,13 @@
 //   6. the doc-verify profile fails closed on a broken pointer and a missing section
 // Plus the mutation the card requires: removing the cap check must redden case 1.
 
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, statSync, utimesSync } from "node:fs";
+import { existsSync, linkSync, mkdtempSync, readFileSync, renameSync, rmSync, statSync, utimesSync, writeFileSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn, spawnSync } from "node:child_process";
 import { planMigration, verifyPreservation } from "../scripts/memory-migrate.mjs";
-import { appendFact, republish, acquireLock, releaseHeld, factKey } from "../scripts/memory-append.mjs";
+import { appendFact, republish, acquireLock, releaseHeld, factKey, restoreWithoutClobbering } from "../scripts/memory-append.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LINT = join(ROOT, "scripts", "memory-lint.mjs");
@@ -781,6 +781,91 @@ function caseLockIdentityInseparable() {
   rmSync(dir, { recursive: true, force: true });
 }
 
+// --- 21. a displaced lock is restored WITHOUT clobbering whoever holds the path now -------------
+// `release-replacement-window` installs B before release starts; it never reaches the gap where a
+// THIRD writer C has claimed the free path by the time the displaced lock is restored. `renameSync`
+// OVERWRITES its destination, so a clobbering restore destroys C's live lock -- a deterministic
+// reproduction, not a theoretical race.
+//
+// This drives `restoreWithoutClobbering`, which is the transition releaseLock and the eviction path
+// both call. An earlier version of this case called `linkSync` itself, which tested JavaScript's
+// semantics rather than the code under test: it stayed green when the restore was reverted to a
+// clobbering rename.
+function caseRestoreDoesNotClobber() {
+  const dir = workspace();
+  const target = join(dir, "memory-append.lock");
+  const tombstone = join(dir, "memory-append.lock.displaced");
+
+  // The path is already held by a third writer; the displaced lock sits at its tombstone.
+  writeFileSync(target, "888888 1000000000000\n");
+  writeFileSync(tombstone, "777777 1000000000000\n");
+  const cIno = statSync(target).ino;
+
+  const published = restoreWithoutClobbering(tombstone, target);
+  check(published === false, "restoring into an OCCUPIED path must not publish");
+  check(existsSync(target), "the third writer's lock must still exist");
+  if (existsSync(target)) {
+    check(statSync(target).ino === cIno, "the surviving lock must still be the third writer's");
+    check(readFileSync(target, "utf8").includes("888888"), "the third writer's OWNER RECORD must survive intact");
+  }
+
+  // Control: into a FREE path it does publish, so the function is not simply inert.
+  const free = workspace();
+  const freeTarget = join(free, "memory-append.lock");
+  const freeTombstone = join(free, "displaced");
+  writeFileSync(freeTombstone, "555555 1000000000000\n");
+  const ok = restoreWithoutClobbering(freeTombstone, freeTarget);
+  check(ok === true, "restoring into a FREE path must publish");
+  check(existsSync(freeTarget) && readFileSync(freeTarget, "utf8").includes("555555"),
+    "the restored lock must carry its owner record");
+  rmSync(dir, { recursive: true, force: true });
+  rmSync(free, { recursive: true, force: true });
+}
+
+// --- 22. a RECYCLED pid must not wedge a claim --------------------------------------------------
+// The owner record stores a pid AND a start time. Parsing the start time and then IGNORING it is not
+// a reuse story: a recycled pid is alive, so `kill(pid, 0)` says "alive" and the claim is never
+// reclaimed -- it wedges forever, because age applies only to a dead or unparseable identity.
+// The comparison against the live process's start time is what distinguishes a recycled pid.
+function caseRecycledPid() {
+  const dir = workspace();
+  const index = join(dir, "MEMORY.md");
+  const body = "fact behind a recycled pid";
+  const key = factKey(body);
+  // The CURRENT process's pid (definitely alive) with a start time from long ago: a recycled pid.
+  mkdirSync(join(dir, "notes", ".claims"), { recursive: true });
+  writeFileSync(join(dir, "notes", ".claims", key), `${String(process.pid)} 1\n`);
+  let receipt = null;
+  let code = null;
+  try {
+    receipt = appendFact(index, body);
+  } catch (error) {
+    code = error?.code ?? "threw";
+  }
+  check(code === null, `a recycled pid must not wedge the claim, got ${String(code)}`);
+  check(receipt !== null && receipt.appended === true, "the fact must be appended");
+  check(readFileSync(index, "utf8").includes(body), "the fact must be visible in the index");
+
+  // Control: the SAME pid with a start time that matches the live process is the real holder, and
+  // must NOT be reclaimed.
+  const held = workspace();
+  const heldIndex = join(held, "MEMORY.md");
+  const heldBody = "fact behind a live holder";
+  const heldKey = factKey(heldBody);
+  mkdirSync(join(held, "notes", ".claims"), { recursive: true });
+  const start = Math.round(Date.now() - process.uptime() * 1_000);
+  writeFileSync(join(held, "notes", ".claims", heldKey), `${String(process.pid)} ${String(start)}\n`);
+  let heldCode = null;
+  try {
+    appendFact(heldIndex, heldBody);
+  } catch (error) {
+    heldCode = error?.code ?? "threw";
+  }
+  check(heldCode === "EINPROGRESS", `a genuinely live holder must refuse, got ${String(heldCode)}`);
+  rmSync(dir, { recursive: true, force: true });
+  rmSync(held, { recursive: true, force: true });
+}
+
 // --- run them in order, then report once ----------------------------------------------------
 const cases = [
   ["over-cap", caseOverCap],
@@ -803,6 +888,8 @@ const cases = [
   ["claim-ownership", caseClaimOwnership],
   ["release-replacement-window", caseReleaseReplacementWindow],
   ["lock-identity-inseparable", caseLockIdentityInseparable],
+  ["restore-no-clobber", caseRestoreDoesNotClobber],
+  ["recycled-pid", caseRecycledPid],
 ];
 const ran = [];
 for (const [name, run] of cases) {
