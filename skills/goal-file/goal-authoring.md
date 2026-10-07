@@ -199,12 +199,21 @@ The copyable full-document template (with the phase-DAG mermaid, presets, and ev
 - **Covers:** R# (path: A# → R# when an addition is live)
 - **Scope:** core-schema | module:<name> | ui-ux | <named> | design-time (not an impl scope)
 - **Depends on:** design/MM | none
+- **Test tier:** focused | full | milestone-e2e | none; reason
+- **Review handoff:** `<report path> §Review handoff — <topic>`
 - **Loop:** `flow-grill-review` → `flow:impl` (`flow-common`) → `flow-retro`
 - **Gate:** AC check along **Covers** to the anchored root; a green design that does not move those rows is not done
 - **Exit:** impl-loop breakout → `flow-common` breakout adjudication (architecture, upward, root unchanged, status revert of impacted files). Proved wrong machine → supersede this file, do not revert it.
 ```
 
 Populate one slot per design in (5). Do not paste grill transcripts, round ledgers, or role manuals here. **The status word's one canonical home is this per-design line** (or its Workstream line); it is never duplicated into the Design-files index.
+
+The workflow slot carries only the pre-work **Test tier** and the pointer to the
+durable post-work review handoff. The handoff itself lives in the report path
+selected by the project, in the section named by `flow-common`; do not copy
+changing revisions, trees, or report counts into the goal file. A project with
+no durable report surface names the absence rather than inventing a worklog
+path.
 
 ## AC coverage matrix
 

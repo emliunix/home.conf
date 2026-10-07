@@ -178,6 +178,39 @@ When the manager (or another agent) edits the same checkout while the implemente
 
 Before claiming the round, the implementer self-reviews against the covered AC rows and the path to root. That self-review is the first-party evidence the supervisor grades. Skipping it is not a pass.
 
+### Review handoff
+
+The durable implementer-to-reviewer handoff is one section in the project's
+durable report surface, with the exact heading `## Review handoff — <topic>`.
+The topic suffix keeps multiple handoffs findable and section-addressable
+without inventing a second registry. The goal-file workflow slot names the
+report path; a project with no durable report surface names the absence rather
+than inventing a path.
+
+The section carries the common-case mechanical fields:
+
+```markdown
+## Review handoff — <topic>
+
+- **Object:** base `<rev>` → tip `<rev>`, tree `<tree>`
+- **Artifact:** `<report path>`
+- **Identity:** `<rev>:<path>` resolves to the claimed object
+- **Evidence class:** established | reported | observed | construction-backed
+- **Selected check:** `<command>` → `<result>`; population/scope
+- **Reviewer action:** inspect | ask author | different instrument or population | reproduce
+- **Residual / decision needed:** <one line, or none>
+- **Correction class:** behavior | receipt-only
+```
+
+This is a common-case floor, not a completeness test. Decision-boundary prose
+and scope rationale are optional judgment fields. If a reviewer cannot act
+because material is missing or unclear, it asks the author once; it does not
+reconstruct the work or rerun the same command merely to fill the gap.
+Silent-wrong-green claims still earn reproduction.
+
+A receipt-only correction verifies the corrected handoff fields and keeps
+behavior review closed unless a claim, object, or evidence class changes.
+
 ### Round budget (hard)
 
 A **round** is one implementer dispatch → report → first-party grade cycle on the same reviewed design. Count them aloud in every bounce message ("round N") and record the final count in the worklog (`worklog/NN-<same-topic>.md`) — the design body stays canon and carries no ledger.
