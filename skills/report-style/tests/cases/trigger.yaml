@@ -5,7 +5,7 @@ dimension: trigger
 triplets:
   - behavior: a report brief is wanted
     canonical:
-      prompt: "Write a brief for a colleague who knows Temporal but not this work: how does taskboard-v3 achieve parallelism?"
+      prompt: "Write a brief for a colleague who knows asyncio but not this work: how does lanepool achieve parallelism?"
       expected: [report-style]
       cites: "SKILL.md frontmatter - the entry surface names a concise report brief"
     trap:

@@ -1,12 +1,12 @@
 {
  "files": {
-  "CHANGELOG.md": "1023bcc68e43c0a5afabd2f0f2f1595f5a86117064212f2f5bc612218cfbcf54",
+  "CHANGELOG.md": "27d61638f606d7bbcab72fab9a39f231862b699e1ae530f2d0ee3965341c81ed",
   "README.md": "4ceffe93e02476bf041bdae039299026dd949866aba57e3fa7bcc97a85d5bd1f",
   "SKILL.md": "c5afe9e671f1189f49f2ca6a6a6fc256855b028374edd570c62e1e03def970e9",
-  "tests/cases/production.yaml": "3bf00a09500d1c55ce640dd814337afcd30891a7a92b5a2da9a4f93c3463320f",
-  "tests/cases/trigger.yaml": "5519ae1e96069f102e3901d1b5d23860cb851e91b59ec88195d21fbb2d42ef91",
+  "tests/cases/production.yaml": "7a004eb78edaa8dddac771ed860ba0c8765822236a3f3219171e926d0054c7cf",
+  "tests/cases/trigger.yaml": "a4949d3b287eeb44ecf4e9f342c459cb503765b0920bfacd367cf9673c973fc7",
   "tests/rubric.yaml": "f39a83a456c48e6a1fa5b8ebe8b924da4c7d4179349d6df853e7875002230444"
  },
  "skill": "report-style",
- "version": 3
+ "version": 4
 }

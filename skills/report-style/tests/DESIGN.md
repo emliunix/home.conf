@@ -39,29 +39,23 @@ skills/report-style/
   Then the trigger triplets. Runs on any edit to the package.
 - **full — all dimensions**, all triplets, plus the frozen-lock assertion and the production case.
 
-## The pinned source material (production case) — r2, corrected
+## The pinned source material (production case) — r3, a package fixture
 
-**r1 claimed the material "contains every element the brief demands". That was overstated**: `grep` over
-`taskboard-v3/` finds no *per-region state* framing (the correction in the material is
-*"the frontier is a scheduling width, not an in-flight set"*, `evaluate/parallelism-1.md:30-33`), and
-`obligation` / `contrast` appear **zero times** in the four evaluates. r2 pins a set and names which file
-carries which element; an element with no home is **cut from the rubric**, not assumed.
-
-The set is resolved at visflow's tag `archive/pre-cut-2026-10-01`: the 2026-10-01 cut removed these
-files from the working tree, and `tests/l0.py` checks each pin with `git cat-file` at that tag.
+The production case reads a fixture owned by this package, `tests/fixtures/production/`: the
+documents of a small made-up system, **lanepool**, written to carry each element the brief must find.
+r2 pinned another project's tree; r3 replaces it so the package depends on nothing outside itself
+(2026-10-07). The semantics the case tests are unchanged: each element below has exactly one carrier,
+and an element with no carrier is **cut from the rubric**, not assumed.
 
 | element | carried by |
 |---|---|
-| frame / premise correction | `taskboard-v3/evaluate/parallelism-1.md:30-33` |
-| the formal object (σ, `R`, `O`, P8) | `graph-ir-v3.md` — *Configuration*, *Properties that change* |
-| the mechanism | `taskboard-v3/src/taskboard_v3/runner.py` (`start_effects`, per-landing `barrier_check`, `run_one_control`) |
-| measurements / status tags | the four `evaluate/parallelism-*.md` headline verdicts |
+| frame / premise correction | `evaluate/measure-1.md`, *Correcting the premise* (*"the ready set is a scheduling width, not an in-flight set"*) |
+| the formal object (σ, `R`, `O`, P1–P3) | `model.md` — *Configuration*, *Properties that change* |
+| the mechanism | `src/runner.py` (`start_effects`, per-landing `barrier_check`, `run_one_control`) |
+| measurements / status tags | the two `evaluate/measure-*.md` headline verdicts |
 | obligations | `theory.md` §3 (T1–T3 with their obligations separated) and §4 |
-| contrasts | `architecture.md` §15 (*"child workflows per arm are the outer relation"*); the batch model as the alternative in `parallelism-1.md` |
-| boundary / residuals | `parallelism-3.md` and `parallelism-4.md`, *What it does not establish* |
-
-**Not in the set, and therefore not tested**: the conversation-level framing *"does a region fork the
-world?"* — it is not citable from the tree, so no rubric item turns on it.
+| contrasts | `design.md` §15 (*"lanes are the outer relation"*; the batch model as the alternative), and `evaluate/measure-1.md`, *Against the batch model* |
+| boundary / residuals | `evaluate/measure-2.md`, *What it does not establish* |
 
 ## The production oracle - r2 baseline, retained for the system-report case
 
@@ -97,7 +91,7 @@ world?"* — it is not citable from the tree, so no rubric item turns on it.
 
 | kind | task | expected | cites |
 |---|---|---|---|
-| canonical | write a peer brief explaining how parallelism is achieved in `taskboard-v3` | fires | `SKILL.md:4-8` |
+| canonical | write a peer brief explaining how parallelism is achieved in `lanepool` | fires | `SKILL.md:4-8` |
 | canonical | write a durable source-keyed report | fires | `SKILL.md:69-90` |
 | canonical | report domain-model and policy changes without an implementation diary | fires as change report | `SKILL.md:18-49` |
 | canonical | package an already-completed review's findings | fires as review output | `SKILL.md:135-140` |

@@ -12,7 +12,7 @@ Checks:
      claims it says. A line-number cite is checked for range; an anchor cite
      (`SKILL.md#some-heading`) is resolved against the headings in SKILL.md.
   4. Every linked report-kind reference exists and carries its four routing sections.
-  5. The pinned production sources exist (skipped, not failed, when the visflow tree is absent).
+  5. The pinned production sources exist in the package (`tests/fixtures/production/`).
   6. The frozen lock matches the package on disk. A lock nothing verifies is decoration:
      measured 2026-10-05, all six of its entries pointed at a different vintage of the
      package and no check read the file at all.
@@ -23,9 +23,7 @@ Dependency-free apart from PyYAML; run from the package root.
 
 from __future__ import annotations
 
-import os
 import pathlib
-import subprocess
 import re
 import sys
 import json
@@ -38,14 +36,10 @@ except ImportError:  # pragma: no cover
     sys.exit(2)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-VISFLOW = pathlib.Path.home() / "Documents" / "visflow"
-# The production case pins source material from the visflow tree as it stood before its
-# 2026-10-01 cut (DESIGN.md, "The pinned source material"). The cut removed those files from
-# the working tree and kept them in this tag, so pins resolve at the tag, not in the checkout.
-PINS_REVISION = "archive/pre-cut-2026-10-01"
-# Run as a pre-commit hook, git exports GIT_DIR into this process, and GIT_DIR overrides
-# `git -C`; the pin lookups would then search the repository being committed, not visflow.
-PINS_GIT_ENV = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+# The production case's source material is a fixture owned by this package: a small
+# made-up system whose documents carry the elements the brief must find (DESIGN.md,
+# "The pinned source material"). Nothing outside the package is read.
+PINS_ROOT = ROOT / "tests" / "fixtures" / "production"
 failures: list[str] = []
 
 
@@ -185,17 +179,10 @@ def check_decision_subtemplate() -> int:
 def check_pins() -> str:
     prod = ROOT / "tests" / "cases" / "production.yaml"
     pins = (yaml.safe_load(prod.read_text()) or {}).get("pins", [])
-    if not VISFLOW.is_dir():
-        return f"skipped ({len(pins)} pins) - the visflow tree is not present"
-    if subprocess.run(["git", "-C", str(VISFLOW), "rev-parse", "--verify", "--quiet", PINS_REVISION + "^{commit}"],
-                      capture_output=True, env=PINS_GIT_ENV).returncode != 0:
-        failures.append(f"production pins: revision {PINS_REVISION} is not in {VISFLOW}")
-        return f"{len(pins)} pins, revision {PINS_REVISION} absent"
-    missing = [p for p in pins if subprocess.run(
-        ["git", "-C", str(VISFLOW), "cat-file", "-e", f"{PINS_REVISION}:{p}"], capture_output=True, env=PINS_GIT_ENV).returncode != 0]
+    missing = [p for p in pins if not (PINS_ROOT / p).is_file()]
     for p in missing:
-        failures.append(f"production pin does not exist: {p}")
-    return f"{len(pins)} pins at {PINS_REVISION}, {len(missing)} missing"
+        failures.append(f"production pin does not exist: tests/fixtures/production/{p}")
+    return f"{len(pins)} pins, {len(missing)} missing"
 
 
 def check_frozen_lock() -> str:

@@ -1,21 +1,20 @@
 # report-style - production cases: the artifact the skill must produce, scored
-# The material is the visflow tree at the pinned revision. Each element names the file that carries it;
+# The material is the package's own fixture, tests/fixtures/production/ (a made-up system, lanepool).
+# Each element names the file that carries it;
 # an element with no carrier is not in this case (DESIGN.md, "The pinned source material").
 skill: report-style
 dimension: production
 pins:
-  - graph-ir-v3.md
+  - model.md
   - theory.md
-  - architecture.md
-  - taskboard-v3/src/taskboard_v3/runner.py
-  - taskboard-v3/evaluate/parallelism-1.md
-  - taskboard-v3/evaluate/parallelism-2.md
-  - taskboard-v3/evaluate/parallelism-3.md
-  - taskboard-v3/evaluate/parallelism-4.md
+  - design.md
+  - src/runner.py
+  - evaluate/measure-1.md
+  - evaluate/measure-2.md
 triplets:
   - behavior: a system brief over the pinned set
     canonical:
-      prompt: "Using only the pinned set, write the brief: how taskboard-v3 achieves true parallelism. A peer knows Temporal, not this work."
+      prompt: "Using only the pinned set, write the brief: how lanepool achieves true parallelism. A peer knows asyncio, not this work."
       expected: [report-style]
       cites: "SKILL.md#route-first - select the system kind and the brief shape; the system reference supplies its aspect spine"
     trap:
@@ -23,7 +22,7 @@ triplets:
       expected: []
       cites: "SKILL.md#end-at-a-claim-boundary - the brief closes with a claim boundary, not a summary"
     paraphrase:
-      prompt: "Explain to a Temporal engineer who has never seen this repo how the runner gets independent work in flight at once, and be explicit about what you have not shown."
+      prompt: "Explain to an asyncio engineer who has never seen this system how the runner gets independent work in flight at once, and be explicit about what you have not shown."
       expected: [report-style]
       cites: "SKILL.md#end-at-a-claim-boundary - the brief carries the smallest sufficient argument and an explicit boundary"
   - behavior: a record over the same set
@@ -41,7 +40,7 @@ triplets:
       cites: "SKILL.md#make-every-claim-checkable - factual claims are keyed and local links are verified"
   - behavior: a decision request over the pinned set
     canonical:
-      prompt: "We have to choose the parallelism model for taskboard-v3 before the next slice. Write the decision-ready report: where it stands now, why it is needed now, the options, what deferring costs us, the evidence that separates them, who owns the decision, when it must be made or what forces it, and your recommendation."
+      prompt: "We have to choose the parallelism model for lanepool before the next slice. Write the decision-ready report: where it stands now, why it is needed now, the options, what deferring costs us, the evidence that separates them, who owns the decision, when it must be made or what forces it, and your recommendation."
       expected: [report-style]
       cites: "SKILL.md#reports-that-ask-for-a-decision - INPUT_TEST: a request for a decision must supply the decision's inputs; the fields are defined once in references/decision-report.md \"Decision-request subtemplate\""
     trap:
@@ -73,6 +72,6 @@ oracle:
   no_self_grading: a subject that writes and scores its own text measures nothing
   arms: [control, full, full-minus-boundary]
 run_notes:
-  - "The pinned elements and their carriers are tabulated in DESIGN.md; 'does a region fork the world' is not citable from the tree and is not tested."
+  - "The pinned elements and their carriers are tabulated in DESIGN.md; only what the fixture carries is tested."
   - "R-BRIEF, R-RECORD, I-COST, A-ELEMENT, A-UNPRICED are the scored items; A-ELEMENT needs the ablation arms."
   - "The material is read-only to every arm; a subject that edits the pinned set is voided, as the naming trial's control was."
