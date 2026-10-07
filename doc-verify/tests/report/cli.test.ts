@@ -242,6 +242,55 @@ document:
     expect(result.stderr).toContain("selected no configured document or dependency");
     expect(result.stderr).not.toContain("design/a.md");
   });
+
+  it("expands a --paths glob over the governed surface", () => {
+    const root = cliFixture();
+    mkdirSync(path.join(root, "receipts", "one"), { recursive: true });
+    mkdirSync(path.join(root, "receipts", "two"), { recursive: true });
+    writeFileSync(path.join(root, "receipts", "one", "a.md"), "# Receipt A\n## Review handoff — a\nEvidence.\n");
+    writeFileSync(path.join(root, "receipts", "two", "b.md"), "# Receipt B\n## Review handoff — b\nEvidence.\n");
+    writeFileSync(path.join(root, "receipts", "README.md"), "# Receipt guidance\n");
+    writeFileSync(path.join(root, ".doc-verify.yaml"), `schema_version: 1
+kind: document-verification
+documents:
+  - pattern: receipts/**/*.md
+    artifact_kind: receipt
+    modules: [modules/receipt.yaml]
+  - pattern: receipts/README.md
+    exclude: true
+invalidation_patterns: []
+judge:
+  kind: jev
+  model: jev-1.13.0
+  client_sha256: ce983f8de97d5b30d527a7116f0c49ad3d17e098d2c3f17c9600041260c65dcb
+  attestation_max_age_seconds: 3600
+policy:
+  kind: semantic-boundary
+  version: 1
+  max_evidence_bytes: 12000
+  forbidden_literals: []
+`);
+    writeFileSync(path.join(root, "modules", "receipt.yaml"), `schema_version: 2
+kind: verification-module
+module: fixture.receipt
+rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+constraints:
+  has-handoff:
+    forall: core.meta(D, kind, receipt)
+    require: top(D, S), core.heading(D, S, 'Review handoff — a')
+    severity: error
+    message: "{D} has no review handoff"
+`);
+    const result = spawnSync("node", [
+      path.resolve("doc-verify/dist/cli.js"), "check",
+      "--paths", "receipts/**/*.md",
+      "--profile", "draft", "--format", "json",
+    ], { cwd: root, encoding: "utf8", env: cliEnv() });
+    expect(result.status, result.stdout + result.stderr).toBe(1);
+    const report = JSON.parse(result.stdout) as { affectedArtifacts: string[] };
+    expect(report.affectedArtifacts).toEqual(["receipts/one/a.md", "receipts/two/b.md"]);
+  });
 });
 
 /** The structural module the fixture's design rule names: no oracle, so no judge request is ever made. */

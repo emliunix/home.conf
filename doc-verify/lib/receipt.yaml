@@ -1,0 +1,27 @@
+# doc-verify:receipt - a durable work receipt: what was done, measured, or decided,
+# with its sources and the review handoff for the frozen object. A receipt records
+# evidence; it does not create standing law. Extends doc-verify:references, so every
+# link and repository path it names must resolve.
+schema_version: 2
+kind: verification-module
+module: doc-verify.receipt
+extends: [doc-verify:references]
+oracles:
+  evidence_not_law(D, S):
+    ask: >-
+      The receipt records dated work, evidence, commands, or decisions with their
+      sources and names the object or artifact it concerns. It does not assert a new
+      standing rule that belongs in a design or the canon.
+    evidence: core.body(D, S)
+    threshold: 0
+    max_bytes: 36000
+rules:
+  outermost_selected(D, S): core.selected(D, S), core.section(D, S, P), not core.selected(D, P)
+constraints:
+  receipt-evidence-not-law:
+    forall: core.meta(D, kind, receipt), outermost_selected(D, S)
+    require: evidence_not_law(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{S} in {D} asserts a standing rule instead of recording evidence for the named object"
+    repair: "Record what was done, measured, or decided and where it is evidenced; move standing law to the design or canon that owns it and cite it here."

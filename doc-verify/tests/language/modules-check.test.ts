@@ -221,7 +221,7 @@ describe("engine libraries (doc-verify:NAME)", () => {
     expect(engineLibraries()).toEqual([
       "doc-verify:artifact", "doc-verify:design", "doc-verify:goal", "doc-verify:module-contract",
       "doc-verify:module-model", "doc-verify:module-properties", "doc-verify:module-verification",
-      "doc-verify:no-line-citations", "doc-verify:references", "doc-verify:runbook",
+      "doc-verify:no-line-citations", "doc-verify:receipt", "doc-verify:references", "doc-verify:runbook",
       "doc-verify:worklog-record",
     ]);
   });
@@ -277,7 +277,7 @@ params:
     artifact_kind: design
     modules: [doc-verify:nope]`);
     await expect(checkDocuments({ root, mode: { kind: "paths", paths: ["design/a.md"] }, profile: "auto", backend: holds.backend }))
-      .rejects.toThrow("doc-verify:nope: no such engine library; this engine ships doc-verify:artifact, doc-verify:design, doc-verify:goal, doc-verify:module-contract, doc-verify:module-model, doc-verify:module-properties, doc-verify:module-verification, doc-verify:no-line-citations, doc-verify:references, doc-verify:runbook, doc-verify:worklog-record");
+      .rejects.toThrow("doc-verify:nope: no such engine library; this engine ships doc-verify:artifact, doc-verify:design, doc-verify:goal, doc-verify:module-contract, doc-verify:module-model, doc-verify:module-properties, doc-verify:module-verification, doc-verify:no-line-citations, doc-verify:receipt, doc-verify:references, doc-verify:runbook, doc-verify:worklog-record");
     const escape = await repository({ "design/a.md": GOOD }, `  - pattern: design/*.md
     artifact_kind: design
     modules: [doc-verify:../../package]`);
@@ -293,6 +293,7 @@ describe("the type library's worked examples", () => {
     ["doc-verify:module-properties", "module-properties", "module-properties.md"],
     ["doc-verify:module-verification", "module-verification", "module-verification.md"],
     ["doc-verify:runbook", "runbook", "runbook.md"],
+    ["doc-verify:receipt", "receipt", "receipt.md"],
     ["doc-verify:worklog-record", "worklog", "worklog-record.md"],
   ];
   for (const [library, kind, example] of EXAMPLES) {

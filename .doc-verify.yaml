@@ -28,6 +28,13 @@ documents:
   - pattern: docs/modules/*/verification.md
     artifact_kind: module-verification
     modules: [doc-verify:module-verification]
+  # Durable work receipts: the intermediate evidence and implementer-to-reviewer
+  # handoff for a frozen object. The README is guidance, not a receipt.
+  - pattern: receipts/**/*.md
+    artifact_kind: receipt
+    modules: [doc-verify:receipt]
+  - pattern: receipts/README.md
+    exclude: true
 invalidation_patterns:
   - .doc-verify.yaml
   - doc-verify/**

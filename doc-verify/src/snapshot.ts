@@ -121,7 +121,9 @@ export async function captureSnapshots(input: {
 
   const candidatePaths = filterDocuments([...allTracked, ...workingFiles], input.documentRules);
   const workingInventory = [...new Set([...allTracked, ...workingFiles, ...workingYaml])];
-  const changed = input.mode.kind === "all" ? candidatePaths : input.mode.paths.map((file) => normalizeRepoPath(input.root, file));
+  const changed = input.mode.kind === "all"
+    ? candidatePaths
+    : await expandPathArgs(input.root, input.mode.paths, input.documentRules);
   return buildPair({
     root: input.root,
     baselineLabel: input.mode.kind === "all" ? "empty" : headExists ? "HEAD" : "empty",
@@ -352,6 +354,44 @@ function normalizeRepoPath(root: string, file: string): RepoPath {
   const absolute = path.resolve(root, file);
   ensureInside(root, absolute);
   return repoPath(path.relative(root, absolute).split(path.sep).join(path.posix.sep));
+}
+
+/**
+ * `--paths` accepts explicit paths and glob patterns. A pattern is expanded against
+ * the candidate working tree so callers can check a whole governed surface without
+ * shell-specific expansion. A pattern with no match is returned unchanged, letting
+ * the checker's unmatched-path diagnostic name it rather than silently passing.
+ */
+async function expandPathArgs(
+  root: string,
+  paths: string[],
+  documentRules: readonly DocumentReferenceRule[],
+): Promise<RepoPath[]> {
+  const expanded: RepoPath[] = [];
+  for (const value of paths) {
+    if (!fg.isDynamicPattern(value)) {
+      expanded.push(normalizeRepoPath(root, value));
+      continue;
+    }
+    const matches = await fg(value, {
+      cwd: root,
+      onlyFiles: true,
+      followSymbolicLinks: false,
+      dot: true,
+      ignore: [".git/**", "node_modules/**"],
+    });
+    const governed = matches
+      .map((match) => repoPath(match))
+      .filter((match) => resolveDocumentSelector(documentRules, match) !== undefined);
+    if (governed.length === 0) {
+      expanded.push(normalizeRepoPath(root, value));
+      continue;
+    }
+    for (const match of governed.sort()) {
+      expanded.push(normalizeRepoPath(root, match));
+    }
+  }
+  return [...new Set(expanded)];
 }
 
 function ensureInside(root: string, absolute: string): void {

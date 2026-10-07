@@ -18,7 +18,7 @@ import { readFile } from "node:fs/promises";
 const USAGE = `usage: doc-verify <segments|check> [options]
 
   doc-verify check FILE...              check the named documents
-  doc-verify check --paths FILE...      the same, explicitly
+  doc-verify check --paths FILE|GLOB... check named files or configured glob matches
   doc-verify check --staged             check documents staged in Git
   doc-verify check --range A..B         check documents changed in a Git range
   doc-verify check --all                check every configured document
