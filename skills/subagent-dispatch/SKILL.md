@@ -11,10 +11,11 @@ description: >-
 
 1. **Route per role** — take the model and effort from the project's model-route table, if it has one, read from the workspace, not from memory or habit.
 2. **Hand the spine, not a paraphrase** — the prompt names the reading order (constitution → README → method document → the owning document) and the repository's own files; a summary measures the parent's paraphrase, not the repository.
-3. **One output file per child** — the child writes only that file; the tree is otherwise read-only to it.
+3. **One output file per child** — the child writes only that file; every other mutation channel is read-only. Read-only covers files, Raft messages and tasks, git refs, and external state, not only the tree.
 4. **Reuse keyed by topic and task kind** — the same kind of work on the same subject goes back to the child that holds the context. A fresh child is earned by blinding, independence or a new topic — never by convenience.
 5. **Freeze while it measures** — the parent edits nothing and commits nothing until the last child returns.
 6. **Fan out with a shared lever** — write the recipe once, as the artifact every delegate reads, and keep it outside their write scope.
+7. **Bind identity before mutation** — a read-only child asserts its own identity before touching any mutation channel. If the credential resolves to the parent or another unexpected identity and the harness cannot scrub or override it, the wrapper refuses the mutation. The dispatch envelope names the child's write path, or says `read-only`.
 
 ## Why each rule holds
 
@@ -57,6 +58,11 @@ dispatch states the commit under test, and a harness whose run regenerates a rec
 scratch directory instead of the recorded path. A measurement taken against a moving tree is not a
 measurement, and two runs against one path are not two runs.
 
+**Read-only is an identity property, not a sentence in the prompt.** A full-history child can inherit the
+parent's credentials, so a nominal reviewer can post messages, claim tasks, or move refs as the parent.
+Before any mutation, the child asserts its own identity; if the harness cannot provide it, the wrapper
+refuses the mutation rather than trusting the prompt.
+
 **A forked session does not own its parent's children.** After a fork, only the children spawned since the
 fork are addressable; messaging an earlier one fails. So a handover that says "send your report to the
 parent" presumes a parent still addressable, and **reuse is only available inside the session that spawned
@@ -82,6 +88,9 @@ check (see `finding-triage`).
 - **The fork** (observed 2026-09-18): after a fork, `list_agents` showed only the children spawned since
   the fork, and `send_message` to an earlier one failed with `subagent "<id>" belongs to another parent
   session` — including children messaged successfully minutes before.
+- **The identity bleed** (observed 2026-10-08): full-history reviewers inherited the parent's
+  `SLOCK_AGENT_ID`; their Raft mutations were recorded under the parent. The repair is to scrub the
+  identity or assert it at the mutation boundary, not to add another sentence to the review prompt.
 
 ## Project binding
 
