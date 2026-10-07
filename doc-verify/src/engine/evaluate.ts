@@ -13,7 +13,7 @@
  */
 
 import type { Constraint, Literal, Oracle, Program, Rule } from "./checker.js";
-import { atom, compound, listItems, number, termText, writeTerm, type Term } from "./terms.js";
+import { atom, compound, list, listItems, number, termText, writeTerm, type Term } from "./terms.js";
 
 export type Mode = "certain" | "possible";
 type Env = ReadonlyMap<string, Term>;
@@ -108,6 +108,39 @@ interface Solution {
   env: Env;
   settled: boolean;
   premises: Premise[];
+}
+
+/**
+ * The ids of `documentId`'s sections in document order, read from the `section/3` and
+ * `order/3` facts. Bounded to one document: a candidate list can never reach another
+ * document's sections, and no rule solution is enumerated.
+ */
+function sectionIdsInOrder(context: Context, documentId: string): string[] {
+  const orders = context.relations.get("core::order");
+  const sections = context.relations.get("core::section");
+  if (orders === undefined || sections === undefined) {
+    return [];
+  }
+  const seen = new Set<string>();
+  for (const entry of sections.certain.values()) {
+    const [document, section] = entry.args as [Term, Term];
+    if (termText(document) === documentId && isGround(section)) {
+      seen.add(termText(section));
+    }
+  }
+  const ordered: Array<{ id: string; order: number }> = [];
+  for (const entry of orders.certain.values()) {
+    const [document, section, position] = entry.args as [Term, Term, Term];
+    if (termText(document) !== documentId || !isGround(section) || position.kind !== "number") {
+      continue;
+    }
+    const id = termText(section);
+    if (seen.has(id)) {
+      ordered.push({ id, order: position.value });
+    }
+  }
+  ordered.sort((a, b) => a.order - b.order);
+  return ordered.map((item) => item.id);
 }
 
 export function evaluate(program: Program, facts: Term[], view: OracleView): Evaluation {
@@ -244,6 +277,35 @@ function* solveLiteral(
         }
       } else if (matching(relation.certain).length === 0) {
         yield { env, settled: settled && matching(relation.possible).every((entry) => entry.settled), premises: [...premises, premise] };
+      }
+      return;
+    }
+    case "present": {
+      const document = substitute(literal.document, env);
+      const candidateTerm = substitute(literal.candidates, env);
+      const listed = listItems(candidateTerm) ?? [];
+      if (!isGround(document)) {
+        return;
+      }
+      const documentId = termText(document);
+      const sections = sectionIdsInOrder(context, documentId);
+      const wanted = new Set(listed.map((candidate) => termText(candidate)));
+      const presentIds = sections.filter((id) => wanted.has(id));
+      // Zero present members has no derivation: a v1 `scope: combined` item whose candidates all
+      // miss is v1's missing-coverage failure, and the module states that as a companion
+      // constraint over a rule whose body is this literal. Failing here means the combined
+      // constraint binds nothing (vacuously satisfied, no question asked) and the guard reddens.
+      if (presentIds.length === 0) {
+        return;
+      }
+      const present = list(presentIds.map((id) => atom(id)));
+      const unified = unifyAll([literal.present], [present], env);
+      if (unified !== undefined) {
+        yield {
+          env: unified,
+          settled,
+          premises: [...premises, { kind: "builtin", text: `present(${documentId}, ${String(presentIds.length)} of ${String(listed.length)} in ${termText(candidateTerm)})` }],
+        };
       }
       return;
     }
@@ -516,6 +578,8 @@ export function literalText(literal: Literal, env: Env): string {
       return `${show(literal.left)} ${literal.op} ${show(literal.right)}`;
     case "count":
       return `count(${show(literal.variable)}, ${literal.goal.map((inner) => literalText(inner, env)).join(", ")}, ${show(literal.result)})`;
+    case "present":
+      return `present(${show(literal.document)}, ${show(literal.candidates)}, ${show(literal.present)})`;
   }
 }
 
@@ -523,7 +587,8 @@ function literalVariables(literal: Literal): string[] {
   const terms = literal.kind === "pos" || literal.kind === "neg" ? literal.args
     : literal.kind === "in" ? [literal.item, literal.list]
       : literal.kind === "cmp" ? [literal.left, literal.right]
-        : [literal.result];
+        : literal.kind === "present" ? [literal.document, literal.candidates, literal.present]
+          : [literal.result];
   const names: string[] = [];
   const visit = (term: Term): void => {
     if (term.kind === "var" && term.name !== "_") {

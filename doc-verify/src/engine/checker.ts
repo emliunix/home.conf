@@ -16,7 +16,8 @@ export type Literal =
   | { kind: "neg"; predicate: string; args: Term[] }
   | { kind: "in"; item: Term; list: Term }
   | { kind: "cmp"; op: string; left: Term; right: Term }
-  | { kind: "count"; variable: Term; goal: Literal[]; result: Term };
+  | { kind: "count"; variable: Term; goal: Literal[]; result: Term }
+  | { kind: "present"; document: Term; candidates: Term; present: Term };
 
 export interface Rule {
   predicate: string;
@@ -113,8 +114,13 @@ export function checkModule(parsed: ParsedModule): Program {
     return { predicate, args: rule.head.args };
   });
 
-  const resolve = (term: Term, where: string): Literal | undefined => resolveLiteral(term, where, qualify, known, oracleNames, issues);
   const oracleInputs = new Map(oracles.map((oracle) => [oracle.predicate, oracle.inputs]));
+  // A `core.union` oracle asked over a literal empty list would bind no evidence at all
+  // (`unionEvidence` returns the empty object: `chosen.length === wanted.size` is `0 === 0`),
+  // so the judge would be asked to label nothing. Refused at the call site, where the list
+  // is written; the declaration shape is validated separately in `checkOracleHead`.
+  const oracleUnionArgs = new Map(oracles.filter((oracle) => oracle.evidence.form === "union").map((oracle) => [oracle.predicate, (oracle.evidence as { form: "union"; sections: number }).sections]));
+  const resolve = (term: Term, where: string): Literal | undefined => resolveLiteral(term, where, qualify, known, oracleNames, oracleUnionArgs, issues);
   const rules: Rule[] = [];
   for (const [index, rule] of parsed.rules.entries()) {
     const head = ruleHeads[index];
@@ -254,6 +260,7 @@ function resolveLiteral(
   qualify: (name: string) => string,
   known: Map<string, number>,
   oracleNames: Set<string>,
+  oracleUnionArgs: Map<string, number>,
   issues: string[],
 ): Literal | undefined {
   if (term.kind === "atom" && term.name === "true") {
@@ -264,7 +271,7 @@ function resolveLiteral(
     return undefined;
   }
   if ((term.functor === "not" || term.functor === "\\+") && term.args.length === 1) {
-    const inner = resolveLiteral(term.args[0] as Term, where, qualify, known, oracleNames, issues);
+    const inner = resolveLiteral(term.args[0] as Term, where, qualify, known, oracleNames, oracleUnionArgs, issues);
     if (inner === undefined) {
       return undefined;
     }
@@ -296,13 +303,49 @@ function resolveLiteral(
     }
     return { kind: "cmp", op: term.functor, left, right };
   }
+  if (term.functor === "present" && term.args.length === 3) {
+    const [document, candidates, present] = term.args as [Term, Term, Term];
+    if (document.kind !== "var") {
+      issues.push(`${where}: present(D, Candidates, Present) takes a variable for D`);
+      return undefined;
+    }
+    if (present.kind !== "var") {
+      issues.push(`${where}: present(D, Candidates, Present) takes a variable for Present`);
+      return undefined;
+    }
+    const listed = listItems(candidates);
+    if (listed === undefined) {
+      issues.push(`${where}: the second argument of present is a list of section ids`);
+      return undefined;
+    }
+    if (listed.length === 0) {
+      issues.push(`${where}: present(D, Candidates, Present) needs a non-empty candidate list`);
+      return undefined;
+    }
+    for (const candidate of listed) {
+      if (candidate.kind !== "atom") {
+        issues.push(`${where}: present candidate ${describe(candidate)} is not a section id`);
+        return undefined;
+      }
+    }
+    const seen = new Set<string>();
+    for (const candidate of listed) {
+      const text = candidate.kind === "atom" ? candidate.name : "";
+      if (seen.has(text)) {
+        issues.push(`${where}: present candidate '${text}' is listed twice`);
+        return undefined;
+      }
+      seen.add(text);
+    }
+    return { kind: "present", document, candidates, present };
+  }
   if (term.functor === "count" && term.args.length === 3) {
     const [variable, goal, result] = term.args as [Term, Term, Term];
     if (variable.kind !== "var" || result.kind !== "var") {
       issues.push(`${where}: count(V, G, N) takes variables for V and N`);
       return undefined;
     }
-    const inner = resolveBody(goal, where, (candidate, innerWhere) => resolveLiteral(candidate, innerWhere, qualify, known, oracleNames, issues));
+    const inner = resolveBody(goal, where, (candidate, innerWhere) => resolveLiteral(candidate, innerWhere, qualify, known, oracleNames, oracleUnionArgs, issues));
     if (inner.some((literal) => literal.kind === "count")) {
       issues.push(`${where}: count does not nest`);
       return undefined;
@@ -331,6 +374,14 @@ function resolveLiteral(
   if (arity !== args.length) {
     issues.push(`${where}: ${predicate.replace("::", ".")} takes ${String(arity)} arguments, not ${String(args.length)}`);
     return undefined;
+  }
+  const unionArg = oracleUnionArgs.get(predicate);
+  if (unionArg !== undefined) {
+    const listed = listItems(args[unionArg] as Term);
+    if (listed !== undefined && listed.length === 0) {
+      issues.push(`${where}: ${predicate.replace("::", ".")} is asked over an empty section list; core.union over no sections would bind no evidence`);
+      return undefined;
+    }
   }
   for (const arg of args) {
     if (arg.kind === "compound" && listItems(arg) === undefined) {
@@ -399,6 +450,13 @@ function checkSafety(
         checkSafety([], literal.goal, where, oracleInputs, issues, bound);
         if (literal.result.kind === "var") {
           bound.add(literal.result.name);
+        }
+        break;
+      }
+      case "present": {
+        requireBound([literal.document], "present(D, Candidates, Present) needs D bound by an earlier positive literal");
+        if (literal.present.kind === "var") {
+          bound.add(literal.present.name);
         }
         break;
       }
