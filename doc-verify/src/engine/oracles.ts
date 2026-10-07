@@ -174,29 +174,42 @@ export async function askRound(input: {
 
   const records: RequestRecord[] = [];
   for (const [document, prepared] of byDocument) {
-    const state = {
-      schema_version: 2,
-      document,
-      round: input.round,
-      evidence: Object.fromEntries(prepared.map((entry) => [entry.key, { sections: entry.evidence.sections, text: entry.evidence.text }])),
-    };
-    const stateJson = canonicalJson(state);
-    enforceOutboundPolicy(stateJson, input.policy);
-    if (input.backend === undefined) {
-      throw new BlockedError(input.unavailable ?? "no judge is available");
-    }
-    enforceCapabilities(input.backend, prepared, Buffer.byteLength(stateJson));
-    const questions: JudgeQuestion[] = prepared.map((entry) => ({
-      id: entry.key,
-      kind: "choose",
-      instruction: `Judge ONLY state.evidence.${entry.key}. ${entry.question}`,
-      options: entry.options.map((id) => ({ id })),
-    }));
-    let answers: JudgeAnswer[];
-    try {
-      answers = (await input.backend.complete({ state, questions, model: input.model })).answers;
-    } catch (error) {
-      throw new BlockedError(`judge request for round ${String(input.round)} failed: ${error instanceof Error ? error.name : "unknown error"}`);
+    // A round's evidence is split across sub-batches that each fit the outbound budget, so a
+    // document larger than the budget is still decided. One atom that alone exceeds it stays
+    // BLOCKED over-budget, named in `partitionBatches`.
+    const answers: JudgeAnswer[] = [];
+    for (const batch of partitionBatches(document, prepared, input)) {
+      const state = {
+        schema_version: 2,
+        document,
+        round: input.round,
+        evidence: Object.fromEntries(batch.map((entry) => [entry.key, { sections: entry.evidence.sections, text: entry.evidence.text }])),
+      };
+      const stateJson = canonicalJson(state);
+      enforceOutboundPolicy(stateJson, input.policy);
+      if (input.backend === undefined) {
+        throw new BlockedError(input.unavailable ?? "no judge is available");
+      }
+      enforceCapabilities(input.backend, batch, Buffer.byteLength(stateJson));
+      const questions: JudgeQuestion[] = batch.map((entry) => ({
+        id: entry.key,
+        kind: "choose",
+        instruction: `Judge ONLY state.evidence.${entry.key}. ${entry.question}`,
+        options: entry.options.map((id) => ({ id })),
+      }));
+      try {
+        answers.push(...(await input.backend.complete({ state, questions, model: input.model })).answers);
+      } catch (error) {
+        throw new BlockedError(`judge request for round ${String(input.round)} failed: ${error instanceof Error ? error.name : "unknown error"}`);
+      }
+      records.push({
+        round: input.round,
+        document,
+        questions: questions.length,
+        keys: batch.map((entry) => entry.key),
+        stateBytes: Buffer.byteLength(stateJson),
+        id: sha256(canonicalJson({ state, questions, model: input.model })),
+      });
     }
     const byId = new Map<string, JudgeAnswer>();
     const duplicated = new Set<string>();
@@ -225,7 +238,14 @@ export async function askRound(input: {
         ? sentenceSpans(entry.evidence) : [];
       return spans.length === 0 ? [] : [{ entry, spans }];
     });
-    const chosen = await askSpans(input, candidates, state, document, records);
+    const spanState = {
+      schema_version: 2,
+      document,
+      round: input.round,
+      evidence: Object.fromEntries(candidates.map((candidate) =>
+        [candidate.entry.key, { sections: candidate.entry.evidence.sections, text: candidate.entry.evidence.text }])),
+    };
+    const chosen = await askSpans(input, candidates, spanState, document, records);
     for (const entry of prepared) {
       const leaf = input.store.leaves.get(entry.demand.key);
       if (leaf === undefined || (leaf.label !== "fails" && leaf.label !== UNKNOWN) || leaf.span !== undefined) {
@@ -235,14 +255,6 @@ export async function askRound(input: {
       const index = spans === undefined ? -1 : spans.findIndex((_span, i) => `s${String(i)}` === chosen.get(entry.key));
       leaf.span = (index >= 0 ? spans?.[index] : undefined) ?? sectionSpan(entry.evidence);
     }
-    records.push({
-      round: input.round,
-      document,
-      questions: questions.length,
-      keys: prepared.map((entry) => entry.key),
-      stateBytes: Buffer.byteLength(stateJson),
-      id: sha256(canonicalJson({ state, questions, model: input.model })),
-    });
   }
 
   // A cached non-passing atom still gets its span: ask the follow-up (or replay it from the
@@ -266,6 +278,40 @@ export async function askRound(input: {
     }
   }
   return records;
+}
+
+/**
+ * Split a document's prepared atoms into sub-batches that each fit the outbound budget, so a
+ * document larger than the budget is still decided across several calls. One atom that alone
+ * exceeds the budget is BLOCKED over-budget, named; a single atom is never split.
+ */
+function partitionBatches(document: string, prepared: Prepared[], input: { policy: OutboundPolicy; backend: JudgeBackend | undefined }): Prepared[][] {
+  const size = (list: Prepared[]): number => Buffer.byteLength(canonicalJson({
+    schema_version: 2, document, round: 0,
+    evidence: Object.fromEntries(list.map((entry) => [entry.key, { sections: entry.evidence.sections, text: entry.evidence.text }])),
+  }));
+  // A sub-batch must satisfy both the outbound policy and the judge's own state budget, and hold
+  // no more questions than the judge takes.
+  const limit = Math.min(input.policy.maxEvidenceBytes, input.backend?.capabilities.stateTokenBudget ?? Number.POSITIVE_INFINITY);
+  const maxQuestions = input.backend?.capabilities.maxQuestions ?? Number.POSITIVE_INFINITY;
+  const batches: Prepared[][] = [];
+  let current: Prepared[] = [];
+  for (const entry of prepared) {
+    const alone = size([entry]);
+    if (alone > limit) {
+      throw new BlockedError(`evidence for ${entry.key} is ${String(alone)} bytes, above the effective budget of ${String(limit)} (max_evidence_bytes ${String(input.policy.maxEvidenceBytes)}, judge state budget ${String(input.backend?.capabilities.stateTokenBudget ?? "none")}); a single atom is not split`);
+    }
+    if (current.length > 0 && (current.length >= maxQuestions || size([...current, entry]) > limit)) {
+      batches.push(current);
+      current = [entry];
+    } else {
+      current.push(entry);
+    }
+  }
+  if (current.length > 0) {
+    batches.push(current);
+  }
+  return batches;
 }
 
 /** The follow-up's cache key: model, question, sentence ids, evidence hash, policy, and the span marker. */
