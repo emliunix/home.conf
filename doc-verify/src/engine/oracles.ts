@@ -285,19 +285,23 @@ export async function askRound(input: {
  * document larger than the budget is still decided across several calls. One atom that alone
  * exceeds the budget is BLOCKED over-budget, named; a single atom is never split.
  */
-function partitionBatches(document: string, prepared: Prepared[], input: { policy: OutboundPolicy }): Prepared[][] {
+function partitionBatches(document: string, prepared: Prepared[], input: { policy: OutboundPolicy; backend: JudgeBackend | undefined }): Prepared[][] {
   const size = (list: Prepared[]): number => Buffer.byteLength(canonicalJson({
     schema_version: 2, document, round: 0,
     evidence: Object.fromEntries(list.map((entry) => [entry.key, { sections: entry.evidence.sections, text: entry.evidence.text }])),
   }));
+  // A sub-batch must satisfy both the outbound policy and the judge's own state budget, and hold
+  // no more questions than the judge takes.
+  const limit = Math.min(input.policy.maxEvidenceBytes, input.backend?.capabilities.stateTokenBudget ?? Number.POSITIVE_INFINITY);
+  const maxQuestions = input.backend?.capabilities.maxQuestions ?? Number.POSITIVE_INFINITY;
   const batches: Prepared[][] = [];
   let current: Prepared[] = [];
   for (const entry of prepared) {
     const alone = size([entry]);
-    if (alone > input.policy.maxEvidenceBytes) {
-      throw new BlockedError(`evidence for ${entry.key} is ${String(alone)} bytes, above the outbound budget of ${String(input.policy.maxEvidenceBytes)}; a single atom is not split`);
+    if (alone > limit) {
+      throw new BlockedError(`evidence for ${entry.key} is ${String(alone)} bytes, above the effective budget of ${String(limit)} (max_evidence_bytes ${String(input.policy.maxEvidenceBytes)}, judge state budget ${String(input.backend?.capabilities.stateTokenBudget ?? "none")}); a single atom is not split`);
     }
-    if (current.length > 0 && size([...current, entry]) > input.policy.maxEvidenceBytes) {
+    if (current.length > 0 && (current.length >= maxQuestions || size([...current, entry]) > limit)) {
       batches.push(current);
       current = [entry];
     } else {

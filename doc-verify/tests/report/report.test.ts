@@ -112,7 +112,7 @@ describe("text report", () => {
     const over = await check(GOOD, 0.9, 50);
     const blocked = over.artifacts[0]?.findings.find((item) => item.ruleId === "module.engine");
     expect(blocked?.verdict).toBe("BLOCKED");
-    expect(blocked?.message).toMatch(/above the outbound budget of 50/);
+    expect(blocked?.message).toMatch(/above the effective budget of 50/);
     expect(renderText(over)).toContain("module.engine BLOCKED evidence for");
     const leak = await check(GOOD.replace("drops a field", "drops a forbidden-word"), 0.9);
     const refused = leak.artifacts[0]?.findings.find((item) => item.ruleId === "module.engine");

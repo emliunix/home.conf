@@ -114,6 +114,15 @@ describe("outbound checks", () => {
     expect(report.verdict).not.toBe("BLOCKED");
   });
 
+  it("splits a round within the byte budget but over the judge's state budget", async () => {
+    const { backend, requests } = scriptedJudge(byHeading(PURPOSES));
+    const tight = { ...backend, capabilities: { ...backend.capabilities, stateTokenBudget: 300 } };
+    // A huge byte budget: only the judge's own state budget can force the split.
+    const report = await run(KNOWN, tight, { policy: { maxEvidenceBytes: 1_000_000, forbiddenLiterals: [] } });
+    expect(requests.length).toBeGreaterThan(1);
+    expect(report.verdict).not.toBe("BLOCKED");
+  });
+
   it("blocks a single atom whose own evidence is over budget, named", async () => {
     const { backend, requests } = scriptedJudge(byHeading(PURPOSES));
     const report = await run(KNOWN, backend, { policy: { maxEvidenceBytes: 40, forbiddenLiterals: [] } });
@@ -121,7 +130,7 @@ describe("outbound checks", () => {
     expect(report.verdict).toBe("BLOCKED");
     const refusal = report.failure?.message ?? "";
     expect(refusal).toMatch(/evidence for \S+ is \d+ bytes/);
-    expect(refusal).toContain("above the outbound budget of 40");
+    expect(refusal).toContain("above the effective budget of 40");
     expect(refusal).toMatch(/a single atom is not split/);
   });
 
