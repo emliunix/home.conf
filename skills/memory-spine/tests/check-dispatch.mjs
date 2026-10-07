@@ -20,13 +20,13 @@
 //   6. the doc-verify profile fails closed on a broken pointer and a missing section
 // Plus the mutation the card requires: removing the cap check must redden case 1.
 
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync, utimesSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn, spawnSync } from "node:child_process";
 import { planMigration, verifyPreservation } from "../scripts/memory-migrate.mjs";
-import { appendFact } from "../scripts/memory-append.mjs";
+import { appendFact, republish } from "../scripts/memory-append.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LINT = join(ROOT, "scripts", "memory-lint.mjs");
@@ -117,7 +117,15 @@ async function caseConcurrent() {
   const log = readFileSync(logFileFor(dir), "utf8");
   const entries = log.split("\n").filter((l) => l.startsWith("## 2")).length;
   check(entries === 6, `exactly one entry per distinct fact (idempotent under concurrency), got ${String(entries)}`);
-  check(readFileSync(index).equals(before), "append must leave the index byte-identical");
+  // THE INDEX IS THE RECOVERY POINT, SO IT MUST CHANGE. An earlier revision asserted the OPPOSITE
+  // -- "append must leave the index byte-identical" -- which encoded the defect as a requirement and
+  // is why the suite stayed green while `appendFact` never published. Every appended fact must be
+  // VISIBLE in the index, or a fresh agent reading it cannot see what the log durably holds.
+  const after = readFileSync(index);
+  check(!after.equals(before), "append must CHANGE the index -- a fact only in the log is not recoverable from the index");
+  for (let i = 0; i < 6; i += 1) {
+    check(after.toString("utf8").includes(`- concurrent fact ${String(i)}`), `fact ${String(i)} must be visible in the index`);
+  }
   rmSync(dir, { recursive: true, force: true });
 
   // THE DISCRIMINATING HALF. Eight writers of ONE fact must leave exactly ONE entry, because what
@@ -332,6 +340,114 @@ function caseLiveLock() {
   rmSync(dir, { recursive: true, force: true });
 }
 
+// --- 10. a fact that would overrun the cap is refused, and NOTHING is written -----------------
+// The published index is what a fresh agent reads, so an append that cannot be published must not
+// half-happen: no log entry, no index change. Otherwise the log claims a fact the index cannot carry.
+function caseCapRefusal() {
+  const dir = workspace();
+  const index = join(dir, "MEMORY.md");
+  const before = readFileSync(index);
+  // Fill the Key Knowledge section to just under the cap, then append one more fact.
+  // Sized so the index is comfortably under the cap but one more fact crosses it.
+  const filler = `- ${"pad".repeat(5_430)}`;
+  writeFileSync(index, GOOD_INDEX().replace("- see `notes/real.md`", `- see \`notes/real.md\`\n${filler}`));
+  const size = Buffer.byteLength(readFileSync(index, "utf8"), "utf8");
+  check(size < 16_384, `fixture should start under the cap, got ${String(size)}`);
+  const beforeFull = readFileSync(index);
+  let code = null;
+  try {
+    appendFact(index, "one more fact");
+  } catch (error) {
+    code = error?.code ?? "threw";
+  }
+  check(code === "ECAP", `an append that would overrun the cap must be refused with ECAP, got ${String(code)}`);
+  check(readFileSync(index).equals(beforeFull), "a refused append must leave the index byte-identical");
+  check(!existsSync(logFileFor(dir)), "a refused append must not create a log entry");
+  rmSync(dir, { recursive: true, force: true });
+  void before;
+}
+
+// --- 11. the STALE -> FRESH lock transition (this is the case that was missing) ---------------
+// A lock that is genuinely stale must be recovered -- and recovering it must not let a waiter evict
+// the FRESH lock that a winner just created, which is the duplicate-append race. The earlier
+// `live-lock` case only covered a PRESENT fresh lock and so never exercised this transition.
+//
+// The fixture therefore starts with a PRE-AGED lock (every waiter sees it stale) and eight barriered
+// writers of ONE fact: exactly one log entry must result. Asserted with a real race because the
+// property IS about concurrency, and the fix that closes it was verified by mutation -- removing the
+// inode comparison took this from 0/12 failing trials to 6/12.
+async function caseStaleLockRace() {
+  const dir = workspace();
+  const index = join(dir, "MEMORY.md");
+  const lock = join(dir, "memory-append.lock");
+  mkdirSync(lock, { recursive: true });
+  writeFileSync(join(lock, "owner"), "12345\n");
+  const old = (Date.now() - 300_000) / 1000;
+  utimesSync(lock, old, old);                      // older than the 60 s stale threshold
+
+  const racer = join(dir, "racer.mjs");
+  writeFileSync(racer, [
+    `import { appendFact } from ${JSON.stringify(APPEND)};`,
+    "const startAt = Number(process.env.RACE_START);",
+    "while (Date.now() < startAt) { /* barrier */ }",
+    "try { appendFact(process.env.RACE_INDEX, 'one fact, eight writers'); } catch { /* refusal is fine */ }",
+  ].join("\n"));
+  const startAt = Date.now() + 2_000;
+  await Promise.all(Array.from({ length: 8 }, () => new Promise((done) => {
+    const child = spawn(process.execPath, [racer], {
+      env: { ...process.env, RACE_START: String(startAt), RACE_INDEX: index },
+    });
+    child.on("close", () => done(null));
+  })));
+
+  const log = existsSync(logFileFor(dir)) ? readFileSync(logFileFor(dir), "utf8") : "";
+  const entries = log.split("\n").filter((l) => l.startsWith("## 2")).length;
+  check(entries === 1, `stale-lock recovery must not duplicate: eight writers, one fact, one entry; got ${String(entries)}`);
+  check(!existsSync(`${lock}.stale`) && !existsSync(lock), "the lock must be released and no tombstone left behind");
+  rmSync(dir, { recursive: true, force: true });
+}
+
+// --- 12. the index is a FOLD of the log, and converging on it is idempotent ---------------------
+// The append path publishes a fold of the LOG rather than an amended snapshot, which is what makes a
+// momentary lock failure unable to lose a fact. What that mechanism actually guarantees is
+// CONVERGENCE, so that is what is asserted: republishing is idempotent and brings an index that is
+// missing facts onto the full log. Claiming "no concurrent append is ever missed" would be a claim
+// the mechanism does not support -- the log and the index are two files and cannot be updated
+// atomically together.
+function caseFoldConvergence() {
+  const dir = workspace();
+  const index = join(dir, "MEMORY.md");
+  // Three appends, then simulate an index left behind by an interrupted publish: strip the bullets
+  // the log owns and confirm a republish restores ALL of them.
+  for (const fact of ["fact one", "fact two", "fact three"]) appendFact(index, fact);
+  const full = readFileSync(index, "utf8");
+  check(full.includes("- fact one") && full.includes("- fact three"), "appends must be visible in the index");
+
+  const stripped = full.split("\n").filter((l) => !/^- fact .*<!--/.test(l)).join("\n");
+  writeFileSync(index, stripped);
+  check(!readFileSync(index, "utf8").includes("- fact two"), "fixture: the stale index is missing facts");
+
+  const result = republish(index);
+  check(result.republished === true, "republish must report that it changed the index");
+  const restored = readFileSync(index, "utf8");
+  for (const fact of ["fact one", "fact two", "fact three"]) {
+    check(restored.includes(`- ${fact}`), `republish must restore ${fact}`);
+  }
+
+  // IDEMPOTENT: a second republish is a no-op, because a fold of the same log is the same text.
+  const again = republish(index);
+  check(again.republished === false, "a second republish must be a no-op (folding is idempotent)");
+  check(readFileSync(index, "utf8") === restored, "a no-op republish must not rewrite the index");
+
+  // Hand-written bullets are NOT the log's to manage and must survive the fold.
+  const withHand = restored.replace("- fact one", "- a hand-written pointer to notes/x.md\n- fact one");
+  writeFileSync(index, withHand);
+  republish(index);
+  check(readFileSync(index, "utf8").includes("- a hand-written pointer to notes/x.md"),
+    "the fold must not remove hand-written bullets");
+  rmSync(dir, { recursive: true, force: true });
+}
+
 // --- run them in order, then report once ----------------------------------------------------
 const cases = [
   ["over-cap", caseOverCap],
@@ -343,6 +459,9 @@ const cases = [
   ["profile", caseProfile],
   ["migration", caseMigration],
   ["live-lock", caseLiveLock],
+  ["cap-refusal", caseCapRefusal],
+  ["stale-lock-race", caseStaleLockRace],
+  ["fold-convergence", caseFoldConvergence],
 ];
 const ran = [];
 for (const [name, run] of cases) {

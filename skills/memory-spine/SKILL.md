@@ -31,6 +31,13 @@ contract:
   claims it does.
 - **A write that is refused changes nothing.** Not "changes very little" — both files keep their
   bytes.
+- **`append` must leave the fact VISIBLE in the index.** An earlier version wrote only the log and
+  left the index untouched; a fresh agent reading the index could not see a fact the log durably
+  held, so the recovery point was the wrong file. The index is the thing that gets injected.
+- **The index is a FOLD of the log, not an edited snapshot.** This is what makes a momentary lock
+  failure harmless: whichever writer renames last publishes *every* fact in the log, because it
+  rebuilds the section from the log rather than editing whatever it happened to read. Hand-written
+  bullets are preserved; only bullets this log owns are regenerated.
 
 ## The scripts
 
@@ -42,6 +49,9 @@ node scripts/memory-lint.mjs /path/to/MEMORY.md
 # Add one fact. Idempotent by content; appends to the log, then republishes the index.
 node scripts/memory-append.mjs /path/to/MEMORY.md "the fact, as one line"
 #   exit 0 appended (or already present) · 1 refused, nothing changed · 64 usage
+
+# Bring an index back onto the full log. Idempotent; a no-op when it is already current.
+node scripts/memory-republish.mjs /path/to/MEMORY.md
 
 # Move an index's overflow into notes. DRY RUN unless --apply.
 node scripts/memory-migrate.mjs /path/to/MEMORY.md            # print the plan
@@ -100,6 +110,18 @@ comm -23 /tmp/defined /tmp/called   # empty = every defined case is called
 
 A gap here is a case that never runs. Note this checks definition-vs-call only; a case that is
 called and asserts nothing still passes it.
+
+## The guarantee is convergence, not instant completeness
+
+Because the log and the index are two files, they cannot be updated atomically together. So the
+honest property is: **the index converges to the log.** Appending folds the log into the index, and
+`republish` brings an index that is behind onto the full log; folding is idempotent, so running it
+again is a no-op. What is *not* claimed is that no concurrent append can ever be momentarily missing
+from the index — with a lock that can fail that would be a guarantee the mechanism does not support.
+
+Idempotence is enforced by an **atomic claim keyed by the fact** (`open(claim, "wx")`), not by the
+lock. The lock serializes writers; the claim is what makes a duplicate impossible even if the lock
+does not hold, because the filesystem enforces that exactly one caller creates the claim file.
 
 ## What this does not do
 
