@@ -213,13 +213,19 @@ function caseProfile() {
   writeFileSync(join(dir, "module.yaml"), readFileSync(join(ROOT, "module.yaml")));
   const good = GOOD_INDEX();
   writeFileSync(join(dir, "MEMORY.md"), good);
-  const git = (...args) => spawnSync("git", args, { cwd: dir, encoding: "utf8" });
+  // Run as a pre-commit hook, git exports GIT_DIR and GIT_INDEX_FILE into this
+  // process. Inherited, they point the fixture's git at the real repository:
+  // init would set core.bare there, config would write the fixture identity, and
+  // add would stage the fixture into the real index. The fixture gets an
+  // environment with every GIT_* variable removed.
+  const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith("GIT_")));
+  const git = (...args) => spawnSync("git", args, { cwd: dir, encoding: "utf8", env });
   git("init", "-q", ".");
   git("config", "user.email", "t@example.invalid");
   git("config", "user.name", "t");
   git("add", "-A");
   git("commit", "-q", "-m", "fixture");
-  const checkDoc = () => spawnSync(process.execPath, [ENGINE, "check", "--paths", "MEMORY.md"], { cwd: dir, encoding: "utf8" });
+  const checkDoc = () => spawnSync(process.execPath, [ENGINE, "check", "--paths", "MEMORY.md"], { cwd: dir, encoding: "utf8", env });
   const stage = (text) => {
     writeFileSync(join(dir, "MEMORY.md"), text);
     git("add", "-A");

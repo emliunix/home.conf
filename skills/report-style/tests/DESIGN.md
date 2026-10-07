@@ -47,6 +47,9 @@ skills/report-style/
 `obligation` / `contrast` appear **zero times** in the four evaluates. r2 pins a set and names which file
 carries which element; an element with no home is **cut from the rubric**, not assumed.
 
+The set is resolved at visflow's tag `archive/pre-cut-2026-10-01`: the 2026-10-01 cut removed these
+files from the working tree, and `tests/l0.py` checks each pin with `git cat-file` at that tag.
+
 | element | carried by |
 |---|---|
 | frame / premise correction | `taskboard-v3/evaluate/parallelism-1.md:30-33` |

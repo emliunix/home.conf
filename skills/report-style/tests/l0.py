@@ -23,7 +23,9 @@ Dependency-free apart from PyYAML; run from the package root.
 
 from __future__ import annotations
 
+import os
 import pathlib
+import subprocess
 import re
 import sys
 import json
@@ -37,6 +39,13 @@ except ImportError:  # pragma: no cover
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 VISFLOW = pathlib.Path.home() / "Documents" / "visflow"
+# The production case pins source material from the visflow tree as it stood before its
+# 2026-10-01 cut (DESIGN.md, "The pinned source material"). The cut removed those files from
+# the working tree and kept them in this tag, so pins resolve at the tag, not in the checkout.
+PINS_REVISION = "archive/pre-cut-2026-10-01"
+# Run as a pre-commit hook, git exports GIT_DIR into this process, and GIT_DIR overrides
+# `git -C`; the pin lookups would then search the repository being committed, not visflow.
+PINS_GIT_ENV = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
 failures: list[str] = []
 
 
@@ -178,10 +187,15 @@ def check_pins() -> str:
     pins = (yaml.safe_load(prod.read_text()) or {}).get("pins", [])
     if not VISFLOW.is_dir():
         return f"skipped ({len(pins)} pins) - the visflow tree is not present"
-    missing = [p for p in pins if not (VISFLOW / p).exists()]
+    if subprocess.run(["git", "-C", str(VISFLOW), "rev-parse", "--verify", "--quiet", PINS_REVISION + "^{commit}"],
+                      capture_output=True, env=PINS_GIT_ENV).returncode != 0:
+        failures.append(f"production pins: revision {PINS_REVISION} is not in {VISFLOW}")
+        return f"{len(pins)} pins, revision {PINS_REVISION} absent"
+    missing = [p for p in pins if subprocess.run(
+        ["git", "-C", str(VISFLOW), "cat-file", "-e", f"{PINS_REVISION}:{p}"], capture_output=True, env=PINS_GIT_ENV).returncode != 0]
     for p in missing:
         failures.append(f"production pin does not exist: {p}")
-    return f"{len(pins)} pins, {len(missing)} missing"
+    return f"{len(pins)} pins at {PINS_REVISION}, {len(missing)} missing"
 
 
 def check_frozen_lock() -> str:
