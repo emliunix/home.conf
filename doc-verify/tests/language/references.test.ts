@@ -444,6 +444,26 @@ describe("doc-verify:references", () => {
     expect(fullIdReport.artifacts[0]?.findings.find((item) => item.ruleId === "module.specs-resolve")?.message)
       .toContain("whose revision does not resolve");
 
+    // ⚠⚠ A **BLOB-SHAPED** REVISION IS THE CASE THAT DISCRIMINATES THE `^{tree}` PEEL, AND IT WAS
+    // MISSING UNTIL REVIEW MEASURED M7 GREEN. A blob IS a git object, so `cat-file -e <blob>` exits 0:
+    // a resolver built on the bare form gets past the revision test and then reports the **PATH** as
+    // wrong, for a reference that can never have a path at all. Only `^{tree}` refuses it, because a
+    // blob cannot prefix a path. The fabricated-id rows above cannot catch this -- `deadbeef` fails
+    // both commands, and a fabricated full-length id fails both too (neither names an object).
+    // ⚠ The blob id must be REAL and READ FROM GIT, not written as a literal: a hard-coded id would
+    // stop being a blob the moment the fixture content changed.
+    const blobId = execFileSync("git", ["-C", good, "rev-parse", "HEAD:src/engine/run.ts"], { encoding: "utf8" }).trim();
+    const badBlob = await repository({
+      "docs/a.md": withSpec(`\`${blobId}:src/engine/run.ts\``),
+      "src/engine/run.ts": "export const x = 1;\n",
+    });
+    commit(badBlob);
+    const blobReport = await checkDocuments({ root: badBlob, mode: { kind: "paths", paths: ["docs/a.md"] }, profile: "auto" });
+    expect(blobReport.artifacts[0]?.verdict, JSON.stringify(blobReport.artifacts[0]?.findings)).toBe("NO-GO");
+    const blobFinding = blobReport.artifacts[0]?.findings.find((item) => item.ruleId === "module.specs-resolve");
+    expect(blobFinding?.message).toContain("whose revision does not resolve");
+    expect(blobFinding?.basis).toEqual([`structural: core.spec_unresolved(docs/a.md, body, ${blobId}:src/engine/run.ts, revision)`]);
+
     const pathReport = await checkDocuments({ root: badPath, mode: { kind: "paths", paths: ["docs/a.md"] }, profile: "auto" });
     const pathFinding = pathReport.artifacts[0]?.findings.find((item) => item.ruleId === "module.spec-paths-resolve");
     expect(pathReport.artifacts[0]?.verdict).toBe("NO-GO");
