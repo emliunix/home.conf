@@ -1,0 +1,7 @@
+[
+  {"ph":"i","ts":0,"pid":1,"tid":0,"name":"surface.elab.step","cat":"surface","args":{"n":1}},
+  {"ph":"i","ts":0,"pid":1,"tid":0,"name":"remark","cat":"surface","args":{"code":"surface.elab.lower.edge","at":{"path":"x.flow.md","line":3},"why":"edge lowered to filter"}},
+  {"ph":"i","ts":0,"pid":1,"tid":0,"name":"interp.turn.step","cat":"interp","args":{}},
+  {"ph":"X","ts":0,"dur":0,"pid":1,"tid":0,"name":"interp.turn","cat":"interp","args":{}},
+  {"ph":"X","ts":0,"dur":0,"pid":1,"tid":0,"name":"surface.elab.lower","cat":"surface","args":{}}
+]

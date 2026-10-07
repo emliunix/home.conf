@@ -1,0 +1,7 @@
+{"kind":"begin","id":"s1","parent":null,"name":"surface.elab.lower","cls":"surface","fields":{},"ts_us":0}
+{"kind":"event","span":"s1","name":"surface.elab.step","cls":"surface","fields":{"n":1},"ts_us":0}
+{"kind":"remark","span":"s1","code":"surface.elab.lower.edge","at":{"path":"x.flow.md","line":3},"why":"edge lowered to filter","fields":{},"ts_us":0}
+{"kind":"begin","id":"s2","parent":"s1","name":"interp.turn","cls":"interp","fields":{},"ts_us":0}
+{"kind":"event","span":"s2","name":"interp.turn.step","cls":"interp","fields":{},"ts_us":0}
+{"kind":"end","id":"s2","parent":"s1","name":"interp.turn","cls":"interp","fields":{},"ts_us":0,"dur_us":0}
+{"kind":"end","id":"s1","parent":null,"name":"surface.elab.lower","cls":"surface","fields":{},"ts_us":0,"dur_us":0}
