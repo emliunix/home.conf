@@ -178,6 +178,7 @@ Problems that came up in real sessions, and what helped. These are practices, no
 - **Silent log reads.** A `jq` filter with a wrong field name prints `null` and looks like a quiet tick. Use the documented fields, and treat `null` where records exist as a failed read.
 - **Stale seat and stale briefs.** After editing `group.py`, the running seat keeps the old code, and live briefs keep the old grammar. Restart the seat, update the skill text in the same change, and re-brief peers whose brief shows a changed form.
 - **Typing into a busy pane.** `herdr pane run` and send-text type into whatever is in the foreground, including a hung server. Read the pane first and confirm a shell prompt; record owner-lent panes in the ledger so their reuse is on record.
+- **Some agent panes queue incoming prompts.** A Devin pane parks a prompt that arrives mid-turn behind "Press Enter to send queued messages", and its own posts can stay in the pane and never reach the group. After messaging such a seat, read its screen and press Enter only when it shows the queue prompt and not "Running tools" (Enter interrupts a running tool). Verify its DONEs in git or the files it names; a missing post is not missing work.
 - **Stalls the screen check misses.** TUI agents redraw every tick, so an unchanged-screen fingerprint may never fire. Watch signals that do move, such as the peer's file changes and its last message, and ask when both stop.
 
 ## The check loop
