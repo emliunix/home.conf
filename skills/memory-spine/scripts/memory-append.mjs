@@ -40,6 +40,18 @@ import {
 import { dirname, join, resolve } from "node:path";
 import { CAP_BYTES } from "./memory-lint.mjs";
 
+/**
+ * Per-process memo for `startTimeOf`, keyed by the RAW OWNER RECORD.
+ *
+ * Bounded implicitly: one entry per distinct holder observed in this process's lifetime, and each
+ * entry is a string plus a number. It is deliberately NOT cleared on a timer -- the record is the
+ * identity, so a stale entry is unreachable once a successor writes a different record.
+ */
+const startTimeCache = new Map();
+
+/** Counts REAL `ps` spawns, so the suite can prove the memo holds. */
+let lookupCount = 0;
+
 export function factKey(text) {
   return createHash("sha256").update(text.trim(), "utf8").digest("hex").slice(0, 16);
 }
@@ -67,27 +79,47 @@ export function logPathFor(notesDir, date = new Date()) {
  * or put it back and retry (we moved a successor's live lock).
  */
 /**
- * Publish a displaced lock back to its path WITHOUT clobbering whatever is there now.
+ * Publish a displaced lock back to its path, or PRESERVE it if the path is now occupied.
  *
- * `renameSync` OVERWRITES its destination, so a third writer that claimed the free path in the gap
- * between the eviction and this restore would have its live lock destroyed -- a deterministic
- * reproduction, not a theoretical race. `linkSync` fails with EEXIST instead, so the newcomer
- * survives and the displaced lock is left at its tombstone. A leftover file is recoverable; a
- * clobbered live lock is not.
+ * `renameSync` OVERWRITES its destination, so restoring over a third writer that claimed the free
+ * path in the gap would destroy that writer's live lock -- a deterministic reproduction, not a
+ * theoretical race. `linkSync` fails with EEXIST instead, so the newcomer survives.
  *
- * Extracted and exported so the coverage can drive this transition directly with the path already
- * occupied. A case that called `linkSync` itself would test JavaScript rather than this behaviour.
+ * WHEN THE PATH IS OCCUPIED THE DISPLACED LOCK IS KEPT AT ITS TOMBSTONE. Removing it there would
+ * delete the ONLY handle to a record that is no longer reachable by name -- an earlier revision
+ * published non-clobberingly and then unconditionally deleted the tombstone anyway, so the displaced
+ * holder vanished precisely in the case the restore refused. A leftover file is recoverable; a
+ * deleted one is not.
  *
- * Returns true when the restore published, false when the path was occupied.
+ * THE CLEANUP LIVES HERE, NOT IN THE CALLERS. Splitting it out left a caller-side step that could be
+ * (and was) wrong independently of this decision, and the gap between the two is not injectable from
+ * outside, so no caller-level case could reach it. Folding the removal in makes the callers correct
+ * by construction and lets the coverage drive the real transition.
+ *
+ * Returns true when the displaced lock was published, false when the path was occupied and the
+ * tombstone was deliberately kept.
  */
 export function restoreWithoutClobbering(tombstone, target) {
   try {
     linkSync(tombstone, target);
-    return true;
   } catch {
-    return false;                       // EEXIST (occupied) or the tombstone is gone
+    return false;                       // EEXIST (occupied): keep the tombstone, it is the only handle
   }
+  try { rmSync(tombstone, { force: true }); } catch { /* published; the leftover is inert */ }
+  return true;
 }
+
+/**
+ * How many times this process has actually spawned `ps` to resolve a holder's start time.
+ *
+ * The identity check must not sit on the polling path, so it is memoized and gated behind an ALIVE
+ * answer from `kill`. A count is the observable that shows the memo holds: N observations of one
+ * holder must cost ONE lookup. Exposed for the suite, which asserts it does not grow per poll.
+ */
+export function identityLookupCount() {
+  return lookupCount;
+}
+
 
 function acquire(lockDir, { timeoutMs = 10_000, pollMs = 25, staleMs = 60_000 } = {}) {
   const lock = join(lockDir, "memory-append.lock");
@@ -141,8 +173,7 @@ function acquire(lockDir, { timeoutMs = 10_000, pollMs = 25, staleMs = 60_000 } 
           // took the free path in the meantime would have its live record destroyed. `linkSync` fails
           // with EEXIST instead of overwriting, which is the behaviour we need; the tombstone stays
           // if the path is occupied, since a leftover file is recoverable and a clobbered lock is not.
-          restoreWithoutClobbering(tombstone, lock);
-          try { rmSync(tombstone, { force: true }); } catch { /* best effort */ }
+          restoreWithoutClobbering(tombstone, lock);  // owns publish-or-preserve; no caller cleanup
           continue;
         }
         rmSync(tombstone, { force: true });
@@ -190,8 +221,7 @@ function releaseLock(held) {
     // NON-CLOBBERINGLY. `renameSync` overwrites, so a THIRD writer that claimed the free path in the
     // gap would have its live record destroyed -- reproduced deterministically. `linkSync` fails with
     // EEXIST rather than overwriting, so the newcomer survives and we leave the tombstone.
-    restoreWithoutClobbering(tombstone, held.lock);
-    try { rmSync(tombstone, { force: true }); } catch { /* best effort */ }
+    restoreWithoutClobbering(tombstone, held.lock);   // owns publish-or-preserve; no caller cleanup
     return;
   }
   rmSync(tombstone, { recursive: true, force: true });
@@ -259,7 +289,10 @@ function readOwner(file) {
   const startedAt = Number.parseInt(parts[1], 10);
   if (!Number.isInteger(pid) || pid <= 0) return null;
   if (!Number.isInteger(startedAt) || startedAt <= 0) return null;
-  return { pid, startedAt };
+  // `raw` is carried so callers can memoize a per-identity lookup by the RECORD rather than the
+  // pid: the record is the identity, so a recycled pid yields a different key and cannot be
+  // served a stale answer that was computed for its predecessor.
+  return { pid, startedAt, raw };
 }
 
 /** What a fresh owner record should contain: our pid and our start time. */
@@ -299,7 +332,7 @@ function holderState(owner) {
   // so a recycled pid wedged the claim forever, because age applies only when identity is dead or
   // unparseable. Comparing the live process's start time to the recorded one distinguishes the
   // original holder (alive) from a successor that happens to own the number (recycled).
-  const started = startTimeOf(owner.pid);
+  const started = startTimeOf(owner.pid, owner.raw);
   if (started === null) return "alive";                // cannot confirm identity; do not evict
   // THE TOLERANCE MUST COVER `ps`'s TRUNCATION, WHICH GROWS WITH UPTIME.
   // `ps -o lstart=` reports whole seconds, truncated, while the record uses `Date.now() - uptime`.
@@ -319,17 +352,36 @@ function holderState(owner) {
  * deadlines. Callers reach it only for a lock that is ALREADY suspect -- a dead-or-recycled identity
  * check runs once per lock under contention, not once per 25 ms per waiter.
  */
-function startTimeOf(pid) {
+function startTimeOf(pid, rawOwner) {
+  // MEMOIZED PER OWNER RECORD, AND ONLY FOR A SUSPECT OWNER.
+  //
+  // A subprocess must not sit on the polling path: eight waiters polling at 25 ms and each spawning
+  // `ps` starved their own deadlines in an earlier revision. Two gates keep it off that path.
+  //
+  //  1. `holderState` calls this ONLY after `kill(pid, 0)` says the pid is ALIVE. "Dead" returns
+  //     without a subprocess, and a dead holder is the common eviction case.
+  //  2. The result is memoized by the owner RECORD -- pid plus start time -- so a waiter that
+  //     observes the SAME lock once per poll asks at most once for that holder, not once per poll.
+  //     Keying on the record rather than the pid is what makes the memo safe: the record IS the
+  //     identity, so a recycled pid produces a different key and cannot be served a stale answer.
+  //     Keying on the pid alone would cache the very thing whose change we are testing.
+  if (rawOwner !== undefined && startTimeCache.has(rawOwner)) return startTimeCache.get(rawOwner);
+  let value = null;
+  lookupCount += 1;
   try {
     const out = spawnSync("ps", ["-o", "lstart=", "-p", String(pid)], { encoding: "utf8" });
     const text = String(out.stdout ?? "").trim();
-    if (text === "") return null;
-    const ms = Date.parse(text);
-    return Number.isFinite(ms) ? ms : null;
+    if (text !== "") {
+      const ms = Date.parse(text);
+      if (Number.isFinite(ms)) value = ms;
+    }
   } catch {
-    return null;
+    value = null;
   }
+  if (rawOwner !== undefined) startTimeCache.set(rawOwner, value);
+  return value;
 }
+
 
 
 /**
@@ -367,7 +419,10 @@ function tryClaim(claim, { claimGraceMs = 5_000 } = {}) {
   }
   try {
     if (statSync(tombstone).ino !== measured.ino) {
-      try { renameSync(tombstone, claim); } catch { rmSync(tombstone, { force: true }); }
+      // We moved a claim that was NOT the dead one we measured, so a fourth writer created in the
+      // gap would be destroyed by a clobbering rename. Publish non-clobberingly and keep the
+      // tombstone if the path is taken, exactly as the lock path does.
+      restoreWithoutClobbering(tombstone, claim);
       return false;
     }
   } catch { /* tombstone vanished; treat as reclaimed */ }

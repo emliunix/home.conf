@@ -31,10 +31,19 @@ contract:
   claims it does.
 - **A write that is refused changes nothing.** Not "changes very little" — both files keep their
   bytes.
-- **A RESTORE must be non-clobbering.** When a displaced lock is put back, `rename` OVERWRITES its
-  destination, so a third writer that claimed the free path in the gap has its live lock destroyed.
-  `link` fails instead of overwriting; leave the tombstone when the path is occupied, since a
-  leftover file is recoverable and a clobbered lock is not.
+- **A RESTORE must be non-clobbering, AND must KEEP what it could not publish.** When a displaced
+  lock is put back, `rename` OVERWRITES its destination, so a third writer that claimed the free path
+  in the gap has its live lock destroyed. `link` fails instead of overwriting — and when the path is
+  occupied the displaced record is no longer reachable by name, so its tombstone is the ONLY handle
+  and must be kept. Publishing non-clobberingly and then deleting the tombstone anyway loses the
+  record in exactly the case the restore refused. The cleanup lives inside the helper, not in its
+  callers: a separate caller-side step can be wrong on its own, and the gap between the two steps is
+  not reachable from outside, so no caller-level case can cover it.
+- **A memo on a polling path must be keyed by the IDENTITY, not the handle.** The start-time lookup
+  is memoized by the raw owner RECORD (pid plus start), never by pid alone: keying on the pid caches
+  the very thing whose change is being tested, so a recycled pid would be served its predecessor's
+  start time and read as alive. Count the real lookups and assert the count — "it is fast here" and
+  "the memo works" are indistinguishable otherwise.
 - **A stored start time must be COMPARED, not merely recorded.** A pid can be recycled, so "this pid
   is alive" is not "the writer that recorded this pid is alive". Without the comparison a recycled
   pid wedges a claim forever, because age applies only to a dead or unparseable identity.
@@ -112,7 +121,7 @@ Two operational notes, both measured:
 node tests/check-dispatch.mjs
 ```
 
-Twenty-two cases, each shown to fail on the defect it targets — that is what the suite is for, and a
+Twenty-three cases, each shown to fail on the defect it targets — that is what the suite is for, and a
 case that cannot redden is not coverage. Two lessons are encoded here at cost:
 
 - An earlier revision ran its cases as top-level blocks with a `process.exit()` inside one of them:

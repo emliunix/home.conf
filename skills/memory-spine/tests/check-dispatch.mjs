@@ -26,7 +26,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn, spawnSync } from "node:child_process";
 import { planMigration, verifyPreservation } from "../scripts/memory-migrate.mjs";
-import { appendFact, republish, acquireLock, releaseHeld, factKey, restoreWithoutClobbering } from "../scripts/memory-append.mjs";
+import { appendFact, republish, acquireLock, releaseHeld, factKey, restoreWithoutClobbering, identityLookupCount } from "../scripts/memory-append.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LINT = join(ROOT, "scripts", "memory-lint.mjs");
@@ -808,6 +808,14 @@ function caseRestoreDoesNotClobber() {
     check(statSync(target).ino === cIno, "the surviving lock must still be the third writer's");
     check(readFileSync(target, "utf8").includes("888888"), "the third writer's OWNER RECORD must survive intact");
   }
+  // AND THE DISPLACED LOCK MUST SURVIVE. When the path is occupied the displaced record is no longer
+  // reachable by name, so the tombstone is its ONLY handle; deleting it loses the record entirely.
+  // An earlier revision published non-clobberingly and then removed the tombstone anyway, which the
+  // card called out -- "leaving the tombstone if the path is occupied", not merely "C survives".
+  check(existsSync(tombstone), "the displaced lock must remain recoverable at its tombstone");
+  if (existsSync(tombstone)) {
+    check(readFileSync(tombstone, "utf8").includes("777777"), "the tombstone must still hold the displaced record");
+  }
 
   // Control: into a FREE path it does publish, so the function is not simply inert.
   const free = workspace();
@@ -818,6 +826,7 @@ function caseRestoreDoesNotClobber() {
   check(ok === true, "restoring into a FREE path must publish");
   check(existsSync(freeTarget) && readFileSync(freeTarget, "utf8").includes("555555"),
     "the restored lock must carry its owner record");
+  check(!existsSync(freeTombstone), "a PUBLISHED restore must clean up its tombstone");
   rmSync(dir, { recursive: true, force: true });
   rmSync(free, { recursive: true, force: true });
 }
@@ -866,6 +875,60 @@ function caseRecycledPid() {
   rmSync(held, { recursive: true, force: true });
 }
 
+// --- 23. the identity lookup must NOT sit on the polling path --------------------------------
+// `startTimeOf` spawns `ps`. Calling it for every live owner on every poll reintroduces exactly the
+// waiter-starvation the polling design removed: eight waiters polling at 25 ms each spawn a process,
+// starve their own deadlines, and the whole group times out. The lookup is gated behind an ALIVE
+// answer from `kill` and MEMOIZED BY OWNER RECORD, so repeated observations of one holder cost one
+// lookup. Asserted by COUNTING real spawns, which is the only observable that separates a memo from
+// "it happens to be fast here".
+function caseIdentityLookupIsMemoized() {
+  const dir = workspace();
+  const lockPath = join(dir, "memory-append.lock");
+  // A LIVE holder, so `holderState` takes the alive branch and WOULD reach the lookup.
+  writeFileSync(lockPath, `${String(process.pid)} ${String(Math.round(Date.now() - process.uptime() * 1_000))}\n`);
+  const before = identityLookupCount();
+  // Observe the same lock many times, as a waiter polling would.
+  const observations = 25;
+  for (let i = 0; i < observations; i += 1) {
+    let code = null;
+    try {
+      acquireLock(dir, { timeoutMs: 0, staleMs: 60_000 });
+    } catch (error) {
+      code = error?.code ?? "threw";
+    }
+    check(code !== "threw", `a live lock must produce a bounded refusal, got ${String(code)}`);
+  }
+  const spent = identityLookupCount() - before;
+  check(spent <= 2,
+    `${String(observations)} observations of ONE holder must cost at most one lookup, spent ${String(spent)}`);
+
+  // THE MEMO MUST BE KEYED BY THE RECORD, NOT THE PID. Keying on the pid would cache the very thing
+  // whose change we are testing: a RECYCLED pid would be served the PREVIOUS holder's start time and
+  // read as alive, which is the wedge this identity check exists to break. Same pid, different
+  // record, must therefore force a fresh lookup.
+  // ⚠ THE MEMO IS PROCESS-GLOBAL, SO THIS CASE MUST USE A RECORD NO EARLIER CASE TOUCHED. Test
+  // isolation here is by record-uniqueness, not by fixture: a start time another case already
+  // observed is already memoized, and the lookup count then reads 0 for the right reason and the
+  // wrong one. This originally used `<pid> 1`, which the recycled-pid case writes first, so the
+  // assertion failed with no mutation present.
+  const UNIQUE_START = 1_791_999_999_999;                    // no other case uses this value
+  writeFileSync(lockPath, `${String(process.pid)} ${String(UNIQUE_START)}\n`);
+  const beforeRecycled = identityLookupCount();
+  try {
+    acquireLock(dir, { timeoutMs: 0, staleMs: 60_000 });
+  } catch { /* whether it reclaims is the age policy's business, not this case's */ }
+  const recycledSpent = identityLookupCount() - beforeRecycled;
+  // ONLY THE LOOKUP is asserted here. Whether a RECYCLED holder is reclaimed immediately or after the
+  // age bound is the lock's staleness policy -- a lock path requires age for it, a claim path does
+  // not. What this case owns is the memo's KEY: the same pid under a different record must not be
+  // served the predecessor's answer.
+  check(recycledSpent >= 1,
+    "a DIFFERENT owner record must force its own lookup, not reuse the memo for the same pid");
+
+  rmSync(dir, { recursive: true, force: true });
+}
+
 // --- run them in order, then report once ----------------------------------------------------
 const cases = [
   ["over-cap", caseOverCap],
@@ -890,6 +953,7 @@ const cases = [
   ["lock-identity-inseparable", caseLockIdentityInseparable],
   ["restore-no-clobber", caseRestoreDoesNotClobber],
   ["recycled-pid", caseRecycledPid],
+  ["identity-lookup-memoized", caseIdentityLookupIsMemoized],
 ];
 const ran = [];
 for (const [name, run] of cases) {
