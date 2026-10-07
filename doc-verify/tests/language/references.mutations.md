@@ -12,9 +12,23 @@ is applied alone to `doc-verify/src/engine/facts.ts` (or the named file), then
 | M4 | `facts.ts`: in `referenceResolves`, return `true` for a `spec` instead of asking the resolver | "spec: an unresolved spec emits `dangling`, and a resolved one does not" |
 | M5 | `facts.ts`: emit `spec_unresolved(…, unresolved)` when `context.resolveSpec` is undefined | "spec: with no resolver the span is classified but RESOLUTION IS NOT CLAIMED" — an absent capability becomes a failure |
 | M6 | `facts.ts`: move the `specParts` arm BELOW `isLineLocator`'s callers (i.e. let `PATH_SPAN` run first) | "spec: a line locator is still a line locator…" and every spec case — the `:` is refused before the arm is reached |
-| M7 | `checker.ts`: make `specResolver` test the revision with a bare `cat-file -e <rev>` instead of `^{tree}` | a blob-shaped revision would be reported as a bad PATH rather than a bad revision |
+| M7 | `doc-verify/src/checker.ts`: make `specResolver` test the revision with a bare `cat-file -e <rev>` instead of `^{tree}` | a blob-shaped revision would be reported as a bad PATH rather than a bad revision |
 | M8 | `references.yaml`: change `specs-resolve`'s `forbid` to `core.spec_unresolved(D, S, T, path)` | "references: an unresolved spec reddens with the component named…" — the bad-revision case would no longer redden |
-| M9 | `checker.ts`: test the revision with `git rev-parse --verify -q <rev>` instead of `cat-file -e <rev>^{tree}` | "references: an unresolved spec reddens with the component named…" — **but ONLY because the case carries a fabricated 40-hex id.** `--verify` asserts FORMAT, not existence: measured, a fabricated 8-hex id fails it, while a fabricated **40-hex** id and a real-but-foreign commit hash both **exit 0**. Without the full-length row this mutation is GREEN. |
+| M9 | `doc-verify/src/checker.ts`: test the revision with `git rev-parse --verify -q <rev>` instead of `cat-file -e <rev>^{tree}` | "references: an unresolved spec reddens with the component named…" — **but ONLY because the case carries a fabricated 40-hex id.** `--verify` asserts FORMAT, not existence: measured, a fabricated 8-hex id fails it, while a fabricated **40-hex** id and a real-but-foreign commit hash both **exit 0**. Without the full-length row this mutation is GREEN. |
+
+## ⚠⚠ Two files are called `checker.ts`, and only one is the resolver
+
+`doc-verify/src/checker.ts` (**602 lines**, exports `checkDocuments`, consumes `cli.ts`) holds the
+`specResolver` that M7 and M9 target. `doc-verify/src/engine/checker.ts` (**675 lines**, exports
+`checkModule`) is a **different file on the same import chain** —
+`cli.ts` → `src/checker.ts` → `src/engine/index.ts` → `src/engine/checker.ts`.
+
+**Both are live, and both have a line 417 meaning different things.** Measured: `cat-file` appears
+**5×** in the root file and **0×** in the engine file, so an unqualified `checker.ts:417` is
+**ambiguous rather than merely mislocated** — and a mutation applied to the wrong one **compiles, runs
+a green suite, and measures an unmutated tree.** Every cite in this file therefore names the directory,
+and the harness targets the full path and reports `BROKEN` (anchor absent) or `HARNESS` (no test line)
+rather than scoring it.
 
 ## Why the ordering arm (M6) is the interesting one
 
