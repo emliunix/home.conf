@@ -1,12 +1,11 @@
 ---
 name: project-skeleton
-description: Bootstrap a new project with the verified document spine — constitution, design/goal/worklog, typed docs canon, doc-verify modules and hook, layering and canon-pairing gates, and the rule-quality harness. Use when starting a new repository that should follow the visflow/home.conf document-contract method, or when asked to "skeleton a project", "set up the spine", or install the doc gates on a fresh repo.
+description: Bootstrap a new project with the verified document spine — constitution, design/goal/worklog, typed docs canon, doc-verify modules and hook, layering and canon-pairing gates, and the rule-quality harness. Use when starting a new repository that should follow the document-contract method (a constitution, design/goal/worklog canon, and a pinned verifier), or when asked to "skeleton a project", "set up the spine", or install the doc gates on a fresh repo.
 ---
 
 # Project skeleton
 
-Extracted from visflow (design 10, task #14). The template directory beside this file is
-the reference instance; `bootstrap.sh TARGET_DIR NAME` copies it into a new git repo.
+The template directory beside this file is the reference instance; `bootstrap.sh TARGET_DIR NAME` copies it into a new git repo.
 
 ## What the skeleton installs
 
@@ -59,6 +58,6 @@ Bootstrap a scratch project and require, out of the box:
 
 ## Owning records
 
-- Reference instance: visflow (constitution, `design/09`, `design/10`, `docs/modules/`).
+- Reference instance: the `template/` directory beside this file.
 - Engine: home.conf `doc-verify-v2` at `2381b1f`; bump deliberately and rerun the
   baseline (`cfdf457` showed an engine change can silently shift verdicts).

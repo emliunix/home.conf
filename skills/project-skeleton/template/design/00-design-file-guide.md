@@ -7,7 +7,7 @@ reviewed
 ## Goal
 
 This file is the guide designs are measured against: every `design/NN-*.md` follows the
-shape described here (project skeleton, extracted from visflow).
+shape described here (the project skeleton).
 
 ## Problem statement
 
