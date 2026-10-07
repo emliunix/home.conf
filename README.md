@@ -134,6 +134,17 @@ Reference facts (added 2026-10-05; path rules revised the same day). For each do
   beside neither the document nor the root, and the tracked files hold it zero times or several
   times (`local-env.md`, or `ir.py` in two packages). `paths-resolve` reads only `path`, so a name
   is never a finding; it resolves when some tracked file has it.
+- `Kind = spec`: an inline code span naming a **revision-qualified** reference, `<rev>:<path>`
+  (`1c71b248:doc-verify/src/checker.ts`, `HEAD:README.md`, `main:src/run.ts`). This is the only kind
+  that binds content to a revision: a plain `path` says which file, never which version of it, which
+  is why a receipt's `Identity:` field uses this form. The revision must be a 7-40 hex object id, a
+  `HEAD`-relative expression, or a name `git for-each-ref` lists, and the path must look like a
+  repository path, so a URL (`https://host/x.md`), a port (`localhost:8080`) and a line locator
+  (`path.ts:123`, claimed by rule 0 first) never reach it. Resolution asks the two components
+  **separately**: an unknown revision and a path absent from that revision are different repairs, so
+  `core.spec_unresolved(D, S, Target, revision|path)` names which one failed. With no resolver
+  supplied the span is classified but resolution is not claimed -- an absent capability is not a
+  failure.
 - `Kind = line`: an inline code span naming a position by line number (`path.ts:123`,
   `path.ts:123-456`). A line is a position that rots on the next edit above it, so it is never a
   reference; a repository that wants no line locators in its prose ranges over this kind
@@ -144,6 +155,9 @@ Reference facts (added 2026-10-05; path rules revised the same day). For each do
 A code span is a candidate only when it is made of `[A-Za-z0-9_./-]` and is not a predicate
 indicator (`child/3`, `design/02`) or a placeholder (`path/X.md`, `task/N`). Then, in order:
 
+0a. A span that is a revision-qualified reference is a `spec` (`<rev>:<path>`; the kinds above).
+   This runs before the path rules, because `PATH_SPAN` has no `:`, so a spec would otherwise be no
+   reference at all.
 0. A span that is a line locator is a `line`, before any path rule runs. The tail is one or more
    line numbers or ranges, separated by `,` or `/`, so `impl/x/queue.ts:312`, `path.ts:10-20`,
    `schema.sql:11,16`, `claim-loop.ts:280-289,393-400` and `facade.ts:119/154` are all locators of

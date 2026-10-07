@@ -80,6 +80,12 @@ policy:
   forbidden_literals: []
 `);
   execFileSync("git", ["init"], { cwd: root, stdio: "ignore" });
+  // ⚠ THE FIXTURE IS COMMITTED, NOT MERELY INITIALISED. A revision-qualified reference needs a
+  // revision to resolve against, and an unborn `HEAD` has no tree -- so `HEAD:<path>` would fail for
+  // a reason that is about the fixture, not about the reference. `-c user.*` keeps the commit
+  // independent of the machine's Git identity.
+  execFileSync("git", ["add", "-A"], { cwd: root, stdio: "ignore" });
+  execFileSync("git", ["-c", "user.email=fixture@example.invalid", "-c", "user.name=fixture", "commit", "-m", "fixture"], { cwd: root, stdio: "ignore" });
   return root;
 }
 
@@ -300,7 +306,11 @@ describe("the type library's worked examples", () => {
     it(`${library} passes its worked example`, async () => {
       // The oracle half runs on promotion; the shared judge answers every `ask` oracle `holds`.
       const text = readFileSync(new URL(`../../lib/examples/${example}`, import.meta.url), "utf8");
-      const root = await repository({ "docs/a.md": text },
+      // The receipt's `Identity:` field names `HEAD:<path>`, so the fixture must hold that path --
+      // otherwise the example exercises the resolver's FAILURE arm while asserting PASS, which would
+      // make the case pass for the wrong reason.
+      const extras = example === "receipt.md" ? { "doc-verify/src/checker.ts": "export const reviewed = true;\n" } : {};
+      const root = await repository({ "docs/a.md": text, ...extras },
         `  - pattern: docs/*.md
     artifact_kind: ${kind}
     modules: [${library}]`);

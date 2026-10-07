@@ -2,9 +2,9 @@
 
 ## Review handoff — parser review
 
-- **Object:** base `1111111` -> tip `2222222`, tree `3333333`
+- **Object:** base `HEAD^` -> tip `HEAD`; the tip's tree is the reviewed tree
 - **Artifact:** `receipts/parser/review.md`
-- **Identity:** `2222222:doc-verify/src/checker.ts` resolves to the reviewed blob
+- **Identity:** `HEAD:doc-verify/src/checker.ts` resolves in the reviewed revision
 - **Evidence class:** established
 - **Selected check:** `npm run check` -> pass; focused parser population
 - **Reviewer action:** inspect

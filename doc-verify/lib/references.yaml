@@ -21,3 +21,19 @@ constraints:
     severity: warning
     message: "{D} §{S} names the path {T}, which does not exist"
     repair: "Fix the path, or drop the backticks if it is not a path"
+  # A revision-qualified reference binds content to a revision, which a plain path cannot: this is
+  # the kind that makes the receipt's `Identity:` field checked rather than promised. The message
+  # names WHICH component failed, because "the path is wrong" and "the revision is wrong" are
+  # different repairs and `dangling` alone cannot tell a reader which one to make.
+  specs-resolve:
+    forall: core.ref(D, S, T, spec)
+    forbid: core.spec_unresolved(D, S, T, revision)
+    severity: error
+    message: "{D} §{S} names the revision-qualified reference {T}, whose revision does not resolve to a Git object"
+    repair: "Fix the revision, or drop the prefix if the file alone is the reference"
+  spec-paths-resolve:
+    forall: core.ref(D, S, T, spec)
+    forbid: core.spec_unresolved(D, S, T, path)
+    severity: error
+    message: "{D} §{S} names the revision-qualified reference {T}, whose path does not exist in that revision"
+    repair: "Fix the path, or name the revision whose tree holds it"

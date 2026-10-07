@@ -279,7 +279,178 @@ policy:
   return root;
 }
 
+
+describe("core.ref spec (revision-qualified references)", () => {
+  // A `<rev>:<path>` reference binds content to a REVISION, which is the one thing a plain `path`
+  // cannot say. #216: before this, `PATH_SPAN` refused the `:` outright, so the receipt's mandated
+  // `Identity:` field was invisible to the rule that was supposed to check it.
+  const REV = "1c71b248f78c2e1d248f854cf608e244b7496343";
+  const SHORT = "1c71b248";
+  const context = (extra: Partial<ReferenceContext> = {}): ReferenceContext => ({
+    path: "docs/a.md",
+    exists: (file) => ["doc-verify/src/checker.ts", "doc-verify/src", "doc-verify"].includes(file),
+    files: ["doc-verify/src/checker.ts"],
+    gitRefs: ["main", "origin/main"],
+    // A resolver that answers by shape, so the classifier cases need no repository.
+    resolveSpec: (spec) => (spec.startsWith(`${REV}:`) || spec.startsWith(`${SHORT}:`) ? "ok" : spec.includes("deadbeef") ? "revision" : "path"),
+    ...extra,
+  });
+  const spans = (markdown: string, extra: Partial<ReferenceContext> = {}): Array<[string, string]> =>
+    documentReferences(markdown, segmentMarkdown(markdown), context(extra))
+      .filter((reference) => reference.kind !== "link")
+      .map((reference) => [reference.target, reference.kind]);
+
+  it("spec: a revision-qualified span is its own kind, for a hex id, a short id, HEAD and a listed ref", () => {
+    expect(spans("`${REV}:doc-verify/src/checker.ts` `abc1234:doc-verify/src/checker.ts` `HEAD:doc-verify/src/checker.ts` `main:doc-verify/src/checker.ts`\n".replace("${REV}", REV))).toEqual([
+      [`${REV}:doc-verify/src/checker.ts`, "spec"],
+      ["abc1234:doc-verify/src/checker.ts", "spec"],
+      ["HEAD:doc-verify/src/checker.ts", "spec"],
+      ["main:doc-verify/src/checker.ts", "spec"],
+    ]);
+  });
+
+  it("spec: an UNLISTED ref name is not a spec, and neither is a bare name on the right", () => {
+    // ⚠ The left side is only a revision if the body says so: `totally/not-a-ref` is a path that
+    // happens to contain a `/`, and `rev:main` names a revision and a ref, not a file.
+    expect(spans("`nope/nothex:doc-verify/src/checker.ts` `1c71b248:main`\n")).toEqual([]);
+  });
+
+  it("spec: the paths and links and line locators the rule already read are unchanged", () => {
+    // ⚠ THE PRESERVATION ARM. A new kind must not steal a span from an existing one: the plain
+    // path, the line locator and the URL must classify exactly as before.
+    expect(spans("`doc-verify/src/checker.ts` `doc-verify/src/checker.ts:12` `https://x/y.md` `localhost:8080`\n")).toEqual([
+      ["doc-verify/src/checker.ts", "path"],
+      ["doc-verify/src/checker.ts:12", "line"],
+    ]);
+  });
+
+  it("spec: the failure NAMES ITS COMPONENT, so a bad revision and a bad path are different facts", () => {
+    const facts = documentFacts({
+      path: "docs/a.md",
+      markdown: "ok `" + SHORT + ":doc-verify/src/checker.ts`\n\nrev `deadbeef:doc-verify/src/checker.ts`\n\npath `" + SHORT + ":doc-verify/src/other.ts`",
+      exists: (file) => ["doc-verify/src/checker.ts", "doc-verify/src", "doc-verify"].includes(file),
+      files: ["doc-verify/src/checker.ts"],
+      gitRefs: ["main", "origin/main"],
+      resolveSpec: (spec) => spec.includes("deadbeef") ? "revision" : spec.includes("other.ts") ? "path" : "ok",
+    }).facts.map((term) => JSON.stringify(term));
+    const unresolved = facts.filter((text) => text.includes("spec_unresolved"));
+    expect(unresolved).toHaveLength(2);
+    expect(unresolved.some((text) => text.includes("revision"))).toBe(true);
+    expect(unresolved.some((text) => text.includes("path"))).toBe(true);
+    expect(facts.some((text) => text.includes("spec_unresolved") && text.includes("deadbeef") && text.includes("\"revision\""))).toBe(true);
+  });
+
+
+  it("spec: an unresolved spec emits `dangling`, and a resolved one does not", () => {
+    // ⚠ THIS CASE EXISTS BECAUSE A MUTATION DID NOT REDDEN WITHOUT IT. `referenceResolves` has a
+    // `spec` arm, but the constraints read `core.spec_unresolved` -- so bypassing the arm and calling
+    // every spec resolved changed no verdict, and the arm was unverifiable. `core.dangling` is part
+    // of the fact vocabulary (`CORE_DERIVED`), so the arm is kept and pinned here rather than
+    // removed: a consumer ranging over `dangling(_, _, _, spec)` must get the truth.
+    const facts = (markdown: string, resolve: (spec: string) => "ok" | "revision" | "path"): string[] =>
+      documentFacts({ ...context({ resolveSpec: resolve }), markdown })
+        .facts.map((term) => JSON.stringify(term));
+    const unresolved = facts("bad `1c71b248:doc-verify/src/checker.ts`", () => "revision");
+    expect(unresolved.some((text) => text.includes("dangling") && text.includes('"spec"'))).toBe(true);
+    const resolved = facts("ok `1c71b248:doc-verify/src/checker.ts`", () => "ok");
+    expect(resolved.some((text) => text.includes("dangling") && text.includes('"spec"'))).toBe(false);
+  });
+
+  it("spec: with no resolver the span is classified but RESOLUTION IS NOT CLAIMED", () => {
+    // ⚠ AN ABSENT CAPABILITY IS NOT A FAILURE. Without `resolveSpec` the engine cannot ask whether
+    // the revision exists, so it must not report the reference as unresolved — that would red a
+    // correct document. This mirrors `exists === undefined`, which resolves every reference.
+    // ⚠ DESTRUCTURE `resolveSpec` OUT rather than setting it to `undefined`: with
+    // `exactOptionalPropertyTypes` the two are different types, and the honest way to say "no
+    // resolver" is to omit the capability, not to hand a present-but-undefined one.
+    const facts = documentFacts({
+      path: "docs/a.md",
+      markdown: "x `1c71b248:doc-verify/src/checker.ts`",
+      exists: (file) => ["doc-verify/src/checker.ts", "doc-verify/src", "doc-verify"].includes(file),
+      files: ["doc-verify/src/checker.ts"],
+      gitRefs: ["main", "origin/main"],
+    }).facts.map((term) => JSON.stringify(term));
+    expect(facts.some((text) => text.includes("spec_unresolved"))).toBe(false);
+    expect(facts.some((text) => text.includes('"spec"'))).toBe(true);
+  });
+
+  it("spec: a line locator is still a line locator, even though both contain a colon", () => {
+    // The ordering is load-bearing: `isLineLocator` runs FIRST, so a numeric tail stays a `line`.
+    // `1c71b248:doc-verify/src/checker.ts` has a PATH tail, which is what makes it a spec.
+    expect(spans("`schema.sql:11,16` `types.d.ts:286` `.gitignore:3`\n")).toEqual([
+      ["schema.sql:11,16", "line"],
+      ["types.d.ts:286", "line"],
+      [".gitignore:3", "line"],
+    ]);
+  });
+});
+
 describe("doc-verify:references", () => {
+
+  it("references: an unresolved spec reddens with the component named, and a resolved one stays PASS", async () => {
+    // ⚠ END TO END THROUGH THE CONSTRAINT, NOT THE FACTS. A facts-only case cannot see which
+    // `spec_unresolved` COMPONENT the constraint forbids -- swapping `revision` for `path` in
+    // `references.yaml` left a facts-level case green, which is the "the case cannot redden its own
+    // regression" shape. Driving `checkDocuments` makes the module's own wiring the subject.
+    //
+    // ⚠ THE FIXTURE IS COMMITTED, because `HEAD:<path>` must resolve against a real revision: an
+    // unborn HEAD has no tree, and the reference would then fail for a reason about the fixture.
+    // ⚠ COMMITTED, because `HEAD:<path>` must resolve against a real revision: an unborn HEAD has no
+    // tree, and the reference would fail for a reason about the fixture rather than the reference.
+    const commit = (root: string): void => {
+      execFileSync("git", ["add", "-A"], { cwd: root, stdio: "ignore" });
+      execFileSync("git", ["-c", "user.email=f@example.invalid", "-c", "user.name=f", "commit", "-m", "fixture"], { cwd: root, stdio: "ignore" });
+    };
+    const withSpec = (span: string): string => `# D\n\n## Body\n\nSee ${span}.\n`;
+    const good = await repository({
+      "docs/a.md": withSpec("`HEAD:src/engine/run.ts`"),
+      "src/engine/run.ts": "export const x = 1;\n",
+    });
+    commit(good);
+    const goodReport = await checkDocuments({ root: good, mode: { kind: "paths", paths: ["docs/a.md"] }, profile: "auto" });
+    expect(goodReport.artifacts[0]?.verdict, JSON.stringify(goodReport.artifacts[0]?.findings)).toBe("PASS");
+
+    const badRev = await repository({
+      "docs/a.md": withSpec("`deadbeef:src/engine/run.ts`"),
+      "src/engine/run.ts": "export const x = 1;\n",
+    });
+    commit(badRev);
+    const revReport = await checkDocuments({ root: badRev, mode: { kind: "paths", paths: ["docs/a.md"] }, profile: "auto" });
+    const revFinding = revReport.artifacts[0]?.findings.find((item) => item.ruleId === "module.specs-resolve");
+    expect(revReport.artifacts[0]?.verdict).toBe("NO-GO");
+    expect(revFinding?.message).toContain("whose revision does not resolve");
+    expect(revFinding?.basis).toEqual(["structural: core.spec_unresolved(docs/a.md, body, deadbeef:src/engine/run.ts, revision)"]);
+
+    const badPath = await repository({
+      "docs/a.md": withSpec("`HEAD:src/engine/gone.ts`"),
+      "src/engine/run.ts": "export const x = 1;\n",
+    });
+    commit(badPath);
+    // ⚠⚠ A FABRICATED **FULL-LENGTH** ID IS THE DISCRIMINATING CASE, AND IT IS HERE BECAUSE A
+    // REVIEWER MEASURED THAT `git rev-parse --verify` PASSES IT. `--verify` asserts only that the
+    // string can be turned into a raw object name -- git's own manual says to add `^{type}` to check
+    // the object actually exists. Measured in this repo: a fabricated 40-hex id exits 0 under
+    // `rev-parse --verify -q` and 1 under `cat-file -e <rev>^{tree}`, which is what this resolver
+    // uses. The 8-char `deadbeef` case below fails for BOTH reasons, so it cannot tell the two
+    // instruments apart; only a well-formed absent id can.
+    const fullHex = "a".repeat(40);
+    const badFullId = await repository({
+      "docs/a.md": withSpec(`\`${fullHex}:src/engine/run.ts\``),
+      "src/engine/run.ts": "export const x = 1;\n",
+    });
+    commit(badFullId);
+    const fullIdReport = await checkDocuments({ root: badFullId, mode: { kind: "paths", paths: ["docs/a.md"] }, profile: "auto" });
+    expect(fullIdReport.artifacts[0]?.verdict, JSON.stringify(fullIdReport.artifacts[0]?.findings)).toBe("NO-GO");
+    expect(fullIdReport.artifacts[0]?.findings.find((item) => item.ruleId === "module.specs-resolve")?.message)
+      .toContain("whose revision does not resolve");
+
+    const pathReport = await checkDocuments({ root: badPath, mode: { kind: "paths", paths: ["docs/a.md"] }, profile: "auto" });
+    const pathFinding = pathReport.artifacts[0]?.findings.find((item) => item.ruleId === "module.spec-paths-resolve");
+    expect(pathReport.artifacts[0]?.verdict).toBe("NO-GO");
+    expect(pathFinding?.message).toContain("whose path does not exist in that revision");
+    expect(pathFinding?.basis).toEqual(["structural: core.spec_unresolved(docs/a.md, body, HEAD:src/engine/gone.ts, path)"]);
+  });
+
   const GOOD = "# Doc\n\n## Body\n\nSee [the guide](guide.md) and `docs/guide.md`.\n";
 
   it("passes when every link and path resolves, with no judge", async () => {
