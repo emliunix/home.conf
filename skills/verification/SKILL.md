@@ -64,6 +64,17 @@ Commands (v2):
 Do not treat `auto` as proof that a draft was reviewed. Treat `NO-GO`, `BLOCKED` and
 `NEEDS-REVIEW` as distinct outcomes, and never turn model confidence into `PASS`.
 
+### Rules and documents co-evolve
+
+A type's structure, selected sections, and criteria are part of the contract
+surface, not a fixed judge that prose must imitate. When a rule and an intended
+document disagree, diagnose whether the document, the rule, or both are wrong,
+using the proof and the owning intent rather than the generic diagnostic alone.
+When the intended structure has moved, change the rule and the document together
+in one reviewed object and add cases for both paths the rule can take. Keep
+deterministic checks deterministic, keep model judgments bounded, and land a
+required engine change as a separate reviewed object with explicit pin order.
+
 ### Type library
 
 A document rule names a default `modules` list and may declare named `types:`. A
