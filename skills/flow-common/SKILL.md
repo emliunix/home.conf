@@ -196,7 +196,9 @@ The section carries the common-case mechanical fields:
 - **Artifact:** `<report path>`
 - **Identity:** `<rev>:<path>` resolves to the claimed object
 - **Evidence class:** established | reported | observed | construction-backed
-- **Selected check:** `<command>` → `<result>`; `<log path>`; population/scope
+- **Selected check:** `<command>` → `<result>`; `<log path>`; population/denominator/scope
+- **Check proof:** seeded defect or mutation → expected RED; clean object → expected GREEN
+- **Evidence bound:** what the instrument cannot see; unresolved count and excluded population
 - **Reviewer action:** inspect | ask author | different instrument or population | reproduce
 - **Residual / decision needed:** <one line, or none>
 - **Correction class:** behavior | receipt-only
@@ -207,6 +209,13 @@ and scope rationale are optional judgment fields. If a reviewer cannot act
 because material is missing or unclear, it asks the author once; it does not
 reconstruct the work or rerun the same command merely to fill the gap.
 Silent-wrong-green claims still earn reproduction.
+
+The receipt is the review handoff and supersedes a legacy task worklog pointer.
+The worklog remains narrative execution history; it is not a second handoff.
+`Artifact`, `log path`, and ordinary repository-path spans are machine-checked
+where the project governs the receipt. `Object` and `Identity` remain prose
+until the revision-qualified reference kind lands (#216); do not describe them
+as checked before that predicate exists.
 
 Command output is a shareable artifact: write combined stdout/stderr, working
 directory, start time, and the checked command's exit status to the linked

@@ -27,12 +27,23 @@ REQUIRED OUTCOME.
 2. Observable result.
 
 ACCEPTANCE. The command, review, or measurement that decides the result, and
-the exact object it runs against.
+the exact object it runs against. For every count or rate, name the population
+or denominator the figure is over.
+
+CHECK PROOF. For each claimed gate or check: the command, the seeded defect or
+mutation that must make it red, and the clean object that must make it green.
+Write "None" when the card claims no check.
+
+EVIDENCE BOUND. What the selected instrument cannot see: excluded paths,
+unresolved or unreadable cases, wrong-revision subject, or another named
+coverage limit. Write "None known" only after checking.
 
 TEST TIER. focused | full | milestone-e2e | none; reason.
 
 REPORT. receipts/<topic>/<report>.md §Review handoff — <topic>; or the
-project-selected durable receipt surface.
+project-selected durable receipt surface. This is the review handoff and
+supersedes a legacy task worklog pointer; a worklog remains narrative history,
+not a second handoff.
 
 LOGS. receipts/<topic>/logs/<check>.log; raw stdout/stderr and the checked
 command's exit status.
