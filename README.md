@@ -77,6 +77,41 @@ A constraint whose `forall` binds nothing is vacuously satisfied and reports not
 with `population: nonempty` on the constraint: then a `forall` that binds nothing violates it,
 at the constraint's severity, with the message "<id>: the population is empty".
 
+### Candidate sets: `core.present/3`
+
+`core.present(D, Candidates, Present)` binds `Present` to the ids in the literal `Candidates` list
+that the document `D` **has**, in **document order**. Missing candidates are omitted, not fatal, so
+one oracle can judge the union of whichever sections exist — a v1 `scope: combined` item over a list
+of alternative sections:
+
+```yaml
+oracles:
+  problem_scope_rationale(D, L):
+    ask: Does the design state one material problem, its scope, and the authority it acts under?
+    evidence: core.union(D, L)
+    threshold: 0
+    max_bytes: 16000
+constraints:
+  problem-scope-rationale:
+    forall: core.meta(D, kind, design), present(D, ['problem-statement', 'scope--what-we-touch', 'rationale'], P)
+    require: problem_scope_rationale(D, P)
+    severity: error
+    population: nonempty
+    message: "{D} states no problem, scope or rationale"
+```
+
+`Candidates` must be a literal non-empty list of section ids, with no duplicates; a malformed list is
+refused before evaluation. Candidate order is irrelevant — document order decides the bound list. The
+primitive reads only the named document's sections, so it cannot enumerate another document's
+sections or a rule's solutions. **Zero present members** derives nothing, so the constraint does not
+bind; with `population: nonempty` that is the missing-coverage failure at the constraint's severity,
+and **no question is asked of the judge** (an empty evidence set is not a question). Without
+`population: nonempty` a zero-member candidate list is silently vacuous, which is almost never what
+a presence rule wants.
+
+`core.union(D, L)` itself requires every id in `L` to exist and returns no evidence otherwise; use
+that form when the sections are jointly required, and `core.present/3` when they are alternatives.
+
 ### Engine libraries
 
 Shipped in `doc-verify/lib/`, versioned with the engine and read from its install:

@@ -16,7 +16,8 @@ export type Literal =
   | { kind: "neg"; predicate: string; args: Term[] }
   | { kind: "in"; item: Term; list: Term }
   | { kind: "cmp"; op: string; left: Term; right: Term }
-  | { kind: "count"; variable: Term; goal: Literal[]; result: Term };
+  | { kind: "count"; variable: Term; goal: Literal[]; result: Term }
+  | { kind: "present"; document: Term; candidates: Term; present: Term };
 
 export interface Rule {
   predicate: string;
@@ -296,6 +297,42 @@ function resolveLiteral(
     }
     return { kind: "cmp", op: term.functor, left, right };
   }
+  if (term.functor === "present" && term.args.length === 3) {
+    const [document, candidates, present] = term.args as [Term, Term, Term];
+    if (document.kind !== "var") {
+      issues.push(`${where}: present(D, Candidates, Present) takes a variable for D`);
+      return undefined;
+    }
+    if (present.kind !== "var") {
+      issues.push(`${where}: present(D, Candidates, Present) takes a variable for Present`);
+      return undefined;
+    }
+    const listed = listItems(candidates);
+    if (listed === undefined) {
+      issues.push(`${where}: the second argument of present is a list of section ids`);
+      return undefined;
+    }
+    if (listed.length === 0) {
+      issues.push(`${where}: present(D, Candidates, Present) needs a non-empty candidate list`);
+      return undefined;
+    }
+    for (const candidate of listed) {
+      if (candidate.kind !== "atom") {
+        issues.push(`${where}: present candidate ${describe(candidate)} is not a section id`);
+        return undefined;
+      }
+    }
+    const seen = new Set<string>();
+    for (const candidate of listed) {
+      const text = candidate.kind === "atom" ? candidate.name : "";
+      if (seen.has(text)) {
+        issues.push(`${where}: present candidate '${text}' is listed twice`);
+        return undefined;
+      }
+      seen.add(text);
+    }
+    return { kind: "present", document, candidates, present };
+  }
   if (term.functor === "count" && term.args.length === 3) {
     const [variable, goal, result] = term.args as [Term, Term, Term];
     if (variable.kind !== "var" || result.kind !== "var") {
@@ -399,6 +436,13 @@ function checkSafety(
         checkSafety([], literal.goal, where, oracleInputs, issues, bound);
         if (literal.result.kind === "var") {
           bound.add(literal.result.name);
+        }
+        break;
+      }
+      case "present": {
+        requireBound([literal.document], "present(D, Candidates, Present) needs D bound by an earlier positive literal");
+        if (literal.present.kind === "var") {
+          bound.add(literal.present.name);
         }
         break;
       }
