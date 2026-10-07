@@ -181,10 +181,10 @@ Before claiming the round, the implementer self-reviews against the covered AC r
 ### Review handoff
 
 The durable implementer-to-reviewer handoff is one section in the project's
-durable report surface, with the exact heading `## Review handoff — <topic>`.
+durable receipt surface, with the exact heading `## Review handoff — <topic>`.
 The topic suffix keeps multiple handoffs findable and section-addressable
 without inventing a second registry. The goal-file workflow slot names the
-report path; a project with no durable report surface names the absence rather
+receipt path; a project with no durable receipt surface names the absence rather
 than inventing a path.
 
 The section carries the common-case mechanical fields:

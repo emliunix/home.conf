@@ -135,7 +135,7 @@ One slot per design in Design files. Inner loop and wrong-design exit are
 - **Depends on:** design/MM | none
 - **Worktree:** `required | not-needed`; reason; base/ref
 - **Test tier:** focused | full | milestone-e2e | none; reason
-- **Review handoff:** `<report path> §Review handoff — <topic>`
+- **Review handoff:** `<receipt path> §Review handoff — <topic>`
 - **Loop:** `flow-grill-review` → `flow:impl` (`flow-common`) → `flow-retro`
 - **Gate:** AC check along **Covers** to the anchored root
 - **Exit:** impl-loop breakout → `flow-common` breakout adjudication. Proved
