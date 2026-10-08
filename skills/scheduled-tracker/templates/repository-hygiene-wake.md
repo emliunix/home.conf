@@ -54,15 +54,27 @@ for repo in "${REPOS[@]}"; do
 done
 ```
 
-For each repository, read the live remote target rather than trusting a cached
-`origin/main`. `git ls-remote` is only a listing of remote **tips**; it is not a
-reachability test. An interior commit that is already landed appears nowhere in
-that output. Use ancestry against the recorded target:
+For each repository, resolve the target before grading any tip. A repository
+with an `origin` uses the live remote `main`; a repository without one uses its
+local `main` and records that provenance rather than going `unconfirmed` only
+because no remote exists. `git ls-remote` is only a listing of remote **tips**;
+it is not a reachability test. An interior commit that is already landed appears
+nowhere in that output. Use ancestry against the resolved target:
 
 ```sh
-git -C "$repo" ls-remote --heads origin main
-git -C "$repo" merge-base --is-ancestor "$tip" origin/main
-git -C "$repo" cherry origin/main "$branch"
+if git -C "$repo" remote get-url origin >/dev/null 2>&1; then
+  target=origin/main
+  rc=0; remote=$(git -C "$repo" ls-remote --heads origin main 2>&1) || rc=$?
+  # rc != 0 unconfirmed; do not grade against the cached remote ref
+else
+  target=main
+fi
+
+rc=0; git -C "$repo" merge-base --is-ancestor "$tip" "$target" || rc=$?
+# rc=0 reachable; rc=1 not an ancestor; any other status unconfirmed
+
+rc=0; cherry=$(git -C "$repo" cherry "$target" "$branch" 2>&1) || rc=$?
+# rc != 0 unconfirmed; rc=0 parse the + / - prefixes
 ```
 
 `merge-base --is-ancestor` answers reachability, not patch equivalence; a normal
@@ -70,9 +82,13 @@ rebase, squash, or cherry-pick may leave a branch with no unique patch even when
 its tip is not an ancestor. `git cherry` is the second check for that case. Do
 not build the test as `ls-remote | grep "$tip"`: the intuitive form returns a
 plausible false negative for exactly the squash/interior-landed branches this
-sweep is meant to clear. If the live remote target differs from the cached
-`origin/main`, mark the repository `unconfirmed` rather than grading against the
-stale local ref.
+sweep is meant to clear. If `origin` exists but the live read fails, mark the
+repository `unconfirmed`; do not silently fall back to cached `origin/main`. If
+the live remote target differs from the cached ref, mark it `unconfirmed`
+rather than grading against the stale local ref. Run `merge-base` and `cherry`
+through the status-preserving form above: exit 1 is a normal ancestry verdict,
+not a sweep failure, and bare use under `set -e` would abort before the
+following disposition line.
 
 Do not use `git branch --merged` as the candidate list without stripping its
 markers. Its `*` and `+` prefixes encode current and worktree-checked-out
@@ -83,7 +99,7 @@ check; if `git branch --merged` is used for a quick view, parse it only after
 removing `[*+ ]*`, or use the explicit equivalent:
 
 ```sh
-git -C "$repo" branch --merged origin/main | sed 's/^[*+ ]*//'
+git -C "$repo" branch --merged "$target" | sed 's/^[*+ ]*//'
 ```
 
 For every linked worktree, inspect the checkout before judging the branch:
