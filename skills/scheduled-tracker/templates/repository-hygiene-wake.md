@@ -41,6 +41,7 @@ REPOS=(
   "$HOME/Documents/home.conf"
   "$HOME/Documents/sandbox-deploy"
   "$HOME/Documents/task-svc"
+  "$HOME/Documents/pi-team"
 )
 
 for repo in "${REPOS[@]}"; do
@@ -95,6 +96,12 @@ git -C "$worktree" rev-parse HEAD
 git -C "$repo" worktree prune --dry-run --verbose
 ```
 
+The dry-run names the repository-relative **git metadata** entry
+(`worktrees/<name>`), not the checkout path. The directory to inspect comes from
+the same `git worktree list --porcelain` record as the `prunable` marker; pair
+the two there rather than trying to resolve the dry-run's name as a filesystem
+path.
+
 Run the process check **last**, and only for candidates that already passed
 reachability and the clean-tree inspection. A full `lsof +D` walks the tree and
 its cost scales with file count; measured on this host, a 779-file worktree took
@@ -105,13 +112,20 @@ sweep without changing any earlier disposition.
 For a candidate that reaches this step:
 
 ```sh
-lsof +D "$worktree" 2>/dev/null | head -20
+out=$(lsof +D "$worktree" 2>&1); rc=$?
+printf '%s\n' "$out"
+# rc=1 and empty output  -> nothing held
+# rc=0 with output       -> held (cwd-only holders are reported)
+# any other pair          -> unconfirmed; inspect the captured output
 ```
 
-`lsof +D` exit status is meaningful: exit 1 with no output means nothing held
-the path in the controlled pair; exit 0 with output means something did, and a
-process merely `cd`'d into the tree is reported even with no open file there. A
-missing `lsof` executable, permission denial, or an unreadable path is
+Capture `lsof` directly; do not pipe it to `head` or redirect stderr to
+`/dev/null`. A pipeline returns the last command's status, so clean, held, and
+unconfirmed all look like success, while suppressing stderr removes the only
+evidence for a missing executable or unreadable path. In the controlled pair,
+nothing holding the path produced exit 1 with no output; a live process merely
+`cd`'d into the tree produced exit 0 with output, even with no open file there.
+A missing `lsof` executable, permission denial, or unreadable path is
 `unconfirmed`; an empty output is one input to cleanup, not the whole gate.
 Never use `if lsof` as a truth test without checking the exit status and output.
 `lsof -a -d cwd` is not path-scoped by itself; without a path filter it lists
