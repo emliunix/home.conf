@@ -63,18 +63,25 @@ nowhere in that output. Use ancestry against the resolved target:
 
 ```sh
 if git -C "$repo" remote get-url origin >/dev/null 2>&1; then
-  target=origin/main
   rc=0; remote=$(git -C "$repo" ls-remote --heads origin main 2>&1) || rc=$?
-  # rc != 0 unconfirmed; do not grade against the cached remote ref
+  if [ "$rc" -ne 0 ] || [ -z "$remote" ]; then
+    target=
+  else
+    target=origin/main
+  fi
 else
   target=main
 fi
 
-rc=0; git -C "$repo" merge-base --is-ancestor "$tip" "$target" || rc=$?
-# rc=0 reachable; rc=1 not an ancestor; any other status unconfirmed
+if [ -z "$target" ]; then
+  : # unconfirmed: live remote main unavailable; do not grade a cached ref
+else
+  rc=0; git -C "$repo" merge-base --is-ancestor "$tip" "$target" || rc=$?
+  # rc=0 reachable; rc=1 not an ancestor; any other status unconfirmed
 
-rc=0; cherry=$(git -C "$repo" cherry "$target" "$branch" 2>&1) || rc=$?
-# rc != 0 unconfirmed; rc=0 parse the + / - prefixes
+  rc=0; cherry=$(git -C "$repo" cherry "$target" "$branch" 2>&1) || rc=$?
+  # rc != 0 unconfirmed; rc=0 parse the + / - prefixes
+fi
 ```
 
 `merge-base --is-ancestor` answers reachability, not patch equivalence; a normal
