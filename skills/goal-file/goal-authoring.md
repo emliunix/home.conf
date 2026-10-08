@@ -252,6 +252,7 @@ Phases, workstream DAGs, and the parallelizability partition come into play only
 - No "Next action" section — Open threads + the active phase answer it structurally.
 - Do not add role definitions, process manuals, review transcripts, or historical narrative.
 - Use design-file links as the task source of truth; do not duplicate design contents. The anchored root is the vendored copy; after anchoring, source designs are not the root.
+- **A card reference names its channel** — `#comp-agent-substrate-2` task #225, not `#225` — because channels number cards independently, so a bare number resolves to two different cards and the wrong one reads as plausible.
 - Vendored law carries `vendored from: <path> (date, ref)` — and **re-compiles** on project-law change (it is not anchored). User requirements anchor; principles re-compile.
 
 ## Completion language
