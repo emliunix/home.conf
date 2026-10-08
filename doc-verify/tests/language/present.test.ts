@@ -80,7 +80,7 @@ describe("core.present/3", () => {
     const { backend } = scriptedJudge(always);
     const forward = await run(combined(["problem-statement", "scope", "rationale"]), backend);
     const reversed = await run(combined(["rationale", "scope", "problem-statement"]), backend);
-    expect(asked(forward)).toEqual([{ sections: ["problem-statement", "rationale"], bytes: expect.any(Number) }]);
+    expect(asked(forward)).toEqual([{ sections: ["problem-statement", "rationale"], bytes: expect.any(Number) as number }]);
     // Candidate order is irrelevant; document order is authoritative, so the two agree exactly.
     expect(asked(reversed)).toEqual(asked(forward));
   });

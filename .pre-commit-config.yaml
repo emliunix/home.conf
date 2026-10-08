@@ -8,6 +8,22 @@ repos:
         pass_filenames: false
         files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$'
         require_serial: true
+      - id: oxlint
+        name: oxc lint gate
+        language: system
+        # The oxlint gate, wrapped rather than invoked directly. oxlint exits 1
+        # for BOTH a finding and a broken run (eslint exits 2 on a crash and 1 on
+        # a finding), so the wrapper restores the discrimination on the output
+        # stream: a finding emits parseable JSON on stdout, a broken run emits
+        # plain text there. It also asserts the typed rule is ARMED, because
+        # `--type-aware` and `--deny <rule>` are both load-bearing and neither
+        # alone is visible in the exit status -- with either missing, the run
+        # exits 0 on a file with ten real violations while still printing an
+        # unrelated diagnostic. Exit 0 pass, 1 finding, 2 crash.
+        entry: npm run --silent lint
+        pass_filenames: false
+        files: '^doc-verify/.*\.(ts|mjs)$|^oxlint\.config\.json$|^scripts/oxlint-gate\.mjs$|^scripts/__gate-probe__/'
+        require_serial: true
       - id: skill-dispatch
         name: skill dispatch coverage
         language: system

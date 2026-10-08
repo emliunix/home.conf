@@ -195,7 +195,7 @@ describe("design 04 golden path", () => {
     expect(violated[0]?.values).toMatchObject({ C: "scope---what-we-touch/weather-report", P: "scope---what-we-touch" });
     expect(violated[0]?.message).toContain("scope---what-we-touch/weather-report");
     expect(violated[0]?.repair).toContain("scope---what-we-touch");
-    const leaves = oracleLeaves(violated[0]?.proof as ProofNode | undefined);
+    const leaves = oracleLeaves(violated[0]?.proof);
     const categoryLeaf = leaves.find((leaf) => leaf.label === "other");
     expect(categoryLeaf).toMatchObject({ round: 2, threshold: 0.5, sections: ["scope---what-we-touch/weather-report"] });
     expect(categoryLeaf?.distribution).toEqual([0, 0, 0, 1, 0]);

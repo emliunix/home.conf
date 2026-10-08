@@ -16,7 +16,7 @@
     "prepare": "npm run build && if [ \"$(git rev-parse --show-toplevel 2>/dev/null)\" = \"$(pwd -P)\" ] && command -v prek >/dev/null 2>&1; then prek install --git-dir \"$(git rev-parse --path-format=absolute --git-common-dir)\" -t pre-commit; fi",
     "test": "npm run build && vitest run",
     "typecheck": "tsc -p doc-verify/tsconfig.json --noEmit",
-    "lint": "eslint doc-verify/src doc-verify/tests",
+    "lint": "node scripts/oxlint-gate.mjs --self-test",
     "check": "npm run build && node doc-verify/dist/cli.js check --paths design/02-programmatic-document-contract-verification.md goals/01-document-verification-and-skill-transfer.md --profile draft --format text",
     "test:remote-hook": "bash doc-verify/tests/remote-hook.sh"
   },
@@ -39,6 +39,8 @@
     "@types/mdast": "4.0.4",
     "@types/node": "24.5.2",
     "eslint": "9.36.0",
+    "oxlint": "1.77.0",
+    "oxlint-tsgolint": "7.0.2001",
     "typescript": "5.9.2",
     "typescript-eslint": "8.44.1",
     "vitest": "3.2.4"
