@@ -1,0 +1,15 @@
+schema_version: 2
+kind: verification-module
+module: tree
+imports: { core: doc-verify:core }
+rules:
+  decisions(D, S): core.section(D, S, _), core.heading(D, S, 'Decisions')
+  decision(D, C): decisions(D, S), core.child(D, S, C)
+  has_why(D, C): core.child(D, C, W), core.heading(D, W, 'Why')
+constraints:
+  every-decision-says-why:
+    forall: decision(D, C)
+    require: has_why(D, C)
+    severity: error
+    message: "decision {C} has no '#### Why' under it"
+    repair: "Add '#### Why' under {C}"
