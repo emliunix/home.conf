@@ -1,0 +1,19 @@
+schema_version: 1
+kind: document-verification
+documents:
+  - pattern: docs/*.md
+    artifact_kind: doc
+    modules: [modules/demo.yaml]
+  - pattern: docs/decisions.md
+    artifact_kind: doc
+    modules: [modules/tree.yaml]
+judge:
+  kind: jev
+  model: jev-1.13.0
+  client_sha256: ce983f8de97d5b30d527a7116f0c49ad3d17e098d2c3f17c9600041260c65dcb
+  attestation_max_age_seconds: 86400
+policy:
+  kind: semantic-boundary
+  version: 1
+  max_evidence_bytes: 48000
+  forbidden_literals: []

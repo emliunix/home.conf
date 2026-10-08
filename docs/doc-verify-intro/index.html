@@ -1,0 +1,1151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>doc-verify: an introduction</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --ink:#172033; --muted:#5d6779; --line:#dfe4ec; --paper:#ffffff; --wash:#f5f7fb;
+    --blue:#2563eb; --blue-soft:#e8f0ff; --green:#15803d; --green-soft:#e7f6ec;
+    --red:#c2410c; --red-soft:#fff1ea; --amber:#b45309; --amber-soft:#fff7e6;
+    --violet:#7c3aed; --violet-soft:#f1ebff; --term:#0f172a;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; background:#dfe5ee; color:var(--ink);
+    font-family: Inter, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+  .slide { display:none; position:absolute; inset:0; margin:auto; width:min(1240px,97vw); height:min(760px,94vh);
+    background:var(--paper); border-radius:18px; box-shadow:0 14px 40px rgba(15,23,42,.16);
+    padding:44px 60px 40px; overflow:auto; }
+  .slide.active { display:block; animation:fade .25s ease; }
+  @keyframes fade { from { opacity:.3; transform:translateY(6px);} to { opacity:1; transform:none; } }
+  .kicker { font-size:14px; letter-spacing:.12em; text-transform:uppercase; color:var(--blue); font-weight:700; margin-bottom:6px; }
+  h1 { font-size:58px; margin:0; letter-spacing:-.02em; }
+  h2 { font-size:34px; margin:0 0 20px; letter-spacing:-.01em; }
+  p, li { font-size:20px; line-height:1.5; }
+  ul { padding-left:24px; } li { margin:6px 0; }
+  .muted { color:var(--muted); }
+  code { font-family: "SF Mono", Menlo, Consolas, monospace; background:var(--wash); border:1px solid var(--line);
+    padding:0 6px; border-radius:5px; font-size:.86em; }
+  pre { font-family: "SF Mono", Menlo, Consolas, monospace; background:var(--term); color:#e2e8f0; padding:14px 18px;
+    border-radius:12px; font-size:14px; line-height:1.5; overflow:auto; white-space:pre-wrap; margin:8px 0; }
+  pre.light { background:var(--wash); color:var(--ink); border:1px solid var(--line); }
+  pre .r { color:#fb923c; font-weight:600; } pre .g { color:#4ade80; font-weight:600; } pre .d { color:#94a3b8; }
+  pre .b { color:#93c5fd; } pre .y { color:#fcd34d; } pre .v { color:#c4b5fd; }
+  pre.light .r { color:var(--red); } pre.light .g { color:var(--green); } pre.light .d { color:#94a3b8; } pre.light .b { color:var(--blue); }
+  .cols { display:grid; grid-template-columns:1fr 1fr; gap:30px; align-items:start; }
+  .cols.wide-left { grid-template-columns:1.25fr 1fr; }
+  .card { border:1px solid var(--line); border-radius:14px; padding:16px 20px; background:var(--paper); }
+  .card h3 { margin:0 0 6px; font-size:19px; }
+  .card p { margin:0; font-size:17px; }
+  .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .grid2 { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .blue { background:var(--blue-soft); border-color:#c7d8fb; } .green { background:var(--green-soft); border-color:#bfe5cb; }
+  .red { background:var(--red-soft); border-color:#f8cdb6; } .amber { background:var(--amber-soft); border-color:#f6dca9; }
+  .violet { background:var(--violet-soft); border-color:#d9c8fb; }
+  .badge { display:inline-block; font-weight:700; font-size:14px; padding:3px 10px; border-radius:999px; color:#fff; vertical-align:middle; }
+  .b-nogo { background:var(--red); } .b-pass { background:var(--green); } .b-block { background:#475569; } .b-review { background:var(--amber); }
+  .note { border-left:5px solid var(--blue); background:var(--blue-soft); padding:10px 16px; border-radius:0 10px 10px 0; margin-top:14px; font-size:18px; }
+  .note.warn { border-color:var(--red); background:var(--red-soft); }
+  .note.ok { border-color:var(--green); background:var(--green-soft); }
+  .mermaid { display:flex; justify-content:center; }
+  table { border-collapse:collapse; font-size:18px; width:100%; }
+  th, td { border-bottom:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top; }
+  th { color:var(--muted); font-size:15px; text-transform:uppercase; letter-spacing:.05em; }
+  .title-slide { background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#2563eb 100%); color:#fff; }
+  .title-slide .muted { color:#c7d2fe; } .title-slide code { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.2); color:#fff; }
+  .pipeline { display:flex; gap:10px; align-items:center; margin:34px 0 10px; flex-wrap:wrap; }
+  .pipeline span { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); padding:8px 14px; border-radius:10px; font-size:17px; }
+  .pipeline i { font-style:normal; opacity:.7; }
+  .section-slide { display:none; }
+  .section-slide.active { display:flex; flex-direction:column; justify-content:center; background:var(--wash); }
+  .section-slide h1 { font-size:50px; } .section-slide p { font-size:22px; }
+  .factrow { font-family:"SF Mono",Menlo,monospace; font-size:15px; }
+  .hl { background:#fde68a; border-radius:3px; padding:0 2px; }
+  .slide[style*="--dense"] pre { font-size:12.5px; line-height:1.4; padding:10px 14px; }
+  .slide[style*="--dense"] p { font-size:16px; margin:6px 0; }
+  #pager { position:fixed; bottom:12px; right:22px; color:#64748b; font-size:13px; font-family:monospace; }
+  #bar { position:fixed; left:0; bottom:0; height:4px; background:var(--blue); transition:width .25s; }
+
+  /* ---------- step animations ---------- */
+  .f { opacity:0; transform:translateY(12px); transition:opacity .45s ease, transform .45s ease; }
+  .f.on { opacity:1; transform:none; }
+  .f.gone { display:none; }
+  .f.pop.on { animation:pop .5s ease; }
+  @keyframes pop { 0%{transform:scale(.6);} 70%{transform:scale(1.08);} 100%{transform:scale(1);} }
+  .slide-in { transform:translateX(-40px); }
+  .slide-in.on { transform:none; }
+  .mk { transition:background .35s, box-shadow .35s; border-radius:5px; }
+  .mk.on { background:#fde68a; box-shadow:0 0 0 3px #fde68a; }
+  .cap { font-size:21px; color:var(--ink); margin-top:22px; }
+  .steps-cap { min-height:60px; margin-top:16px; }
+  .steps-cap .cap { margin:0; }
+
+  /* variables */
+  v { font-family:"SF Mono",Menlo,monospace; font-weight:700; padding:0 3px; border-radius:4px; }
+  .vD{color:#2563eb;background:#e8f0ff}.vS{color:#15803d;background:#e7f6ec}.vP{color:#b45309;background:#fff7e6}
+  .vC{color:#7c3aed;background:#f1ebff}.vA{color:#0d9488;background:#e0f5f2}.vN{color:#475569;background:#eef2f6}
+  .vT{color:#be185d;background:#fde7f1}.vX{color:#64748b;background:#f1f5f9}
+  .cD{color:#2563eb}.cS{color:#15803d}
+  v.big { font-size:34px; padding:4px 14px; border-radius:10px; min-width:64px; text-align:center; display:inline-block; }
+
+  /* document mock */
+  .doc { background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 6px 18px rgba(15,23,42,.08);
+    padding:14px 18px; font-family:"SF Mono",Menlo,monospace; font-size:14px; width:250px; }
+  .doc.wide { width:auto; font-size:16px; }
+  .doc-title { font-weight:700; color:var(--muted); font-size:13px; margin-bottom:8px; border-bottom:1px dashed var(--line); padding-bottom:6px; }
+  .doc-line { padding:2px 4px; color:#475569; } .doc-line.h { color:var(--ink); font-weight:700; }
+
+  /* what-it-is flow */
+  .flow3 { display:grid; grid-template-columns:260px 1fr 330px; gap:26px; align-items:center; margin-top:10px; }
+  .lanes { display:flex; flex-direction:column; gap:26px; }
+  .lane { display:grid; grid-template-columns:30px 170px 1fr; gap:12px; align-items:center; }
+  .lane .arrow { font-size:26px; color:#94a3b8; }
+  .pill { border-radius:14px; padding:10px 14px; font-weight:700; text-align:center; font-size:18px; }
+  .pill small { font-weight:400; font-size:13px; color:var(--muted); }
+  .pill.blue { background:var(--blue-soft); border:1px solid #c7d8fb; } .pill.violet { background:var(--violet-soft); border:1px solid #d9c8fb; }
+  .q { font-size:16px; color:#334155; font-style:italic; }
+  .out { display:flex; flex-direction:column; gap:10px; align-items:flex-start; }
+  .badge.big { font-size:22px; padding:6px 18px; }
+  .finding { background:var(--red-soft); border:1px solid #f8cdb6; border-radius:10px; padding:8px 12px; font-size:15px; }
+  .finding .rep { color:var(--green); font-size:14px; }
+  .icon { font-size:38px; margin-bottom:6px; }
+
+  /* facts */
+  .tbl-title { font-family:"SF Mono",Menlo,monospace; font-size:16px; font-weight:700; margin-bottom:6px; }
+  table.facts td { font-family:"SF Mono",Menlo,monospace; font-size:15px; }
+
+  /* legend */
+  .legend { display:grid; grid-template-columns:1fr 1fr; gap:14px 40px; margin-top:6px; }
+  .lg { display:grid; grid-template-columns:90px 1fr auto; align-items:center; gap:14px; font-size:20px;
+    border:1px solid var(--line); border-radius:12px; padding:8px 14px; }
+
+  /* rule */
+  .rule-stage { display:flex; flex-direction:column; gap:20px; margin-top:8px; }
+  .rule-line { font-family:"SF Mono",Menlo,monospace; font-size:22px; background:var(--wash); border:1px solid var(--line);
+    border-radius:12px; padding:14px 18px; }
+  .rule-line.small { font-size:16px; padding:10px 14px; }
+  .rule-line .new { font-weight:700; }
+  .op { color:#dc2626; font-weight:800; padding:0 4px; }
+  .say { font-size:19px; color:var(--muted); }
+  .chips { display:flex; gap:16px; }
+  .chip { font-family:"SF Mono",Menlo,monospace; font-size:17px; background:#fff; border:2px solid #cbd5e1; border-radius:999px; padding:8px 16px; }
+  .fill { font-family:"SF Mono",Menlo,monospace; font-size:19px; background:#fffbea; border:1px dashed #f6d47a; border-radius:12px; padding:12px 16px; }
+  .tick { color:var(--green); font-weight:800; margin-left:10px; }
+  .newfact { align-self:flex-start; font-family:"SF Mono",Menlo,monospace; font-size:22px; background:var(--green-soft);
+    border:2px solid var(--green); border-radius:12px; padding:10px 18px; }
+
+  /* scanner */
+  .scan { position:relative; margin-top:16px; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .srow { display:grid; grid-template-columns:1fr 1fr 40px; padding:9px 16px; font-family:"SF Mono",Menlo,monospace; font-size:17px;
+    border-bottom:1px solid var(--line); transition:background .3s; }
+  .srow i { font-style:normal; font-weight:800; opacity:0; }
+  .srow .x { color:#dc2626; } .srow .y { color:var(--green); }
+  .scan .bar { position:absolute; left:0; right:0; height:42px; top:-44px; background:linear-gradient(180deg,rgba(37,99,235,0),rgba(37,99,235,.22),rgba(37,99,235,0)); pointer-events:none; }
+  .scan.on .bar { animation:scan 2.6s linear forwards; }
+  @keyframes scan { 0%{top:-44px;} 100%{top:100%;} }
+  .scan.on .srow i { animation:showmark .2s forwards; }
+  .scan.on .srow:nth-of-type(2) i { animation-delay:.45s } .scan.on .srow:nth-of-type(3) i { animation-delay:.95s }
+  .scan.on .srow:nth-of-type(4) i { animation-delay:1.45s } .scan.on .srow:nth-of-type(5) i { animation-delay:1.95s }
+  .scan.on .srow:nth-of-type(6) i { animation-delay:2.45s }
+  @keyframes showmark { to { opacity:1; } }
+  .scan.on .srow.hit { animation:hit .4s 1.5s forwards; }
+  @keyframes hit { to { background:var(--green-soft); } }
+  .pop-row { display:flex; gap:20px; margin-top:16px; align-items:center; }
+  .binding { font-family:"SF Mono",Menlo,monospace; font-size:18px; background:var(--green-soft); border:2px solid var(--green); border-radius:10px; padding:8px 14px; }
+  .counter { font-size:20px; border:2px solid var(--blue); border-radius:999px; padding:6px 16px; } .counter b { font-size:26px; color:var(--blue); }
+
+  /* proof tree */
+  .tree { display:flex; flex-direction:column; gap:30px; align-items:center; margin-top:12px; }
+  .tlevel { display:flex; gap:26px; justify-content:center; }
+  .node { font-family:"SF Mono",Menlo,monospace; font-size:16px; border-radius:12px; padding:10px 16px; border:2px solid #cbd5e1; background:#fff; position:relative; }
+  .node.fact { background:var(--wash); } .node.mid { border-color:#93c5fd; background:var(--blue-soft); }
+  .node.goal { border-color:var(--blue); background:var(--blue-soft); font-weight:700; font-size:18px; }
+  .node.on::before { content:"▲"; position:absolute; top:-26px; left:50%; transform:translateX(-50%); color:#94a3b8; font-size:16px; }
+  .node.goal.on::before { content:""; }
+  .spacer { width:180px; }
+
+  /* machine */
+  .machine { margin-top:20px; }
+  .m-row { display:flex; align-items:center; gap:6px; flex-wrap:nowrap; }
+  .mbox { min-width:108px; text-align:center; border:2px solid #cbd5e1; border-radius:14px; padding:12px 8px; font-size:16px; background:#fff; line-height:1.5; }
+  .mbox.blue { border-color:#93c5fd; background:var(--blue-soft); } .mbox.violet { border-color:#c4b5fd; background:var(--violet-soft); font-weight:700; }
+  .mbox.amber { border-color:#f6d47a; background:var(--amber-soft); } .mbox.dark { background:#0f172a; color:#fff; border-color:#0f172a; }
+  .mbox.small { min-width:90px; padding:8px; }
+  .marr { font-size:22px; color:#94a3b8; }
+  .m-judge { display:flex; gap:14px; align-items:center; margin:22px 0 0 330px; }
+  .m-judge .down { color:var(--violet); font-size:15px; }
+  .dot { display:inline-block; width:14px; height:14px; border-radius:50%; margin:0 2px; }
+  .dot.g{background:#16a34a}.dot.r{background:#dc2626}.dot.a{background:#d97706}
+  .dot.big { width:30px; height:30px; flex:none; }
+
+  /* anatomy */
+  .anat { display:grid; grid-template-columns:1.2fr 1fr; gap:24px; align-items:start; }
+  pre.big { font-size:16.5px; line-height:2; }
+  .callouts { display:flex; flex-direction:column; gap:12px; }
+  .co { border-left:4px solid var(--blue); background:var(--blue-soft); border-radius:0 10px 10px 0; padding:8px 14px; font-size:18px; }
+
+  /* oracle */
+  .oracle { display:grid; grid-template-columns:260px 110px 1fr 180px; gap:18px; align-items:center; margin-top:18px; }
+  .ev { background:var(--wash); border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:17px; font-style:italic; }
+  .oarr { font-size:24px; text-align:center; }
+  .dist { position:relative; display:flex; flex-direction:column; gap:12px; padding:6px 0; }
+  .dl { display:grid; grid-template-columns:80px 1fr; align-items:center; gap:10px; font-family:"SF Mono",Menlo,monospace; font-size:15px; }
+  .track { height:22px; background:#eef2f6; border-radius:6px; overflow:hidden; }
+  .fillbar { height:100%; width:0; transition:width 1s ease; }
+  .dist.on .fillbar { width:var(--w); }
+  .fillbar.g{background:#16a34a}.fillbar.r{background:#dc2626}.fillbar.n{background:#94a3b8}
+  .thr { position:absolute; top:-6px; bottom:-6px; left:calc(90px + (100% - 90px) * .8); border-left:3px dashed #0f172a; }
+  .thr span { position:absolute; top:-24px; left:-40px; font-size:13px; font-weight:700; white-space:nowrap; }
+  .label-out { display:flex; justify-content:center; }
+  .stamp { font-size:30px; font-weight:800; border:4px solid; border-radius:12px; padding:6px 18px; transform:rotate(-6deg); }
+  .stamp.on { animation:stamp .4s ease; }
+  @keyframes stamp { 0%{transform:scale(2) rotate(-6deg);opacity:0} 100%{transform:scale(1) rotate(-6deg);opacity:1} }
+  .stamp.red { color:#dc2626; border-color:#dc2626; } .stamp.grey { color:#64748b; border-color:#64748b; }
+
+  /* outcomes */
+  .lights { display:flex; flex-direction:column; gap:18px; }
+  .lamp { display:flex; gap:16px; align-items:center; font-size:20px; }
+  .ladder { display:flex; flex-direction:column; gap:10px; }
+  .rung { display:grid; grid-template-columns:150px 70px 1fr; gap:12px; align-items:center; border:1px solid var(--line); border-radius:12px; padding:10px 14px; font-size:17px; }
+  .rung small { color:var(--muted); font-size:15px; }
+
+</style>
+</head>
+<body>
+
+<!-- 1 Title -->
+<section class="slide title-slide">
+  <div class="kicker" style="color:#93c5fd">home.conf · design 04</div>
+  <h1>doc-verify</h1>
+  <p style="font-size:28px;margin-top:10px">A linter for what a document <em>means</em>, not only how it is laid out.</p>
+  <div class="pipeline">
+    <span>Markdown</span><i>→</i><span>facts</span><i>→</i><span>rules</span><i>→</i><span>judge questions</span><i>→</i><span>verdict + proof</span>
+  </div>
+  <p class="muted" style="margin-top:60px">Every command output in this deck was produced by running the tool on home.conf main <code>6937c15</code>.<br>
+  Press → or space to step through each animation. Press <code>a</code> to reveal a whole slide.</p>
+</section>
+
+<!-- 2 What (animated) -->
+<section class="slide">
+  <div class="kicker">The idea</div>
+  <h2>What doc-verify does</h2>
+  <div class="flow3">
+    <div class="doc f" data-s="1">
+      <div class="doc-title">design/42.md</div>
+      <div class="doc-line h">## Problem statement</div>
+      <div class="doc-line">…</div>
+      <div class="doc-line h">## Verification design</div>
+      <div class="doc-line">It works well.</div>
+      <div class="doc-line h">## Status</div>
+      <div class="doc-line">maybe</div>
+    </div>
+    <div class="lanes">
+      <div class="lane f" data-s="2"><span class="arrow">➜</span><div class="pill blue">structure<br><small>logic · free · certain</small></div><div class="q">"Is there a <b>## Status</b> with one status word?"</div></div>
+      <div class="lane f" data-s="3"><span class="arrow">➜</span><div class="pill violet">meaning<br><small>judge (LLM) · only when needed</small></div><div class="q">"Does the verification name a check that would <b>fail</b> if the claim were false?"</div></div>
+    </div>
+    <div class="out f" data-s="4">
+      <span class="badge b-nogo big">NO-GO</span>
+      <div class="finding">status 'maybe' is not one of [draft, reviewed, …]<br><span class="rep">repair: use one status word</span></div>
+      <div class="finding">verification names no failing check<br><span class="rep">repair: name the test that fails</span></div>
+    </div>
+  </div>
+  <p class="cap f" data-s="4">One command, the same in a terminal, a commit hook and CI.</p>
+</section>
+
+<!-- 3 Why (animated) -->
+<section class="slide">
+  <div class="kicker">The idea</div>
+  <h2>Why it exists</h2>
+  <div class="grid3">
+    <div class="card f" data-s="1"><div class="icon">🧠</div><h3>Before</h3><p>Design rules lived in a reviewer's memory.</p></div>
+    <div class="card red f" data-s="2"><div class="icon">🔢</div><h3>Version 1</h3><p>A fixed list of judge questions, identified by position. Once matched <b>0 of 12</b> answers to the wrong items.</p></div>
+    <div class="card green f" data-s="3"><div class="icon">🧩</div><h3>Now</h3><p>The rules are a small program. Every question has a name. Every finding says why.</p></div>
+  </div>
+  <p class="cap f" data-s="4">To read those programs you need five ideas from <b>Datalog</b>. Next.</p>
+</section>
+
+<!-- 4 Section: primer -->
+<section class="slide section-slide">
+  <div class="kicker">Part 1</div>
+  <h1>Datalog in pictures</h1>
+  <p class="muted">Facts, variables, rules, bindings, proofs.</p>
+</section>
+
+<!-- 5 Facts (animated) -->
+<section class="slide">
+  <div class="kicker">Datalog · facts</div>
+  <h2>A document becomes rows</h2>
+  <div class="cols">
+    <div class="doc wide">
+      <div class="doc-title">design/99.md</div>
+      <div class="doc-line h mk" data-s="1"># 99 - Answer cache</div>
+      <div class="doc-line h mk" data-s="2">## Problem statement</div>
+      <div class="doc-line">Every check re-asks the judge…</div>
+      <div class="doc-line h mk" data-s="3">## Verification design</div>
+      <div class="doc-line">It works well…</div>
+      <div class="doc-line h mk" data-s="4">## Status</div>
+      <div class="doc-line">draft</div>
+    </div>
+    <div>
+      <div class="tbl-title">core.heading(<v class="vD">D</v>, <v class="vS">S</v>, Text)</div>
+      <table class="facts">
+        <tr class="f slide-in" data-s="1"><td class="cD">99.md</td><td class="cS">99---answer-cache</td><td>99 - Answer cache</td></tr>
+        <tr class="f slide-in" data-s="2"><td class="cD">99.md</td><td class="cS">problem-statement</td><td>Problem statement</td></tr>
+        <tr class="f slide-in" data-s="3"><td class="cD">99.md</td><td class="cS">verification-design</td><td>Verification design</td></tr>
+        <tr class="f slide-in" data-s="4"><td class="cD">99.md</td><td class="cS">status</td><td>Status</td></tr>
+      </table>
+      <div class="tbl-title f" data-s="5" style="margin-top:18px">core.section(<v class="vD">D</v>, <v class="vS">S</v>, <v class="vP">P</v>) · core.depth(<v class="vD">D</v>, <v class="vS">S</v>, <v class="vN">N</v>) · core.child · ref …</div>
+    </div>
+  </div>
+  <p class="cap f" data-s="5">Rules only ever read rows like these. Never raw text.</p>
+</section>
+
+<!-- 6 Variables legend (animated) -->
+<section class="slide">
+  <div class="kicker">Datalog · variables</div>
+  <h2>Capital letters are blanks</h2>
+  <div class="legend">
+    <div class="lg f" data-s="1"><v class="vD big">D</v><span>document</span><code>design/99.md</code></div>
+    <div class="lg f" data-s="1"><v class="vS big">S</v><span>section</span><code>status</code></div>
+    <div class="lg f" data-s="2"><v class="vP big">P</v><span>parent section</span><code>decisions</code></div>
+    <div class="lg f" data-s="2"><v class="vC big">C</v><span>child section</span><code>decisions/use-temporal</code></div>
+    <div class="lg f" data-s="3"><v class="vA big">A</v><span>ancestor, any level up</span><code>language</code></div>
+    <div class="lg f" data-s="3"><v class="vN big">N</v><span>number (depth, order)</span><code>2</code></div>
+    <div class="lg f" data-s="4"><v class="vT big">T</v><span>link or path target</span><code>runbook.md</code></div>
+    <div class="lg f" data-s="4"><v class="vX big">_</v><span>anything, don't care</span><code></code></div>
+  </div>
+  <p class="cap f" data-s="5">The letters are only a habit. The <b>position</b> in the brackets is what gives them meaning: <code>core.child(<v class="vD">D</v>, <v class="vP">P</v>, <v class="vC">C</v>)</code> = "in <v class="vD">D</v>, <v class="vC">C</v> sits directly under <v class="vP">P</v>".</p>
+</section>
+
+<!-- 7 Rule (animated) -->
+<section class="slide">
+  <div class="kicker">Datalog · rules</div>
+  <h2>A rule fills its blanks and makes a new fact</h2>
+  <div class="rule-stage">
+    <div class="rule-line">
+      <span class="new">top(<v class="vD">D</v>, <v class="vS">S</v>)</span>
+      <span class="op">:</span>
+      core.section(<v class="vD">D</v>, <v class="vS">S</v>, _) <span class="op">,</span> core.depth(<v class="vD">D</v>, <v class="vS">S</v>, 2)
+    </div>
+    <div class="say f" data-s="1"><b>:</b> means "is true when". <b>,</b> means "and".</div>
+    <div class="chips">
+      <div class="chip f" data-s="2">core.section(<b class="cD">99.md</b>, <b class="cS">status</b>, root)</div>
+      <div class="chip f" data-s="2">core.depth(<b class="cD">99.md</b>, <b class="cS">status</b>, 2)</div>
+    </div>
+    <div class="fill f" data-s="3">
+      <span class="drop">top(<b class="cD">99.md</b>, <b class="cS">status</b>)</span> <span class="op">:</span>
+      core.section(<b class="cD">99.md</b>, <b class="cS">status</b>, root) <span class="op">,</span> core.depth(<b class="cD">99.md</b>, <b class="cS">status</b>, 2) <span class="tick">✓ ✓</span>
+    </div>
+    <div class="newfact f pop" data-s="4">new fact&nbsp; <b>top(99.md, status)</b></div>
+  </div>
+  <p class="cap f" data-s="4">Nothing runs in order. A rule only says when a fact is true.</p>
+</section>
+
+<!-- 8 Bindings (animated) -->
+<section class="slide">
+  <div class="kicker">Datalog · bindings</div>
+  <h2>The engine tries every row</h2>
+  <div class="rule-line small">verification_design_section(<v class="vD">D</v>, <v class="vS">S</v>) : top(<v class="vD">D</v>, <v class="vS">S</v>), core.heading(<v class="vD">D</v>, <v class="vS">S</v>, 'Verification design')</div>
+  <div class="scan" data-s="1">
+    <div class="bar"></div>
+    <div class="srow"><span class="cS">problem-statement</span><span>Problem statement</span><i class="x">✗</i></div>
+    <div class="srow"><span class="cS">rationale</span><span>Rationale</span><i class="x">✗</i></div>
+    <div class="srow hit"><span class="cS">verification-design</span><span>Verification design</span><i class="y">✓</i></div>
+    <div class="srow"><span class="cS">goal</span><span>Goal</span><i class="x">✗</i></div>
+    <div class="srow"><span class="cS">status</span><span>Status</span><i class="x">✗</i></div>
+  </div>
+  <div class="pop-row">
+    <div class="binding f" data-s="2">binding: <v class="vD">D</v> = 99.md, <v class="vS">S</v> = verification-design</div>
+    <div class="counter f" data-s="3">population <b>1</b></div>
+  </div>
+  <p class="cap f" data-s="3">Each match is a <b>binding</b>. The number of matches is the <b>population</b>. Population 0 = nothing to check.</p>
+</section>
+
+<!-- 9 Proof (animated) -->
+<section class="slide">
+  <div class="kicker">Datalog · proofs</div>
+  <h2>Every new fact remembers why</h2>
+  <div class="tree">
+    <div class="tlevel"><div class="node goal f" data-s="4">verification_design_section(99.md, verification-design)</div></div>
+    <div class="tlevel"><div class="node mid f" data-s="3">top(99.md, verification-design)</div><div class="node fact f" data-s="2">heading = 'Verification design'</div></div>
+    <div class="tlevel"><div class="node fact f" data-s="1">section(…, verification-design, …)</div><div class="node fact f" data-s="1">depth = 2</div><div class="spacer"></div></div>
+  </div>
+  <p class="cap f" data-s="5">That tree is the <b>proof</b>. A failure points at the section, the rule and the missing piece, not just "rule 4 failed".</p>
+</section>
+
+<!-- 10 Restricted (animated) -->
+<section class="slide">
+  <div class="kicker">Datalog · the safety catch</div>
+  <h2>A restricted dialect</h2>
+  <div class="grid3">
+    <div class="card green f" data-s="1"><div class="icon">🚫</div><h3>Can't do anything</h3><p><s>exec(</s> <s>http_get(</s> <s>consult(</s> <s>write_file(</s><br>refused before running.</p></div>
+    <div class="card blue f" data-s="2"><div class="icon">⏹</div><h3>Always finishes</h3><p>No cut, no assert. Same document, same answer.</p></div>
+    <div class="card violet f" data-s="3"><div class="icon">🤖</div><h3>Judge sits outside</h3><p>The engine asks the model. A rule only reads the answer.</p></div>
+  </div>
+  <p class="cap f" data-s="4">For Prolog readers: Datalog with stratified <code>not</code>, <code>X in List</code>, integer comparisons and <code>count</code>.</p>
+</section>
+
+<!-- 11 Section: engine -->
+<section class="slide section-slide">
+  <div class="kicker">Part 2</div>
+  <h1>How a check runs</h1>
+  <p class="muted">Press → to build the machine.</p>
+</section>
+
+<!-- 12 Machine build-up (animated) -->
+<section class="slide">
+  <div class="kicker">The machine</div>
+  <h2>From document to verdict</h2>
+  <div class="machine">
+    <div class="m-row">
+      <div class="mbox f" data-s="1">📄<br>document</div>
+      <div class="marr f" data-s="2">➜</div>
+      <div class="mbox f" data-s="2">🌳<br>section tree</div>
+      <div class="marr f" data-s="3">➜</div>
+      <div class="mbox blue f" data-s="3">▦<br>facts</div>
+      <div class="marr f" data-s="4">➜</div>
+      <div class="mbox blue f" data-s="4">ƒ<br>rules</div>
+      <div class="marr f" data-s="5">➜</div>
+      <div class="mbox blue f" data-s="5">✔<br>constraints</div>
+      <div class="marr f" data-s="7">➜</div>
+      <div class="mbox f outc" data-s="7"><span class="dot g"></span><span class="dot r"></span><span class="dot a"></span><br>outcomes</div>
+      <div class="marr f" data-s="8">➜</div>
+      <div class="mbox dark f" data-s="8">⚖<br>verdict</div>
+    </div>
+    <div class="m-judge f" data-s="6">
+      <div class="mbox violet">🤖 judge</div>
+      <div class="mbox amber small f" data-s="6">🗄 cache</div>
+      <div class="down">⬇ holds · fails · unknown ⬇ into the rules</div>
+    </div>
+  </div>
+  <div class="steps-cap">
+    <p class="cap f only" data-s="1" data-h="2">Start with a Markdown file.</p>
+    <p class="cap f only" data-s="2" data-h="3">Split into sections with stable ids (<code>segments FILE</code> prints them).</p>
+    <p class="cap f only" data-s="3" data-h="4">Every section, heading, depth, child and link becomes a fact.</p>
+    <p class="cap f only" data-s="4" data-h="5">Rules derive new facts.</p>
+    <p class="cap f only" data-s="5" data-h="6">Constraints say what must hold for every binding.</p>
+    <p class="cap f only" data-s="6" data-h="7">Some facts are questions only a model can answer. Answers are cached per section.</p>
+    <p class="cap f only" data-s="7" data-h="8">Each constraint ends satisfied, violated or undetermined.</p>
+    <p class="cap f only" data-s="8">One verdict and an exit code.</p>
+  </div>
+</section>
+
+<!-- 13 Constraint anatomy (animated) -->
+<section class="slide">
+  <div class="kicker">The machine · constraints</div>
+  <h2>Anatomy of a constraint</h2>
+  <div class="anat">
+    <pre class="light big"><span class="mk" data-s="1">design-verification-falsifies:</span>
+  <span class="mk" data-s="2">forall:  verification_design_section(D, S)</span>
+  <span class="mk" data-s="3">require: verification_falsifies(D, S)</span>
+  <span class="mk" data-s="4">severity: error</span>
+  profiles: [promotion]
+  <span class="mk" data-s="5">message: "{S} in {D} names no observable failure witness…"</span>
+  <span class="mk" data-s="5">repair:  "Name the test, command or measurement that fails…"</span></pre>
+    <div class="callouts">
+      <div class="co f" data-s="1"><b>name</b> shows up in every finding</div>
+      <div class="co f" data-s="2"><b>forall</b> = for every binding of this…</div>
+      <div class="co f" data-s="3"><b>require</b> = …this must hold <small>(or <b>forbid</b>: must not)</small></div>
+      <div class="co f" data-s="4"><b>error</b> blocks · <b>warning</b> is reported</div>
+      <div class="co f" data-s="5"><b>message</b> + <b>repair</b> printed on failure, with the blanks filled</div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 Oracle (animated) -->
+<section class="slide">
+  <div class="kicker">The machine · the judge</div>
+  <h2>How a judge answer becomes a fact</h2>
+  <div class="oracle">
+    <div class="ev f" data-s="1"><div class="tbl-title">evidence: that one section</div>"It works well and we are confident in it."</div>
+    <div class="oarr f" data-s="2">➜ 🤖 ➜</div>
+    <div class="dist f" data-s="2">
+      <div class="dl"><span>holds</span><div class="track"><div class="fillbar g" style="--w:0%"></div></div></div>
+      <div class="dl"><span>fails</span><div class="track"><div class="fillbar r" style="--w:99%" data-alt="55%"></div></div></div>
+      <div class="dl"><span>unknown</span><div class="track"><div class="fillbar n" style="--w:1%"></div></div></div>
+      <div class="thr f" data-s="3"><span>threshold (e.g. 0.8)</span></div>
+    </div>
+    <div class="label-out">
+      <div class="stamp red f" data-s="3" data-h="5">fails</div>
+      <div class="stamp grey f" data-s="5">unknown</div>
+    </div>
+  </div>
+  <div class="steps-cap">
+    <p class="cap f only" data-s="1" data-h="2">The judge sees only the question and this one section.</p>
+    <p class="cap f only" data-s="2" data-h="3">It answers with a probability per label.</p>
+    <p class="cap f only" data-s="3" data-h="4">Top answer above the threshold → that label enters the rules.</p>
+    <p class="cap f only" data-s="4" data-h="5">Now imagine a less confident answer…</p>
+    <p class="cap f only" data-s="5">Below the threshold → <b>unknown</b>. A threshold never flips to another label. The report keeps both <code>answered: fails</code> (before) and <code>label: unknown</code> (after), so a weak answer can be told apart from no answer.</p>
+  </div>
+</section>
+
+<!-- 15 Outcomes + verdict (animated) -->
+<section class="slide">
+  <div class="kicker">The machine · verdict</div>
+  <h2>Three outcomes, one verdict</h2>
+  <div class="cols">
+    <div class="lights">
+      <div class="lamp f" data-s="1"><span class="dot g big"></span><div><b>satisfied</b><br><small>the requirement certainly holds</small></div></div>
+      <div class="lamp f" data-s="2"><span class="dot r big"></span><div><b>violated</b><br><small>the case applies and the requirement can't hold</small></div></div>
+      <div class="lamp f" data-s="3"><span class="dot a big"></span><div><b>undetermined</b><br><small>it hangs on an <i>unknown</i> answer</small></div></div>
+    </div>
+    <div class="ladder">
+      <div class="rung f" data-s="4"><span class="badge b-nogo">NO-GO</span><span>exit 1</span><small>an error is violated</small></div>
+      <div class="rung f" data-s="5"><span class="badge b-block">BLOCKED</span><span>exit 3</span><small>a needed judge answer was never obtained</small></div>
+      <div class="rung f" data-s="6"><span class="badge b-review">NEEDS-REVIEW</span><span>exit 2</span><small>an error is undetermined, or warnings too low</small></div>
+      <div class="rung f" data-s="7"><span class="badge b-pass">PASS</span><span>exit 0</span><small>none of the above</small></div>
+    </div>
+  </div>
+  <p class="cap f" data-s="8">Checked top to bottom: the first that applies wins. With no judge key, structure is still fully checked.</p>
+</section>
+
+
+<!-- 16 Section: demo -->
+<section class="slide section-slide">
+  <div class="kicker">Part 3</div>
+  <h1>A real run, bad then good</h1>
+  <p class="muted">Real config, real input, real output. Scratch file <code>design/99-demo-scratch.md</code>, profile <code>promotion</code>.</p>
+</section>
+
+<!-- 17 Config -->
+<section class="slide">
+  <div class="kicker">Demo · the configuration</div>
+  <h2>Which rules apply to which file</h2>
+  <div class="cols">
+    <div>
+      <p><code>.doc-verify.yaml</code> (home.conf, excerpt). Rules are ordered, last match wins.</p>
+      <pre class="light">documents:
+  - pattern: design/{0[1-9],[1-9][0-9]}-*.md
+    artifact_kind: design
+    modules: [doc-verify:artifact,
+              doc-verify/modules/design.yaml]
+  - pattern: goals/[0-9][0-9]-*.md
+    artifact_kind: goal
+    modules: [doc-verify:goal]
+    status_from: title</pre>
+      <p>Our file matches the first rule. So it gets the shipped <code>artifact</code> library (which brings <code>references</code>) plus the repo's own design module.</p>
+    </div>
+    <div>
+      <p><code>doc-verify/modules/design.yaml</code> (excerpt):</p>
+      <pre class="light">module: home.design
+oracles:
+  problem_resolved(D, L):     <span class="d"># judge</span>
+    evidence: core.union(D, L)
+  verification_falsifies(D, S): <span class="d"># judge</span>
+    evidence: core.body(D, S)
+rules:
+  problem_section(D, S): top(D, S),
+      core.heading(D, S, 'Problem statement')
+  verification_design_section(D, S): top(D, S),
+      core.heading(D, S, 'Verification design')
+constraints:
+  design-has-problem-statement:  …
+  design-has-review:             …
+  design-verification-falsifies: …</pre>
+    </div>
+  </div>
+</section>
+
+<!-- 18 Bad input structural -->
+<section class="slide">
+  <div class="kicker">Demo · bad 1 · structure</div>
+  <h2>Missing sections, wrong status word</h2>
+  <div class="cols">
+    <div>
+      <p>Input:</p>
+      <pre class="light"># 99 - Demo
+
+## Goal
+Show what doc-verify reports.
+
+## Rationale
+We cache answers per section so unchanged
+text costs nothing.
+
+## Verification
+It works well.
+
+## Status
+<span class="r">maybe</span></pre>
+    </div>
+    <div class="f" data-s="1">
+      <p>Output (<span class="badge b-nogo">NO-GO</span>, exit 1):</p>
+      <pre>[99---demo] module.artifact-status-in-vocabulary <span class="r">NO-GO</span>
+  status 'maybe' is not one of [draft, reviewed, pending-retro, landed]
+  repair: Use one of [draft, reviewed, pending-retro, landed]…
+  structural: missing maybe in [draft, …]
+[99---demo] module.design-has-problem-statement <span class="r">NO-GO</span>
+  … has no '## Problem statement' section
+  repair: Add '## Problem statement': what is wrong today, observably.
+[99---demo] module.design-has-review <span class="r">NO-GO</span>
+  … has no '## Review' section
+<span class="r">NO-GO</span>: 1 artifact(s), 5 section(s), 1 warning(s),
+       <span class="y">0 semantic call(s)</span>, 0 cache hit(s)</pre>
+      <p class="note ok">All decided from facts. Zero judge calls.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 19 Bad input semantic -->
+<section class="slide">
+  <div class="kicker">Demo · bad 2 · meaning</div>
+  <h2>Structure fixed, but the claim is empty</h2>
+  <div class="cols">
+    <div>
+      <p>Every required section is now present. The verification design says:</p>
+      <pre class="light">## Verification design
+
+<span class="r">It works well and we are confident in it.</span></pre>
+      <p class="f" data-s="1">Output (<span class="badge b-nogo">NO-GO</span>, exit 1):</p>
+      <pre class="f" data-s="1">99-demo-scratch.md:17-17 [verification-design]
+  module.design-verification-falsifies <span class="r">NO-GO</span> violated:
+  verification-design names no observable failure witness
+  for a load-bearing claim
+  span: deciding sentence — "It works well and we are
+        confident in it."
+  repair: For each load-bearing claim, name the test,
+          command or measurement that fails when the claim
+          is false.
+  <span class="v">answered fails (p=0.99 >= threshold 0)</span></pre>
+    </div>
+    <div>
+      <p><code>--verbose</code> also lists every question asked:</p>
+      <pre><span class="d">oracle questions 2</span>
+r1 problem_resolved(…, [problem-statement, rationale])
+   -> <span class="g">holds</span>  [0.83, 0.14, 0.03] over [holds, fails, unknown]
+r1 verification_falsifies(…, verification-design)
+   -> <span class="r">fails</span>  [0, 0.99, 0.01] over [holds, fails, unknown]
+   67 bytes, round 1, span 17-17</pre>
+      <p>The judge was shown 67 bytes: that section's text and nothing else.</p>
+      <p class="muted" style="font-size:16px">Numbers are from one captured run. The judge samples, so a rerun can give p=1 instead of 0.99. The label is what counts.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 20 Bad proof -->
+<section class="slide">
+  <div class="kicker">Demo · bad 2 · the proof</div>
+  <h2>Why it is a violation, step by step</h2>
+  <div class="cols">
+    <div>
+      <pre>proof:
+  binding design-verification-falsifies: <span class="r">violated</span>
+    forall verification_design_section(D, S) <span class="g">[certain]</span>
+      rule verification_design_section(99.md, verification-design)
+        rule top(99.md, verification-design)
+          fact core.section(99.md, verification-design, 99---answer-cache)
+          fact core.depth(99.md, verification-design, 2)
+        fact core.heading(99.md, verification-design, Verification design)
+    missing verification_falsifies(99.md, verification-design)
+      <span class="r">is not possible</span></pre>
+      <p>The <code>forall</code> side is certain: this section exists. The <code>require</code> side is impossible because the judge answered <code>fails</code>. Certain case plus impossible requirement means <strong>violated</strong>.</p>
+    </div>
+    <div class="mermaid">
+flowchart TD
+  B["binding: <b>violated</b><br/>D=99.md, S=verification-design"] --> FA["forall: verification_design_section<br/>certain"]
+  B --> RQ["require: verification_falsifies<br/>not possible"]
+  FA --> T["top(…)"]
+  FA --> H["fact: heading 'Verification design'"]
+  T --> S1["fact: section"]
+  T --> S2["fact: depth 2"]
+  RQ --> J(["judge: fails, p=0.99"])
+  style B fill:#fff1ea,stroke:#c2410c
+  style RQ fill:#fff1ea,stroke:#c2410c
+  style J fill:#f1ebff,stroke:#7c3aed
+  style FA fill:#e7f6ec,stroke:#15803d
+    </div>
+  </div>
+</section>
+
+<!-- 21 Good input+output -->
+<section class="slide">
+  <div class="kicker">Demo · good</div>
+  <h2>Name the check that would fail</h2>
+  <div class="cols">
+    <div>
+      <pre class="light">## Verification design
+
+Run `check` twice on an unchanged document: the
+second run must report 0 semantic calls and N cache
+hits. Then edit one sentence in one section and run
+again: exactly that section's question is asked
+(1 semantic call). If the cache key ignored the
+evidence hash, the edited run would report 0 calls
+and this check fails.</pre>
+      <p class="f" data-s="1">Output (<span class="badge b-pass">PASS</span>, exit 0):</p>
+      <pre class="f" data-s="1">r1 verification_falsifies(…, verification-design)
+   -> <span class="g">holds</span>  [0.98, 0.02, 0] over [holds, fails, unknown]
+   346 bytes, round 1
+<span class="g">PASS</span>: 1 artifact(s), 8 section(s), 1 warning(s),
+      1 semantic call(s), 1 cache hit(s)</pre>
+    </div>
+    <div>
+      <p class="f" data-s="2">The satisfied proof (from <code>--format json</code>) ends in the judge's answer:</p>
+      <div class="mermaid">
+flowchart TD
+  B["binding: <b>satisfied</b>"] --> FA["forall: verification_design_section<br/>certain"]
+  B --> G["goal: verification_falsifies<br/>certain"]
+  FA --> T["top(…) + heading fact"]
+  G --> O(["oracle: holds<br/>key verification_falsifies-6d9f…<br/>346 bytes"])
+  style B fill:#e7f6ec,stroke:#15803d
+  style G fill:#e7f6ec,stroke:#15803d
+  style O fill:#f1ebff,stroke:#7c3aed
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 22 Cache -->
+<section class="slide">
+  <div class="kicker">Demo · the cache</div>
+  <h2>The second run is free</h2>
+  <div class="cols">
+    <div>
+      <p>The good document, run twice right after the bad run (same cache). From an empty cache the first run asks every question, and the second run still makes 0 calls.</p>
+      <pre><span class="d">run 1</span>
+<span class="g">PASS</span>: 1 artifact(s), 8 section(s), 1 warning(s),
+      <span class="y">1 semantic call(s)</span>, 1 cache hit(s)
+</pre><pre class="f" data-s="1"><span class="d">run 2</span>
+<span class="g">PASS</span>: 1 artifact(s), 8 section(s), 1 warning(s),
+      <span class="y">0 semantic call(s)</span>, 2 cache hit(s)</pre>
+      <p>Run 1 asked only about the edited verification section. The problem and rationale question was already cached from the bad run, because that text had not changed.</p>
+    </div>
+    <div class="card amber f" data-s="2" style="margin-top:36px">
+      <h3>Cache key per question</h3>
+      <p style="font-size:18px;line-height:1.7">model · question text · labels · <strong>evidence hash</strong> · policy version<br><br>
+      Stored in <code>.doc-verify-cache/atoms/</code> (gitignore it). Edit a section and only that section's questions are asked again. <code>--no-cache</code> skips the cache entirely.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 22a JSON -->
+<section class="slide">
+  <div class="kicker">Demo · machine form</div>
+  <h2>Reading <code>--format json</code></h2>
+  <div class="cols">
+    <div>
+      <p>The JSON is the full report, one entry per artifact. The paths you will actually use:</p>
+      <table>
+        <tr><th>What</th><th>Path</th></tr>
+        <tr><td>overall verdict</td><td><code>.verdict</code></td></tr>
+        <tr><td>one document's verdict</td><td><code>.artifacts[0].verdict</code></td></tr>
+        <tr><td>findings</td><td><code>.artifacts[0].findings[]</code></td></tr>
+        <tr><td>a finding's rule</td><td><code>.ruleId</code> (not <code>rule</code>)</td></tr>
+        <tr><td>warnings (the other collection)</td><td><code>.artifacts[0].warnings[]</code>, total in <code>.warningCount</code></td></tr>
+        <tr><td>proof trees, oracle table</td><td><code>.artifacts[0].engine.report</code></td></tr>
+      </table>
+    </div>
+    <div>
+      <pre><span class="d"># one finding from docs/bad.md</span>
+{
+  "ruleId":    "module.must-have-status",
+  "verdict":   "<span class="r">NO-GO</span>",
+  "status":    "violated",
+  "path": "docs/bad.md", "line": 1, "sectionId": "rollout-notes",
+  "message":   "every page must carry a Status section",
+  "repair":    "add a `## Status` heading",
+  "basis": […], "proof": {…}, "evidenceId": "…", "sections": […]
+}</pre>
+      <pre><span class="d"># a compact view</span>
+jq '{verdict, findings: [.artifacts[0].findings[]
+     | {ruleId, verdict, message, repair}]}'</pre>
+      <p class="muted" style="font-size:16px">Paths from ZWorker's and CowBoy's review, re-checked here.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 22b First module -->
+<section class="slide" style="--dense:1">
+  <div class="kicker">Write your own · no judge key needed</div>
+  <h2>A complete module in 20 lines</h2>
+  <div class="cols">
+    <div>
+      <p><code>.doc-verify.yaml</code></p>
+      <pre class="light">schema_version: 1
+kind: document-verification
+documents:
+  - pattern: docs/*.md
+    artifact_kind: doc
+    modules: [modules/demo.yaml]</pre>
+      <p class="muted" style="font-size:16px">(plus the <code>judge:</code> and <code>policy:</code> blocks copied from an existing config)</p>
+      <p><code>modules/demo.yaml</code></p>
+      <pre class="light">schema_version: 2
+kind: verification-module
+module: demo
+imports: { core: doc-verify:core }
+rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  status_section(D, S): top(D, S), core.heading(D, S, <span class="b">'Status'</span>)
+constraints:
+  must-have-status:
+    forall: top(D, _)
+    require: status_section(D, S)
+    severity: error
+    message: every page must carry a Status section
+    repair: add a `## Status` heading
+  links-resolve:
+    forall: core.ref(D, _, T, _)
+    require: core.resolves(D, T)
+    severity: error
+    message: "link '{T}' does not resolve"</pre>
+    </div>
+    <div>
+      <div class="grid2">
+        <div><p><code>docs/good.md</code></p><pre class="light"># Rollout notes
+## Status
+Accepted.
+## Scope
+See [the runbook](runbook.md).</pre></div>
+        <div><p><code>docs/bad.md</code></p><pre class="light"># Rollout notes
+## Scope
+See [the runbook](<span class="r">runbook-v2.md</span>).</pre></div>
+      </div>
+      <pre><span class="d">$ doc-verify check --paths docs/good.md</span>
+<span class="g">PASS</span>: 1 artifact(s), 3 section(s), 1 warning(s), 0 semantic call(s)
+<span class="d">$ doc-verify check --paths docs/bad.md</span>
+[rollout-notes] module.must-have-status <span class="r">NO-GO</span> violated:
+  every page must carry a Status section
+  repair: add a `## Status` heading
+[rollout-notes] module.links-resolve <span class="r">NO-GO</span> violated:
+  link 'runbook-v2.md' does not resolve
+<span class="r">NO-GO</span>: 1 artifact(s), 2 section(s), 1 warning(s), 0 semantic call(s)</pre>
+      <p class="muted" style="font-size:16px">Fixture by CowBoy, re-run on this Mac: exits 0 and 1.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 22c First module proof -->
+<section class="slide">
+  <div class="kicker">Write your own · reading the proof</div>
+  <h2>"Possible but absent"</h2>
+  <div class="cols">
+    <div>
+      <pre>constraint must-have-status [error, require]
+  population 1 (1 certain)
+    D=docs/bad.md
+  status <span class="r">violated</span>
+    binding must-have-status: violated
+      forall top(D, _) <span class="g">[certain]</span>
+        rule demo.top(docs/bad.md, scope)
+          fact core.section(docs/bad.md, scope, rollout-notes)
+          fact core.depth(docs/bad.md, scope, 2)
+      missing demo.status_section(docs/bad.md, S)
+        <span class="r">is not possible</span></pre>
+      <p>Read it top to bottom: one top-level section exists (<code>scope</code>), so the rule applies. No fact can make <code>status_section</code> true, so the requirement is impossible.</p>
+    </div>
+    <div>
+      <div class="note warn"><strong>The one syntax trap that bites everyone:</strong> text values take <em>single</em> quotes. <code>'Status'</code> is a word. <code>"Status"</code> is a list of character codes, so the rule silently matches nothing. The good page then fails with "missing … is not possible", and there is no syntax error to warn you.</div>
+      <pre style="margin-top:16px"><span class="d"># 'Status' changed to "Status", good.md re-run:</span>
+[rollout-notes] module.must-have-status <span class="r">NO-GO</span> violated
+<span class="r">NO-GO</span>: 1 artifact(s), 3 section(s), …</pre>
+    </div>
+  </div>
+</section>
+
+<!-- 22d Tree relations -->
+<section class="slide" style="--dense:1">
+  <div class="kicker">Write your own · parents and children</div>
+  <h2>Rules over the section tree</h2>
+  <div class="cols">
+    <div>
+      <p>The tree is part of the core facts, so a rule can talk about structure directly:</p>
+      <table>
+        <tr><th>Fact</th><th>Meaning</th></tr>
+        <tr><td><code>core.section(D, S, P)</code></td><td><code>P</code> is the parent of <code>S</code> (<code>root</code> at the top)</td></tr>
+        <tr><td><code>core.child(D, P, C)</code></td><td><code>C</code> is a direct child of <code>P</code></td></tr>
+        <tr><td><code>core.descendant(D, A, X)</code></td><td><code>X</code> is anywhere under <code>A</code></td></tr>
+        <tr><td><code>core.depth</code> / <code>core.order</code></td><td>heading level / position in the document</td></tr>
+      </table>
+      <p>Example: every decision under <code>## Decisions</code> must have a <code>#### Why</code> child.</p>
+      <pre class="light">
+  decisions(D, S): core.section(D, S, _), core.heading(D, S, &#x27;Decisions&#x27;)
+  decision(D, C): decisions(D, S), core.child(D, S, C)
+  has_why(D, C): core.child(D, C, W), core.heading(D, W, &#x27;Why&#x27;)
+constraints:
+  every-decision-says-why:
+    forall: decision(D, C)
+    require: has_why(D, C)
+    severity: error
+    message: &quot;decision {C} has no &#x27;#### Why&#x27; under it&quot;
+    repair: &quot;Add &#x27;#### Why&#x27; under {C}&quot;</pre>
+    </div>
+    <div>
+      <pre class="light"># Platform choices
+
+## Decisions
+
+### Use Postgres
+
+#### Why
+
+One store for jobs and workflows.
+
+### Use Temporal
+
+We like it.
+
+## Status
+
+Accepted.</pre>
+      <pre>[decisions/use-temporal] module.every-decision-says-why <span class="r">NO-GO</span>
+  decision decisions/use-temporal has no '#### Why' under it
+  repair: Add '#### Why' under decisions/use-temporal
+<span class="d">--verbose:</span>
+  population 2 (2 certain)
+    C=decisions/use-postgres   <span class="g">satisfied</span>
+    C=decisions/use-temporal   <span class="r">violated</span>
+  rule tree.decision(…, decisions/use-temporal)
+    rule tree.decisions(…, decisions)
+    fact core.child(…, decisions, decisions/use-temporal)
+  missing tree.has_why(…, decisions/use-temporal) <span class="r">is not possible</span>
+<span class="r">NO-GO</span>: … 6 section(s), 0 semantic call(s)</pre>
+    </div>
+  </div>
+</section>
+
+<!-- 23 Section: traps -->
+<section class="slide section-slide">
+  <div class="kicker">Part 4</div>
+  <h1>What trips people up</h1>
+  <p class="muted">Each of these happened for real, in this repo or in visflow.</p>
+</section>
+
+<!-- 24 Vacuous -->
+<section class="slide">
+  <div class="kicker">Trap 1</div>
+  <h2>Nothing to check counts as a pass</h2>
+  <div class="cols">
+    <div>
+      <p>In the first try at the semantic demo, the heading was <code>## Verification</code>. This module looks for <code>## Verification design</code>. Nothing matched, and the verdict was <span class="badge b-pass">PASS</span>.</p>
+      <pre>constraint design-verification-falsifies [error, require]
+  <span class="r">population 0 (0 certain)</span>
+  status satisfied</pre>
+      <p>A <code>forall</code> with no bindings is vacuously satisfied, and the count shows only in <code>--verbose</code>.</p>
+    </div>
+    <div>
+      <div class="note warn">When "nothing matched" is itself a defect, add <code>population: nonempty</code> to the constraint. An empty population then fails at the constraint's severity, and no judge question is asked.</div>
+      <pre class="light" style="margin-top:16px">design-verification-falsifies:
+  forall: verification_design_section(D, S)
+  require: verification_falsifies(D, S)
+  severity: error
+  <span class="b">population: nonempty</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- 25 WARN vs warnings -->
+<section class="slide">
+  <div class="kicker">Trap 2</div>
+  <h2>WARN lines and "0 warning(s)" are different things</h2>
+  <div class="cols">
+    <div>
+      <pre>… module.paths-resolve <span class="y">WARN</span> violated: … names the path …
+… module.paths-resolve <span class="y">WARN</span> violated: …
+… module.paths-resolve <span class="y">WARN</span> violated: …
+<span class="g">PASS</span>: 1 artifact(s), … <span class="y">0 warning(s)</span> …     <span class="d">(exit 0)</span></pre>
+      <p>Three WARN lines, yet "0 warning(s)" and exit 0. Nothing is broken.</p>
+    </div>
+    <div class="mermaid">
+flowchart TD
+  R["one run"] --> F["<b>findings</b><br/>one per constraint result<br/>WARN = warning-severity violation<br/>reported, never fatal"]
+  R --> W["<b>warnings</b><br/>engine and metadata notices<br/>e.g. no companion file<br/>this is the 'N warning(s)' count"]
+  F --> V["verdict PASS, exit 0"]
+  style F fill:#fff7e6,stroke:#b45309
+  style W fill:#f5f7fb,stroke:#64748b
+    </div>
+  </div>
+  <p class="muted" style="font-size:16px">Found by GameBoy running <code>npm run check</code>. <code>--format json</code> shows both collections.</p>
+</section>
+
+<!-- 26 Newcomer pitfalls -->
+<section class="slide">
+  <div class="kicker">Traps 3 to 6</div>
+  <h2>Four more first-week surprises</h2>
+  <div class="grid2">
+    <div class="card"><h3>A new worktree says BLOCKED</h3><p>The judge key comes from a gitignored <code>.env.doc-verify</code> symlink at the worktree root. A fresh <code>git worktree</code> doesn't have it, so semantic checks report <code>TYPESAFE_API_KEY is unavailable</code>. Fix: add the symlink.</p></div>
+    <div class="card"><h3>"Run the hook" is not "check the repo"</h3><p><code>prek run --all-files</code> reads the index and can be green without reading any document. To check every document, run <code>doc-verify check --all</code>.</p></div>
+    <div class="card"><h3>A code-only change is skipped</h3><p>If no configured document changed, nothing is checked. That prints success too, but it is not the same as "every document passed".</p></div>
+    <div class="card"><h3>Old configs are refused</h3><p>A design-02 style <code>verification:</code> rubric is refused with a migration hint, not ignored. Examples older than design 04 will not run.</p></div>
+  </div>
+  <p class="muted" style="font-size:16px">From CowBoy's notes on real incidents.</p>
+</section>
+
+<!-- 27 Modules -->
+<section class="slide">
+  <div class="kicker">Writing modules</div>
+  <h2>Modules compose by adding, never overriding</h2>
+  <div class="cols">
+    <div>
+      <ul>
+        <li>Reference a module as <code>doc-verify:NAME</code> (shipped with the engine) or as a repository path.</li>
+        <li>A config rule lists several modules, and the engine merges their params, oracles, rules and constraints into one program.</li>
+        <li><strong>A name defined twice is refused.</strong> A child can add constraints but cannot change an inherited one, not even to make it stricter.</li>
+      </ul>
+      <p class="note warn">Design 04 describes <code>waive:</code> and module-level overrides. The shipped engine does not support them: a module that still carries <code>extends</code> or <code>waive</code> after composition is rejected.</p>
+    </div>
+    <div class="mermaid">
+flowchart BT
+  A["doc-verify:references<br/>links and paths resolve"]
+  B["doc-verify:artifact<br/>status word, ## Goal"] --> A
+  D["doc-verify:design<br/>Status, Verification, decision"] --> B
+  G["doc-verify:goal<br/>root, workstreams, coverage"] --> B
+  H["home.design (repo module)<br/>listed beside artifact"] -.-> B
+  style H fill:#e8f0ff,stroke:#2563eb
+    </div>
+  </div>
+</section>
+
+<!-- 28 Try -->
+<section class="slide">
+  <div class="kicker">Next steps</div>
+  <h2>Try it yourself</h2>
+  <pre>npm ci &amp;&amp; npm run build
+node doc-verify/dist/cli.js segments FILE                          <span class="d"># section ids</span>
+node doc-verify/dist/cli.js check --paths FILE --profile draft      <span class="d"># structure only</span>
+node doc-verify/dist/cli.js check --paths FILE --profile promotion --verbose
+node doc-verify/dist/cli.js check --paths FILE --format json        <span class="d"># full proof trees</span>
+node doc-verify/dist/cli.js check --all                            <span class="d"># every configured document</span></pre>
+  <div class="grid3" style="margin-top:16px">
+    <div class="card blue"><h3>Exercise</h3><p>Start from the appendix's demo files, or copy a design to <code>design/99-*.md</code>. Break one rule at a time: the status word, a heading, the verification text. Read each finding's repair line and proof.</p></div>
+    <div class="card"><h3>Read next</h3><p><code>design/04-modular-verification-language.md</code> for the language, and the README's doc-verify section for the CLI and reference facts.</p></div>
+    <div class="card"><h3>Read the modules</h3><p><code>doc-verify/lib/*.yaml</code>: short, commented, and the best examples of real rules.</p></div>
+  </div>
+</section>
+
+<!-- 99 Appendix -->
+<section class="slide" style="--dense:1">
+  <div class="kicker">Appendix · reproduce the demos</div>
+  <h2>The exact demo documents</h2>
+  <p>Copy one to <code>design/99-demo-scratch.md</code> in home.conf and run <code>node doc-verify/dist/cli.js check --paths design/99-demo-scratch.md --profile promotion</code>. Delete it afterwards.</p>
+  <div class="grid3"><div><p><code>99-bad-structure.md</code> <a href="#" class="dl" data-file="99-bad-structure.md">download</a></p><pre class="light" id="f-99-bad-structure.md" style="font-size:11.5px"># 99 - Demo
+
+## Goal
+
+Show what doc-verify reports.
+
+## Rationale
+
+We cache answers per section so unchanged text costs nothing.
+
+## Verification
+
+It works well.
+
+## Status
+
+maybe
+</pre></div><div><p><code>99-bad-meaning.md</code> <a href="#" class="dl" data-file="99-bad-meaning.md">download</a></p><pre class="light" id="f-99-bad-meaning.md" style="font-size:11.5px"># 99 - Answer cache
+
+## Problem statement
+
+Every check re-asks the judge about sections that did not change, which costs money on each commit.
+
+## Scope - what we touch
+
+The judge client and a cache directory.
+
+## Rationale
+
+Key each answer by model, question and evidence hash, so unchanged text is never asked twice.
+
+## Verification design
+
+It works well and we are confident in it.
+
+## Goal
+
+Unchanged sections cost nothing to re-check.
+
+## Review
+
+Not yet reviewed.
+
+## Status
+
+draft
+</pre></div><div><p><code>99-good.md</code> <a href="#" class="dl" data-file="99-good.md">download</a></p><pre class="light" id="f-99-good.md" style="font-size:11.5px"># 99 - Answer cache
+
+## Problem statement
+
+Every check re-asks the judge about sections that did not change, which costs money on each commit.
+
+## Scope - what we touch
+
+The judge client and a cache directory.
+
+## Rationale
+
+Key each answer by model, question and evidence hash, so unchanged text is never asked twice.
+
+## Verification design
+
+Run `check` twice on an unchanged document: the second run must report 0 semantic calls and
+N cache hits. Then edit one sentence in one section and run again: exactly that section&#x27;s
+question is asked (1 semantic call). If the cache key ignored the evidence hash, the edited run
+would report 0 calls and this check fails.
+
+## Goal
+
+Unchanged sections cost nothing to re-check.
+
+## Review
+
+Not yet reviewed.
+
+## Status
+
+draft
+</pre></div></div>
+</section>
+
+<div id="pager"></div><div id="bar"></div>
+
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad:false, theme:"base", securityLevel:"loose",
+    themeVariables:{ fontFamily:"Inter, -apple-system, Helvetica, Arial", fontSize:"15px",
+      primaryColor:"#ffffff", primaryBorderColor:"#94a3b8", lineColor:"#64748b", primaryTextColor:"#172033" },
+    flowchart:{ curve:"basis", htmlLabels:true } });
+  const slides = [...document.querySelectorAll(".slide")];
+  const maxStep = sl => Math.max(0, ...[...sl.querySelectorAll("[data-s],[data-h]")].flatMap(e => [+(e.dataset.s||0), +(e.dataset.h||0)]));
+  let i = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1)) || 1) - 1));
+  let step = 0;
+  const rendered = new Set();
+  function applyStep(sl, n) {
+    sl.querySelectorAll("[data-s]").forEach(e => e.classList.toggle("on", n >= +e.dataset.s));
+    sl.querySelectorAll("[data-h]").forEach(e => e.classList.toggle("gone", n >= +e.dataset.h));
+    sl.querySelectorAll("[data-alt]").forEach(e => e.style.setProperty("--w", n >= 5 ? e.dataset.alt : e.dataset.w0 || (e.dataset.w0 = getComputedStyle(e).getPropertyValue("--w").trim())));
+  }
+  async function show(n, s = 0) {
+    slides.forEach((sl, k) => sl.classList.toggle("active", k === n));
+    step = s; applyStep(slides[n], step);
+    document.getElementById("pager").textContent = `${n + 1} / ${slides.length}`;
+    document.getElementById("bar").style.width = `${(100 * (n + 1)) / slides.length}%`;
+    history.replaceState(null, "", "#" + (n + 1));
+    if (!rendered.has(n)) {
+      rendered.add(n);
+      const nodes = slides[n].querySelectorAll(".mermaid");
+      if (nodes.length) await mermaid.run({ nodes });
+    }
+  }
+  const next = () => { if (step < maxStep(slides[i])) { step++; applyStep(slides[i], step); } else if (i < slides.length - 1) { i++; show(i, 0); } };
+  const prev = () => { if (step > 0) { step--; applyStep(slides[i], step); } else if (i > 0) { i--; show(i, maxStep(slides[i])); } };
+  document.addEventListener("keydown", e => {
+    if (["ArrowRight","PageDown"," ","Enter"].includes(e.key)) { e.preventDefault(); next(); }
+    if (["ArrowLeft","PageUp","Backspace"].includes(e.key)) { e.preventDefault(); prev(); }
+    if (e.key === "Home") { i = 0; show(i); } if (e.key === "End") { i = slides.length - 1; show(i); }
+    if (e.key === "a") { show(i, maxStep(slides[i])); }  /* reveal all steps */
+  });
+  document.addEventListener("click", e => { if (!e.target.closest("a, pre, code")) next(); });
+  const q = new URLSearchParams(location.search); 
+  show(i, (q.has("all") || location.hash.endsWith("a")) ? maxStep(slides[i]) : 0);
+  document.querySelectorAll("a.dl").forEach(a => a.addEventListener("click", e => {
+    e.preventDefault(); e.stopPropagation();
+    const name = a.dataset.file, text = document.getElementById("f-" + name).textContent;
+    const url = URL.createObjectURL(new Blob([text], { type: "text/markdown" }));
+    Object.assign(document.createElement("a"), { href: url, download: name }).click();
+  }));
+</script>
+</body>
+</html>

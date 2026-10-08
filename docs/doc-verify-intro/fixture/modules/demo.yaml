@@ -1,0 +1,20 @@
+schema_version: 2
+kind: verification-module
+module: demo
+imports: { core: doc-verify:core }
+rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  status_section(D, S): top(D, S), core.heading(D, S, 'Status')
+constraints:
+  must-have-status:
+    forall: top(D, _)
+    require: status_section(D, S)
+    message: every page must carry a Status section
+    repair: add a `## Status` heading
+    severity: error
+  links-resolve:
+    forall: core.ref(D, _, T, _)
+    require: core.resolves(D, T)
+    message: "link '{T}' does not resolve"
+    repair: fix the path, or remove the link
+    severity: error
