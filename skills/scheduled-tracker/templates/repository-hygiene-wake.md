@@ -67,7 +67,13 @@ if git -C "$repo" remote get-url origin >/dev/null 2>&1; then
   if [ "$rc" -ne 0 ] || [ -z "$remote" ]; then
     target=
   else
-    target=origin/main
+    remote_tip=${remote%%[[:space:]]*}
+    rc=0; cached=$(git -C "$repo" rev-parse --verify --quiet refs/remotes/origin/main 2>/dev/null) || rc=$?
+    if [ "$rc" -ne 0 ] || [ "$remote_tip" != "$cached" ]; then
+      target=
+    else
+      target=origin/main
+    fi
   fi
 else
   target=main
