@@ -32,7 +32,13 @@ const CONFIG = join(ROOT, "oxlint.config.json");
 // diagnostics on an untyped fallback. It is covered by .mjs lint rules and by
 // its own check-* case file, not by the typed program. See task #224.
 const POPULATION = ["doc-verify/src", "doc-verify/tests"];
-const EXCLUDED = ["--ignore-pattern=doc-verify/tests/language/references.mutations.mjs"];
+// ⚠ BY CLASS, NOT BY NAME, AND DEPTH-INDEPENDENT. The untyped mutation runners are
+// excluded because they are deliberately outside the typed program (#224), but
+// excluding one filename at a time means the NEXT one lands with no exclusion and
+// reddens the gate for every lander. Measured: `evidence-budget.mutations.mjs` was
+// added after this gate landed and took the run from 2 diagnostics to 66, leaving
+// `main` red. The class is `*.mutations.mjs`.
+const EXCLUDED = ["--ignore-pattern=**/*.mutations.mjs"];
 
 // ⚠ The project is PINNED rather than auto-discovered, and that is load-bearing.
 // Measured: with no `--tsconfig`, oxlint walks up from each file and silently
@@ -95,7 +101,26 @@ function classify(res) {
   return { kind: "ok", report };
 }
 
+// The exclusion is only legitimate because the excluded files are NOT typable by
+// this project -- `tsconfig.json` includes `src/**/*.ts` and `tests/**/*.ts`, so a
+// `.mjs` is outside the typed program by construction. If the pattern ever grew to
+// cover a `.ts`, the gate would silently drop a typable file and report green: the
+// same false-green shape the crash/coverage arms exist to catch, reached through
+// the exclusion list instead. Assert the invariant rather than trust it.
+function assertExclusionIsUntypable() {
+  const bad = EXCLUDED.filter((flag) => /\.ts\b|\*\.ts|\.tsx/.test(flag));
+  if (bad.length > 0) {
+    return `exclusion can cover a TYPABLE file (${bad.join(", ")}); that would report green on untyped code`;
+  }
+  return null;
+}
+
 function main() {
+  const exclusionProblem = assertExclusionIsUntypable();
+  if (exclusionProblem) {
+    process.stderr.write(`oxlint gate: BROKEN CONFIG (not a finding) — ${exclusionProblem}\n`);
+    return 2;
+  }
   const selfTest = process.argv.includes("--self-test");
   const res = runOxlint([...EXCLUDED, ...POPULATION]);
   const verdict = classify(res);
