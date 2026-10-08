@@ -141,22 +141,32 @@ sweep without changing any earlier disposition.
 For a candidate that reaches this step:
 
 ```sh
-rc=0; out=$(lsof +D "$worktree" 2>&1) || rc=$?
-printf '%s\n' "$out"
-# rc=1 and empty output  -> nothing held
-# rc=0 with output       -> held (cwd-only holders are reported)
-# any other pair          -> unconfirmed; inspect the captured output
+tmp=$(mktemp)
+out=$(lsof +D "$worktree" 2>"$tmp") || true
+if   [ -s "$tmp" ]; then
+  printf '%s\n' "unconfirmed: $(cat "$tmp")"
+elif [ -n "$out" ]; then
+  printf '%s\n' "$out"   # held (cwd-only holders are reported)
+else
+  :                      # nothing held
+fi
+rm -f "$tmp"
 ```
 
-Capture `lsof` directly; do not pipe it to `head` or redirect stderr to
-`/dev/null`. A pipeline returns the last command's status, so clean, held, and
-unconfirmed all look like success, while suppressing stderr removes the only
-evidence for a missing executable or unreadable path. In the controlled pair,
-nothing holding the path produced exit 1 with no output; a live process merely
-`cd`'d into the tree produced exit 0 with output, even with no open file there.
-A missing `lsof` executable, permission denial, or unreadable path is
-`unconfirmed`; an empty output is one input to cleanup, not the whole gate.
-Never use `if lsof` as a truth test without checking the exit status and output.
+Do not classify on `lsof`'s exit status. With `+D`, it walks the directory and
+every entry under it; the status is 0 only when it could list information about
+**all** those search arguments. An unopened regular file makes a real worktree
+return 1 whether or not something holds it, so the status cannot distinguish a
+free tree from a held one. Capture `stdout` and `stderr` separately instead:
+stderr non-empty is `unconfirmed` (missing executable, permission denial,
+unreadable path, or another diagnostic); stdout non-empty is `held`, including
+the cwd-only case; both empty is `nothing held`.
+
+Do not pipe `lsof` to `head`, and do not merge stderr into stdout: a pipeline
+returns `head`'s status, while merging makes a diagnostic indistinguishable from
+a holder. A missing `lsof` executable lands on the stderr stream and is
+therefore `unconfirmed`. The empty stream is one input to cleanup, not the whole
+gate.
 `lsof -a -d cwd` is not path-scoped by itself; without a path filter it lists
 every process's cwd on the host. `lsof +d <path>` is cheaper but checks only the
 directory's immediate entries and can miss a process working in a subdirectory,
