@@ -231,19 +231,29 @@ async function checkRedGreen() {
 // check-lock-mutations.mjs proves each of those cases FIREs on the defect it targets.
 // The canonical-checkout guard's cases and mutations, on the same contract: the cases pin the
 // verdicts and the mutations prove each case is load-bearing rather than merely green.
-async function checkCanonicalCases() {
-for (const file of ["check-canonical-checkout.mjs", "check-canonical-checkout-mutations.mjs"]) {
-const result = await run(process.execPath, [join(ROOT, "tests", file)]);
-if (result.status !== 0) {
-const detail = `${result.stdout}${result.stderr}`
-.trim()
-.split("\n")
-.filter((line) => line.trim().startsWith("- "))
-.join(" | ");
-fail(`${file} failed: ${detail || `exit ${result.status}`}`);
-}
-}
-}
+// ⚠ THE MUTATION TABLE IS DELIBERATELY NOT HERE. It costs minutes, not seconds: its M6 arm
+// has to re-run this whole case suite nested, because M6's target (a child `git` inheriting
+// the caller's `GIT_*`) only exists under that nesting. Measured: the table is ~160 s against
+// a ~14 s case suite. Paying that on every `skills/` commit buys nothing, because the guard it
+// guards runs in no hook at all -- it is a lander's step. The table runs there instead, beside
+// the guard, where its verdict can actually block something:
+//
+//   node skills/worktree-sop/tests/check-canonical-checkout-mutations.mjs
+//
+// ⚠ And it cannot simply be trimmed: marking the inner run `CASE_INHERITANCE_CHILD=1` to skip
+// arm 9 drops the table from ~260 s to ~64 s AND BREAKS M6 -- measured, 6 of 7 redden instead
+// of 7 of 7. The cost is structural, so the fix is placement, not deletion.
+  async function checkCanonicalCases() {
+    const result = await run(process.execPath, [join(ROOT, "tests", "check-canonical-checkout.mjs")]);
+    if (result.status !== 0) {
+      const detail = `${result.stdout}${result.stderr}`
+        .trim()
+        .split("\n")
+        .filter((line) => line.trim().startsWith("- "))
+        .join(" | ");
+      fail(`check-canonical-checkout.mjs failed: ${detail || `exit ${result.status}`}`);
+    }
+  }
 
 async function checkLockCases() {
   for (const file of ["check-lock.mjs", "check-lock-mutations.mjs"]) {

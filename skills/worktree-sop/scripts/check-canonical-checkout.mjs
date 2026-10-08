@@ -87,7 +87,11 @@ function mainWorktree() {
       if (path === repoRoot) return path;
     }
   }
-  // No path match (bare repo, or an unusual layout): fall back, and the caller says so.
+  // The common dir did not end in `/.git`, or no worktree claims that path. Fall back to the
+  // first entry -- correct for a bare repository, and the guard's name in `git-common-dir`
+  // still points at the right config. No promise is made that the caller is told; it is not
+  // told, because in the bare case there is nothing actionable to report beyond the refusal
+  // the bareness arm below already gives.
   return blocks[0]?.match(/^worktree (.+)$/m)?.[1] ?? null;
 }
 
@@ -119,11 +123,6 @@ function main() {
     process.exit(0);
   }
 
-  if (process.env[ALLOW_ENV] === "1") {
-    console.log(`check-canonical-checkout: SKIPPED by ${ALLOW_ENV}=1`);
-    process.exit(0);
-  }
-
   // ⚠ DECLINE WHEN THERE IS NOTHING TO RACE. One worktree means no shared checkout: the repo is
   // a single clone (a CI runner, a fresh copy) and the branch it is on is its own business.
   // Failing here would redden every CI job and train readers to ignore the check.
@@ -133,6 +132,16 @@ function main() {
     );
     process.exit(0);
   }
+
+  // ⚠ THE ESCAPE HATCH IS SCOPED TO THE DETACH ARM, AND THAT SCOPE IS THE POINT. It answers
+  // "is this checkout being off `main` intentional?" -- the maintenance case. It must NOT answer
+  // the other two questions, because the person most likely to reach for it is a maintainer
+  // working on an ALREADY-BROKEN checkout, which is exactly when `core.bare = true` is live.
+  // Measured before this was scoped: with `core.bare = true` set, the bare invocation named the
+  // config key and the repair, while `ALLOW_CANONICAL_OFF_MAIN=1` printed `SKIPPED` and exited 0.
+  // `core.bare = true` is not a maintenance state -- it means every worktree sharing that `.git`
+  // fails `rev-parse` -- and a tracked file left staged in the shared tree is not one either.
+  const detachedAllowed = process.env[ALLOW_ENV] === "1";
 
   // ⚠ BARENESS IS CHECKED FIRST, BECAUSE IT MASKS EVERYTHING. Measured precedent: with
   // `core.bare = true` in the shared config, `git rev-parse --show-toplevel` itself fails, so
@@ -204,18 +213,22 @@ function main() {
 
   const tipNote = expectedTip ? ` (${EXPECTED_BRANCH} is at ${expectedTip.slice(0, 8)})` : "";
 
-  if (branch === null) {
-    problems.push(
-      `the main worktree is DETACHED at ${head ? head.slice(0, 8) : "<unreadable>"}${tipNote}` +
-        ` -- a landing here (\`git merge --ff-only\`) exits 0 and updates the tree while moving NO ref,` +
-        ` so the landing is silently lost; and this is the tree other seats measure`,
-    );
-  } else if (branch !== EXPECTED_BRANCH) {
-    problems.push(
-      `the main worktree is on branch '${branch}', not '${EXPECTED_BRANCH}'${tipNote}` +
-        ` -- another seat's \`git checkout\` there is a write you can race, and the tree no longer` +
-        ` matches the branch other seats assume`,
-    );
+  // The escape hatch covers arms 1 and 2 only (the detach / wrong-branch question). It does
+  // NOT cover barness, which already refused above, nor the dirty-tracked arm below.
+  if (!detachedAllowed) {
+    if (branch === null) {
+      problems.push(
+        `the main worktree is DETACHED at ${head ? head.slice(0, 8) : "<unreadable>"}${tipNote}` +
+      ` -- a landing here (\`git merge --ff-only\`) exits 0 and updates the tree while moving NO ref,` +
+      ` so the landing is silently lost; and this is the tree other seats measure`,
+      );
+    } else if (branch !== EXPECTED_BRANCH) {
+      problems.push(
+        `the main worktree is on branch '${branch}', not '${EXPECTED_BRANCH}'${tipNote}` +
+      ` -- another seat's \`git checkout\` there is a write you can race, and the tree no longer` +
+      ` matches the branch other seats assume`,
+      );
+    }
   }
 
   // 2. The tree. A TRACKED file staged or modified in the shared checkout is a landing half-done
@@ -251,21 +264,28 @@ function main() {
     );
   }
 
-  if (problems.length > 0) {
-    console.error(
-      `check-canonical-checkout: FAIL: the shared checkout at ${mainPath} is not in a landable state.`,
-    );
-    for (const problem of problems) console.error(`  - ${problem}`);
-    console.error(
-      `  Fix: work and land from a linked worktree at an explicit SHA, and leave ${mainPath} on ${EXPECTED_BRANCH}.`,
-    );
-    console.error(`  To proceed anyway (intentional maintenance), re-run with ${ALLOW_ENV}=1.`);
-    process.exit(1);
-  }
+    if (problems.length > 0) {
+      console.error(
+        `check-canonical-checkout: FAIL: the shared checkout at ${mainPath} is not in a landable state.`,
+      );
+      for (const problem of problems) console.error(`  - ${problem}`);
+      console.error(
+        `  Fix: work and land from a linked worktree at an explicit SHA, and leave ${mainPath} on ${EXPECTED_BRANCH}.`,
+      );
+      if (detachedAllowed) {
+        console.error(
+          `  Note: ${ALLOW_ENV}=1 is set, which excuses an off-\`${EXPECTED_BRANCH}\` checkout only -- it does not excuse uncommitted tracked work.`,
+        );
+      } else {
+        console.error(`  To proceed anyway (intentional maintenance), re-run with ${ALLOW_ENV}=1.`);
+      }
+      process.exit(1);
+    }
 
-  console.log(
-    `check-canonical-checkout: OK: the shared checkout at ${mainPath} is on ${EXPECTED_BRANCH} (${head.slice(0, 8)}) and clean beyond allowed run output.`,
-  );
+    const skipped = detachedAllowed ? ` [${ALLOW_ENV}=1: off-${EXPECTED_BRANCH} allowed]` : "";
+    console.log(
+      `check-canonical-checkout: OK: the shared checkout at ${mainPath} is on ${EXPECTED_BRANCH} (${head.slice(0, 8)}) and clean beyond allowed run output.${skipped}`,
+    );
 }
 
 main();

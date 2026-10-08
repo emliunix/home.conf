@@ -89,6 +89,19 @@ const MUTATIONS = [
     apply: (source) => source.replace('  if (isBare === "true") {', "  if (false) {"),
     expects: "bare arm",
   },
+    {
+      id: "M8",
+      name: "let the escape hatch excuse barness and dirt again",
+      file: GUARD,
+      // Reproduce the ORIGINAL defect: an unscoped hatch that exits before the bareness and
+      // dirty arms. Anchored on the bareness check's own first line.
+      apply: (source) =>
+        source.replace(
+          "  let isBare = null;",
+          '  if (detachedAllowed) {\n    console.log(`check-canonical-checkout: SKIPPED by ${ALLOW_ENV}=1`);\n    process.exit(0);\n  }\n\n  let isBare = null;',
+        ),
+      expects: "allowlist-bare arm",
+    },
 ];
 
 // ⚠⚠ Same hazard as the case suite: this runner also executes inside the `pre-commit` hook, and

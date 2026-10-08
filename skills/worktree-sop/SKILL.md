@@ -81,10 +81,25 @@ node skills/worktree-sop/scripts/check-canonical-checkout.mjs
 ```
 
 It declines (`SKIP:`) where there is no shared checkout -- a single worktree, a
-CI runner -- and takes `ALLOW_CANONICAL_OFF_MAIN=1` for intentional maintenance.
-Read [`references/worktree-lifecycle.md`](references/worktree-lifecycle.md) for
-the lifecycle this guards.
-
+CI runner. `ALLOW_CANONICAL_OFF_MAIN=1` excuses an off-`main` checkout for
+intentional maintenance; it does **not** excuse `core.bare = true` or a
+tracked file left staged, because those are not maintenance states. Read
+[`references/worktree-lifecycle.md`](references/worktree-lifecycle.md) for the
+lifecycle this guards.
+  
+⚠ **This guard refuses nothing on its own.** It is a convention: prose here, plus
+a command a lander runs by hand. Nothing invokes it automatically, and a lander
+who skips the command lands exactly as before. That is the deliberate choice --
+no hook can carry the rule (see below) -- but it means the guard's value is
+entirely in whether it is run, and the record already shows a convention here
+being bypassed under pressure. Treat "run the guard" as part of landing, not as
+a check that will catch you.
+  
+The mutation table is the same: `tests/check-canonical-checkout-mutations.mjs`
+proves each case is load-bearing, and it runs at the lander's step rather than in
+the commit hook, because its M6 arm must re-run the case suite nested and costs
+minutes where the cases cost seconds.
+  
 ⚠ This is a LANDER'S STEP, not a hook, and that is measured rather than
 preferred: `pre-commit` -- the only stage this repository installs -- does not
 fire on `git merge --ff-only` or `git pull --ff-only`, and the `post-*` hooks

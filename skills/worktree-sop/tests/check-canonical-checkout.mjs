@@ -216,15 +216,44 @@ function tracked(fn) {
   if (!output.includes("scratch-note.txt")) fail(`unexpected-untracked arm: expected the path named, got: ${output.trim()}`);
 }
 
-// 7. The escape hatch works, and says so.
+// 7. The escape hatch is SCOPED, and all three arms are pinned. It excuses an off-`main`
+//    checkout (the maintenance case the flag names) but must NOT excuse `core.bare = true` or
+//    uncommitted tracked work. The bare half is the one that matters: a maintainer working on an
+//    already-broken checkout is exactly who reaches for this flag, so an unscoped hatch would
+//    silence the diagnosis the incident needed.
 {
   const repo = baseRepo();
   created.push(repo);
   created.push(addSecondWorktree(repo));
   git(repo, ["checkout", "-q", "--detach", "HEAD"]);
   const { status, output } = run(repo, { ALLOW_CANONICAL_OFF_MAIN: "1" });
-  if (status !== 0) fail(`allowlist arm: expected exit 0 under the escape hatch, got ${status}: ${output.trim()}`);
-  if (!output.includes("SKIPPED")) fail(`allowlist arm: expected a SKIPPED line, got: ${output.trim()}`);
+  if (status !== 0)
+    fail(`allowlist arm: expected exit 0 under the escape hatch for a detach, got ${status}: ${output.trim()}`);
+  if (!output.includes("off-main allowed"))
+    fail(`allowlist arm: expected the flag to be reported as applied, got: ${output.trim()}`);
+}
+{
+  const repo = baseRepo();
+  created.push(repo);
+  created.push(addSecondWorktree(repo));
+  git(repo, ["config", "core.bare", "true"]);
+  const { status, output } = run(repo, { ALLOW_CANONICAL_OFF_MAIN: "1" });
+  if (status === 0)
+    fail("allowlist-bare arm: the escape hatch must NOT excuse `core.bare = true`, but it exited 0");
+  if (!output.includes("core.bare"))
+    fail(`allowlist-bare arm: expected the bare refusal to survive the flag, got: ${output.trim().split("\n")[0]}`);
+}
+{
+  const repo = baseRepo();
+  created.push(repo);
+  created.push(addSecondWorktree(repo));
+  writeFileSync(join(repo, "f.txt"), "staged\n");
+  git(repo, ["add", "f.txt"]);
+  const { status, output } = run(repo, { ALLOW_CANONICAL_OFF_MAIN: "1" });
+  if (status === 0)
+    fail("allowlist-dirty arm: the escape hatch must NOT excuse uncommitted tracked work, but it exited 0");
+  if (!output.includes("uncommitted"))
+    fail(`allowlist-dirty arm: expected the dirty refusal to survive the flag, got: ${output.trim().split("\n")[0]}`);
 }
 
 // 8. THE CONSEQUENCE THE HEADER CLAIMS. In a detached canonical checkout at main's own commit,
@@ -334,5 +363,5 @@ if (failures.length) {
   process.exit(1);
 }
 console.log(
-  "check-canonical-checkout (cases): ok (decline at one worktree, detached, non-main branch, clean pass, staged tracked, allowed run output, unexpected untracked, escape hatch, silent-loss consequence, git-env inheritance, core.bare)",
+  "check-canonical-checkout (cases): ok (decline at one worktree, detached, non-main branch, clean pass, staged tracked, allowed run output, unexpected untracked, escape hatch, silent-loss consequence, git-env inheritance, core.bare, escape-hatch scope)",
 );
