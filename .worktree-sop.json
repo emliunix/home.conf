@@ -1,0 +1,3 @@
+{
+  "allowed_untracked": ["^receipts/.*/logs/"]
+}

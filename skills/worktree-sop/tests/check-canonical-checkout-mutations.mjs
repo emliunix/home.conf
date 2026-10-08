@@ -51,7 +51,7 @@ const MUTATIONS = [
     file: GUARD,
     apply: (source) =>
       source.replace(
-        'if (ALLOWED_UNTRACKED.some((re) => re.test(path))) continue;',
+        "if (allowedUntracked.some((re) => re.test(path))) continue;",
         "if (false) continue;",
       ),
     expects: "allowed-drift arm",
@@ -60,9 +60,17 @@ const MUTATIONS = [
     id: "M4",
     name: "read status with the default (collapses untracked directories)",
     file: GUARD,
+    // ⚠ ANCHORED ON THE JUDGING CALL SITE, NOT ON THE FLAG. There are two `-uall` call sites
+    // (the declaration-error fallback also reads status), and a bare flag anchor is replaced at
+    // the FIRST one, so the mutation would edit the fallback and leave the real judgement intact
+    // -- measured: the table reported GREEN for this mutation after the fallback path was added.
+    // A mutation that edits the wrong site is not evidence about the site it names.
     apply: (source) =>
-      source.replace('["status", "--porcelain", "-uall"]', '["status", "--porcelain"]'),
-    expects: "allowed-drift arm",
+      source.replace(
+        '    const porcelain = git(["status", "--porcelain", "-uall"], mainPath);',
+        '    const porcelain = git(["status", "--porcelain"], mainPath);',
+      ),
+    expects: "-uall arm",
   },
   {
     id: "M5",
@@ -102,6 +110,52 @@ const MUTATIONS = [
         ),
       expects: "allowlist-bare arm",
     },
+  {
+    id: "M9",
+    name: "treat a MISSING declaration as 'allow everything'",
+    file: GUARD,
+    // The refuse default is the load-bearing half of the ruling: absence must not silently mean
+    // "allow nothing" OR "allow everything". This mutation takes the permissive direction.
+    apply: (source) =>
+      source.replace(
+        "  if (!existsSync(file)) {",
+        "  if (!existsSync(file)) {\n    return { patterns: [/./] };\n  }\n  if (false) {",
+      ),
+    expects: "undeclared arm",
+  },
+  {
+    id: "M10",
+    name: "treat a MISSING declaration as 'allow nothing' (redden everything)",
+    file: GUARD,
+    apply: (source) =>
+      source.replace(
+        "  if (!existsSync(file)) {",
+        "  if (!existsSync(file)) {\n    return { patterns: [] };\n  }\n  if (false) {",
+      ),
+    expects: "undeclared arm",
+  },
+  {
+    id: "M11",
+    name: "ignore the per-repo declaration and hard-code one (the #233 defect itself)",
+    file: GUARD,
+    apply: (source) =>
+      source.replace(
+        "  const declaration = loadAllowedUntracked(mainPath);",
+        '  const declaration = { patterns: [/^worklog\\//] };',
+      ),
+    expects: "per-repo arm",
+  },
+  {
+    id: "M12",
+    name: "offer the escape hatch beside a refusal it cannot clear",
+    file: GUARD,
+    apply: (source) =>
+      source.replace(
+        "    } else if (coverable) {",
+        "    } else if (true) {",
+      ),
+    expects: "undeclared arm",
+  },
 ];
 
 // ⚠⚠ Same hazard as the case suite: this runner also executes inside the `pre-commit` hook, and

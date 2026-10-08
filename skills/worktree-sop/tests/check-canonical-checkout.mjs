@@ -96,7 +96,20 @@ function run(cwd, extraEnv = {}) {
 }
 
 /** Build a repository in a temp dir, on `main`, with ONE commit. */
-function baseRepo() {
+/** The per-repo declaration the guard now requires. Written and COMMITTED in `baseRepo`, because
+ *  an untracked declaration is itself untracked drift and would redden the tree arm it
+ *  configures -- measured: `git status --porcelain -uall` prints `?? .worktree-sop.json`.
+ *  Defaults to this repository's own run-output prefix so the pre-existing arms keep their
+ *  original meaning; the adoption arm passes `null` to build an UNDECLARED repo. */
+function writeDeclaration(repo, patterns = ["^receipts/.*/logs/"]) {
+  if (patterns === null) return;
+  writeFileSync(join(repo, ".worktree-sop.json"), `${JSON.stringify({ allowed_untracked: patterns }, null, 2)}\n`);
+  git(repo, ["add", ".worktree-sop.json"]);
+  git(repo, ["commit", "-qm", "declare run output"]);
+}
+
+/** Build a repository in a temp dir, on `main`, with ONE commit and a declaration. */
+function baseRepo({ declared = ["^receipts/.*/logs/"] } = {}) {
   const dir = mkdtempSync(join(tmpdir(), "canonical-case-"));
   git(dir, ["init", "-q", "-b", "main"]);
   git(dir, ["config", "user.email", "case@test"]);
@@ -104,6 +117,7 @@ function baseRepo() {
   writeFileSync(join(dir, "f.txt"), "base\n");
   git(dir, ["add", "f.txt"]);
   git(dir, ["commit", "-qm", "base"]);
+  writeDeclaration(dir, declared);
   return dir;
 }
 
@@ -348,6 +362,116 @@ if (process.env.CASE_INHERITANCE_CHILD !== "1") {
     fail("bare arm: expected the literal repair line, got none");
 }
 
+// 11. THE REFUSE DEFAULT (#233). A repository that has not declared its run output must be
+//     REFUSED, naming the file to create -- not silently allowed (the guard stops guarding) and
+//     not silently denied (every ordinary path reddens, which is the 1129-path false FAIL that
+//     produced this card). The refusal must also NOT offer the escape hatch, because the hatch is
+//     scoped to the detach arm and an instruction that does not work is worse than no instruction.
+{
+  const repo = baseRepo({ declared: null });
+  created.push(repo);
+  created.push(addSecondWorktree(repo));
+  const { status, output } = run(repo);
+  if (status === 0) fail("undeclared arm: expected a refusal for a repo with no declaration, got 0");
+  if (!output.includes(".worktree-sop.json"))
+    fail(`undeclared arm: expected the declaration file named, got: ${output.trim().split("\n")[0]}`);
+  if (!/would NOT clear this/.test(output))
+    fail(`undeclared arm: the escape hatch must NOT be offered beside a missing declaration, got: ${output.trim().split("\n").slice(-1)[0]}`);
+  const hatch = run(repo, { ALLOW_CANONICAL_OFF_MAIN: "1" });
+  if (hatch.status === 0)
+    fail("undeclared arm: the escape hatch must NOT clear a missing declaration, but it exited 0");
+}
+
+// 12. A MALFORMED declaration is refused with its own reason, and is not confused with absence.
+//     Three shapes, because "invalid JSON" and "valid JSON, wrong shape" are different repairs.
+for (const [label, body, expected] of [
+  ["not JSON", "{ this is not json", "not valid JSON"],
+  ["no allowed_untracked", '{"other": 1}', "allowed_untracked"],
+  ["bad regex", '{"allowed_untracked": ["[unclosed"]}', "not a valid regular expression"],
+]) {
+  const repo = baseRepo({ declared: null });
+  created.push(repo);
+  created.push(addSecondWorktree(repo));
+  writeFileSync(join(repo, ".worktree-sop.json"), body);
+  git(repo, ["add", ".worktree-sop.json"]);
+  git(repo, ["commit", "-qm", "decl"]);
+  const { status, output } = run(repo);
+  if (status === 0) fail(`declaration-${label} arm: expected a refusal, got 0`);
+  if (!output.includes(expected))
+    fail(`declaration-${label} arm: expected '${expected}' in the refusal, got: ${output.trim().split("\n")[1] ?? ""}`);
+}
+
+// 13. THE DECLARATION IS PER-REPO, WHICH IS THE WHOLE POINT (#233). The same guard, the same tree,
+//     two declarations, two verdicts -- and the verdicts must be OPPOSITE. A `worklog/` repo passes
+//     with a `worklog/` declaration and reddens with a `receipts/` one; this is the defect (two
+//     copies with different hard-coded allowlists reaching opposite verdicts on one tree) now
+//     expressed as a declared datum rather than a duplicated file.
+{
+  const repo = baseRepo({ declared: ["^worklog/"] });
+  created.push(repo);
+  created.push(addSecondWorktree(repo));
+  mkdirSync(join(repo, "worklog", "x"), { recursive: true });
+  writeFileSync(join(repo, "worklog", "x", "a.log"), "run output\n");
+  const declared = run(repo);
+  if (declared.status !== 0)
+    fail(`per-repo arm: a worklog declaration must tolerate worklog run output, got ${declared.status}: ${declared.output.trim().split("\n")[0]}`);
+  // Now re-declare the same repo for a DIFFERENT prefix and require the opposite verdict.
+  writeFileSync(join(repo, ".worktree-sop.json"), `${JSON.stringify({ allowed_untracked: ["^receipts/.*/logs/"] })}\n`);
+  git(repo, ["add", ".worktree-sop.json"]);
+  git(repo, ["commit", "-qm", "re-declare"]);
+  const mismatched = run(repo);
+  if (mismatched.status === 0)
+    fail("per-repo arm: the same tree must REDDEN under a declaration that does not cover it, but it passed");
+  if (!mismatched.output.includes("worklog/x/a.log"))
+    fail(`per-repo arm: expected the offending path named under the mismatched declaration, got: ${mismatched.output.trim().split("\n")[1] ?? ""}`);
+}
+
+// 14. ⚠ `-uall` SURVIVES (card item 3). Plain `--porcelain` collapses a wholly-untracked directory
+//     into one `?? dir/` line, so a file-level allowlist can never match it and allowed run output
+//     would redden -- and the population shrinks 5.7x, the direction that HIDES a dirty tree. The
+//     case is built so it can only pass under `-uall`: the allowed file sits several directories
+//     deep and the enclosing tree is wholly untracked.
+{
+  const repo = baseRepo();
+  created.push(repo);
+  created.push(addSecondWorktree(repo));
+  const deep = join(repo, "receipts", "process", "logs", "nested");
+  mkdirSync(deep, { recursive: true });
+  writeFileSync(join(deep, "check.log"), "run output\n");
+  const { status, output } = run(repo);
+  if (status !== 0)
+    fail(`-uall arm: allowed run output several dirs deep must pass; got ${status}: ${output.trim().split("\n").slice(-2)[0]}`);
+  // And the same tree must REDDEN when the collapsed mode would have hidden it: add an untracked
+  // file whose parent directory is also wholly untracked and outside the allowlist.
+  mkdirSync(join(repo, "scratchdir", "inner"), { recursive: true });
+  writeFileSync(join(repo, "scratchdir", "inner", "wip.txt"), "wip\n");
+  const red = run(repo);
+  if (red.status === 0) fail("-uall arm: untracked drift must redden, but the run passed");
+  if (!red.output.includes("scratchdir/inner/wip.txt"))
+    fail(`-uall arm: expected the FILE path named (the -uall contract), got: ${red.output.trim().split("\n")[1] ?? ""}`);
+}
+
+// 15. CROSS-REPO INVOCATION (card item 6). The surviving guard is owned by `home.conf` but must
+//     inspect the repository it is RUN FROM, so a lander in another repo gets a verdict about
+//     their own tree. The red arm is the pre-#233 state: resolving the same path against the wrong
+//     repo. Here the assertion is that the guard's message names the CWD repository.
+{
+  const own = baseRepo();
+  created.push(own);
+  const other = baseRepo();
+  created.push(other);
+  created.push(addSecondWorktree(other));
+  // Run from `other`, and require the refusal to be about `other` -- not about the repo the guard
+  // lives in. A guard that inspected its own checkout would name `own`'s path.
+  writeFileSync(join(other, "scratch-note.txt"), "wip\n");
+  const { status, output } = run(other);
+  if (status === 0) fail("cross-repo arm: an untracked path in the run-from repo must redden, got 0");
+  if (!output.includes(other))
+    fail(`cross-repo arm: the verdict must name the repo it was RUN FROM (${other}), got: ${output.trim().split("\n")[0]}`);
+  if (output.includes(own))
+    fail(`cross-repo arm: the verdict must NOT name the guard's own checkout (${own})`);
+}
+
 // ---------------------------------------------------------------------------------------------
 for (const dir of created) {
   try {
@@ -363,5 +487,5 @@ if (failures.length) {
   process.exit(1);
 }
 console.log(
-  "check-canonical-checkout (cases): ok (decline at one worktree, detached, non-main branch, clean pass, staged tracked, allowed run output, unexpected untracked, escape hatch, silent-loss consequence, git-env inheritance, core.bare, escape-hatch scope)",
+  "check-canonical-checkout (cases): ok (decline at one worktree, detached, non-main branch, clean pass, staged tracked, allowed run output, unexpected untracked, escape hatch, silent-loss consequence, git-env inheritance, core.bare, escape-hatch scope, refuse default, malformed declaration, per-repo declaration, -uall depth, cross-repo invocation)",
 );

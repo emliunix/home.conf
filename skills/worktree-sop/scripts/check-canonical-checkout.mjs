@@ -57,9 +57,21 @@
 //      ALLOW_CANONICAL_OFF_MAIN=1 node ...check-canonical-checkout.mjs   (intentional maintenance)
 
 import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const ALLOW_ENV = "ALLOW_CANONICAL_OFF_MAIN";
 const EXPECTED_BRANCH = "main";
+
+/** The per-repo declaration file, named beside the repo's own root. It is JSON and not YAML
+ *  because this guard imports `node:child_process` and two `node:` builtins and NOTHING else:
+ *  it is a hand-run landing step that must work in a fresh worktree with no `node_modules`, so
+ *  a parser dependency would break it exactly where it is needed. `JSON.parse` is builtin.
+ *
+ *  ⚠ IT MUST BE TRACKED. An untracked declaration is itself an untracked path in the tree the
+ *  guard is judging, so it would redden the very arm it configures -- measured: writing the
+ *  file and running `git status --porcelain -uall` prints `?? .worktree-sop.json`. */
+const DECLARATION_FILE = ".worktree-sop.json";
 
 function git(args, cwd) {
   return execFileSync("git", args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
@@ -95,12 +107,53 @@ function mainWorktree() {
   return blocks[0]?.match(/^worktree (.+)$/m)?.[1] ?? null;
 }
 
-/** Untracked paths allowed to sit in the canonical checkout. These are RUN OUTPUT, not work in
- *  progress. A staged or modified TRACKED file is never allowed: that is a landing half-done in
- *  a tree other seats measure. Kept deliberately narrow -- measured on this repository, the
- *  canonical checkout carries no non-ignored untracked path in normal use, and the suite leaves
- *  none behind, so this list exists for generated run output and should grow only with evidence. */
-const ALLOWED_UNTRACKED = [/^receipts\/.*\/logs\//];
+/** Read the guarded repository's own declaration of which untracked prefixes are RUN OUTPUT.
+ *
+ *  ⚠ THE DECLARATION IS REQUIRED, AND ITS ABSENCE IS A REFUSAL, NOT A DEFAULT. Before this was
+ *  a per-repo datum it was hard-coded here, which is the defect task #233 removes: one script
+ *  with one repository's allowlist reached OPPOSITE verdicts on the same tree as its duplicate
+ *  (the home.conf copy allowlisted `receipts` log dirs, the agent-substrate copy `worklog`)
+ *  copy the reader happened to find. A missing declaration must NOT silently mean "allow
+ *  everything" (the guard stops guarding) nor "allow nothing" (every ordinary run-output path
+ *  reddens and readers learn to pass the escape hatch). It means: this repository has not been
+ *  adopted, so say so and name the file -- the same reasoning as the guard's header, that a
+ *  check which passes a shape it cannot judge is worse than one that declines loudly.
+ *
+ *  Returns { patterns } on success or { error } on a refusal. Never throws: the caller reports. */
+function loadAllowedUntracked(repoRoot) {
+  const file = join(repoRoot, DECLARATION_FILE);
+  if (!existsSync(file)) {
+    return {
+      error:
+        `${repoRoot} has no ${DECLARATION_FILE}, so this guard does not know which untracked paths are run output there.\n` +
+        `  Create ${DECLARATION_FILE} in ${repoRoot} naming them, e.g.:\n` +
+        `    { "allowed_untracked": ["^receipts/.*/logs/"] }\n` +
+        `  Its absence is refused rather than tolerated: without it the guard cannot tell run output from work in progress.`,
+    };
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(readFileSync(file, "utf8"));
+  } catch (error) {
+    return { error: `${file} is not valid JSON: ${String(error?.message ?? error).split("\n")[0]}` };
+  }
+  const raw = parsed?.allowed_untracked;
+  if (!Array.isArray(raw)) {
+    return { error: `${file} must carry an \`allowed_untracked\` array of regular-expression strings; found ${raw === undefined ? "nothing" : JSON.stringify(raw)}` };
+  }
+  const patterns = [];
+  for (const entry of raw) {
+    if (typeof entry !== "string") {
+      return { error: `${file}: every \`allowed_untracked\` entry must be a string; found ${JSON.stringify(entry)}` };
+    }
+    try {
+      patterns.push(new RegExp(entry));
+    } catch (error) {
+      return { error: `${file}: \`${entry}\` is not a valid regular expression: ${String(error?.message ?? error).split("\n")[0]}` };
+    }
+  }
+  return { patterns };
+}
 
 function countWorktrees() {
   try {
@@ -238,6 +291,34 @@ function main() {
   // allowed run output under an allowed prefix would redden. Measured: with
   // `receipts/process/logs/check.log` untracked, the default prints `?? receipts/` and `-uall`
   // prints `?? receipts/process/logs/check.log`. A case in the sibling suite caught this.
+  // ⚠ THE DECLARATION IS LOADED HERE, AND ITS FAILURE DOES NOT SKIP THE TRACKED-FILE ARM.
+  // A staged or modified TRACKED file is never run output under ANY allowlist, so that half of
+  // the judgement is declaration-independent and must survive a broken declaration. Only the
+  // classification of UNTRACKED paths needs the declaration. Reporting "1129 uncommitted
+  // path(s)" from a hard-coded list while the repository's own declaration is missing or
+  // malformed would be the guard answering a question it was not asked.
+  const declaration = loadAllowedUntracked(mainPath);
+  if (declaration.error !== undefined) problems.push(declaration.error);
+  const allowedUntracked = declaration.patterns;
+  if (allowedUntracked === undefined) {
+    // The declaration is unusable: report the tracked half only, and say the untracked half was
+    // not judged. Silence here would read as "no untracked drift", which was never established.
+    try {
+      const trackedOnly = git(["status", "--porcelain", "-uall"], mainPath)
+        .split("\n")
+        .filter((l) => l.trim() && l.slice(0, 2) !== "??");
+      for (const line of trackedOnly) {
+        problems.push(`${line.slice(0, 2).trim()} ${line.slice(3).replace(/^"|"$/g, "")}`);
+      }
+    } catch (error) {
+      problems.push(
+        `could not read the main worktree's status: ${String(error?.message ?? error).split("\n")[0]}`,
+      );
+    }
+    reportAndExit(problems, mainPath, head, detachedAllowed);
+    return;
+  }
+
   try {
     const porcelain = git(["status", "--porcelain", "-uall"], mainPath);
     const dirty = [];
@@ -246,7 +327,7 @@ function main() {
       const code = line.slice(0, 2);
       const path = line.slice(3).replace(/^"|"$/g, "");
       if (code === "??") {
-        if (ALLOWED_UNTRACKED.some((re) => re.test(path))) continue;
+        if (allowedUntracked.some((re) => re.test(path))) continue;
         dirty.push(`untracked ${path}`);
       } else {
         dirty.push(`${code.trim()} ${path}`);
@@ -264,28 +345,55 @@ function main() {
     );
   }
 
-    if (problems.length > 0) {
-      console.error(
-        `check-canonical-checkout: FAIL: the shared checkout at ${mainPath} is not in a landable state.`,
-      );
-      for (const problem of problems) console.error(`  - ${problem}`);
-      console.error(
-        `  Fix: work and land from a linked worktree at an explicit SHA, and leave ${mainPath} on ${EXPECTED_BRANCH}.`,
-      );
-      if (detachedAllowed) {
-        console.error(
-          `  Note: ${ALLOW_ENV}=1 is set, which excuses an off-\`${EXPECTED_BRANCH}\` checkout only -- it does not excuse uncommitted tracked work.`,
-        );
-      } else {
-        console.error(`  To proceed anyway (intentional maintenance), re-run with ${ALLOW_ENV}=1.`);
-      }
-      process.exit(1);
-    }
+    reportAndExit(problems, mainPath, head, detachedAllowed);
+}
 
-    const skipped = detachedAllowed ? ` [${ALLOW_ENV}=1: off-${EXPECTED_BRANCH} allowed]` : "";
-    console.log(
-      `check-canonical-checkout: OK: the shared checkout at ${mainPath} is on ${EXPECTED_BRANCH} (${head.slice(0, 8)}) and clean beyond allowed run output.${skipped}`,
+/** Which refusals the escape hatch can clear. The hatch answers "is this off-`main` checkout
+ *  intentional?" and nothing else, so only the branch-shaped problems qualify. A TRACKED file
+ *  left staged is a landing half-done, and a missing declaration is an un-adopted repository;
+ *  neither is a maintenance state, and the guard must not imply otherwise. */
+const HATCH_COVERABLE = /^(the main worktree is (DETACHED|on branch))/;
+
+function isCoveredByHatch(problem) {
+  return HATCH_COVERABLE.test(problem);
+}
+
+/** The single exit path. Factored out because the declaration arm and the normal arm both end
+ *  here, and two copies of a refusal message is how the two drift. */
+function reportAndExit(problems, mainPath, head, detachedAllowed) {
+  if (problems.length > 0) {
+    console.error(
+      `check-canonical-checkout: FAIL: the shared checkout at ${mainPath} is not in a landable state.`,
     );
+    for (const problem of problems) console.error(`  - ${problem}`);
+    console.error(
+      `  Fix: work and land from a linked worktree at an explicit SHA, and leave ${mainPath} on ${EXPECTED_BRANCH}.`,
+    );
+    // ⚠ THE HATCH IS OFFERED ONLY WHEN IT WOULD ACTUALLY CLEAR SOMETHING. It is scoped to the
+    // detach/wrong-branch arm, so offering it beside a dirty-tree or missing-declaration refusal
+    // is an instruction that does not work -- and a reader who follows it, sees the same refusal,
+    // and concludes the guard is broken is the failure mode this whole file is written against.
+    // Measured: with no `.worktree-sop.json`, `ALLOW_CANONICAL_OFF_MAIN=1` still exits 1, so the
+    // unconditional line was a false promise in the one case most likely to hit it.
+    const coverable = problems.filter((problem) => isCoveredByHatch(problem)).length === problems.length;
+    if (detachedAllowed) {
+      console.error(
+        `  Note: ${ALLOW_ENV}=1 is set, which excuses an off-\`${EXPECTED_BRANCH}\` checkout only -- it does not excuse uncommitted tracked work or a missing declaration.`,
+      );
+    } else if (coverable) {
+      console.error(`  To proceed anyway (intentional maintenance), re-run with ${ALLOW_ENV}=1.`);
+    } else {
+      console.error(
+        `  Note: ${ALLOW_ENV}=1 would NOT clear this -- it excuses an off-\`${EXPECTED_BRANCH}\` checkout only.`,
+      );
+    }
+    process.exit(1);
+  }
+
+  const skipped = detachedAllowed ? ` [${ALLOW_ENV}=1: off-${EXPECTED_BRANCH} allowed]` : "";
+  console.log(
+    `check-canonical-checkout: OK: the shared checkout at ${mainPath} is on ${EXPECTED_BRANCH} (${head.slice(0, 8)}) and clean beyond allowed run output.${skipped}`,
+  );
 }
 
 main();

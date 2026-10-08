@@ -77,15 +77,39 @@ linked worktree at an explicit SHA; the main checkout stays on `main`. Before
 landing, refuse the land if the shared tree is off it:
 
 ```bash
-node skills/worktree-sop/scripts/check-canonical-checkout.mjs
+node "$HOME/Documents/home.conf/skills/worktree-sop/scripts/check-canonical-checkout.mjs"
 ```
+
+**The path names the repo that OWNS the guard, not the repo being guarded.** The
+guard inspects the main worktree of the repository it is **run from**, so the
+same command is correct for a `home.conf` lander and for a lander in any other
+repo that adopts this rule -- run it from the repo you are landing in. A
+repo-relative path was the defect this replaced: in `agent-substrate` it resolved
+against `home.conf`, silently importing `home.conf`'s run-output allowlist into a
+repo whose run output is `worklog/`, and refused 1129 legitimate paths.
+
+**⚠ Each guarded repository declares its own run output, and an undeclared
+repository is REFUSED.** The declaration is `.worktree-sop.json` at the
+repository root, committed (an untracked declaration is itself untracked drift):
+
+```json
+{ "allowed_untracked": ["^receipts/.*/logs/"] }
+```
+
+The guard refuses a repository with no declaration, naming the file to create. It
+does **not** treat absence as "allow everything" (the guard would stop guarding)
+or "allow nothing" (every ordinary path reddens and readers learn to work
+around). It is JSON, not YAML, because the guard imports only `node:` builtins --
+it runs in a fresh worktree with no `node_modules`, which is exactly where a
+parser dependency would break it.
 
 It declines (`SKIP:`) where there is no shared checkout -- a single worktree, a
 CI runner. `ALLOW_CANONICAL_OFF_MAIN=1` excuses an off-`main` checkout for
-intentional maintenance; it does **not** excuse `core.bare = true` or a
-tracked file left staged, because those are not maintenance states. Read
-[`references/worktree-lifecycle.md`](references/worktree-lifecycle.md) for the
-lifecycle this guards.
+intentional maintenance; it does **not** excuse `core.bare = true`, a tracked
+file left staged, or a missing declaration, because those are not maintenance
+states -- and the guard does not offer the hatch beside a refusal it cannot
+clear. Read [`references/worktree-lifecycle.md`](references/worktree-lifecycle.md)
+for the lifecycle this guards.
   
 ⚠ **This guard refuses nothing on its own.** It is a convention: prose here, plus
 a command a lander runs by hand. Nothing invokes it automatically, and a lander
