@@ -67,6 +67,10 @@ sixth:
 - [`templates/tracker-wake.md`](templates/tracker-wake.md) — a seat that owns the
   board: dispositions, ownership, reachability by tip, labels traceable to
   measurements.
+- [`templates/repository-hygiene-wake.md`](templates/repository-hygiene-wake.md)
+  — a seat that owns the daily repository-hygiene sweep: worktree and branch
+  inventory, reachability by tip, cleanup candidates, and a report-only
+  default with a narrow safe-deletion gate.
 - [`templates/project-tracker-message.md`](templates/project-tracker-message.md)
   — the scheduled pass message: board rows, an explicit request for every named
   member to report its own progress, and the three-step follow-up when a member
