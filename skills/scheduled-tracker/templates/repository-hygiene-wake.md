@@ -112,7 +112,7 @@ sweep without changing any earlier disposition.
 For a candidate that reaches this step:
 
 ```sh
-out=$(lsof +D "$worktree" 2>&1); rc=$?
+rc=0; out=$(lsof +D "$worktree" 2>&1) || rc=$?
 printf '%s\n' "$out"
 # rc=1 and empty output  -> nothing held
 # rc=0 with output       -> held (cwd-only holders are reported)
