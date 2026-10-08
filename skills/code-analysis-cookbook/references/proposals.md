@@ -136,11 +136,21 @@ NAME/INSTANCE`; in this build the indexer is named **`haskell-hie`**, and
 `main`.
 
 **Merge-time check, from the same card.** `git rev-parse --git-path hooks` answers
-where git **dispatches** (it honours `core.hooksPath`, which on this host is the
-global `/Users/ppio/.git-hooks`), not where a clone **installs**
-(`<git-common-dir>/hooks`). And an "install is *outside* `core.hooksPath`" test is
-satisfied by **equality** — it stays green in exactly the collapse it guards. Any
-rerun-hook wiring must canonicalise both sides and assert they are *distinct*.
+where git **dispatches**, which honours `core.hooksPath` — not where a clone
+**installs** (`<git-common-dir>/hooks`). When no `core.hooksPath` is configured
+the two answer the **same** path, and that is the ordinary state, not a defect:
+on this host today `git config --show-origin --get core.hooksPath` exits 1 at
+every scope and dispatch resolves to `.git/hooks`.
+
+The trap is in the *assertion*, not the commands. An "install is *under*
+`core.hooksPath`" test is satisfied by that equality, so it stays green in
+exactly the state it is meant to flag; and a raw string comparison splits one
+directory into two spellings, because `--git-common-dir` is relative in a normal
+checkout and absolute in a linked worktree. So any rerun-hook wiring must canonicalise both sides with
+`realpath` and assert **distinctness whenever `core.hooksPath` resolves to a path
+outside the repository** — and when it is unset, report the equality as the
+declared non-foreign state rather than assuming it away. The failure worth
+catching is a configured foreign dispatcher, not equality with an absent one.
 
 ### Preconditions measured on macOS (2026-10-03, seat @GameBoy, `4b21c6cb`)
 
