@@ -69,6 +69,29 @@ guarantee.
 Read [`references/gate-lock.md`](references/gate-lock.md) for the contract and
 recovery rules.
 
+## The canonical checkout
+
+The repository's MAIN worktree is shared, so every seat measures there and a
+`git checkout` in it is a write another seat can race. Landing is done from a
+linked worktree at an explicit SHA; the main checkout stays on `main`. Before
+landing, refuse the land if the shared tree is off it:
+
+```bash
+node skills/worktree-sop/scripts/check-canonical-checkout.mjs
+```
+
+It declines (`SKIP:`) where there is no shared checkout -- a single worktree, a
+CI runner -- and takes `ALLOW_CANONICAL_OFF_MAIN=1` for intentional maintenance.
+Read [`references/worktree-lifecycle.md`](references/worktree-lifecycle.md) for
+the lifecycle this guards.
+
+⚠ This is a LANDER'S STEP, not a hook, and that is measured rather than
+preferred: `pre-commit` -- the only stage this repository installs -- does not
+fire on `git merge --ff-only` or `git pull --ff-only`, and the `post-*` hooks
+that do fire run after the ref has already moved, so their exit code cannot undo
+it. A detached shared checkout is refused even at `main`'s own commit, because a
+landing from it exits 0 and reports `Fast-forward` while **moving no ref**.
+
 ## Boundary
 
 This skill does not merge on its own, delete a worktree without the inspection

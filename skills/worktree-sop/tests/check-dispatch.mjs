@@ -229,6 +229,22 @@ async function checkRedGreen() {
 // lock, so it never presents the publish window that the live-holder eviction came from.
 // check-lock.mjs drives that window and the identity-checked transitions directly, and
 // check-lock-mutations.mjs proves each of those cases FIREs on the defect it targets.
+// The canonical-checkout guard's cases and mutations, on the same contract: the cases pin the
+// verdicts and the mutations prove each case is load-bearing rather than merely green.
+async function checkCanonicalCases() {
+for (const file of ["check-canonical-checkout.mjs", "check-canonical-checkout-mutations.mjs"]) {
+const result = await run(process.execPath, [join(ROOT, "tests", file)]);
+if (result.status !== 0) {
+const detail = `${result.stdout}${result.stderr}`
+.trim()
+.split("\n")
+.filter((line) => line.trim().startsWith("- "))
+.join(" | ");
+fail(`${file} failed: ${detail || `exit ${result.status}`}`);
+}
+}
+}
+
 async function checkLockCases() {
   for (const file of ["check-lock.mjs", "check-lock-mutations.mjs"]) {
     const result = await run(process.execPath, [join(ROOT, "tests", file)]);
@@ -246,6 +262,7 @@ async function checkLockCases() {
 checkSurface();
 await checkRedGreen();
 await checkLockCases();
+await checkCanonicalCases();
 
 if (failures.length) {
   console.error(`check-dispatch: ${failures.length} failure(s)`);
@@ -253,5 +270,5 @@ if (failures.length) {
   process.exit(1);
 }
 console.log(
-  "check-dispatch: ok (surface, serialization red/green, stale recovery, lock classification, seeded mutations)",
+  "check-dispatch: ok (surface, serialization red/green, stale recovery, lock classification, seeded mutations, canonical checkout)",
 );
