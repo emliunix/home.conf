@@ -36,6 +36,11 @@ Name the active repositories before running commands. Set `REPOS` to their
 canonical checkout paths; the inventory itself is read-only until a candidate
 has passed the cleanup gate below.
 
+Run the inventory in every repository in play, not only the current one. A
+linked worktree in one repository can be registered in another repository's Git
+directory, so a sweep scoped to one `git worktree list` can miss a live
+checkout.
+
 ```sh
 REPOS=(
   "$HOME/Documents/home.conf"
@@ -63,7 +68,7 @@ nowhere in that output. Use ancestry against the resolved target:
 
 ```sh
 if git -C "$repo" remote get-url origin >/dev/null 2>&1; then
-  rc=0; remote=$(git -C "$repo" ls-remote --heads origin main 2>&1) || rc=$?
+  rc=0; remote=$(git -C "$repo" ls-remote --heads origin refs/heads/main 2>&1) || rc=$?
   if [ "$rc" -ne 0 ] || [ -z "$remote" ]; then
     target=
   else
@@ -250,6 +255,11 @@ Post one line per non-clean object and keep clean rows summarized by count:
 ```text
 repo | object | tip | target relation | worktree state | owner/card | disposition | next action
 ```
+
+Do not report reclaimable space by summing per-candidate `du` output. Linked
+worktrees share the repository object store, and `du` deduplicates shared bytes
+only within one invocation; separate per-candidate measurements can promise
+space that removal cannot return.
 
 Each wake ends **done** when every declared repository is readable, every
 candidate has a disposition, and cleanup candidates either passed the cleanup
