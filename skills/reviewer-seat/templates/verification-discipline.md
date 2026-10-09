@@ -38,6 +38,17 @@ name the rule they earned.
   almost nothing. Say which of the two you are standing on.
 - **Measure the counter-check before the correction ships.** A correction written from the same
   surface as the error repeats the error. Reproduce the hole, then fix it.
+- **A finding that prescribes a repair is a claim about the repository; the receiving seat measures
+  the repair, not only the diagnosis.** A verdict can mis-describe the object yet still *name an
+  action*, and the action can be false in the same way the verdict was. The ordinary response to a
+  `NOT-LAND` — comply — then replaces a correct object with a wrong one, and the reviewer's own
+  acceptance command is the only thing standing between the two. **The test:** ask what the tree
+  would have to be for the prescribed repair to make it *worse*, and measure that row before
+  applying it. Corollary: when a verdict says *which of two mechanisms applies*, the matrix must
+  vary one condition at a time and name the row that would have failed under the rival hypothesis —
+  a configuration holding **both** candidate states is consistent with either winner and is
+  therefore not evidence for one. Same discipline as `Measure the counter-check`, aimed at the
+  reviewer's own prescription rather than at the correction that follows it.
 - **Check the surface the claim is ABOUT**, not the adjacent one. A claim verified on one surface
   and stated about another is wrong even when every check ran. The test: which artifact would
   have to be different for this sentence to be false? Verify *that* one.
