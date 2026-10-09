@@ -7,10 +7,10 @@ outside, and either can strand reviewed work or delete an unlanded change.
 
 ## The five checks, as the hygiene seat
 
-1. **Routine check — every declared repository, not the current one.** Read the
+1. **Routine check — every configured repository, not the current one.** Read the
    active-work list and inventory each repository's worktrees, local branches,
-   remote branches, and remote target. A repository omitted from the list is an
-   unowned population, not a clean one.
+   remote branches, and remote target. A repository omitted from the host config
+   is an unowned population, not a clean one.
 2. **High-level understanding — state the two deletion boundaries.** Worktrees
    are checkout containers; branches are commit names. A worktree can be removed
    after its checkout is safe, while a branch can be deleted only after its tip
@@ -26,191 +26,143 @@ outside, and either can strand reviewed work or delete an unlanded change.
    the card/owner and next observable result for each non-clean classification.
    "No one mentioned it" is not a disposition.
 5. **Process defect review — do not let branch names answer reachability.** A
-   local branch's name is not evidence that its tip is on `main`, and a remote
-   branch's existence is not evidence that an owner still needs it. Test the
-   commit relationship and inspect the worktree before proposing cleanup.
+   local branch's name is not evidence that its tip is on the target, and a
+   remote branch's existence is not evidence that an owner still needs it. Test
+   the commit relationship and inspect the worktree before proposing cleanup.
 
 ## Daily inventory
 
-Name the active repositories before running commands. Set `REPOS` to their
-canonical checkout paths; the inventory itself is read-only until a candidate
-has passed the cleanup gate below.
+The inventory logic is a single-file Python script with PEP 723 metadata. Run it
+through `uv`; it uses the standard library only.
+
+Repository paths, source names, target branches, remote names, and scheduling
+time zones are host or project settings. Keep them in a local TOML config or pass
+them as CLI parameters; do not commit machine-specific paths or project names in
+the generic skill.
+
+```sh
+uv run skills/scheduled-tracker/scripts/repository-hygiene.py \
+  --config "$HYGIENE_CONFIG"
+```
+
+The same invocation can be composed from parameters without a config file:
+
+```sh
+uv run skills/scheduled-tracker/scripts/repository-hygiene.py \
+  --repo "<name>=<path>" \
+  --repo "<name>=<path>" \
+  --target "<target-branch>"
+```
+
+The config shape is:
+
+```toml
+target = "main"
+remote = "origin"
+
+[[repositories]]
+name = "primary"
+path = "/path/to/repository"
+
+[[repositories]]
+name = "secondary"
+path = "/path/to/another/repository"
+target = "release"
+remote = "upstream"
+```
+
+`remote = ""` for a repository with no remote selects its local target branch.
+Paths and the config path may use environment variables and `~`.
+
+Run the focused script suite after changing the inventory:
+
+```sh
+uv run --with pytest pytest -q \
+  skills/scheduled-tracker/scripts/test_repository_hygiene.py
+```
 
 Run the inventory in every repository in play, not only the current one. A
 linked worktree in one repository can be registered in another repository's Git
 directory, so a sweep scoped to one `git worktree list` can miss a live
 checkout.
 
-```sh
-REPOS=(
-  "$HOME/Documents/home.conf"
-  "$HOME/Documents/sandbox-deploy"
-  "$HOME/Documents/task-svc"
-  "$HOME/Documents/pi-team"
-)
+The script resolves the target before grading any tip:
 
-for repo in "${REPOS[@]}"; do
-  printf '\n== %s ==\n' "$repo"
-  git -C "$repo" rev-parse --show-toplevel
-  git -C "$repo" status --short --branch
-  git -C "$repo" worktree list --porcelain
-  git -C "$repo" for-each-ref --format='%(refname:short)%09%(objectname)%09%(upstream:short)%09%(upstream:track)' refs/heads
-  git -C "$repo" for-each-ref --format='%(refname:short)%09%(objectname)' refs/remotes/origin
-done
-```
+- With a remote, it reads the live target branch using the literal
+  `refs/heads/<target>` ref and compares that tip with the cached remote-tracking
+  ref. A failed live read, a missing branch, or a stale cached ref makes the
+  repository `unconfirmed`; the script does not grade against a cached ref.
+- Without a remote, it uses the local target branch and records that provenance.
 
-For each repository, resolve the target before grading any tip. A repository
-with an `origin` uses the live remote `main`; a repository without one uses its
-local `main` and records that provenance rather than going `unconfirmed` only
-because no remote exists. `git ls-remote` is only a listing of remote **tips**;
-it is not a reachability test. An interior commit that is already landed appears
-nowhere in that output. Use ancestry against the resolved target:
+Reachability means ancestry (`git merge-base --is-ancestor`) or patch
+equivalence (`git cherry`). A remote-tip listing is not a reachability test: an
+interior commit that is already landed appears nowhere in that output. The
+script parses `git cherry`'s `+`/`-` prefixes rather than trusting its exit
+status.
 
-```sh
-if git -C "$repo" remote get-url origin >/dev/null 2>&1; then
-  rc=0; remote=$(git -C "$repo" ls-remote --heads origin refs/heads/main 2>&1) || rc=$?
-  if [ "$rc" -ne 0 ] || [ -z "$remote" ]; then
-    target=
-  else
-    remote_tip=${remote%%[[:space:]]*}
-    rc=0; cached=$(git -C "$repo" rev-parse --verify --quiet refs/remotes/origin/main 2>/dev/null) || rc=$?
-    if [ "$rc" -ne 0 ] || [ "$remote_tip" != "$cached" ]; then
-      target=
-    else
-      target=origin/main
-    fi
-  fi
-else
-  target=main
-fi
+The candidate list comes from `git for-each-ref`, not from
+`git branch --merged` alone. The latter's `*` and `+` markers mean current and
+worktree-checked-out branches; a naive indentation parse would report the
+branches with no worktree and omit the worktree-backed branches that must be
+handled first.
 
-if [ -z "$target" ]; then
-  : # unconfirmed: live remote main unavailable; do not grade a cached ref
-else
-  rc=0; git -C "$repo" merge-base --is-ancestor "$tip" "$target" || rc=$?
-  # rc=0 reachable; rc=1 not an ancestor; any other status unconfirmed
+For every linked worktree, the script reads the checkout's tracked and ignored
+state, its `HEAD`, and the `prunable` marker from `git worktree list
+--porcelain`. It reports one row per worktree and one row per local or remote
+branch. The row includes the repository, object, tip, target relation, worktree
+state, process state, owner/card placeholder, observed disposition, and next
+action.
 
-  rc=0; cherry=$(git -C "$repo" cherry "$target" "$branch" 2>&1) || rc=$?
-  # rc != 0 unconfirmed; rc=0 parse the + / - prefixes
-fi
-```
+### Process checks are last and path-scoped
 
-`merge-base --is-ancestor` answers reachability, not patch equivalence; a normal
-rebase, squash, or cherry-pick may leave a branch with no unique patch even when
-its tip is not an ancestor. `git cherry` is the second check for that case. Do
-not build the test as `ls-remote | grep "$tip"`: the intuitive form returns a
-plausible false negative for exactly the squash/interior-landed branches this
-sweep is meant to clear. If `origin` exists but the live read fails, mark the
-repository `unconfirmed`; do not silently fall back to cached `origin/main`. If
-the live remote target differs from the cached ref, mark it `unconfirmed`
-rather than grading against the stale local ref. Run `merge-base` and `cherry`
-through the status-preserving form above: exit 1 is a normal ancestry verdict,
-not a sweep failure, and bare use under `set -e` would abort before the
-following disposition line.
+The script runs a full `lsof +D <path>` only after a candidate has already passed
+clean-tree inspection and reachability. The cost scales with the file count, so
+running it for every worktree can dominate the sweep without changing an earlier
+disposition.
 
-Do not use `git branch --merged` as the candidate list without stripping its
-markers. Its `*` and `+` prefixes encode current and worktree-checked-out
-branches; a naive indentation parse therefore reports the branches with **no**
-worktree and omits the worktree-backed branches that must be handled first. The
-marker-free form is the `for-each-ref` list above followed by the ancestry
-check; if `git branch --merged` is used for a quick view, parse it only after
-removing `[*+ ]*`, or use the explicit equivalent:
+It classifies the streams, never `lsof`'s exit status:
 
-```sh
-git -C "$repo" branch --merged "$target" | sed 's/^[*+ ]*//'
-```
-
-For every linked worktree, inspect the checkout before judging the branch:
-
-```sh
-git -C "$repo" worktree list --porcelain
-git -C "$worktree" status --porcelain=v1 --untracked-files=all
-git -C "$worktree" status --porcelain=v1 --ignored --untracked-files=all
-git -C "$worktree" rev-parse HEAD
-git -C "$repo" worktree prune --dry-run --verbose
-```
-
-The dry-run names the repository-relative **git metadata** entry
-(`worktrees/<name>`), not the checkout path. The directory to inspect comes from
-the same `git worktree list --porcelain` record as the `prunable` marker; pair
-the two there rather than trying to resolve the dry-run's name as a filesystem
-path.
-
-Run the process check **last**, and only for candidates that already passed
-reachability and the clean-tree inspection. A full `lsof +D` walks the tree and
-its cost scales with file count; measured on this host, a 779-file worktree took
-about 0.4 s while canonical `home.conf` with 108,489 files took about 7.1 s.
-With roughly 79 registered worktrees, doing it for every candidate dominates the
-sweep without changing any earlier disposition.
-
-For a candidate that reaches this step:
-
-```sh
-tmp=$(mktemp)
-out=$(lsof +D "$worktree" 2>"$tmp") || true
-if   [ -s "$tmp" ]; then
-  printf '%s\n' "unconfirmed: $(cat "$tmp")"
-elif [ -n "$out" ]; then
-  printf '%s\n' "$out"   # held (cwd-only holders are reported)
-else
-  :                      # nothing held
-fi
-rm -f "$tmp"
-```
-
-Do not classify on `lsof`'s exit status. With `+D`, it walks the directory and
-every entry under it; the status is 0 only when it could list information about
-**all** those search arguments. An unopened regular file makes a real worktree
-return 1 whether or not something holds it, so the status cannot distinguish a
-free tree from a held one. Capture `stdout` and `stderr` separately instead:
-stderr non-empty is `unconfirmed` (missing executable, permission denial,
-unreadable path, or another diagnostic); stdout non-empty is `held`, including
-the cwd-only case; both empty is `nothing held`.
+- stderr is non-empty: `unconfirmed` (missing executable, permission denial,
+  unreadable path, or another diagnostic);
+- stdout is non-empty: `held`, including a process whose working directory is
+  inside the tree;
+- both are empty: `nothing held`.
 
 Do not pipe `lsof` to `head`, and do not merge stderr into stdout: a pipeline
 returns `head`'s status, while merging makes a diagnostic indistinguishable from
-a holder. A missing `lsof` executable lands on the stderr stream and is
-therefore `unconfirmed`. The empty stream is one input to cleanup, not the whole
-gate.
-`lsof -a -d cwd` is not path-scoped by itself; without a path filter it lists
-every process's cwd on the host. `lsof +d <path>` is cheaper but checks only the
-directory's immediate entries and can miss a process working in a subdirectory,
-so it is not a safe substitute for `+D`.
+a holder. `lsof -a -d cwd` is not path-scoped by itself. `lsof +d <path>` is
+cheaper but checks only the directory's immediate entries and can miss a process
+working in a subdirectory, so it is not a safe substitute for `+D`.
 
 ### `prunable` is not empty and is not cleanup
 
 `prunable` means Git lost the worktree's `.git` link. It does **not** mean the
-directory is empty, and it does not mean the work is gone. Measured:
+directory is empty, and it does not mean the work is gone. Measured behavior:
 
 - a prunable worktree can still contain tracked, untracked, and ignored files;
 - `git worktree prune` drops the metadata but leaves the directory and its
   files on disk, now invisible to Git;
 - `git worktree remove` refuses a healthy dirty tree, but cannot see a prunable
-  tree at all (`fatal: is not a working tree`), so `rm -rf` is the only way to
-  delete it and has no Git guard.
+  tree at all, so `rm -rf` is the only way to delete it and has no Git guard.
 
-Therefore a `prunable` finding is **report-only in this template**. Never run
-`git worktree prune` without `--dry-run`, and never delete a prunable path with
-`rm -rf`. Inspect the directory first:
-
-```sh
-test -d "$path" && find "$path" \( -type f -o -type l \) -print | wc -l
-test -d "$path" && find "$path" \( -type f -o -type l \) -print | head -20
-```
-
-If the directory exists, report it and leave it in place, even when the file
-count is zero. If it is unreadable, mark it `unconfirmed`. A truly absent
-directory is only a stale-metadata finding; metadata pruning is still an owner
+Therefore a `prunable` finding is **report-only in this template**. The script
+counts files and symlinks when the directory still exists, reports the count,
+and leaves the path in place. An unreadable directory is `unconfirmed`. A truly
+absent directory is a stale-metadata finding; metadata pruning is still an owner
 action, not this sweep's default. `prunable` count is a metadata-health signal,
 not a count of reclaimable work.
 
 ## Dispositions
 
+The script reports the machine-observable state. The seat assigns the final
+disposition and fills the owner/card placeholder from the work item or lane
+record:
+
 | disposition | what it means | next observable result |
 | --- | --- | --- |
 | **active** | A live card or owner still needs the branch or worktree. | Name the card/owner and the expected landing or review tip. |
 | **merge-ready** | Review is complete; the tip is not yet on the target. | Name the reviewer, reviewed tip, target ref, and land owner. |
-| **cleanup candidate** | The work is landed or deliberately discarded; the object has no remaining owner. | Run the cleanup gate below, then record the exact removal/delete receipt. |
+| **cleanup candidate** | The observed commit relationship and checkout state permit cleanup; owner/card release is still required. | Apply the cleanup gate below, then record the exact removal/delete receipt. |
 | **unowned/stale** | No card, owner, or fresh evidence explains the object. | Assign it or escalate it; do not delete on age alone. |
 | **unconfirmed** | The inventory could not distinguish the state, or the live target was unavailable. | State the missing read and re-check; do not call the row clean. |
 
@@ -224,36 +176,32 @@ branch only when every applicable condition is observed:
 2. Its tip is reachable from the recorded target, or `git cherry` shows no
    unique patch still to land. A cached remote ref alone does not establish
    either condition.
-3. `git status --porcelain=v1 --untracked-files=all` and the ignored-file
-   inspection show no work that would be lost. A dirty worktree is not a
-   cleanup candidate.
+3. Tracked, untracked, and ignored-file inspection shows no work that would be
+   lost. A dirty worktree is not a cleanup candidate.
 4. No live process or unreadable state keeps the tree in use. Record the
    `lsof` result or the reason it was unavailable.
-5. For a branch, the lane owner or card explicitly releases it. For a remote
+5. A locked worktree is never removed by this sweep. Its `locked` marker is an
+   explicit owner hold; report it and leave it in place.
+6. For a branch, the lane owner or card explicitly releases it. For a remote
    branch, the owner authorizes the remote deletion; do not infer that from a
    merged local branch.
-6. A `prunable` worktree is never removed by this sweep. If its directory
+7. A `prunable` worktree is never removed by this sweep. If its directory
    exists, report it and leave it in place. If it is absent, report the stale
    metadata; `git worktree prune` and `rm -rf` remain owner actions.
 
-Use the safe deletion forms:
-
-```sh
-git -C "$repo" worktree remove "$worktree"
-git -C "$repo" branch -d "$branch"
-git -C "$repo" push origin --delete "$remote_branch"
-```
-
-Never substitute `worktree remove --force`, `branch -D`, or a force push in
-this sweep. If the safe command refuses, report the refusal and leave the
-object in place; the refusal is the finding, not an obstacle to bypass.
+Use only safe, non-forced deletion forms when the gate passes. Never substitute
+`worktree remove --force`, `branch -D`, or a force push in this sweep. If the
+safe command refuses, report the refusal and leave the object in place; the
+refusal is the finding, not an obstacle to bypass.
 
 ## Report
 
-Post one line per non-clean object and keep clean rows summarized by count:
+Post the script's target, inventory, and non-clean rows, then add the owner/card
+and final disposition where the machine inventory cannot know them. Keep clean
+rows summarized by count:
 
 ```text
-repo | object | tip | target relation | worktree state | owner/card | disposition | next action
+repo | object | tip | target relation | worktree state | process | owner/card | disposition | next action
 ```
 
 Do not report reclaimable space by summing per-candidate `du` output. Linked
@@ -261,7 +209,7 @@ worktrees share the repository object store, and `du` deduplicates shared bytes
 only within one invocation; separate per-candidate measurements can promise
 space that removal cannot return.
 
-Each wake ends **done** when every declared repository is readable, every
+Each wake ends **done** when every configured repository is readable, every
 candidate has a disposition, and cleanup candidates either passed the cleanup
 gate or have a named owner/action. It ends **blocked** when a repository,
 remote target, or candidate has an unstated owner or an unreadable state that
@@ -270,7 +218,8 @@ that cannot inspect a candidate is blocked, not clean.
 
 ## Schedule
 
-When this seat is active, anchor the reminder to the owning work thread:
+When this seat is active, anchor the reminder to the owning work thread. Keep the
+time zone in host configuration or pass it as a parameter:
 
 ```sh
 raft reminder schedule \
@@ -278,7 +227,7 @@ raft reminder schedule \
   --repeat every:24h \
   --channel "<channel-or-thread>" \
   --message-id "<anchor-message-id>" \
-  --tz Asia/Shanghai
+  --tz "<iana-timezone>"
 ```
 
 The daily cadence is the sweep's own cadence. It does not replace the
