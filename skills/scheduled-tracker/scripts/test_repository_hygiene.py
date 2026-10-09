@@ -269,6 +269,30 @@ def test_local_target_with_unpushed_commit_is_active(tmp_path: Path) -> None:
     assert rows["branch:main"]["disposition"] == "active"
 
 
+def test_detached_local_target_branch_with_unpushed_commit_is_active(
+    tmp_path: Path,
+) -> None:
+    repo = init_repo(tmp_path / "repository")
+    add_remote(repo, tmp_path)
+    git(repo, "checkout", "-q", "--detach")
+    divergent = git(
+        repo,
+        "commit-tree",
+        f"{git(repo, 'rev-parse', 'HEAD^{tree}')}",
+        "-p",
+        "HEAD",
+        "-m",
+        "unpushed local branch work",
+    )
+    git(repo, "update-ref", "refs/heads/main", divergent)
+
+    rows = rows_by_object(run_hygiene(f"--repo=primary={repo}")[0])
+
+    assert rows["branch:main"]["worktree_state"] == "none"
+    assert rows["branch:main"]["target_relation"] == "unique"
+    assert rows["branch:main"]["disposition"] == "active"
+
+
 @pytest.mark.parametrize(
     ("stub_body", "expected_process", "expected_disposition"),
     [
