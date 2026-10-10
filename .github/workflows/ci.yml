@@ -18,7 +18,8 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      - name: npm ci
+        run: npm ci || { echo "npm ci retry after failure"; sleep 15; npm ci; }
       - run: npm run lint
 
   test:
@@ -30,7 +31,8 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      - name: npm ci
+        run: npm ci || { echo "npm ci retry after failure"; sleep 15; npm ci; }
       - run: npm test
       - run: npm run typecheck
 
@@ -44,7 +46,8 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      - name: npm ci
+        run: npm ci || { echo "npm ci retry after failure"; sleep 15; npm ci; }
       - run: npm run test:mutations
 
   document-contract:
@@ -59,7 +62,8 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      - name: npm ci
+        run: npm ci || { echo "npm ci retry after failure"; sleep 15; npm ci; }
       # Structural ranged check. draft does not call the judge. Live promotion
       # checks are .github/workflows/judge-advisory.yml (real fail, not required).
       - run: npm exec doc-verify -- check --range "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" --profile draft --format json --output doc-verify-report.json

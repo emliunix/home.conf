@@ -16,8 +16,8 @@ concurrency:
 jobs:
   judge-advisory:
     name: judge-advisory
-    # Fork PRs and a missing secret skip the job (neutral), they do not pass it.
-    if: ${{ secrets.TYPESAFE_API_KEY != '' }}
+    # secrets cannot be used in job-level `if:` (GitHub treats the workflow
+    # as invalid / never started). A missing key skips inside the step.
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -28,7 +28,8 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      - name: npm ci
+        run: npm ci || { echo "npm ci retry after failure"; sleep 15; npm ci; }
       - name: Live judge
         env:
           TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
