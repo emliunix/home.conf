@@ -1,0 +1,22 @@
+schema_version: 2
+kind: verification-module
+module: t.matches
+rules:
+  h2(D, S, H): core.heading(D, S, H), core.depth(D, S, 2)
+  h3(D, S, H): core.heading(D, S, H), core.depth(D, S, 3)
+constraints:
+  work-prefix:
+    forall: h2(D, S, H)
+    require: matches(H, '^work - ')
+    severity: error
+    message: "{S} heading {H} is not a work-prefixed heading"
+  verification-prefix:
+    forall: h3(D, S, H)
+    require: matches(H, '^verification - ')
+    severity: error
+    message: "{S} heading {H} is not a verification-prefixed heading"
+  ids-kebab:
+    forall: core.section(D, S, _)
+    require: not matches(S, '_')
+    severity: error
+    message: "{S} is not kebab-case"

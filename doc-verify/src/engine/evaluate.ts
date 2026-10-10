@@ -318,6 +318,25 @@ function* solveLiteral(
       }
       return;
     }
+    case "matches": {
+      const item = substitute(literal.item, env);
+      const text = matchableText(item);
+      const shown = `matches(${termText(item)}, ${literal.pattern})`;
+      const premise: Premise = { kind: "builtin", text: literal.negated ? `not ${shown}` : shown };
+      if (text === undefined) {
+        // An unbound variable or a count interval is not a decided string: undetermined,
+        // never satisfied. A ground list or other compound is decided and does not match.
+        if (mode === "possible" && (item.kind === "var" || isInterval(item))) {
+          yield { env, settled: false, premises: [...premises, premise] };
+        }
+        return;
+      }
+      const hit = literal.regex.test(text);
+      if (literal.negated ? !hit : hit) {
+        yield { env, settled, premises: [...premises, premise] };
+      }
+      return;
+    }
     case "cmp": {
       const left = bounds(substitute(literal.left, env));
       const right = bounds(substitute(literal.right, env));
@@ -451,6 +470,24 @@ function isGround(term: Term): boolean {
   return term.kind === "var" ? false : term.kind === "compound" ? term.args.every(isGround) : true;
 }
 
+/** An atom, string or number has a decided printed form; anything else is not matchable text. */
+function matchableText(term: Term): string | undefined {
+  switch (term.kind) {
+    case "atom":
+      return term.name;
+    case "string":
+      return term.value;
+    case "number":
+      return String(term.value);
+    default:
+      return undefined;
+  }
+}
+
+function isInterval(term: Term): boolean {
+  return term.kind === "compound" && term.functor === "dv_interval";
+}
+
 /** Matches a pattern (with variables) against ground values, extending `env`. */
 function unifyAll(patterns: Term[], values: Term[], env: Env): Env | undefined {
   let current: Map<string, Term> | undefined;
@@ -574,6 +611,10 @@ export function literalText(literal: Literal, env: Env): string {
       return `not ${atomText(literal.predicate, literal.args.map((arg) => substitute(arg, env)))}`;
     case "in":
       return `${show(literal.item)} in ${show(literal.list)}`;
+    case "matches": {
+      const shown = `matches(${show(literal.item)}, ${literal.pattern})`;
+      return literal.negated ? `not ${shown}` : shown;
+    }
     case "cmp":
       return `${show(literal.left)} ${literal.op} ${show(literal.right)}`;
     case "count":
@@ -586,9 +627,10 @@ export function literalText(literal: Literal, env: Env): string {
 function literalVariables(literal: Literal): string[] {
   const terms = literal.kind === "pos" || literal.kind === "neg" ? literal.args
     : literal.kind === "in" ? [literal.item, literal.list]
-      : literal.kind === "cmp" ? [literal.left, literal.right]
-        : literal.kind === "present" ? [literal.document, literal.candidates, literal.present]
-          : [literal.result];
+      : literal.kind === "matches" ? [literal.item]
+        : literal.kind === "cmp" ? [literal.left, literal.right]
+          : literal.kind === "present" ? [literal.document, literal.candidates, literal.present]
+            : [literal.result];
   const names: string[] = [];
   const visit = (term: Term): void => {
     if (term.kind === "var" && term.name !== "_") {
