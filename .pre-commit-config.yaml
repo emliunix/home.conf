@@ -48,6 +48,18 @@ repos:
         pass_filenames: false
         files: '^skills/'
         require_serial: true
+      - id: tracked-ignored
+        name: no gitignored file is tracked
+        language: system
+        # Claim: a path matching .gitignore is not also in the index. The first
+        # live red was skills/skill-creator/scripts/__pycache__/quick_validate.cpython-{311,314}.pyc
+        # while __pycache__/ and *.py[cod] were already ignored. `git ls-files -ci
+        # --exclude-standard` is the observable; an empty discovery is not a pass
+        # (the script's --self-test seeds a tracked .pyc, requires RED, restores).
+        entry: node scripts/check-tracked-ignored.mjs
+        pass_filenames: false
+        always_run: true
+        require_serial: true
       - id: flow-skills-eval-lock
         name: flow-skills-eval frozen prefix lock
         language: system

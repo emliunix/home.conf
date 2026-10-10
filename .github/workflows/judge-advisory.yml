@@ -1,0 +1,50 @@
+name: judge-advisory
+
+# Live LLM judge. A finding fails this job (red, non-zero). It is not a
+# required check, so it never blocks merge. Deterministic jobs in ci.yml are
+# the merge grant.
+on:
+  pull_request:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: judge-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  judge-advisory:
+    name: judge-advisory
+    # Fork PRs and a missing secret skip the job (neutral), they do not pass it.
+    if: ${{ secrets.TYPESAFE_API_KEY != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Live judge
+        env:
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+        run: |
+          if [ -z "${TYPESAFE_API_KEY}" ]; then
+            echo "TYPESAFE_API_KEY absent; skipping live judge."
+            exit 0
+          fi
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npm exec doc-verify -- check --range "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" --profile promotion --format json --output doc-verify-judge-report.json
+          else
+            npm exec doc-verify -- check --all --profile promotion --format json --output doc-verify-judge-report.json
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: document-contract-judge-report
+          path: doc-verify-judge-report.json
+          if-no-files-found: ignore
