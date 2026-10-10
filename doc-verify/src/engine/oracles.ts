@@ -558,7 +558,9 @@ function enforceOutboundPolicy(state: string, policy: OutboundPolicy): void {
     throw new BlockedError(`the round's evidence is ${String(Buffer.byteLength(state))} bytes, above the outbound budget of ${String(policy.maxEvidenceBytes)}; a batch is never split`);
   }
   const lower = state.toLowerCase();
-  const generic = ["typesafe_api_key", "api_key=", "-----begin private key-----", "/users/"];
+  // Assignment and PEM/home-path forms only. The env-var *name* TYPESAFE_API_KEY
+  // is documentable (design/02 states it); `api_key=` still catches `TYPESAFE_API_KEY=…`.
+  const generic = ["api_key=", "-----begin private key-----", "/users/"];
   const match = [...generic, ...policy.forbiddenLiterals.map((value) => value.toLowerCase())].find((value) => value.length > 0 && lower.includes(value));
   if (match !== undefined) {
     throw new PolicyViolationError("semantic evidence contains prohibited data");

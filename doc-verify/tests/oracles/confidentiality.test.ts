@@ -3,7 +3,7 @@
 import { createMockJevJudgeBackend } from "deepclause-sdk";
 import { describe, expect, it } from "vitest";
 
-import { DOC, moduleText, PURPOSE_ORACLE, run } from "../engine-helpers.js";
+import { byHeading, DOC, moduleText, PURPOSE_ORACLE, PURPOSES, run, scriptedJudge } from "../engine-helpers.js";
 
 const ASKS = moduleText(`oracles:
 ${PURPOSE_ORACLE}constraints:
@@ -30,5 +30,15 @@ describe("confidentiality policy", () => {
     expect(report.verdict).toBe("NO-GO");
     expect(report.failure?.message).toBe("semantic evidence contains prohibited data");
     expect(captured).toBe("");
+  });
+
+  it("lets a document name TYPESAFE_API_KEY without a value", async () => {
+    const { backend, requests } = scriptedJudge(byHeading(PURPOSES));
+    const report = await run(ASKS, backend, {
+      markdown: `${DOC}\nThe adapter reads TYPESAFE_API_KEY from the environment.\n`,
+      policy: { maxEvidenceBytes: 20_000, forbiddenLiterals: [] },
+    });
+    expect(report.failure).toBeUndefined();
+    expect(requests.length).toBeGreaterThan(0);
   });
 });
