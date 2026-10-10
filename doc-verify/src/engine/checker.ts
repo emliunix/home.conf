@@ -4,7 +4,8 @@
  * The checker rejects: a predicate that is neither declared, imported nor built in;
  * an unsafe variable; negation or count over the same or a higher stratum; an oracle
  * inside a recursive cycle; an oracle whose arguments are not bound by earlier positive
- * literals; and an oracle depth above `rounds`.
+ * literals; an oracle depth above `rounds`; and `matches/2` whose item is unbound or
+ * whose pattern is not a valid quoted regular expression.
  */
 
 import { CORE_BASE, CORE_DERIVED } from "./facts.js";
@@ -15,6 +16,7 @@ export type Literal =
   | { kind: "pos"; predicate: string; args: Term[] }
   | { kind: "neg"; predicate: string; args: Term[] }
   | { kind: "in"; item: Term; list: Term }
+  | { kind: "matches"; item: Term; pattern: string; regex: RegExp; negated: boolean }
   | { kind: "cmp"; op: string; left: Term; right: Term }
   | { kind: "count"; variable: Term; goal: Literal[]; result: Term }
   | { kind: "present"; document: Term; candidates: Term; present: Term };
@@ -277,11 +279,28 @@ function resolveLiteral(
     if (inner === undefined) {
       return undefined;
     }
+    if (inner.kind === "matches") {
+      return { ...inner, negated: !inner.negated };
+    }
     if (inner.kind !== "pos") {
-      issues.push(`${where}: not applies to a predicate, not to ${describe(term.args[0] as Term)}`);
+      issues.push(`${where}: not applies to a predicate or matches, not to ${describe(term.args[0] as Term)}`);
       return undefined;
     }
     return { kind: "neg", predicate: inner.predicate, args: inner.args };
+  }
+  if (term.functor === "matches" && term.args.length === 2) {
+    const [item, pattern] = term.args as [Term, Term];
+    if (pattern.kind !== "atom" && pattern.kind !== "string") {
+      issues.push(`${where}: the pattern of matches is a quoted atom or string`);
+      return undefined;
+    }
+    const source = pattern.kind === "atom" ? pattern.name : pattern.value;
+    try {
+      return { kind: "matches", item, pattern: source, regex: new RegExp(source, "u"), negated: false };
+    } catch {
+      issues.push(`${where}: ${source} is not a valid regular expression`);
+      return undefined;
+    }
   }
   if (term.functor === "in" && term.args.length === 2) {
     const [item, listTerm] = term.args as [Term, Term];
@@ -397,7 +416,7 @@ function resolveLiteral(
 /**
  * Range restriction plus the bound-inputs rule for oracles, read left to right. A
  * positive literal binds its variables, except that an oracle literal's inputs must
- * already be bound; `not`, `in`, comparisons and `count` bind nothing but `count`'s result.
+ * already be bound; `not`, `in`, `matches`, comparisons and `count` bind nothing but `count`'s result.
  */
 function checkSafety(
   head: Term[],
@@ -444,6 +463,9 @@ function checkSafety(
         break;
       case "in":
         requireBound([literal.item, literal.list], "it is not bound by an earlier positive literal");
+        break;
+      case "matches":
+        requireBound([literal.item], "it is not bound by an earlier positive literal");
         break;
       case "cmp":
         requireBound([literal.left, literal.right], "it is not bound by an earlier positive literal");

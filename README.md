@@ -120,6 +120,37 @@ A constraint whose `forall` binds nothing is vacuously satisfied and reports not
 with `population: nonempty` on the constraint: then a `forall` that binds nothing violates it,
 at the constraint's severity, with the message "<id>: the population is empty".
 
+### Text filter: `matches/2`
+
+`matches(X, 'regex')` is a pure filter, like `X in List`. It never binds. `X` must
+already be bound by an earlier positive literal; an unbound `X` is a module error, not a
+runtime miss. The pattern is a quoted atom or string, compiled once at load as a
+Unicode (`u`) JavaScript `RegExp`. An invalid pattern is a module error.
+
+Matching is **unanchored**: `matches(H, 'work - ')` holds when that needle occurs
+anywhere in the printed term. Write `^...$` (or a leading `^`) when the match must be a
+prefix or the whole string — heading styles such as `### verification - xxx` and
+`## work - yyy` use `matches(H, '^verification - ')` and `matches(H, '^work - ')`.
+Kebab-case ids are the same filter over the section id: `forbid ... matches(Id, '_')`
+(or `require: not matches(Id, '_')`), which closes the gap that "heading equals its
+slug" cannot see because github-slugger keeps `_`.
+
+Three-valued: an unknown oracle label or a count interval in `X` makes the literal
+undetermined, never satisfied, in both `require` and `forbid`. `not matches(...)` is
+allowed and flips the filter. A ground list is not matchable text and does not match.
+
+```yaml
+constraints:
+  work-prefix:
+    forall: core.heading(D, S, H), core.depth(D, S, 2)
+    require: matches(H, '^work - ')
+    severity: error
+  ids-kebab:
+    forall: core.section(D, S, _)
+    require: not matches(S, '_')
+    severity: error
+```
+
 ### Candidate sets: `core.present/3`
 
 `core.present(D, Candidates, Present)` binds `Present` to the ids in the literal `Candidates` list

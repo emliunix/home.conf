@@ -343,6 +343,12 @@ The body grammar is:
 - a conjunction with `,`;
 - `not G`;
 - `X in List`;
+- `matches(X, 'regex')`, a filter: `X` must already be bound; the pattern is a quoted
+  atom or string, compiled once at load as a Unicode (`u`) JavaScript `RegExp`. Matching
+  is unanchored — `matches(H, 'foo')` holds when `foo` occurs anywhere in the printed
+  term — so write `^...$` for a full-string match. The literal never binds. An invalid
+  pattern is a module error. Unknown or undetermined `X` is undetermined, never
+  satisfied. `not matches(...)` flips the filter;
 - comparisons between integers;
 - `count(V, G, N)`, a stratified aggregate.
 
@@ -376,7 +382,9 @@ finite.
 
 `count(V, G, N)` yields the interval [certain count, possible count]. A comparison is
 certain if it holds over the whole interval, and possible if it holds for some value in
-it.
+it. `matches(X, 'regex')` on that interval (or on an unbound `X`) is undetermined in
+both `require` and `forbid`, and never satisfied. A ground atom, string or number is
+matched against its printed form; a ground list or other compound does not match.
 
 A constraint is judged for each binding of `forall`:
 - **violated** when the binding is certain and the goal is not possible;

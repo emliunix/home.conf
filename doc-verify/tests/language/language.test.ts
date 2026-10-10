@@ -101,6 +101,9 @@ ${PURPOSE_ORACLE}rules:
     expect(await issues(`rules:
   r(D): core.section(D, _, _), N > 2
 `)).toMatch(/N is unsafe/);
+    expect(await issues(`rules:
+  r(D): matches(X, 'a')
+`)).toMatch(/X is unsafe/);
   });
 
   it("rejects negation through a recursive cycle", async () => {

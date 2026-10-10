@@ -1,0 +1,40 @@
+# Document mutations that prove matches/2 is load-bearing. Without the builtin
+# (or with its filter deleted) M1–M3 stay GREEN: a prefix rename and an
+# underscore id are invisible to heading-equality and slug-equality alone.
+schema_version: 1
+kind: mutation-table
+document: fixtures/matches.md
+module: fixtures/matches.module.yaml
+artifact_kind: note
+constraints:
+  - work-prefix
+  - verification-prefix
+  - ids-kebab
+uncovered: {}
+rows:
+  - id: M1
+    kind: kill
+    expect: work-prefix
+    from: "## work - planner\n"
+    to: "## task - planner\n"
+  - id: M2
+    kind: kill
+    expect: verification-prefix
+    from: "### verification - compile\n"
+    to: "### check - compile\n"
+  - id: M3
+    kind: kill
+    expect: ids-kebab
+    note: "github-slugger keeps _; heading prefix still holds"
+    from: "## work - planner\n"
+    to: "## work - agenvo_upgrade\n"
+  - id: K1
+    kind: keep
+    note: "work body wording is free"
+    from: "A work body.\n"
+    to: "A different work body.\n"
+  - id: K2
+    kind: keep
+    note: "a still-prefixed work heading with a kebab id stays PASS"
+    from: "## work - planner\n"
+    to: "## work - scheduler\n"
