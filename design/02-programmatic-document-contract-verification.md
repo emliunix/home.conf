@@ -509,11 +509,16 @@ its path, section ID, rule ID, and non-pass verdict. The separate `check --all`
 setup proof covers the full configured document set.
 
 Normal commits use the staged changed-section closure and print the detailed
-diagnostics above. CI runs:
+diagnostics above. CI (`.github/workflows/ci.yml`, Node 24) runs `lint`, `npm
+test`, `npm run typecheck`, every committed `*mutations.mjs` runner, ranged
+`check --profile draft`, and the tracked-ignored guard. Those jobs are the
+merge grant. Live judge calls are `.github/workflows/judge-advisory.yml` on
+pull_request, nightly, and `workflow_dispatch`: a finding fails that job, but
+it is not a required check. The ranged structural check is:
 
 ```text
 npm exec doc-verify -- check \
-  --range "$BASE_SHA...$HEAD_SHA" --profile auto --format json \
+  --range "$BASE_SHA...$HEAD_SHA" --profile draft --format json \
   --output doc-verify-report.json
 ```
 
@@ -534,22 +539,23 @@ in this design's worklog.
 | Property | Observable failure witness | Command |
 | --- | --- | --- |
 | Markdown uses AST section boundaries | Fenced headings, duplicate headings, preamble, nested sections, or overlap produce a wrong segment ID or byte range | `npm test -- segments` |
-| Rubric redirects are safe and deterministic | Relative chains, fragments, overlay rules, cycles, escapes, missing targets, or changed blob order resolve incorrectly | `npm test -- rubrics` |
-| Snapshots and affected closure are correct | Staged bytes read unstaged edits, or deletion, rename, retarget, and baseline-only edges omit a dependent | `npm test -- snapshots graph` |
+| Module composition is safe and deterministic | Two libraries defining the same name collide, an import cycle or repository escape resolves, or a v1 `verification:` rule loads | `npm test -- modules` |
+| Snapshots and affected closure are correct | Staged bytes read unstaged edits, or deletion, rename, retarget, and baseline-only edges omit a dependent | `npm test -- snapshots` |
 | Ordered document selection is correct | Last-match include/exclude differs from CLI selection, a working-tree path bypasses exclusion, or `selector_trace` omits the matching order | `npm test -- cli` |
-| DML clauses are deterministic and restricted | A generated program uses a prohibited predicate, or a fact set changes verdict without changing the deciding trace | `npm test -- rules` |
+| DML clauses are deterministic and restricted | A generated program uses a prohibited predicate, or a fact set changes verdict without changing the deciding trace | `npm test -- language semantic` |
 | Semantic uncertainty and reuse are bounded | Unknown passes, unavailable JEV is not `BLOCKED`, retries occur, or changed evidence, question, model, rubric, DML, or policy reuses an attestation | `npm test -- semantic` |
 | Private sources stay private | A unique local-only canary appears in a request, cache, report, error, log, fixture, or `git diff` | `npm test -- confidentiality` |
 | Hook, agent, and CI agree | Equivalent snapshots disagree after removal of documented provenance and timing fields | `npm test -- cli` |
-| Important gates can fail | A seeded defect in each critical rule family does not turn a known pass into its declared non-pass verdict | `npm test -- mutations` |
-| Local client and DeepClause agree on typed JEV answers | The same live allowlisted batch yields different normalized IDs, types, or labels | `npm run verify:jev` |
+| Important gates can fail | A committed mutation runner reports a row other than RED for a defect that should redden its named case | `npm run test:mutations` (discovers committed `*mutations.mjs` runners). `doc-verify/tests/language/present.mutations.md`, `doc-verify/tests/language/union-empty.mutations.md`, and `doc-verify/tests/oracles/request-shape.mutations.md` have no runner and are not in this command. |
+| Live judge answers are recorded | A promotion-profile run with a key present reports PASS when a load-bearing claim is false | `.github/workflows/judge-advisory.yml` (`pull_request`, nightly, `workflow_dispatch`) runs `check --range` / `check --all --profile promotion` with `TYPESAFE_API_KEY`. A finding fails the job; the job is not a required check. No key (fork PRs) skips the job. `npm run verify:jev` was removed with the v1 reader. |
 | The actual repository contract passes | Root configuration, companions, skills, hook, or CI fail their selected rules | `npm run check` |
 
 The complete deterministic gate is `npm test && npm run typecheck && npm run
-lint`. The live
-JEV parity test is explicit and never runs during ordinary unit tests. Every
-critical rule family has one semantic or structural mutation that proves the
-gate turns red.
+lint && npm run test:mutations && npm run check:tracked-ignored`. Live judge
+calls never run during ordinary unit tests; on PRs they run as
+`judge-advisory`, which fails on a finding and is not a required check. Every
+committed mutation runner has one seeded defect per scored row that proves the
+gate turns red; tables without a runner are not in that set.
 
 ## Goal
 

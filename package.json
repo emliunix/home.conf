@@ -18,7 +18,9 @@
     "typecheck": "tsc -p doc-verify/tsconfig.json --noEmit",
     "lint": "node scripts/oxlint-gate.mjs --self-test",
     "check": "npm run build && node doc-verify/dist/cli.js check --paths design/02-programmatic-document-contract-verification.md goals/01-document-verification-and-skill-transfer.md --profile draft --format text",
-    "test:remote-hook": "bash doc-verify/tests/remote-hook.sh"
+    "test:remote-hook": "bash doc-verify/tests/remote-hook.sh",
+    "test:mutations": "node scripts/run-mutation-runners.mjs",
+    "check:tracked-ignored": "node scripts/check-tracked-ignored.mjs"
   },
   "engines": {
     "node": ">=18"

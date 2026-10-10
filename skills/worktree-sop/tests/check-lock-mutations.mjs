@@ -98,7 +98,12 @@ const MUTATIONS = [
         `    if (sameIdentity(moved, fstatSync(fd))) {`,
         `    if (true) {`,
       ),
-    expects: [], // recorded GREEN: the token check still guards this path on its own
+    // Token match is read from the fd opened on OUR inode. renameSync(path)
+    // then moves whatever inode currently occupies `path`. Without the
+    // identity check, that unlinks a successor that replaced the path
+    // between open and rename. The aged-claim cases observe that deletion.
+    // Recorded GREEN (token check "enough") was stale once those cases existed.
+    expects: ["successor's claim was deleted from the path"],
   },
   {
     // Review F1: release previously did statSync(path) then unlinkSync(path). Restoring the

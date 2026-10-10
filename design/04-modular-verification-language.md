@@ -524,14 +524,19 @@ designs 02 and 03 gain `Superseded by:` lines for those sections.
 | Extends law | A child that raises an inherited threshold, changes an inherited oracle, or adds or widens a `warning` loads without `waive:`, or any waiver-free change improves a seeded document's verdict | `npm test -- modules` |
 | Diagnostics complete | A violation report lacks bindings, the population, a proof leaf with label and distribution, or the repair hint | `npm test -- diagnostics` |
 | Nesting baseline | Against sandbox-deploy `c9edcf0` the populations are not 19 documents, 298 section facts, 104 selected facts, and 0 nested pairs, or the seeded case does not give exactly 1 | `node doc-verify/dist/cli.js check --paths 'design/*.md' --verbose --format json` run from a sandbox-deploy worktree at `c9edcf0` |
-| R2 and R3 live | The fixture with a `scope` parent and a misclassified child does not give exactly one violation naming both sections | `DOC_VERIFY_LIVE=1 npm test -- live`, gated like `doc-verify/tests/remote-hook.sh` |
-| Migration parity | A migrated home.conf contract's verdict differs from its v1 verdict at the parent commit, uncached and live, except for the named exception | `check --paths` over the nine consumers' documents with `--profile promotion --refresh`, run at the parent and at the change |
-| Each migrated constraint separates | For some migrated constraint, a known-good document and a known-bad document land on the same side (both pass or both fail), uncached and live | `DOC_VERIFY_LIVE=1 npm test -- separation`, one committed good/bad pair per constraint |
+| Nested classification (scripted) | Two atoms of one oracle over different sections receive each other's answer, or a `scope` child is labelled from the wrong evidence | `npm test -- oracles` (scripted judge). There is no committed `live` suite; a live judge run is `.github/workflows/judge-advisory.yml` (fails on a finding, not a required check). |
+| Migration parity | A migrated home.conf contract's verdict differs from its v1 verdict at the parent commit, uncached and live, except for the named exception | `check --paths` over the nine consumers' documents with `--profile promotion --refresh`, run at the parent and at the change. Not a PR gate. |
+| Migrated-constraint separation | For some migrated constraint, a known-good document and a known-bad document land on the same side (both pass or both fail), uncached and live | No committed `separation` suite and no good/bad pair per constraint. Not claimed as covered. Structural draft is `npm run check` / CI `document-contract`. |
 | Trust boundary holds | An LLM fallback, a split atom's evidence, more requests than the chosen `request_shape` allows, unsafe outbound evidence, or a PASS driven by confidence becomes reachable | `npm test -- semantic confidentiality` |
 
-The deterministic gate is `npm test && npm run typecheck && npm run lint`. Each gate
-listed here must first be observed failing on a seeded defect. This prevents a repeat
-of the design 02 C10 miss, where the binding boundary was claimed but never observed.
+The deterministic PR gate is `npm test && npm run typecheck && npm run lint && npm
+run test:mutations`. Live judge calls are `.github/workflows/judge-advisory.yml`
+(`pull_request`, nightly, `workflow_dispatch`): a finding fails that job, and
+the job is not a required check. Each gate listed as a committed command must
+first be observed failing on a seeded defect. Rows whose suites were never
+committed (`live`, `separation`) are named as uncovered rather than pointed at a
+filter that selects zero files. This prevents a repeat of the design 02 C10 miss,
+where the binding boundary was claimed but never observed.
 
 ## Goal
 
