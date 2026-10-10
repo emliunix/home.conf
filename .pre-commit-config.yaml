@@ -48,3 +48,21 @@ repos:
         pass_filenames: false
         files: '^skills/'
         require_serial: true
+      - id: flow-skills-eval-lock
+        name: flow-skills-eval frozen prefix lock
+        language: system
+        # The flow skills ship a SECOND, separate frozen lock:
+        # flow-skills-eval/frozen-prefix.lock.json hashes the assembled eval prefix
+        # (the three flow SKILL.md bodies + the prompt), not the per-skill package
+        # the skill-l0 hook above covers. It drifted silently on 2026-10-08: commit
+        # `85b25b5` edited `skills/flow-common/SKILL.md`, the lock still pinning
+        # `48b1de87...` went stale, and the suite read `1 failed / 44 passed` with
+        # NO hook and NO workflow watching either path -- so the drift survived four
+        # commits and only surfaced during the sprint-close retro. Same lesson as
+        # skill-l0's comment, one directory over: a lock nothing verifies is
+        # decoration. This runs the lock assertion (not the full suite) on any edit
+        # to the flow skills or the eval harness.
+        entry: bash -c 'cd flow-skills-eval && npm test -- --run tests/prompt.test.ts'
+        pass_filenames: false
+        files: '^skills/flow-|^flow-skills-eval/'
+        require_serial: true
