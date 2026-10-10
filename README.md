@@ -70,7 +70,7 @@ the table file. `document` is the live file each row edits once; `module` is a r
 schema_version: 1
 kind: mutation-table
 document: note.md
-module: note.yaml          # or doc-verify:module-contract
+module: note.module.yaml   # or doc-verify:module-contract
 artifact_kind: note
 constraints: [has-title, has-status]
 uncovered: {}

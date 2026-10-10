@@ -126,7 +126,7 @@ describe("loadMutationTable", () => {
   it("loads the note table and reads own constraint ids from the module YAML", () => {
     const table = loadMutationTable(TABLE);
     expect(table.rows.map((row) => row.id)).toEqual(["M1", "M2", "K1", "G1"]);
-    expect(ownConstraintIds(readFileSync(join(FIXTURES, "note.yaml"), "utf8"), "note.yaml")).toEqual([
+    expect(ownConstraintIds(readFileSync(join(FIXTURES, "note.module.yaml"), "utf8"), "note.module.yaml")).toEqual([
       "has-status", "has-title",
     ]);
   });
@@ -145,7 +145,7 @@ describe("runMutate on the note fixture", () => {
 describe("runMutate seeded statuses", () => {
   function tableWith(rewrite: (text: string) => string): string {
     const dir = mkdtempSync(join(tmpdir(), "mutate-seed-"));
-    writeFileSync(join(dir, "note.yaml"), readFileSync(join(FIXTURES, "note.yaml"), "utf8"));
+    writeFileSync(join(dir, "note.module.yaml"), readFileSync(join(FIXTURES, "note.module.yaml"), "utf8"));
     writeFileSync(join(dir, "note.md"), readFileSync(join(FIXTURES, "note.md"), "utf8"));
     writeFileSync(join(dir, "note.mutations.yaml"), rewrite(readFileSync(TABLE, "utf8")));
     return join(dir, "note.mutations.yaml");
@@ -230,7 +230,7 @@ describe("runMutate seeded statuses", () => {
 
   it("CONSTRAINT-DRIFT: pin names a constraint deleted from the module", async () => {
     const dir = mkdtempSync(join(tmpdir(), "mutate-drift-"));
-    const module = readFileSync(join(FIXTURES, "note.yaml"), "utf8").replace(
+    const module = readFileSync(join(FIXTURES, "note.module.yaml"), "utf8").replace(
       `  has-status:
     forall: core.meta(D, kind, note)
     require: top(D, S), core.heading(D, S, 'Status')
@@ -239,7 +239,7 @@ describe("runMutate seeded statuses", () => {
 `,
       "",
     );
-    writeFileSync(join(dir, "note.yaml"), module);
+    writeFileSync(join(dir, "note.module.yaml"), module);
     writeFileSync(join(dir, "note.md"), readFileSync(join(FIXTURES, "note.md"), "utf8"));
     writeFileSync(join(dir, "note.mutations.yaml"), readFileSync(TABLE, "utf8"));
     try {
@@ -254,7 +254,7 @@ describe("runMutate seeded statuses", () => {
 
   it("HARNESS: unmutated document is not PASS", async () => {
     const dir = mkdtempSync(join(tmpdir(), "mutate-harness-"));
-    writeFileSync(join(dir, "note.yaml"), readFileSync(join(FIXTURES, "note.yaml"), "utf8"));
+    writeFileSync(join(dir, "note.module.yaml"), readFileSync(join(FIXTURES, "note.module.yaml"), "utf8"));
     writeFileSync(join(dir, "note.md"), "# Fixture note\n\n## Status\n\ndraft\n");
     writeFileSync(join(dir, "note.mutations.yaml"), readFileSync(TABLE, "utf8"));
     try {

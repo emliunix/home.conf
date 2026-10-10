@@ -4,7 +4,7 @@
 schema_version: 1
 kind: mutation-table
 document: note.md
-module: note.yaml
+module: note.module.yaml
 artifact_kind: note
 constraints:
   - has-title
