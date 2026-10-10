@@ -19,7 +19,7 @@ import { askRound, OracleStore, type OracleCache, type OutboundPolicy, type Requ
 export { bindingBasis, bindingReason, bindingSections, bindingSpan, renderProof, renderReport } from "./diagnostics.js";
 export type { BindingReport, ConstraintReport, EngineReport, ProofNode, ProofOracle } from "./diagnostics.js";
 export { ModuleError } from "./module.js";
-export { composeModules, engineLibraries, type ComposedModule } from "./compose.js";
+export { composeModules, engineLibraries, readEngineLibrary, type ComposedModule } from "./compose.js";
 export { applyThreshold, memoryOracleCache } from "./oracles.js";
 export type { OracleCache, OracleLeaf, OutboundPolicy, RequestRecord } from "./oracles.js";
 export type { DocumentInput } from "./facts.js";

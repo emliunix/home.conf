@@ -7,6 +7,7 @@ const SUBPROCESS = [
   "doc-verify/tests/report/cli.test.ts",
   "doc-verify/tests/report/keyless.test.ts",
   "doc-verify/tests/selection/task61-selector-gate.test.ts",
+  "doc-verify/tests/mutate/mutate.test.ts",
 ];
 
 export default defineConfig({

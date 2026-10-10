@@ -63,6 +63,11 @@ function readLibrary(reference: string): TextBlob {
   return { path: repoPath(reference), content, hash: sha256(content) };
 }
 
+/** The YAML body of an engine library `doc-verify:NAME`, read from this install. */
+export function readEngineLibrary(reference: string): TextBlob {
+  return readLibrary(reference);
+}
+
 const MERGED = ["params", "oracles", "rules", "constraints"] as const;
 
 export interface ComposedModule {

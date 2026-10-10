@@ -3,6 +3,7 @@ import { writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
 import { checkDocuments } from "./checker.js";
+import { runMutate } from "./mutate.js";
 import { MIGRATION_HINT } from "./config.js";
 import { renderText, exitCodeFor } from "./report.js";
 import { segmentMarkdown } from "./segments.js";
@@ -15,7 +16,7 @@ import {
 } from "./types.js";
 import { readFile } from "node:fs/promises";
 
-const USAGE = `usage: doc-verify <segments|check> [options]
+const USAGE = `usage: doc-verify <segments|check|mutate> [options]
 
   doc-verify check FILE...              check the named documents
   doc-verify check --paths FILE|GLOB... check named files or configured glob matches
@@ -23,6 +24,8 @@ const USAGE = `usage: doc-verify <segments|check> [options]
   doc-verify check --range A..B         check documents changed in a Git range
   doc-verify check --all                check every configured document
   doc-verify segments DOCUMENT          list a document's sections (--format text|json)
+  doc-verify mutate TABLE.yaml          run a mutation table against a live document
+  doc-verify mutate TABLE.yaml --judge  include promotion/oracle rows (needs TYPESAFE_API_KEY)
 
   --profile draft|promotion|auto   which constraints run (default auto)
   --format text|json               output form (default text)
@@ -48,6 +51,9 @@ async function main(argv: string[]): Promise<number> {
   }
   if (command === "check") {
     return runCheck(rest);
+  }
+  if (command === "mutate") {
+    return runMutateCommand(rest);
   }
   throw new UsageError(`unknown command ${JSON.stringify(command)}; ${USAGE.split("\n")[0] ?? ""}`);
 }
@@ -151,6 +157,24 @@ async function runCheck(argv: string[]): Promise<number> {
     process.stdout.write(rendered);
   }
   return exitCodeFor(report.verdict);
+}
+
+async function runMutateCommand(argv: string[]): Promise<number> {
+  const parsed = parseOptions(argv, () => parseArgs({
+    args: argv,
+    allowPositionals: true,
+    options: { judge: { type: "boolean" } },
+  }));
+  if (parsed.positionals.length !== 1) {
+    throw new UsageError("usage: doc-verify mutate TABLE.yaml [--judge]");
+  }
+  const table = parsed.positionals[0];
+  if (table === undefined) {
+    throw new UsageError("missing mutation table path");
+  }
+  const report = await runMutate(table, { judge: parsed.values.judge === true });
+  process.stdout.write(report.text);
+  return report.exitCode;
 }
 
 main(process.argv.slice(2)).then(

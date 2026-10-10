@@ -1,0 +1,18 @@
+schema_version: 2
+kind: verification-module
+module: mutate.note
+params:
+  statuses: [draft]
+rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+constraints:
+  has-title:
+    forall: core.meta(D, kind, note)
+    require: top(D, S), core.heading(D, S, 'Title')
+    severity: error
+    message: "{D} has no Title"
+  has-status:
+    forall: core.meta(D, kind, note)
+    require: top(D, S), core.heading(D, S, 'Status')
+    severity: error
+    message: "{D} has no Status"
