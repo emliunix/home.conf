@@ -1,0 +1,27 @@
+# Native table for an engine library. references.mutations.mjs is not ported:
+# it edits TypeScript source and scores vitest assertion titles, not module.*
+# constraint ids, so it is outside this command's contract.
+schema_version: 1
+kind: mutation-table
+document: ../../lib/examples/module-contract.md
+module: doc-verify:module-contract
+artifact_kind: module-contract
+constraints:
+  - module-contract-has-surface
+  - module-contract-is-current
+uncovered:
+  module-contract-is-current: >-
+    promotion oracle; the engine's structure.dated-prose pre-check fires first
+    on dated or progress prose and never reaches the module constraint. Covered
+    by modules-check.test.ts on the bad example, not by a module.* kill row.
+rows:
+  - id: M1
+    kind: kill
+    expect: module-contract-has-surface
+    from: "## Public surface\n"
+    to: "## API\n"
+  - id: K1
+    kind: keep
+    note: "surface wording is free"
+    from: "accepts an order and returns its id."
+    to: "accepts an order and returns that order's id."

@@ -12,6 +12,8 @@ npm ci && npm run build
 node doc-verify/dist/cli.js segments FILE              # stable section ids
 node doc-verify/dist/cli.js check --paths FILE --profile draft
 node doc-verify/dist/cli.js check --all                # every configured document
+node doc-verify/dist/cli.js mutate TABLE.yaml          # mutation-table contract
+node doc-verify/dist/cli.js mutate TABLE.yaml --judge  # include promotion/oracle rows
 ```
 
 `check` takes exactly one of `--paths`, `--staged`, `--range BASE...HEAD` or `--all`, plus
@@ -19,6 +21,11 @@ node doc-verify/dist/cli.js check --all                # every configured docume
 fact), `--format text|json`, `--verbose`, `--no-cache` and `--output PATH`. Exit codes: 0 PASS, 1 NO-GO,
 2 NEEDS-REVIEW, 3 BLOCKED, 64 usage or configuration error, 65 config not in the Git index
 (`--staged`), 66 config missing.
+
+`mutate` takes one YAML mutation table. Exit 0 only when every scored row is RED, KEPT, or
+GAP-CONFIRMED (SKIPPED judge-leg rows are not scored). BROKEN, WRONG-CASE, GREEN, HARNESS,
+FALSE-ALARM, GAP-CLOSED, UNKNOWN-EXPECT, CONSTRAINT-DRIFT and NO-KILL fail the run. `--judge`
+needs `TYPESAFE_API_KEY` and runs `leg: judge` rows under `--profile promotion`.
 
 The text report prints one line per finding, `path:line [section] rule VERDICT status: message
 (sections: ...)`, then for a module constraint its repair hint and what decided it: one
@@ -50,6 +57,42 @@ its entry:
 profiles:
   promotion: {cache: refresh}   # default: reuse
 ```
+
+### Mutation tables
+
+The table is YAML (`kind: mutation-table`), not a markdown grid. A third-party module's lock
+(`constraints:`), `uncovered` map, `leg: judge` rows, and `cut_from` edits do not fit a markdown
+table without becoming a second, drifting copy of the runner. Paths in the table are relative to
+the table file. `document` is the live file each row edits once; `module` is a repository path or
+`doc-verify:NAME`.
+
+```yaml
+schema_version: 1
+kind: mutation-table
+document: note.md
+module: note.yaml          # or doc-verify:module-contract
+artifact_kind: note
+constraints: [has-title, has-status]
+uncovered: {}
+rows:
+  - id: M1
+    kind: kill
+    expect: has-title
+    from: "## Title\n"
+    to: "## Name\n"
+```
+
+Each row is `kill`, `keep`, or `gap`. A kill must redden the **named** constraint (`module.<id>`
+NO-GO); reddening only others is WRONG-CASE. A keep must stay PASS. A gap is a strict xfail:
+GAP-CONFIRMED until the named constraint fires, then GAP-CLOSED fails the run so the row is
+promoted to kill. The unmutated document must PASS first (the green half of each pair). The census
+compares `constraints:` to the named module file's own constraint ids (not its `extends` chain, and
+not a regex over the live YAML), so deleting a constraint cannot drop it from the census; a row
+whose `expect` is not in the composed program is UNKNOWN-EXPECT.
+
+`references.mutations.mjs` is not this command: it mutates TypeScript and scores vitest titles.
+The in-repo native example is `doc-verify/tests/mutate/module-contract.mutations.yaml`.
+`npm run mutate` runs every committed `*.mutations.yaml`.
 
 ### Configuration
 

@@ -1,0 +1,34 @@
+# Seeded mutation table for the mutate fixture module. YAML is the source of
+# truth: a markdown table cannot carry the constraints lock, uncovered map,
+# judge legs, or cut_from edits without becoming a second, drifting copy.
+schema_version: 1
+kind: mutation-table
+document: note.md
+module: note.yaml
+artifact_kind: note
+constraints:
+  - has-title
+  - has-status
+uncovered: {}
+rows:
+  - id: M1
+    kind: kill
+    expect: has-title
+    from: "## Title\n"
+    to: "## Name\n"
+  - id: M2
+    kind: kill
+    expect: has-status
+    from: "## Status\n"
+    to: "## State\n"
+  - id: K1
+    kind: keep
+    note: "title body wording is free"
+    from: "A title body.\n"
+    to: "A different title body.\n"
+  - id: G1
+    kind: gap
+    expect: has-title
+    note: "a Title still present under a renamed document heading is not this constraint"
+    from: "# Fixture note\n"
+    to: "# Other note\n"
