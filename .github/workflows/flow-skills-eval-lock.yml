@@ -24,10 +24,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 24.11.0
+          node-version: 24
       - name: Install the Vite+ runner
         run: npm install --global vite-plus@0.2.9
       - name: Install flow-skills-eval dependencies
+        env:
+          # The lockfile records registry.npmmirror.com tarball URLs. Matching
+          # that registry keeps each locked tarball in registry scope instead
+          # of making npm 12 classify it as an arbitrary remote fetch.
+          npm_config_registry: https://registry.npmmirror.com
         run: vp install --frozen-lockfile
       - name: Verify the frozen prefix lock
         run: vp test --run tests/prompt.test.ts
