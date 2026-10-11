@@ -1,0 +1,33 @@
+name: flow-skills-eval-lock
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "skills/flow-*/**"
+      - "flow-skills-eval/**"
+      - ".github/workflows/flow-skills-eval-lock.yml"
+  pull_request:
+    paths:
+      - "skills/flow-*/**"
+      - "flow-skills-eval/**"
+      - ".github/workflows/flow-skills-eval-lock.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flow-skills-eval
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.11.0
+      - name: Install the Vite+ runner
+        run: npm install --global vite-plus@0.2.9
+      - name: Install flow-skills-eval dependencies
+        run: vp install --frozen-lockfile
+      - name: Verify the frozen prefix lock
+        run: vp test --run tests/prompt.test.ts

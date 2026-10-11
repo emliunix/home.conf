@@ -74,7 +74,10 @@ repos:
         # skill-l0's comment, one directory over: a lock nothing verifies is
         # decoration. This runs the lock assertion (not the full suite) on any edit
         # to the flow skills or the eval harness.
-        entry: bash -c 'cd flow-skills-eval && npm test -- --run tests/prompt.test.ts'
+        # Drive the Vite+ project through its documented CLI. Using npm here
+        # makes the result depend on which npm wins the ambient PATH; a system
+        # npm fails devEngines before the lock assertion runs.
+        entry: bash -c 'cd flow-skills-eval && ./node_modules/.bin/vp test --run tests/prompt.test.ts'
         pass_filenames: false
         files: '^skills/flow-|^flow-skills-eval/'
         require_serial: true
