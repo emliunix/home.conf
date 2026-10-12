@@ -1,0 +1,5 @@
+seeds baseline: witnesses 0 FAIL; random x500 unequal 0
+seed ignore-body: FLIPS; witnesses flipped status-b-undefined-open pass->refined; random x500 programs unequal to enumeration 105 (baseline 0)
+seed unsat-vacuous: FLIPS; witnesses flipped seed-odd-loop-unsat pass->refined; random x500 programs unequal to enumeration 0 (baseline 0)
+seed no-exclusivity: FLIPS; witnesses flipped choose-negated pass->FAIL, d1-complete pass->FAIL, m2-total pass->FAIL; random x500 programs unequal to enumeration 0 (baseline 0)
+complete: true

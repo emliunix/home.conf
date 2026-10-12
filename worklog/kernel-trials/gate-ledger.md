@@ -12,6 +12,8 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
 | Round 4 evidence cells | the cell-grain oracle separates every seeded evidence-cell defect (bare, pointer, restatement, padded, one-in-four) from true chains, with and without paths | `node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --oracle evidence_reasons --repeat 2 --ledger round4-B --cap 400` (live; 132 questions) | the seeded fixtures themselves: every defective and mixed fixture NO-GO, `terse` (goals/04 at HEAD before the rewrite) NO-GO on 5/5 cells | yes |
 | Round 4 table facts | the host's table parser yields the rows and cells the oracle is asked over | `npx vitest run doc-verify/tests/language/tables.test.ts` | a table without the column binds nothing (the vacuous-pass case is a test); a scripted judge failing one cell violates that row only | yes |
 | Round 4c witness cells | the cell-grain `witness_observable_in_row` separates restated, negated, padded, verified-asserting and pointer witness cells from genuine ones, and PASSes only the good fixture | `node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --oracle witness_observable_in_row --repeat 2 --ledger round4c-C2 --cap 500` (live; 168 questions) | the seeded fixtures: gross, both subtle and the controls NO-GO; `good` PASS; the swapped fixture PASSes (the known relevance gap, not a gate) | yes |
+| Round 4b S3 witnesses + corpus | the clingo subject agrees with the model's decided statuses and verdicts on every witness and corpus document (undetermined may refine, tagged) | `node worklog/kernel-trials/probe/run-conformance.mjs --s3` and `--s3 --corpus` | seed `no-exclusivity`: 3 witnesses FAIL | yes |
+| Round 4b S3 random | the clingo subject equals brute-force enumeration exactly on random programs, with D1 and D2 checked on its demand | `node worklog/kernel-trials/probe/run-conformance.mjs --s3 --random 500` (exits 1 while the known D1 counterexample stands) | seed `ignore-body`: 105/500 unequal; seed `unsat-vacuous`: the inline odd-loop fixture | yes |
 | Reference self-check | the naive reference matches hand derivations and brute force | `node worklog/kernel-trials/probe/reference/run-reference.mjs worklog/kernel-trials/probe/witnesses/*.yaml` and `node worklog/kernel-trials/probe/reference/random-brute.mjs 500 1` | reference mutated: demand without goal leaves (15/200), `not u` read as `t` (76/200) | yes |
 
 ## Open items
@@ -30,3 +32,10 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
 4. **Evidence-cell threshold from real cells** (round 4 §Left unmeasured): goals/01's middling
    cells land at 0.55–0.66; a fixture set drawn from real goals, not seeded, is what sets the
    threshold. The wrong-row gap (the judge never sees the requirement text) is open with it.
+5. **S3's demand is D1-incomplete** (round 4b): a single-flip demand misses an atom that decides
+   a binding only jointly with another (program #231 of seed 1). A syntactic cone (S1's) is the
+   only D1-safe demand known; if S3 is ever more than a reference, its demand must be the cone.
+6. **The random generator cannot see two defect classes** (round 4b seeds): no `choose` oracles
+   and no UNSAT programs, so `no-exclusivity` and `unsat-vacuous` flip only witnesses. Extending
+   the generator (item 1's property tests) is where this closes.
+

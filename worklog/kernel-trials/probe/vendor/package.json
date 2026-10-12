@@ -1,1 +1,1 @@
-{ "name": "kernel-trials-vendor", "private": true, "dependencies": { "swipl-wasm": "8.2.2" } }
+{"name":"kernel-trials-vendor","private":true,"dependencies":{"swipl-wasm":"8.2.2","clingo-wasm":"0.6.0"}}

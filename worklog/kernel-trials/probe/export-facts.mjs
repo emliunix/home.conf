@@ -17,7 +17,7 @@ const tracked = execFileSync("git", ["ls-files"], { cwd: root, encoding: "utf8" 
 const files = new Set(tracked);
 const exists = (p) => files.has(p) || tracked.some((f) => f.startsWith(`${p}/`));
 
-const out = [":- discontiguous section/3, heading/3, depth/3, order/3, meta/3, selected/2, child/3, descendant/3, nests/3, ref/4, resolves/2, dangling/4, spec_unresolved/4.", ""];
+const out = [":- discontiguous section/3, heading/3, depth/3, order/3, meta/3, selected/2, child/3, descendant/3, nests/3, ref/4, resolves/2, dangling/4, spec_unresolved/4, table/3, header/3, row/3, cell/3.", ""];
 let docs = 0, count = 0;
 for (const file of tracked) {
   let rule;

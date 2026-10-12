@@ -82,7 +82,7 @@ const completions = (atoms, base) => {
   return Array.from({ length: 2 ** free.length }, (_, m) => ({ ...base, ...Object.fromEntries(free.map((a, i) => [a, m & (1 << i) ? "holds" : "fails"])) }));
 };
 
-const cover = { dem: 0, undetermined: 0, population: 0, notDerivedU: 0 };
+const cover = { dem: 0, undetermined: 0, population: 0, notDerivedU: 0, unresolvableAfterDem: 0 };
 const kinds = {};
 
 export { rng, generate, render, twoValued, canon, completions };

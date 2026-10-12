@@ -160,6 +160,12 @@ below-threshold answer are `u` by the author's declaration, not the engine's. Au
 untouched and may be non-stratified; the engine's semantics decides them, and a binding left
 undefined by a negative loop is reported as *unfounded*.
 
+Measured against a second engine (kernel-trials round 4b, 2026-10-13): clingo 5.8.1 with free
+`#external` atoms (supervaluation over total answers) equals brute-force enumeration on 500/500
+random programs and decides every binding the WFS kernel leaves undetermined there, but refines
+0 of 26 corpus documents, gives no derivation or missing literal, and has a D1-incomplete demand.
+The kernel stays as above; clingo is kept as the differential reference the gate ledger names.
+
 ### Module language
 
 A module is a Prolog file. Rules are clauses. Oracles and constraints are directives:

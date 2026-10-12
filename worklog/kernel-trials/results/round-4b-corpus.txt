@@ -1,0 +1,311 @@
+Status table choose-negated step 1 S3: ok
+Status table choose-negated step 1 S3: verdict NO-GO joint NO-GO; externals E=1 (unknown-free 0), clingo solves 4, 40.3 ms
+Status table choose-negated step 2 S3: ok
+Status table choose-negated step 2 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 4.3 ms
+Status table choose-negated step 1 S1: ok
+Status table choose-negated step 2 S1: ok
+Status table choose-negated step 1 S2: MISMATCH missing.pos: expected [{"D":"d","S":"b","literal":"w::k(d,b,x)","path":["w::isx(d,b)#1"]}] got [{"D":"d","S":"b","literal":"w::isx(d,b)"}]
+Status table choose-negated step 1 S2: MISMATCH missing.neg: expected [{"D":"d","S":"a","literal":"not w::k(d,a,x)","path":["w::notx(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::notx(d,a)"}]
+Status table choose-negated step 1 S2: MISMATCH missing.lab: expected [{"D":"d","S":"a","literal":"x in [y,z]","path":["w::yz(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::yz(d,a)"}]
+Status table choose-negated step 2 S2: MISMATCH missing.pos: expected [{"D":"d","S":"b","literal":"w::k(d,b,x)","path":["w::isx(d,b)#1"]},{"D":"d","S":"c","literal":"w::k(d,c,x)","path":["w::isx(d,c)#1"]}] got [{"D":"d","S":"b","literal":"w::isx(d,b)"},{"D":"d","S":"c","literal":"w::isx(d,c)"}]
+Status table choose-negated step 2 S2: MISMATCH missing.neg: expected [{"D":"d","S":"a","literal":"not w::k(d,a,x)","path":["w::notx(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::notx(d,a)"}]
+Status table choose-negated step 2 S2: MISMATCH missing.lab: expected [{"D":"d","S":"a","literal":"x in [y,z]","path":["w::yz(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::yz(d,a)"}]
+D1 d1-complete step 1 S3: ok
+D1 d1-complete step 1 S3: verdict NEEDS-REVIEW joint mixed; externals E=3 (unknown-free 0), clingo solves 12, 14.7 ms
+D1 d1-complete step 2 S3: ok
+D1 d1-complete step 2 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 2.3 ms
+D1 d1-complete step 1 S1: ok
+D1 d1-complete step 2 S1: ok
+D1 d1-complete step 1 S2: ok
+D1 d1-complete step 2 S2: MISMATCH missing.c1: expected [{"D":"d","S":"a","literal":"w::r(d,a)","path":["w::ok(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::ok(d,a)"}]
+D2 d2-minimal step 1 S3: ok
+D2 d2-minimal step 1 S3: verdict NEEDS-REVIEW joint mixed; externals E=3 (unknown-free 0), clingo solves 12, 13.9 ms
+D2 d2-minimal step 2 S3: ok
+D2 d2-minimal step 2 S3: verdict NEEDS-REVIEW joint mixed; externals E=1 (unknown-free 0), clingo solves 4, 4.3 ms
+D2 d2-minimal step 3 S3: ok
+D2 d2-minimal step 3 S3: verdict NEEDS-REVIEW joint mixed; externals E=1 (unknown-free 0), clingo solves 4, 4.3 ms
+D2 d2-minimal step 1 S1: ok
+D2 d2-minimal step 2 S1: ok
+D2 d2-minimal step 3 S1: ok
+D2 d2-minimal step 1 S2: expected-failure demand.prefix: expected ["w::w(d,a)"] got ["w::r(d,a)","w::w(d,a)"]
+D2 d2-minimal step 2 S2: ok
+D2 d2-minimal step 3 S2: ok
+status-table example-status-table step 1 S3: ok
+status-table example-status-table step 1 S3: verdict NO-GO joint NO-GO; externals E=1 (unknown-free 0), clingo solves 4, 3.2 ms
+status-table example-status-table step 1 S1: ok
+status-table example-status-table step 1 S2: MISMATCH missing.req: expected [{"D":"d","S":"b","literal":"w::o(d,b)","path":["w::ok(d,b)#1"]}] got [{"D":"d","S":"b","literal":"w::ok(d,b)"}]
+Status table forbid-undefined step 1 S3: ok
+Status table forbid-undefined step 1 S3: verdict NEEDS-REVIEW joint mixed; externals E=1 (unknown-free 0), clingo solves 4, 2.5 ms
+Status table forbid-undefined step 2 S3: ok
+Status table forbid-undefined step 2 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 1.0 ms
+Status table forbid-undefined step 1 S1: ok
+Status table forbid-undefined step 2 S1: ok
+Status table forbid-undefined step 1 S2: ok
+Status table forbid-undefined step 2 S2: ok
+Interval count interval-count step 1 S3: ok
+Interval count interval-count step 1 S3: verdict NO-GO joint NO-GO; externals E=1 (unknown-free 0), clingo solves 4, 7.9 ms
+Interval count interval-count step 2 S3: ok
+Interval count interval-count step 2 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 2.6 ms
+Interval count interval-count step 1 S1: ok
+Interval count interval-count step 2 S1: ok
+Interval count interval-count step 1 S2: ok
+Interval count interval-count step 2 S2: ok
+M1 m1-monotone step 1 S3: ok
+M1 m1-monotone step 1 S3: verdict NO-GO joint NO-GO; externals E=2 (unknown-free 0), clingo solves 8, 4.9 ms
+M1 m1-monotone step 2 S3: ok
+M1 m1-monotone step 2 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 1.2 ms
+M1 m1-monotone step 1 S1: ok
+M1 m1-monotone step 2 S1: ok
+M1 m1-monotone step 1 S2: MISMATCH missing.c1: expected [{"D":"d","S":"a","literal":"w::o(d,a)","path":["w::ok(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::ok(d,a)"}]
+M1 m1-monotone step 2 S2: MISMATCH missing.c1: expected [{"D":"d","S":"a","literal":"w::o(d,a)","path":["w::ok(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::ok(d,a)"}]
+M2 m2-negative-loop step 1 S3: ok
+M2 m2-negative-loop step 1 S3: verdict NEEDS-REVIEW joint mixed; externals E=0 (unknown-free 0), clingo solves 2, 1.3 ms
+M2 m2-negative-loop step 1 S1: ok
+M2 m2-negative-loop step 1 S2: MISMATCH rejected: expected false got "rules.p: negation or count over q in the same stratum; rules.q: negation or count over p in the same stratum"
+M2 m2-total step 1 S3: ok
+M2 m2-total step 1 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 2.4 ms
+M2 m2-total step 1 S1: ok
+M2 m2-total step 1 S2: MISMATCH missing.c1: expected [{"D":"d","S":"b","literal":"not w::k(d,b,x)","path":["w::good(d,b)#1"]}] got [{"D":"d","S":"b","literal":"w::good(d,b)"}]
+Status table matches-bound-interval step 1 S3: expected-failure rejected: expected false got "S3: matches operand N in constraint two is not bound by a base fact (derived or count operand); pre-evaluation refused"
+Status table matches-bound-interval step 2 S3: expected-failure rejected: expected false got "S3: matches operand N in constraint two is not bound by a base fact (derived or count operand); pre-evaluation refused"
+Status table matches-bound-interval step 1 S1: ok
+Status table matches-bound-interval step 2 S1: ok
+Status table matches-bound-interval step 1 S2: MISMATCH missing.work: expected [{"D":"d","S":"b","H":"Notes","literal":"matches('Notes','^Work - ')"}] got [{"D":"d","S":"b","H":"Notes","literal":"matches(Notes,^Work - )"}]
+Status table matches-bound-interval step 2 S2: MISMATCH missing.work: expected [{"D":"d","S":"b","H":"Notes","literal":"matches('Notes','^Work - ')"}] got [{"D":"d","S":"b","H":"Notes","literal":"matches(Notes,^Work - )"}]
+Status table matches-bound-interval step 2 S2: MISMATCH missing.label: expected [{"D":"d","S":"a","literal":"matches(xa,'^y')"}] got [{"D":"d","S":"a","literal":"matches(xa,^y)"}]
+Missing literal missing-literal step 1 S3: ok
+Missing literal missing-literal step 1 S3: verdict NO-GO joint NO-GO; externals E=1 (unknown-free 0), clingo solves 2, 2.4 ms
+Missing literal missing-literal step 1 S1: ok
+Missing literal missing-literal step 1 S2: MISMATCH demand.prefix: expected [] got ["w::r(d,a)"]
+Missing literal missing-literal step 1 S2: MISMATCH missing.u-first: expected [{"D":"d","S":"a","literal":"w::o(d,a)","passed_u":["w::r(d,a)"]}] got [{"D":"d","S":"a","literal":"w::o(d,a)"}]
+Missing literal missing-literal step 1 S2: MISMATCH missing.derived: expected [{"D":"d","S":"a","literal":"w::o(d,a)","path":["w::both(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::both(d,a)"}]
+Status table nonempty-population step 1 S3: ok
+Status table nonempty-population step 1 S3: verdict NEEDS-REVIEW joint mixed; externals E=2 (unknown-free 0), clingo solves 6, 4.9 ms
+Status table nonempty-population step 2 S3: ok
+Status table nonempty-population step 2 S3: verdict PASS joint PASS; externals E=1 (unknown-free 0), clingo solves 2, 1.3 ms
+Status table nonempty-population step 3 S3: ok
+Status table nonempty-population step 3 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 1.3 ms
+Status table nonempty-population step 1 S1: ok
+Status table nonempty-population step 2 S1: ok
+Status table nonempty-population step 3 S1: ok
+Status table nonempty-population step 1 S2: MISMATCH statuses.judged: expected [{"D":"d","S":"a","status":"satisfied"},{"D":"d","S":"b","status":"satisfied"},{"population":"undetermined","status":"undetermined"}] got [{"D":"d","S":"a","status":"satisfied"},{"D":"d","S":"b","status":"satisfied"}]
+Status table nonempty-population step 1 S2: MISMATCH verdict: expected NEEDS-REVIEW got PASS
+Status table nonempty-population step 2 S2: MISMATCH demand.prefix: expected [] got ["w::o(d,b)"]
+Status table nonempty-population step 3 S2: ok
+D3 overdemand-o-not-o step 1 S3: refined statuses.c1 [["D","d"],["S","a"]]: undetermined -> violated [tautology]
+D3 overdemand-o-not-o step 1 S3: refined verdict: NEEDS-REVIEW -> NO-GO [follows-status]
+D3 overdemand-o-not-o step 1 S3: verdict NO-GO joint NO-GO; externals E=1 (unknown-free 0), clingo solves 2, 1.3 ms
+D3 overdemand-o-not-o step 2 S3: ok
+D3 overdemand-o-not-o step 2 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 1.0 ms
+D3 overdemand-o-not-o step 3 S3: ok
+D3 overdemand-o-not-o step 3 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 1.0 ms
+D3 overdemand-o-not-o step 1 S1: ok
+D3 overdemand-o-not-o step 2 S1: ok
+D3 overdemand-o-not-o step 3 S1: ok
+D3 overdemand-o-not-o step 1 S2: ok
+D3 overdemand-o-not-o step 2 S2: MISMATCH missing.c1: expected [{"D":"d","S":"a","literal":"not w::o(d,a)","path":["w::p(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::p(d,a)"}]
+D3 overdemand-o-not-o step 3 S2: MISMATCH missing.c1: expected [{"D":"d","S":"a","literal":"w::o(d,a)","path":["w::p(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::p(d,a)"}]
+PASS is final pass-is-final-open step 1 S3: ok
+PASS is final pass-is-final-open step 1 S3: verdict NEEDS-REVIEW joint mixed; externals E=2 (unknown-free 0), clingo solves 6, 3.5 ms
+PASS is final pass-is-final-open step 2 S3: ok
+PASS is final pass-is-final-open step 2 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 1.1 ms
+PASS is final pass-is-final-open step 3 S3: ok
+PASS is final pass-is-final-open step 3 S3: verdict PASS joint PASS; externals E=0 (unknown-free 0), clingo solves 2, 1.1 ms
+PASS is final pass-is-final-open step 1 S1: ok
+PASS is final pass-is-final-open step 2 S1: ok
+PASS is final pass-is-final-open step 3 S1: ok
+PASS is final pass-is-final-open step 1 S2: ok
+PASS is final pass-is-final-open step 2 S2: MISMATCH missing.c1: expected [{"D":"d","S":"a","literal":"w::o(d,a)","path":["w::ok(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::ok(d,a)"}]
+PASS is final pass-is-final-open step 3 S2: ok
+PASS is final pass-is-final step 1 S3: ok
+PASS is final pass-is-final step 1 S3: verdict PASS joint PASS; externals E=1 (unknown-free 0), clingo solves 2, 1.5 ms
+PASS is final pass-is-final step 2 S3: ok
+PASS is final pass-is-final step 2 S3: verdict PASS joint PASS; externals E=0 (unknown-free 0), clingo solves 2, 1.3 ms
+PASS is final pass-is-final step 3 S3: ok
+PASS is final pass-is-final step 3 S3: verdict PASS joint PASS; externals E=0 (unknown-free 0), clingo solves 2, 1.1 ms
+PASS is final pass-is-final step 1 S1: ok
+PASS is final pass-is-final step 2 S1: ok
+PASS is final pass-is-final step 3 S1: ok
+PASS is final pass-is-final step 1 S2: MISMATCH demand.prefix: expected [] got ["w::r(d,a)"]
+PASS is final pass-is-final step 2 S2: ok
+PASS is final pass-is-final step 3 S2: ok
+Policy invariance policy-invariance step 1 S3: ok
+Policy invariance policy-invariance step 1 S3: verdict NEEDS-REVIEW joint mixed; externals E=2 (unknown-free 0), clingo solves 10, 5.5 ms
+Policy invariance policy-invariance step 2 S3: ok
+Policy invariance policy-invariance step 2 S3: verdict NEEDS-REVIEW joint mixed; externals E=1 (unknown-free 0), clingo solves 4, 2.1 ms
+Policy invariance policy-invariance step 3 S3: ok
+Policy invariance policy-invariance step 3 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 1.0 ms
+Policy invariance policy-invariance step 1 S1: ok
+Policy invariance policy-invariance step 2 S1: ok
+Policy invariance policy-invariance step 3 S1: ok
+Policy invariance policy-invariance step 1 S2: ok
+Policy invariance policy-invariance step 2 S2: ok
+Policy invariance policy-invariance step 3 S2: MISMATCH missing.c1: expected [{"D":"d","S":"a","literal":"w::r(d,a)","path":["w::ok(d,a)#1"]}] got [{"D":"d","S":"a","literal":"w::ok(d,a)"}]
+Policy invariance prefix-unknown-fallthrough step 1 S3: ok
+Policy invariance prefix-unknown-fallthrough step 1 S3: verdict NEEDS-REVIEW joint mixed; externals E=1 (unknown-free 1), clingo solves 6, 3.3 ms
+Policy invariance prefix-unknown-fallthrough step 2 S3: ok
+Policy invariance prefix-unknown-fallthrough step 2 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 1), clingo solves 2, 1.0 ms
+Policy invariance prefix-unknown-fallthrough step 3 S3: ok
+Policy invariance prefix-unknown-fallthrough step 3 S3: verdict NEEDS-REVIEW joint mixed; externals E=0 (unknown-free 1), clingo solves 2, 1.0 ms
+Policy invariance prefix-unknown-fallthrough step 1 S1: ok
+Policy invariance prefix-unknown-fallthrough step 2 S1: ok
+Policy invariance prefix-unknown-fallthrough step 3 S1: ok
+Policy invariance prefix-unknown-fallthrough step 1 S2: ok
+Policy invariance prefix-unknown-fallthrough step 2 S2: MISMATCH missing.c1: expected [{"D":"d","S":"a","literal":"w::o2(d,a)","path":["w::ok(d,a)#1"],"passed_u":["w::o1(d,a)"]}] got [{"D":"d","S":"a","literal":"w::ok(d,a)"}]
+Policy invariance prefix-unknown-fallthrough step 3 S2: ok
+Status table present-candidates step 1 S3: expected-failure rejected: expected false got "present/3 is out of scope for S3"
+Status table present-candidates step 2 S3: expected-failure rejected: expected false got "present/3 is out of scope for S3"
+Status table present-candidates step 1 S1: ok
+Status table present-candidates step 2 S1: ok
+Status table present-candidates step 1 S2: ok
+Status table present-candidates step 2 S2: ok
+Static checks static-matches-unbound step 1 S3: ok
+Static checks static-matches-unbound step 1 S1: ok
+Static checks static-matches-unbound step 1 S2: ok
+Static checks static-nonground-not step 1 S3: ok
+Static checks static-nonground-not step 1 S1: ok
+Static checks static-nonground-not step 1 S2: ok
+status-table status-b-undefined-open step 1 S3: ok
+status-table status-b-undefined-open step 1 S3: verdict NEEDS-REVIEW joint mixed; externals E=1 (unknown-free 0), clingo solves 4, 2.7 ms
+status-table status-b-undefined-open step 2 S3: ok
+status-table status-b-undefined-open step 2 S3: verdict NO-GO joint NO-GO; externals E=0 (unknown-free 0), clingo solves 2, 1.1 ms
+status-table status-b-undefined-open step 3 S3: ok
+status-table status-b-undefined-open step 3 S3: verdict PASS joint PASS; externals E=0 (unknown-free 0), clingo solves 2, 1.2 ms
+status-table status-b-undefined-open step 1 S1: ok
+status-table status-b-undefined-open step 2 S1: ok
+status-table status-b-undefined-open step 3 S1: ok
+status-table status-b-undefined-open step 1 S2: ok
+status-table status-b-undefined-open step 2 S2: ok
+status-table status-b-undefined-open step 3 S2: ok
+status-table status-b-undefined step 1 S3: ok
+status-table status-b-undefined step 1 S3: verdict PASS joint PASS; externals E=1 (unknown-free 0), clingo solves 2, 1.5 ms
+status-table status-b-undefined step 1 S1: ok
+status-table status-b-undefined step 1 S2: MISMATCH demand.prefix: expected [] got ["w::o(d,a)"]
+D1 unknown-not-reasked step 1 S3: ok
+D1 unknown-not-reasked step 1 S3: verdict NEEDS-REVIEW joint mixed; externals E=1 (unknown-free 0), clingo solves 4, 2.1 ms
+D1 unknown-not-reasked step 2 S3: ok
+D1 unknown-not-reasked step 2 S3: verdict NEEDS-REVIEW joint mixed; externals E=0 (unknown-free 1), clingo solves 2, 0.9 ms
+D1 unknown-not-reasked step 3 S3: ok
+D1 unknown-not-reasked step 3 S3: verdict PASS joint PASS; externals E=0 (unknown-free 0), clingo solves 2, 0.8 ms
+D1 unknown-not-reasked step 1 S1: ok
+D1 unknown-not-reasked step 2 S1: ok
+D1 unknown-not-reasked step 3 S1: ok
+D1 unknown-not-reasked step 1 S2: ok
+D1 unknown-not-reasked step 2 S2: ok
+D1 unknown-not-reasked step 3 S2: ok
+corpus design/01-goal-file-workstreams-phases.md step 1 S1: ok
+corpus design/01-goal-file-workstreams-phases.md step 1 S2: ok
+corpus design/02-programmatic-document-contract-verification.md step 1 S1: ok
+corpus design/02-programmatic-document-contract-verification.md step 1 S2: ok
+corpus design/03-companion-driven-document-verification.md step 1 S1: ok
+corpus design/03-companion-driven-document-verification.md step 1 S2: ok
+corpus design/04-modular-verification-language.md step 1 S1: ok
+corpus design/04-modular-verification-language.md step 1 S2: ok
+corpus design/05-trusted-kernel-redesign.md step 1 S1: ok
+corpus design/05-trusted-kernel-redesign.md step 1 S2: ok
+corpus docs/modules/language/contract.md step 1 S1: ok
+corpus docs/modules/language/contract.md step 1 S2: ok
+corpus docs/modules/language/model.md step 1 S1: ok
+corpus docs/modules/language/model.md step 1 S2: ok
+corpus docs/modules/language/properties.md step 1 S1: ok
+corpus docs/modules/language/properties.md step 1 S2: ok
+corpus docs/modules/language/verification.md step 1 S1: ok
+corpus docs/modules/language/verification.md step 1 S2: ok
+corpus docs/modules/oracles/contract.md step 1 S1: ok
+corpus docs/modules/oracles/contract.md step 1 S2: ok
+corpus docs/modules/oracles/model.md step 1 S1: ok
+corpus docs/modules/oracles/model.md step 1 S2: ok
+corpus docs/modules/oracles/properties.md step 1 S1: ok
+corpus docs/modules/oracles/properties.md step 1 S2: ok
+corpus docs/modules/oracles/verification.md step 1 S1: ok
+corpus docs/modules/oracles/verification.md step 1 S2: ok
+corpus docs/modules/report/contract.md step 1 S1: ok
+corpus docs/modules/report/contract.md step 1 S2: ok
+corpus docs/modules/report/model.md step 1 S1: ok
+corpus docs/modules/report/model.md step 1 S2: ok
+corpus docs/modules/report/properties.md step 1 S1: ok
+corpus docs/modules/report/properties.md step 1 S2: ok
+corpus docs/modules/report/verification.md step 1 S1: ok
+corpus docs/modules/report/verification.md step 1 S2: ok
+corpus docs/modules/selection/contract.md step 1 S1: ok
+corpus docs/modules/selection/contract.md step 1 S2: ok
+corpus docs/modules/selection/model.md step 1 S1: ok
+corpus docs/modules/selection/model.md step 1 S2: ok
+corpus docs/modules/selection/properties.md step 1 S1: ok
+corpus docs/modules/selection/properties.md step 1 S2: ok
+corpus docs/modules/selection/verification.md step 1 S1: ok
+corpus docs/modules/selection/verification.md step 1 S2: ok
+corpus goals/01-document-verification-and-skill-transfer.md step 1 S1: ok
+corpus goals/01-document-verification-and-skill-transfer.md step 1 S2: ok
+corpus goals/02-companion-driven-document-verification.md step 1 S1: ok
+corpus goals/02-companion-driven-document-verification.md step 1 S2: ok
+corpus goals/03-modular-verification-language.md step 1 S1: ok
+corpus goals/03-modular-verification-language.md step 1 S2: ok
+corpus goals/04-trusted-kernel.md step 1 S1: ok
+corpus goals/04-trusted-kernel.md step 1 S2: ok
+corpus receipts/process/2026-10-08-receipts-and-task-card.md step 1 S1: ok
+corpus receipts/process/2026-10-08-receipts-and-task-card.md step 1 S2: ok
+corpus S1 per-document (instance startup + consult + evaluate): min 28.8 ms, max 41.1 ms, total 872 ms
+corpus S3 census: 0 of 26 documents use a feature S3 does not support
+corpus design/01-goal-file-workstreams-phases.md step 1 S3: ok
+corpus design/02-programmatic-document-contract-verification.md step 1 S3: ok
+corpus design/03-companion-driven-document-verification.md step 1 S3: ok
+corpus design/04-modular-verification-language.md step 1 S3: ok
+corpus design/05-trusted-kernel-redesign.md step 1 S3: ok
+corpus docs/modules/language/contract.md step 1 S3: ok
+corpus docs/modules/language/model.md step 1 S3: ok
+corpus docs/modules/language/properties.md step 1 S3: ok
+corpus docs/modules/language/verification.md step 1 S3: ok
+corpus docs/modules/oracles/contract.md step 1 S3: ok
+corpus docs/modules/oracles/model.md step 1 S3: ok
+corpus docs/modules/oracles/properties.md step 1 S3: ok
+corpus docs/modules/oracles/verification.md step 1 S3: ok
+corpus docs/modules/report/contract.md step 1 S3: ok
+corpus docs/modules/report/model.md step 1 S3: ok
+corpus docs/modules/report/properties.md step 1 S3: ok
+corpus docs/modules/report/verification.md step 1 S3: ok
+corpus docs/modules/selection/contract.md step 1 S3: ok
+corpus docs/modules/selection/model.md step 1 S3: ok
+corpus docs/modules/selection/properties.md step 1 S3: ok
+corpus docs/modules/selection/verification.md step 1 S3: ok
+corpus goals/01-document-verification-and-skill-transfer.md step 1 S3: ok
+corpus goals/02-companion-driven-document-verification.md step 1 S3: ok
+corpus goals/03-modular-verification-language.md step 1 S3: ok
+corpus goals/04-trusted-kernel.md step 1 S3: ok
+corpus receipts/process/2026-10-08-receipts-and-task-card.md step 1 S3: ok
+corpus S3 per-document (prepare + translate + step incl. demand): min 1.9 ms, max 10.6 ms, total 114 ms
+corpus S3: refined 0, failing document-steps 0, skipped (census, listed) 0 documents
+
+F9 delay-order self-test: most_recent_first((core_u(selftest_second),core_u(selftest_first)))
+S1 options: count=interval, tables=abolished per step
+S3: clingo version 5.8.1 via clingo-wasm 0.6.0 (in-thread runner dist/run.js)
+
+| Gate | Witness | S1 | S2 | S3 | S3 rejected (exp/got) |
+| --- | --- | --- | --- | --- | --- |
+| Status table | choose-negated | pass | FAIL | pass | no/no |
+| D1 | d1-complete | pass | FAIL | pass | no/no |
+| D2 | d2-minimal | pass | expected-failure | pass | no/no |
+| status-table | example-status-table | pass | FAIL | pass | no/no |
+| Status table | forbid-undefined | pass | pass | pass | no/no |
+| Interval count | interval-count | pass | pass | pass | no/no |
+| M1 | m1-monotone | pass | FAIL | pass | no/no |
+| M2 | m2-negative-loop | pass | FAIL | pass | no/no |
+| M2 | m2-total | pass | FAIL | pass | no/no |
+| Status table | matches-bound-interval | pass | FAIL | expected-failure | no/yes |
+| Missing literal | missing-literal | pass | FAIL | pass | no/no |
+| Status table | nonempty-population | pass | FAIL | pass | no/no |
+| D3 | overdemand-o-not-o | pass | FAIL | refined | no/no |
+| PASS is final | pass-is-final-open | pass | FAIL | pass | no/no |
+| PASS is final | pass-is-final | pass | FAIL | pass | no/no |
+| Policy invariance | policy-invariance | pass | FAIL | pass | no/no |
+| Policy invariance | prefix-unknown-fallthrough | pass | FAIL | pass | no/no |
+| Status table | present-candidates | pass | pass | expected-failure | no/yes |
+| Static checks | static-matches-unbound | pass | pass | pass | yes/yes |
+| Static checks | static-nonground-not | pass | pass | pass | yes/yes |
+| status-table | status-b-undefined-open | pass | pass | pass | no/no |
+| status-table | status-b-undefined | pass | FAIL | pass | no/no |
+| D1 | unknown-not-reasked | pass | pass | pass | no/no |
+| corpus | corpus-draft | pass | pass | pass | -/no |
+
+process 3575 ms; S1 unexpected mismatches: 0; S3 unexpected: 0, S3 refined: 2; clingo solves 202 (258 ms)
+complete: true

@@ -1,4 +1,4 @@
-:- discontiguous section/3, heading/3, depth/3, order/3, meta/3, selected/2, child/3, descendant/3, nests/3, ref/4, resolves/2, dangling/4, spec_unresolved/4.
+:- discontiguous section/3, heading/3, depth/3, order/3, meta/3, selected/2, child/3, descendant/3, nests/3, ref/4, resolves/2, dangling/4, spec_unresolved/4, table/3, header/3, row/3, cell/3.
 
 % design/01-goal-file-workstreams-phases.md (design)
 section('design/01-goal-file-workstreams-phases.md', '01--workstreams-phases-and-the-three-graph-funnel', root).
@@ -137,6 +137,136 @@ nests('design/01-goal-file-workstreams-phases.md', '01--workstreams-phases-and-t
 child('design/01-goal-file-workstreams-phases.md', '01--workstreams-phases-and-the-three-graph-funnel', status).
 descendant('design/01-goal-file-workstreams-phases.md', '01--workstreams-phases-and-the-three-graph-funnel', status).
 nests('design/01-goal-file-workstreams-phases.md', '01--workstreams-phases-and-the-three-graph-funnel', status).
+table('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule', 'generative-edge-rule#table1').
+header('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'Signal').
+header('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'Generative when').
+table('design/01-goal-file-workstreams-phases.md', 'three-graph-layering', 'three-graph-layering#table1').
+header('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Graph').
+header('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Nodes').
+header('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Edges').
+header('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'When rendered').
+header('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Edge label').
+table('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart', 'per-workstream-workflow-flowchart#table1').
+header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'Node').
+header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'Type').
+header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'What it is').
+table('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart', 'per-workstream-workflow-flowchart#table2').
+header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'Label').
+header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'From').
+header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'Routes to').
+table('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability', 'resource-analysis-and-parallelizability#table1').
+header('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'Resource node').
+header('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'Position').
+header('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'Purpose').
+row('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'generative-edge-rule#row1').
+cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row1', 'Signal').
+cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row1', 'Generative when').
+row('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'generative-edge-rule#row2').
+cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row2', 'Signal').
+cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row2', 'Generative when').
+row('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'generative-edge-rule#row3').
+cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row3', 'Signal').
+cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row3', 'Generative when').
+row('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'generative-edge-rule#row4').
+cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row4', 'Signal').
+cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row4', 'Generative when').
+row('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'generative-edge-rule#row5').
+cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row5', 'Signal').
+cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row5', 'Generative when').
+row('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'three-graph-layering#row1').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row1', 'Graph').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row1', 'Nodes').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row1', 'Edges').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row1', 'When rendered').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row1', 'Edge label').
+row('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'three-graph-layering#row2').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row2', 'Graph').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row2', 'Nodes').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row2', 'Edges').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row2', 'When rendered').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row2', 'Edge label').
+row('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'three-graph-layering#row3').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row3', 'Graph').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row3', 'Nodes').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row3', 'Edges').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row3', 'When rendered').
+cell('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#row3', 'Edge label').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'per-workstream-workflow-flowchart#row1').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row1', 'Node').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row1', 'Type').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row1', 'What it is').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'per-workstream-workflow-flowchart#row2').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row2', 'Node').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row2', 'Type').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row2', 'What it is').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'per-workstream-workflow-flowchart#row3').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row3', 'Node').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row3', 'Type').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row3', 'What it is').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'per-workstream-workflow-flowchart#row4').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row4', 'Node').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row4', 'Type').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row4', 'What it is').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'per-workstream-workflow-flowchart#row5').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row5', 'Node').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row5', 'Type').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row5', 'What it is').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'per-workstream-workflow-flowchart#row6').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row6', 'Node').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row6', 'Type').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row6', 'What it is').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'per-workstream-workflow-flowchart#row7').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row7', 'Node').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row7', 'Type').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row7', 'What it is').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'per-workstream-workflow-flowchart#row8').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row8', 'Label').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row8', 'From').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row8', 'Routes to').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'per-workstream-workflow-flowchart#row9').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row9', 'Label').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row9', 'From').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row9', 'Routes to').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'per-workstream-workflow-flowchart#row10').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row10', 'Label').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row10', 'From').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row10', 'Routes to').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'per-workstream-workflow-flowchart#row11').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row11', 'Label').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row11', 'From').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row11', 'Routes to').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'per-workstream-workflow-flowchart#row12').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row12', 'Label').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row12', 'From').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row12', 'Routes to').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'per-workstream-workflow-flowchart#row13').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row13', 'Label').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row13', 'From').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row13', 'Routes to').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'per-workstream-workflow-flowchart#row14').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row14', 'Label').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row14', 'From').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row14', 'Routes to').
+row('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'per-workstream-workflow-flowchart#row15').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row15', 'Label').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row15', 'From').
+cell('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#row15', 'Routes to').
+row('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'resource-analysis-and-parallelizability#row1').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row1', 'Resource node').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row1', 'Position').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row1', 'Purpose').
+row('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'resource-analysis-and-parallelizability#row2').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row2', 'Resource node').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row2', 'Position').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row2', 'Purpose').
+row('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'resource-analysis-and-parallelizability#row3').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row3', 'Resource node').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row3', 'Position').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row3', 'Purpose').
+row('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'resource-analysis-and-parallelizability#row4').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row4', 'Resource node').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row4', 'Position').
+cell('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#row4', 'Purpose').
 ref('design/01-goal-file-workstreams-phases.md', 'scope--what-we-touch', 'skills/goal-file/goal-authoring.md', path).
 resolves('design/01-goal-file-workstreams-phases.md', 'skills/goal-file/goal-authoring.md').
 ref('design/01-goal-file-workstreams-phases.md', 'scope--what-we-touch', 'skills/goal-file/SKILL.md', path).
@@ -335,6 +465,122 @@ nests('design/02-programmatic-document-contract-verification.md', '02---programm
 child('design/02-programmatic-document-contract-verification.md', '02---programmatic-document-contract-verification', status).
 descendant('design/02-programmatic-document-contract-verification.md', '02---programmatic-document-contract-verification', status).
 nests('design/02-programmatic-document-contract-verification.md', '02---programmatic-document-contract-verification', status).
+table('design/02-programmatic-document-contract-verification.md', 'authority-model', 'authority-model#table1').
+header('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'Artifact').
+header('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'Authority').
+table('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure', 'snapshots-and-affected-closure#table1').
+header('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Mode').
+header('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Baseline').
+header('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Candidate').
+header('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Changed roots and graph universe').
+table('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices', 'shared-verification-practices#table1').
+header('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table1', 'Level').
+header('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table1', 'Evidence').
+table('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices', 'shared-verification-practices#table2').
+header('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table2', 'Manifest IDs').
+header('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table2', 'Target owner in this change').
+table('design/02-programmatic-document-contract-verification.md', 'verification-design', 'verification-design#table1').
+header('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'Property').
+header('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'Observable failure witness').
+header('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'Command').
+row('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'authority-model#row1').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row1', 'Artifact').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row1', 'Authority').
+row('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'authority-model#row2').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row2', 'Artifact').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row2', 'Authority').
+row('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'authority-model#row3').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row3', 'Artifact').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row3', 'Authority').
+row('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'authority-model#row4').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row4', 'Artifact').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row4', 'Authority').
+row('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'authority-model#row5').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row5', 'Artifact').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row5', 'Authority').
+row('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'authority-model#row6').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row6', 'Artifact').
+cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row6', 'Authority').
+row('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'snapshots-and-affected-closure#row1').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row1', 'Mode').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row1', 'Baseline').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row1', 'Candidate').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row1', 'Changed roots and graph universe').
+row('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'snapshots-and-affected-closure#row2').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row2', 'Mode').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row2', 'Baseline').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row2', 'Candidate').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row2', 'Changed roots and graph universe').
+row('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'snapshots-and-affected-closure#row3').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row3', 'Mode').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row3', 'Baseline').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row3', 'Candidate').
+cell('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#row3', 'Changed roots and graph universe').
+row('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table1', 'shared-verification-practices#row1').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row1', 'Level').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row1', 'Evidence').
+row('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table1', 'shared-verification-practices#row2').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row2', 'Level').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row2', 'Evidence').
+row('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table1', 'shared-verification-practices#row3').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row3', 'Level').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row3', 'Evidence').
+row('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table1', 'shared-verification-practices#row4').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row4', 'Level').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row4', 'Evidence').
+row('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table2', 'shared-verification-practices#row5').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row5', 'Manifest IDs').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row5', 'Target owner in this change').
+row('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table2', 'shared-verification-practices#row6').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row6', 'Manifest IDs').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row6', 'Target owner in this change').
+row('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table2', 'shared-verification-practices#row7').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row7', 'Manifest IDs').
+cell('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#row7', 'Target owner in this change').
+row('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'verification-design#row1').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row1', 'Property').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row1', 'Observable failure witness').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row1', 'Command').
+row('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'verification-design#row2').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row2', 'Property').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row2', 'Observable failure witness').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row2', 'Command').
+row('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'verification-design#row3').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row3', 'Property').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row3', 'Observable failure witness').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row3', 'Command').
+row('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'verification-design#row4').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row4', 'Property').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row4', 'Observable failure witness').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row4', 'Command').
+row('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'verification-design#row5').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row5', 'Property').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row5', 'Observable failure witness').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row5', 'Command').
+row('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'verification-design#row6').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row6', 'Property').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row6', 'Observable failure witness').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row6', 'Command').
+row('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'verification-design#row7').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row7', 'Property').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row7', 'Observable failure witness').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row7', 'Command').
+row('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'verification-design#row8').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row8', 'Property').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row8', 'Observable failure witness').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row8', 'Command').
+row('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'verification-design#row9').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row9', 'Property').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row9', 'Observable failure witness').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row9', 'Command').
+row('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'verification-design#row10').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row10', 'Property').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row10', 'Observable failure witness').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row10', 'Command').
+row('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'verification-design#row11').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row11', 'Property').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row11', 'Observable failure witness').
+cell('design/02-programmatic-document-contract-verification.md', 'verification-design#row11', 'Command').
 ref('design/02-programmatic-document-contract-verification.md', 'assumptions-and-evidence', 'home.conf', name).
 dangling('design/02-programmatic-document-contract-verification.md', 'assumptions-and-evidence', 'home.conf', name).
 ref('design/02-programmatic-document-contract-verification.md', 'implementation-ownership', 'doc-verify/', path).
@@ -497,6 +743,84 @@ nests('design/03-companion-driven-document-verification.md', '03---companion-dri
 child('design/03-companion-driven-document-verification.md', '03---companion-driven-document-verification', status).
 descendant('design/03-companion-driven-document-verification.md', '03---companion-driven-document-verification', status).
 nests('design/03-companion-driven-document-verification.md', '03---companion-driven-document-verification', status).
+table('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract', 'trigger-and-snapshot-contract#table1').
+header('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'Changed path').
+header('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'Affected root').
+table('design/03-companion-driven-document-verification.md', 'companion-contract', 'companion-contract#table1').
+header('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'Field').
+header('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'Precedence').
+header('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'Reference base or fallback').
+table('design/03-companion-driven-document-verification.md', 'verification-design', 'verification-design#table1').
+header('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'Property').
+header('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'Failure witness').
+header('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'Command').
+row('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'trigger-and-snapshot-contract#row1').
+cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row1', 'Changed path').
+cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row1', 'Affected root').
+row('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'trigger-and-snapshot-contract#row2').
+cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row2', 'Changed path').
+cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row2', 'Affected root').
+row('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'trigger-and-snapshot-contract#row3').
+cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row3', 'Changed path').
+cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row3', 'Affected root').
+row('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'trigger-and-snapshot-contract#row4').
+cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row4', 'Changed path').
+cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row4', 'Affected root').
+row('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'trigger-and-snapshot-contract#row5').
+cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row5', 'Changed path').
+cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row5', 'Affected root').
+row('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'companion-contract#row1').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row1', 'Field').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row1', 'Precedence').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row1', 'Reference base or fallback').
+row('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'companion-contract#row2').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row2', 'Field').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row2', 'Precedence').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row2', 'Reference base or fallback').
+row('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'companion-contract#row3').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row3', 'Field').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row3', 'Precedence').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row3', 'Reference base or fallback').
+row('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'companion-contract#row4').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row4', 'Field').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row4', 'Precedence').
+cell('design/03-companion-driven-document-verification.md', 'companion-contract#row4', 'Reference base or fallback').
+row('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'verification-design#row1').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row1', 'Property').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row1', 'Failure witness').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row1', 'Command').
+row('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'verification-design#row2').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row2', 'Property').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row2', 'Failure witness').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row2', 'Command').
+row('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'verification-design#row3').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row3', 'Property').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row3', 'Failure witness').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row3', 'Command').
+row('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'verification-design#row4').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row4', 'Property').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row4', 'Failure witness').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row4', 'Command').
+row('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'verification-design#row5').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row5', 'Property').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row5', 'Failure witness').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row5', 'Command').
+row('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'verification-design#row6').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row6', 'Property').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row6', 'Failure witness').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row6', 'Command').
+row('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'verification-design#row7').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row7', 'Property').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row7', 'Failure witness').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row7', 'Command').
+row('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'verification-design#row8').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row8', 'Property').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row8', 'Failure witness').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row8', 'Command').
+row('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'verification-design#row9').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row9', 'Property').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row9', 'Failure witness').
+cell('design/03-companion-driven-document-verification.md', 'verification-design#row9', 'Command').
 ref('design/03-companion-driven-document-verification.md', 'companion-contract', '.doc-verify.yaml', path).
 resolves('design/03-companion-driven-document-verification.md', '.doc-verify.yaml').
 ref('design/03-companion-driven-document-verification.md', 'local-credential', '.doc-verify.yaml', path).
@@ -663,12 +987,284 @@ nests('design/04-modular-verification-language.md', '04---modular-verification-l
 child('design/04-modular-verification-language.md', '04---modular-verification-language', status).
 descendant('design/04-modular-verification-language.md', '04---modular-verification-language', status).
 nests('design/04-modular-verification-language.md', '04---modular-verification-language', status).
+table('design/04-modular-verification-language.md', 'verification-design', 'verification-design#table1').
+header('design/04-modular-verification-language.md', 'verification-design#table1', 'Property').
+header('design/04-modular-verification-language.md', 'verification-design#table1', 'Failure witness').
+header('design/04-modular-verification-language.md', 'verification-design#table1', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row1').
+cell('design/04-modular-verification-language.md', 'verification-design#row1', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row1', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row1', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row2').
+cell('design/04-modular-verification-language.md', 'verification-design#row2', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row2', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row2', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row3').
+cell('design/04-modular-verification-language.md', 'verification-design#row3', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row3', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row3', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row4').
+cell('design/04-modular-verification-language.md', 'verification-design#row4', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row4', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row4', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row5').
+cell('design/04-modular-verification-language.md', 'verification-design#row5', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row5', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row5', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row6').
+cell('design/04-modular-verification-language.md', 'verification-design#row6', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row6', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row6', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row7').
+cell('design/04-modular-verification-language.md', 'verification-design#row7', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row7', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row7', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row8').
+cell('design/04-modular-verification-language.md', 'verification-design#row8', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row8', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row8', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row9').
+cell('design/04-modular-verification-language.md', 'verification-design#row9', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row9', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row9', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row10').
+cell('design/04-modular-verification-language.md', 'verification-design#row10', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row10', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row10', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row11').
+cell('design/04-modular-verification-language.md', 'verification-design#row11', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row11', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row11', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row12').
+cell('design/04-modular-verification-language.md', 'verification-design#row12', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row12', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row12', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row13').
+cell('design/04-modular-verification-language.md', 'verification-design#row13', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row13', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row13', 'Command').
+row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row14').
+cell('design/04-modular-verification-language.md', 'verification-design#row14', 'Property').
+cell('design/04-modular-verification-language.md', 'verification-design#row14', 'Failure witness').
+cell('design/04-modular-verification-language.md', 'verification-design#row14', 'Command').
 ref('design/04-modular-verification-language.md', 'scope---what-we-touch', 'selection.ts', path).
 resolves('design/04-modular-verification-language.md', 'selection.ts').
 ref('design/04-modular-verification-language.md', 'assumptions-and-evidence', 'rubric.ts', name).
 dangling('design/04-modular-verification-language.md', 'assumptions-and-evidence', 'rubric.ts', name).
 ref('design/04-modular-verification-language.md', 'verification-design', '.github/workflows/judge-advisory.yml', path).
 resolves('design/04-modular-verification-language.md', '.github/workflows/judge-advisory.yml').
+
+% design/05-trusted-kernel-redesign.md (design)
+section('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', root).
+heading('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', '05 - Trusted kernel redesign').
+depth('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 1).
+order('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 1).
+selected('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign').
+section('design/05-trusted-kernel-redesign.md', 'user-inputs', '05---trusted-kernel-redesign').
+heading('design/05-trusted-kernel-redesign.md', 'user-inputs', 'User inputs').
+depth('design/05-trusted-kernel-redesign.md', 'user-inputs', 2).
+order('design/05-trusted-kernel-redesign.md', 'user-inputs', 2).
+selected('design/05-trusted-kernel-redesign.md', 'user-inputs').
+section('design/05-trusted-kernel-redesign.md', 'problem-statement', '05---trusted-kernel-redesign').
+heading('design/05-trusted-kernel-redesign.md', 'problem-statement', 'Problem statement').
+depth('design/05-trusted-kernel-redesign.md', 'problem-statement', 2).
+order('design/05-trusted-kernel-redesign.md', 'problem-statement', 3).
+selected('design/05-trusted-kernel-redesign.md', 'problem-statement').
+section('design/05-trusted-kernel-redesign.md', 'scope---what-we-touch', '05---trusted-kernel-redesign').
+heading('design/05-trusted-kernel-redesign.md', 'scope---what-we-touch', 'Scope - what we touch').
+depth('design/05-trusted-kernel-redesign.md', 'scope---what-we-touch', 2).
+order('design/05-trusted-kernel-redesign.md', 'scope---what-we-touch', 4).
+selected('design/05-trusted-kernel-redesign.md', 'scope---what-we-touch').
+section('design/05-trusted-kernel-redesign.md', rationale, '05---trusted-kernel-redesign').
+heading('design/05-trusted-kernel-redesign.md', rationale, 'Rationale').
+depth('design/05-trusted-kernel-redesign.md', rationale, 2).
+order('design/05-trusted-kernel-redesign.md', rationale, 5).
+selected('design/05-trusted-kernel-redesign.md', rationale).
+section('design/05-trusted-kernel-redesign.md', 'assumptions-and-evidence', '05---trusted-kernel-redesign').
+heading('design/05-trusted-kernel-redesign.md', 'assumptions-and-evidence', 'Assumptions and evidence').
+depth('design/05-trusted-kernel-redesign.md', 'assumptions-and-evidence', 2).
+order('design/05-trusted-kernel-redesign.md', 'assumptions-and-evidence', 6).
+selected('design/05-trusted-kernel-redesign.md', 'assumptions-and-evidence').
+section('design/05-trusted-kernel-redesign.md', 'constitution-amendments', '05---trusted-kernel-redesign').
+heading('design/05-trusted-kernel-redesign.md', 'constitution-amendments', 'Constitution amendments').
+depth('design/05-trusted-kernel-redesign.md', 'constitution-amendments', 2).
+order('design/05-trusted-kernel-redesign.md', 'constitution-amendments', 7).
+selected('design/05-trusted-kernel-redesign.md', 'constitution-amendments').
+section('design/05-trusted-kernel-redesign.md', design, '05---trusted-kernel-redesign').
+heading('design/05-trusted-kernel-redesign.md', design, 'Design').
+depth('design/05-trusted-kernel-redesign.md', design, 2).
+order('design/05-trusted-kernel-redesign.md', design, 8).
+selected('design/05-trusted-kernel-redesign.md', design).
+section('design/05-trusted-kernel-redesign.md', 'design/host', design).
+heading('design/05-trusted-kernel-redesign.md', 'design/host', 'Host').
+depth('design/05-trusted-kernel-redesign.md', 'design/host', 3).
+order('design/05-trusted-kernel-redesign.md', 'design/host', 9).
+selected('design/05-trusted-kernel-redesign.md', 'design/host').
+section('design/05-trusted-kernel-redesign.md', 'design/kernel', design).
+heading('design/05-trusted-kernel-redesign.md', 'design/kernel', 'Kernel').
+depth('design/05-trusted-kernel-redesign.md', 'design/kernel', 3).
+order('design/05-trusted-kernel-redesign.md', 'design/kernel', 10).
+selected('design/05-trusted-kernel-redesign.md', 'design/kernel').
+section('design/05-trusted-kernel-redesign.md', 'design/module-language', design).
+heading('design/05-trusted-kernel-redesign.md', 'design/module-language', 'Module language').
+depth('design/05-trusted-kernel-redesign.md', 'design/module-language', 3).
+order('design/05-trusted-kernel-redesign.md', 'design/module-language', 11).
+selected('design/05-trusted-kernel-redesign.md', 'design/module-language').
+section('design/05-trusted-kernel-redesign.md', 'design/oracle-toolkit-the-split-the-owner-set', design).
+heading('design/05-trusted-kernel-redesign.md', 'design/oracle-toolkit-the-split-the-owner-set', 'Oracle toolkit (the split the owner set)').
+depth('design/05-trusted-kernel-redesign.md', 'design/oracle-toolkit-the-split-the-owner-set', 3).
+order('design/05-trusted-kernel-redesign.md', 'design/oracle-toolkit-the-split-the-owner-set', 12).
+selected('design/05-trusted-kernel-redesign.md', 'design/oracle-toolkit-the-split-the-owner-set').
+section('design/05-trusted-kernel-redesign.md', 'design/process', design).
+heading('design/05-trusted-kernel-redesign.md', 'design/process', 'Process').
+depth('design/05-trusted-kernel-redesign.md', 'design/process', 3).
+order('design/05-trusted-kernel-redesign.md', 'design/process', 13).
+selected('design/05-trusted-kernel-redesign.md', 'design/process').
+section('design/05-trusted-kernel-redesign.md', 'verification-design', '05---trusted-kernel-redesign').
+heading('design/05-trusted-kernel-redesign.md', 'verification-design', 'Verification design').
+depth('design/05-trusted-kernel-redesign.md', 'verification-design', 2).
+order('design/05-trusted-kernel-redesign.md', 'verification-design', 14).
+selected('design/05-trusted-kernel-redesign.md', 'verification-design').
+section('design/05-trusted-kernel-redesign.md', goal, '05---trusted-kernel-redesign').
+heading('design/05-trusted-kernel-redesign.md', goal, 'Goal').
+depth('design/05-trusted-kernel-redesign.md', goal, 2).
+order('design/05-trusted-kernel-redesign.md', goal, 15).
+selected('design/05-trusted-kernel-redesign.md', goal).
+section('design/05-trusted-kernel-redesign.md', review, '05---trusted-kernel-redesign').
+heading('design/05-trusted-kernel-redesign.md', review, 'Review').
+depth('design/05-trusted-kernel-redesign.md', review, 2).
+order('design/05-trusted-kernel-redesign.md', review, 16).
+selected('design/05-trusted-kernel-redesign.md', review).
+section('design/05-trusted-kernel-redesign.md', status, '05---trusted-kernel-redesign').
+heading('design/05-trusted-kernel-redesign.md', status, 'Status').
+depth('design/05-trusted-kernel-redesign.md', status, 2).
+order('design/05-trusted-kernel-redesign.md', status, 17).
+selected('design/05-trusted-kernel-redesign.md', status).
+meta('design/05-trusted-kernel-redesign.md', kind, design).
+meta('design/05-trusted-kernel-redesign.md', status, draft).
+meta('design/05-trusted-kernel-redesign.md', status_words, '1').
+child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'user-inputs').
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'user-inputs').
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'user-inputs').
+child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'problem-statement').
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'problem-statement').
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'problem-statement').
+child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'scope---what-we-touch').
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'scope---what-we-touch').
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'scope---what-we-touch').
+child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', rationale).
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', rationale).
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', rationale).
+child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'assumptions-and-evidence').
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'assumptions-and-evidence').
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'assumptions-and-evidence').
+child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'constitution-amendments').
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'constitution-amendments').
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'constitution-amendments').
+child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', design).
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', design).
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', design).
+child('design/05-trusted-kernel-redesign.md', design, 'design/host').
+descendant('design/05-trusted-kernel-redesign.md', design, 'design/host').
+nests('design/05-trusted-kernel-redesign.md', design, 'design/host').
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'design/host').
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'design/host').
+child('design/05-trusted-kernel-redesign.md', design, 'design/kernel').
+descendant('design/05-trusted-kernel-redesign.md', design, 'design/kernel').
+nests('design/05-trusted-kernel-redesign.md', design, 'design/kernel').
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'design/kernel').
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'design/kernel').
+child('design/05-trusted-kernel-redesign.md', design, 'design/module-language').
+descendant('design/05-trusted-kernel-redesign.md', design, 'design/module-language').
+nests('design/05-trusted-kernel-redesign.md', design, 'design/module-language').
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'design/module-language').
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'design/module-language').
+child('design/05-trusted-kernel-redesign.md', design, 'design/oracle-toolkit-the-split-the-owner-set').
+descendant('design/05-trusted-kernel-redesign.md', design, 'design/oracle-toolkit-the-split-the-owner-set').
+nests('design/05-trusted-kernel-redesign.md', design, 'design/oracle-toolkit-the-split-the-owner-set').
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'design/oracle-toolkit-the-split-the-owner-set').
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'design/oracle-toolkit-the-split-the-owner-set').
+child('design/05-trusted-kernel-redesign.md', design, 'design/process').
+descendant('design/05-trusted-kernel-redesign.md', design, 'design/process').
+nests('design/05-trusted-kernel-redesign.md', design, 'design/process').
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'design/process').
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'design/process').
+child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'verification-design').
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'verification-design').
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', 'verification-design').
+child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', goal).
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', goal).
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', goal).
+child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', review).
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', review).
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', review).
+child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', status).
+descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', status).
+nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', status).
+table('design/05-trusted-kernel-redesign.md', 'verification-design', 'verification-design#table1').
+header('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'Property').
+header('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'Failure witness').
+header('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'Command').
+row('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'verification-design#row1').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row1', 'Property').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row1', 'Failure witness').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row1', 'Command').
+row('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'verification-design#row2').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row2', 'Property').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row2', 'Failure witness').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row2', 'Command').
+row('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'verification-design#row3').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row3', 'Property').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row3', 'Failure witness').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row3', 'Command').
+row('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'verification-design#row4').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row4', 'Property').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row4', 'Failure witness').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row4', 'Command').
+row('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'verification-design#row5').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row5', 'Property').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row5', 'Failure witness').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row5', 'Command').
+row('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'verification-design#row6').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row6', 'Property').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row6', 'Failure witness').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row6', 'Command').
+row('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'verification-design#row7').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row7', 'Property').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row7', 'Failure witness').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row7', 'Command').
+row('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'verification-design#row8').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row8', 'Property').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row8', 'Failure witness').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row8', 'Command').
+row('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'verification-design#row9').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row9', 'Property').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row9', 'Failure witness').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row9', 'Command').
+row('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'verification-design#row10').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row10', 'Property').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row10', 'Failure witness').
+cell('design/05-trusted-kernel-redesign.md', 'verification-design#row10', 'Command').
+ref('design/05-trusted-kernel-redesign.md', 'scope---what-we-touch', 'docs/doc-verify-constitution.md', path).
+resolves('design/05-trusted-kernel-redesign.md', 'docs/doc-verify-constitution.md').
+ref('design/05-trusted-kernel-redesign.md', 'scope---what-we-touch', 'docs/doc-verify-model.md', path).
+resolves('design/05-trusted-kernel-redesign.md', 'docs/doc-verify-model.md').
+ref('design/05-trusted-kernel-redesign.md', 'scope---what-we-touch', 'worklog/kernel-trials/round-2-verdict.md', path).
+resolves('design/05-trusted-kernel-redesign.md', 'worklog/kernel-trials/round-2-verdict.md').
+ref('design/05-trusted-kernel-redesign.md', 'scope---what-we-touch', 'AGENTS.md', path).
+resolves('design/05-trusted-kernel-redesign.md', 'AGENTS.md').
+ref('design/05-trusted-kernel-redesign.md', rationale, 'worklog/kernel-trials/round-1-verdict.md', path).
+resolves('design/05-trusted-kernel-redesign.md', 'worklog/kernel-trials/round-1-verdict.md').
+ref('design/05-trusted-kernel-redesign.md', 'assumptions-and-evidence', 'docs/doc-verify-model.md', path).
+resolves('design/05-trusted-kernel-redesign.md', 'docs/doc-verify-model.md').
+ref('design/05-trusted-kernel-redesign.md', 'design/oracle-toolkit-the-split-the-owner-set', 'worklog/kernel-trials/probe/oracle-test.mjs', path).
+resolves('design/05-trusted-kernel-redesign.md', 'worklog/kernel-trials/probe/oracle-test.mjs').
+ref('design/05-trusted-kernel-redesign.md', 'design/process', 'AGENTS.md', path).
+resolves('design/05-trusted-kernel-redesign.md', 'AGENTS.md').
+ref('design/05-trusted-kernel-redesign.md', 'verification-design', 'docs/doc-verify-model.md', path).
+resolves('design/05-trusted-kernel-redesign.md', 'docs/doc-verify-model.md').
+ref('design/05-trusted-kernel-redesign.md', 'verification-design', 'docs/doc-verify-constitution.md', path).
+resolves('design/05-trusted-kernel-redesign.md', 'docs/doc-verify-constitution.md').
 
 % docs/modules/language/contract.md (module-contract)
 section('docs/modules/language/contract.md', 'language--contract', root).
@@ -685,6 +1281,30 @@ meta('docs/modules/language/contract.md', kind, 'module-contract').
 child('docs/modules/language/contract.md', 'language--contract', 'public-surface').
 descendant('docs/modules/language/contract.md', 'language--contract', 'public-surface').
 nests('docs/modules/language/contract.md', 'language--contract', 'public-surface').
+table('docs/modules/language/contract.md', 'public-surface', 'public-surface#table1').
+header('docs/modules/language/contract.md', 'public-surface#table1', 'Module').
+header('docs/modules/language/contract.md', 'public-surface#table1', 'Exports').
+header('docs/modules/language/contract.md', 'public-surface#table1', 'Rule callers rely on').
+row('docs/modules/language/contract.md', 'public-surface#table1', 'public-surface#row1').
+cell('docs/modules/language/contract.md', 'public-surface#row1', 'Module').
+cell('docs/modules/language/contract.md', 'public-surface#row1', 'Exports').
+cell('docs/modules/language/contract.md', 'public-surface#row1', 'Rule callers rely on').
+row('docs/modules/language/contract.md', 'public-surface#table1', 'public-surface#row2').
+cell('docs/modules/language/contract.md', 'public-surface#row2', 'Module').
+cell('docs/modules/language/contract.md', 'public-surface#row2', 'Exports').
+cell('docs/modules/language/contract.md', 'public-surface#row2', 'Rule callers rely on').
+row('docs/modules/language/contract.md', 'public-surface#table1', 'public-surface#row3').
+cell('docs/modules/language/contract.md', 'public-surface#row3', 'Module').
+cell('docs/modules/language/contract.md', 'public-surface#row3', 'Exports').
+cell('docs/modules/language/contract.md', 'public-surface#row3', 'Rule callers rely on').
+row('docs/modules/language/contract.md', 'public-surface#table1', 'public-surface#row4').
+cell('docs/modules/language/contract.md', 'public-surface#row4', 'Module').
+cell('docs/modules/language/contract.md', 'public-surface#row4', 'Exports').
+cell('docs/modules/language/contract.md', 'public-surface#row4', 'Rule callers rely on').
+row('docs/modules/language/contract.md', 'public-surface#table1', 'public-surface#row5').
+cell('docs/modules/language/contract.md', 'public-surface#row5', 'Module').
+cell('docs/modules/language/contract.md', 'public-surface#row5', 'Exports').
+cell('docs/modules/language/contract.md', 'public-surface#row5', 'Rule callers rely on').
 
 % docs/modules/language/model.md (module-model)
 section('docs/modules/language/model.md', 'language--model', root).
@@ -717,6 +1337,26 @@ depth('docs/modules/language/properties.md', 'language--properties', 1).
 order('docs/modules/language/properties.md', 'language--properties', 1).
 selected('docs/modules/language/properties.md', 'language--properties').
 meta('docs/modules/language/properties.md', kind, 'module-properties').
+table('docs/modules/language/properties.md', 'language--properties', 'language--properties#table1').
+header('docs/modules/language/properties.md', 'language--properties#table1', 'Id').
+header('docs/modules/language/properties.md', 'language--properties#table1', 'Property').
+header('docs/modules/language/properties.md', 'language--properties#table1', 'Statement').
+row('docs/modules/language/properties.md', 'language--properties#table1', 'language--properties#row1').
+cell('docs/modules/language/properties.md', 'language--properties#row1', 'Id').
+cell('docs/modules/language/properties.md', 'language--properties#row1', 'Property').
+cell('docs/modules/language/properties.md', 'language--properties#row1', 'Statement').
+row('docs/modules/language/properties.md', 'language--properties#table1', 'language--properties#row2').
+cell('docs/modules/language/properties.md', 'language--properties#row2', 'Id').
+cell('docs/modules/language/properties.md', 'language--properties#row2', 'Property').
+cell('docs/modules/language/properties.md', 'language--properties#row2', 'Statement').
+row('docs/modules/language/properties.md', 'language--properties#table1', 'language--properties#row3').
+cell('docs/modules/language/properties.md', 'language--properties#row3', 'Id').
+cell('docs/modules/language/properties.md', 'language--properties#row3', 'Property').
+cell('docs/modules/language/properties.md', 'language--properties#row3', 'Statement').
+row('docs/modules/language/properties.md', 'language--properties#table1', 'language--properties#row4').
+cell('docs/modules/language/properties.md', 'language--properties#row4', 'Id').
+cell('docs/modules/language/properties.md', 'language--properties#row4', 'Property').
+cell('docs/modules/language/properties.md', 'language--properties#row4', 'Statement').
 
 % docs/modules/language/verification.md (module-verification)
 section('docs/modules/language/verification.md', 'language--verification', root).
@@ -725,6 +1365,26 @@ depth('docs/modules/language/verification.md', 'language--verification', 1).
 order('docs/modules/language/verification.md', 'language--verification', 1).
 selected('docs/modules/language/verification.md', 'language--verification').
 meta('docs/modules/language/verification.md', kind, 'module-verification').
+table('docs/modules/language/verification.md', 'language--verification', 'language--verification#table1').
+header('docs/modules/language/verification.md', 'language--verification#table1', 'Property').
+header('docs/modules/language/verification.md', 'language--verification#table1', 'Check (deciding test)').
+header('docs/modules/language/verification.md', 'language--verification#table1', 'Limit').
+row('docs/modules/language/verification.md', 'language--verification#table1', 'language--verification#row1').
+cell('docs/modules/language/verification.md', 'language--verification#row1', 'Property').
+cell('docs/modules/language/verification.md', 'language--verification#row1', 'Check (deciding test)').
+cell('docs/modules/language/verification.md', 'language--verification#row1', 'Limit').
+row('docs/modules/language/verification.md', 'language--verification#table1', 'language--verification#row2').
+cell('docs/modules/language/verification.md', 'language--verification#row2', 'Property').
+cell('docs/modules/language/verification.md', 'language--verification#row2', 'Check (deciding test)').
+cell('docs/modules/language/verification.md', 'language--verification#row2', 'Limit').
+row('docs/modules/language/verification.md', 'language--verification#table1', 'language--verification#row3').
+cell('docs/modules/language/verification.md', 'language--verification#row3', 'Property').
+cell('docs/modules/language/verification.md', 'language--verification#row3', 'Check (deciding test)').
+cell('docs/modules/language/verification.md', 'language--verification#row3', 'Limit').
+row('docs/modules/language/verification.md', 'language--verification#table1', 'language--verification#row4').
+cell('docs/modules/language/verification.md', 'language--verification#row4', 'Property').
+cell('docs/modules/language/verification.md', 'language--verification#row4', 'Check (deciding test)').
+cell('docs/modules/language/verification.md', 'language--verification#row4', 'Limit').
 ref('docs/modules/language/verification.md', 'language--verification', 'doc-verify/tests/language/modules-check.test.ts', path).
 resolves('docs/modules/language/verification.md', 'doc-verify/tests/language/modules-check.test.ts').
 ref('docs/modules/language/verification.md', 'language--verification', 'doc-verify/tests/language/language.test.ts', path).
@@ -751,6 +1411,22 @@ meta('docs/modules/oracles/contract.md', kind, 'module-contract').
 child('docs/modules/oracles/contract.md', 'oracles--contract', 'public-surface').
 descendant('docs/modules/oracles/contract.md', 'oracles--contract', 'public-surface').
 nests('docs/modules/oracles/contract.md', 'oracles--contract', 'public-surface').
+table('docs/modules/oracles/contract.md', 'public-surface', 'public-surface#table1').
+header('docs/modules/oracles/contract.md', 'public-surface#table1', 'Module').
+header('docs/modules/oracles/contract.md', 'public-surface#table1', 'Exports').
+header('docs/modules/oracles/contract.md', 'public-surface#table1', 'Rule callers rely on').
+row('docs/modules/oracles/contract.md', 'public-surface#table1', 'public-surface#row1').
+cell('docs/modules/oracles/contract.md', 'public-surface#row1', 'Module').
+cell('docs/modules/oracles/contract.md', 'public-surface#row1', 'Exports').
+cell('docs/modules/oracles/contract.md', 'public-surface#row1', 'Rule callers rely on').
+row('docs/modules/oracles/contract.md', 'public-surface#table1', 'public-surface#row2').
+cell('docs/modules/oracles/contract.md', 'public-surface#row2', 'Module').
+cell('docs/modules/oracles/contract.md', 'public-surface#row2', 'Exports').
+cell('docs/modules/oracles/contract.md', 'public-surface#row2', 'Rule callers rely on').
+row('docs/modules/oracles/contract.md', 'public-surface#table1', 'public-surface#row3').
+cell('docs/modules/oracles/contract.md', 'public-surface#row3', 'Module').
+cell('docs/modules/oracles/contract.md', 'public-surface#row3', 'Exports').
+cell('docs/modules/oracles/contract.md', 'public-surface#row3', 'Rule callers rely on').
 
 % docs/modules/oracles/model.md (module-model)
 section('docs/modules/oracles/model.md', 'oracles--model', root).
@@ -791,6 +1467,30 @@ depth('docs/modules/oracles/properties.md', 'oracles--properties', 1).
 order('docs/modules/oracles/properties.md', 'oracles--properties', 1).
 selected('docs/modules/oracles/properties.md', 'oracles--properties').
 meta('docs/modules/oracles/properties.md', kind, 'module-properties').
+table('docs/modules/oracles/properties.md', 'oracles--properties', 'oracles--properties#table1').
+header('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'Id').
+header('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'Property').
+header('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'Statement').
+row('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'oracles--properties#row1').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row1', 'Id').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row1', 'Property').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row1', 'Statement').
+row('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'oracles--properties#row2').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row2', 'Id').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row2', 'Property').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row2', 'Statement').
+row('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'oracles--properties#row3').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row3', 'Id').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row3', 'Property').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row3', 'Statement').
+row('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'oracles--properties#row4').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row4', 'Id').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row4', 'Property').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row4', 'Statement').
+row('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'oracles--properties#row5').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row5', 'Id').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row5', 'Property').
+cell('docs/modules/oracles/properties.md', 'oracles--properties#row5', 'Statement').
 
 % docs/modules/oracles/verification.md (module-verification)
 section('docs/modules/oracles/verification.md', 'oracles--verification', root).
@@ -799,6 +1499,30 @@ depth('docs/modules/oracles/verification.md', 'oracles--verification', 1).
 order('docs/modules/oracles/verification.md', 'oracles--verification', 1).
 selected('docs/modules/oracles/verification.md', 'oracles--verification').
 meta('docs/modules/oracles/verification.md', kind, 'module-verification').
+table('docs/modules/oracles/verification.md', 'oracles--verification', 'oracles--verification#table1').
+header('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'Property').
+header('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'Check (deciding test)').
+header('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'Limit').
+row('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'oracles--verification#row1').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row1', 'Property').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row1', 'Check (deciding test)').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row1', 'Limit').
+row('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'oracles--verification#row2').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row2', 'Property').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row2', 'Check (deciding test)').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row2', 'Limit').
+row('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'oracles--verification#row3').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row3', 'Property').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row3', 'Check (deciding test)').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row3', 'Limit').
+row('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'oracles--verification#row4').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row4', 'Property').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row4', 'Check (deciding test)').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row4', 'Limit').
+row('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'oracles--verification#row5').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row5', 'Property').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row5', 'Check (deciding test)').
+cell('docs/modules/oracles/verification.md', 'oracles--verification#row5', 'Limit').
 ref('docs/modules/oracles/verification.md', 'oracles--verification', 'doc-verify/tests/oracles/oracles.test.ts', path).
 resolves('docs/modules/oracles/verification.md', 'doc-verify/tests/oracles/oracles.test.ts').
 ref('docs/modules/oracles/verification.md', 'oracles--verification', 'doc-verify/tests/oracles/cache.test.ts', path).
@@ -823,6 +1547,34 @@ meta('docs/modules/report/contract.md', kind, 'module-contract').
 child('docs/modules/report/contract.md', 'report--contract', 'public-surface').
 descendant('docs/modules/report/contract.md', 'report--contract', 'public-surface').
 nests('docs/modules/report/contract.md', 'report--contract', 'public-surface').
+table('docs/modules/report/contract.md', 'public-surface', 'public-surface#table1').
+header('docs/modules/report/contract.md', 'public-surface#table1', 'Module').
+header('docs/modules/report/contract.md', 'public-surface#table1', 'Exports').
+header('docs/modules/report/contract.md', 'public-surface#table1', 'Rule callers rely on').
+row('docs/modules/report/contract.md', 'public-surface#table1', 'public-surface#row1').
+cell('docs/modules/report/contract.md', 'public-surface#row1', 'Module').
+cell('docs/modules/report/contract.md', 'public-surface#row1', 'Exports').
+cell('docs/modules/report/contract.md', 'public-surface#row1', 'Rule callers rely on').
+row('docs/modules/report/contract.md', 'public-surface#table1', 'public-surface#row2').
+cell('docs/modules/report/contract.md', 'public-surface#row2', 'Module').
+cell('docs/modules/report/contract.md', 'public-surface#row2', 'Exports').
+cell('docs/modules/report/contract.md', 'public-surface#row2', 'Rule callers rely on').
+row('docs/modules/report/contract.md', 'public-surface#table1', 'public-surface#row3').
+cell('docs/modules/report/contract.md', 'public-surface#row3', 'Module').
+cell('docs/modules/report/contract.md', 'public-surface#row3', 'Exports').
+cell('docs/modules/report/contract.md', 'public-surface#row3', 'Rule callers rely on').
+row('docs/modules/report/contract.md', 'public-surface#table1', 'public-surface#row4').
+cell('docs/modules/report/contract.md', 'public-surface#row4', 'Module').
+cell('docs/modules/report/contract.md', 'public-surface#row4', 'Exports').
+cell('docs/modules/report/contract.md', 'public-surface#row4', 'Rule callers rely on').
+row('docs/modules/report/contract.md', 'public-surface#table1', 'public-surface#row5').
+cell('docs/modules/report/contract.md', 'public-surface#row5', 'Module').
+cell('docs/modules/report/contract.md', 'public-surface#row5', 'Exports').
+cell('docs/modules/report/contract.md', 'public-surface#row5', 'Rule callers rely on').
+row('docs/modules/report/contract.md', 'public-surface#table1', 'public-surface#row6').
+cell('docs/modules/report/contract.md', 'public-surface#row6', 'Module').
+cell('docs/modules/report/contract.md', 'public-surface#row6', 'Exports').
+cell('docs/modules/report/contract.md', 'public-surface#row6', 'Rule callers rely on').
 
 % docs/modules/report/model.md (module-model)
 section('docs/modules/report/model.md', 'report--model', root).
@@ -855,6 +1607,30 @@ depth('docs/modules/report/properties.md', 'report--properties', 1).
 order('docs/modules/report/properties.md', 'report--properties', 1).
 selected('docs/modules/report/properties.md', 'report--properties').
 meta('docs/modules/report/properties.md', kind, 'module-properties').
+table('docs/modules/report/properties.md', 'report--properties', 'report--properties#table1').
+header('docs/modules/report/properties.md', 'report--properties#table1', 'Id').
+header('docs/modules/report/properties.md', 'report--properties#table1', 'Property').
+header('docs/modules/report/properties.md', 'report--properties#table1', 'Statement').
+row('docs/modules/report/properties.md', 'report--properties#table1', 'report--properties#row1').
+cell('docs/modules/report/properties.md', 'report--properties#row1', 'Id').
+cell('docs/modules/report/properties.md', 'report--properties#row1', 'Property').
+cell('docs/modules/report/properties.md', 'report--properties#row1', 'Statement').
+row('docs/modules/report/properties.md', 'report--properties#table1', 'report--properties#row2').
+cell('docs/modules/report/properties.md', 'report--properties#row2', 'Id').
+cell('docs/modules/report/properties.md', 'report--properties#row2', 'Property').
+cell('docs/modules/report/properties.md', 'report--properties#row2', 'Statement').
+row('docs/modules/report/properties.md', 'report--properties#table1', 'report--properties#row3').
+cell('docs/modules/report/properties.md', 'report--properties#row3', 'Id').
+cell('docs/modules/report/properties.md', 'report--properties#row3', 'Property').
+cell('docs/modules/report/properties.md', 'report--properties#row3', 'Statement').
+row('docs/modules/report/properties.md', 'report--properties#table1', 'report--properties#row4').
+cell('docs/modules/report/properties.md', 'report--properties#row4', 'Id').
+cell('docs/modules/report/properties.md', 'report--properties#row4', 'Property').
+cell('docs/modules/report/properties.md', 'report--properties#row4', 'Statement').
+row('docs/modules/report/properties.md', 'report--properties#table1', 'report--properties#row5').
+cell('docs/modules/report/properties.md', 'report--properties#row5', 'Id').
+cell('docs/modules/report/properties.md', 'report--properties#row5', 'Property').
+cell('docs/modules/report/properties.md', 'report--properties#row5', 'Statement').
 
 % docs/modules/report/verification.md (module-verification)
 section('docs/modules/report/verification.md', 'report--verification', root).
@@ -863,6 +1639,30 @@ depth('docs/modules/report/verification.md', 'report--verification', 1).
 order('docs/modules/report/verification.md', 'report--verification', 1).
 selected('docs/modules/report/verification.md', 'report--verification').
 meta('docs/modules/report/verification.md', kind, 'module-verification').
+table('docs/modules/report/verification.md', 'report--verification', 'report--verification#table1').
+header('docs/modules/report/verification.md', 'report--verification#table1', 'Property').
+header('docs/modules/report/verification.md', 'report--verification#table1', 'Check (deciding test)').
+header('docs/modules/report/verification.md', 'report--verification#table1', 'Limit').
+row('docs/modules/report/verification.md', 'report--verification#table1', 'report--verification#row1').
+cell('docs/modules/report/verification.md', 'report--verification#row1', 'Property').
+cell('docs/modules/report/verification.md', 'report--verification#row1', 'Check (deciding test)').
+cell('docs/modules/report/verification.md', 'report--verification#row1', 'Limit').
+row('docs/modules/report/verification.md', 'report--verification#table1', 'report--verification#row2').
+cell('docs/modules/report/verification.md', 'report--verification#row2', 'Property').
+cell('docs/modules/report/verification.md', 'report--verification#row2', 'Check (deciding test)').
+cell('docs/modules/report/verification.md', 'report--verification#row2', 'Limit').
+row('docs/modules/report/verification.md', 'report--verification#table1', 'report--verification#row3').
+cell('docs/modules/report/verification.md', 'report--verification#row3', 'Property').
+cell('docs/modules/report/verification.md', 'report--verification#row3', 'Check (deciding test)').
+cell('docs/modules/report/verification.md', 'report--verification#row3', 'Limit').
+row('docs/modules/report/verification.md', 'report--verification#table1', 'report--verification#row4').
+cell('docs/modules/report/verification.md', 'report--verification#row4', 'Property').
+cell('docs/modules/report/verification.md', 'report--verification#row4', 'Check (deciding test)').
+cell('docs/modules/report/verification.md', 'report--verification#row4', 'Limit').
+row('docs/modules/report/verification.md', 'report--verification#table1', 'report--verification#row5').
+cell('docs/modules/report/verification.md', 'report--verification#row5', 'Property').
+cell('docs/modules/report/verification.md', 'report--verification#row5', 'Check (deciding test)').
+cell('docs/modules/report/verification.md', 'report--verification#row5', 'Limit').
 ref('docs/modules/report/verification.md', 'report--verification', 'doc-verify/tests/report/diagnostics.test.ts', path).
 resolves('docs/modules/report/verification.md', 'doc-verify/tests/report/diagnostics.test.ts').
 ref('docs/modules/report/verification.md', 'report--verification', 'doc-verify/tests/report/report.test.ts', path).
@@ -889,6 +1689,22 @@ meta('docs/modules/selection/contract.md', kind, 'module-contract').
 child('docs/modules/selection/contract.md', 'selection--contract', 'public-surface').
 descendant('docs/modules/selection/contract.md', 'selection--contract', 'public-surface').
 nests('docs/modules/selection/contract.md', 'selection--contract', 'public-surface').
+table('docs/modules/selection/contract.md', 'public-surface', 'public-surface#table1').
+header('docs/modules/selection/contract.md', 'public-surface#table1', 'Module').
+header('docs/modules/selection/contract.md', 'public-surface#table1', 'Exports').
+header('docs/modules/selection/contract.md', 'public-surface#table1', 'Rule callers rely on').
+row('docs/modules/selection/contract.md', 'public-surface#table1', 'public-surface#row1').
+cell('docs/modules/selection/contract.md', 'public-surface#row1', 'Module').
+cell('docs/modules/selection/contract.md', 'public-surface#row1', 'Exports').
+cell('docs/modules/selection/contract.md', 'public-surface#row1', 'Rule callers rely on').
+row('docs/modules/selection/contract.md', 'public-surface#table1', 'public-surface#row2').
+cell('docs/modules/selection/contract.md', 'public-surface#row2', 'Module').
+cell('docs/modules/selection/contract.md', 'public-surface#row2', 'Exports').
+cell('docs/modules/selection/contract.md', 'public-surface#row2', 'Rule callers rely on').
+row('docs/modules/selection/contract.md', 'public-surface#table1', 'public-surface#row3').
+cell('docs/modules/selection/contract.md', 'public-surface#row3', 'Module').
+cell('docs/modules/selection/contract.md', 'public-surface#row3', 'Exports').
+cell('docs/modules/selection/contract.md', 'public-surface#row3', 'Rule callers rely on').
 
 % docs/modules/selection/model.md (module-model)
 section('docs/modules/selection/model.md', 'selection--model', root).
@@ -921,6 +1737,26 @@ depth('docs/modules/selection/properties.md', 'selection--properties', 1).
 order('docs/modules/selection/properties.md', 'selection--properties', 1).
 selected('docs/modules/selection/properties.md', 'selection--properties').
 meta('docs/modules/selection/properties.md', kind, 'module-properties').
+table('docs/modules/selection/properties.md', 'selection--properties', 'selection--properties#table1').
+header('docs/modules/selection/properties.md', 'selection--properties#table1', 'Id').
+header('docs/modules/selection/properties.md', 'selection--properties#table1', 'Property').
+header('docs/modules/selection/properties.md', 'selection--properties#table1', 'Statement').
+row('docs/modules/selection/properties.md', 'selection--properties#table1', 'selection--properties#row1').
+cell('docs/modules/selection/properties.md', 'selection--properties#row1', 'Id').
+cell('docs/modules/selection/properties.md', 'selection--properties#row1', 'Property').
+cell('docs/modules/selection/properties.md', 'selection--properties#row1', 'Statement').
+row('docs/modules/selection/properties.md', 'selection--properties#table1', 'selection--properties#row2').
+cell('docs/modules/selection/properties.md', 'selection--properties#row2', 'Id').
+cell('docs/modules/selection/properties.md', 'selection--properties#row2', 'Property').
+cell('docs/modules/selection/properties.md', 'selection--properties#row2', 'Statement').
+row('docs/modules/selection/properties.md', 'selection--properties#table1', 'selection--properties#row3').
+cell('docs/modules/selection/properties.md', 'selection--properties#row3', 'Id').
+cell('docs/modules/selection/properties.md', 'selection--properties#row3', 'Property').
+cell('docs/modules/selection/properties.md', 'selection--properties#row3', 'Statement').
+row('docs/modules/selection/properties.md', 'selection--properties#table1', 'selection--properties#row4').
+cell('docs/modules/selection/properties.md', 'selection--properties#row4', 'Id').
+cell('docs/modules/selection/properties.md', 'selection--properties#row4', 'Property').
+cell('docs/modules/selection/properties.md', 'selection--properties#row4', 'Statement').
 
 % docs/modules/selection/verification.md (module-verification)
 section('docs/modules/selection/verification.md', 'selection--verification', root).
@@ -929,6 +1765,26 @@ depth('docs/modules/selection/verification.md', 'selection--verification', 1).
 order('docs/modules/selection/verification.md', 'selection--verification', 1).
 selected('docs/modules/selection/verification.md', 'selection--verification').
 meta('docs/modules/selection/verification.md', kind, 'module-verification').
+table('docs/modules/selection/verification.md', 'selection--verification', 'selection--verification#table1').
+header('docs/modules/selection/verification.md', 'selection--verification#table1', 'Property').
+header('docs/modules/selection/verification.md', 'selection--verification#table1', 'Check (deciding test)').
+header('docs/modules/selection/verification.md', 'selection--verification#table1', 'Limit').
+row('docs/modules/selection/verification.md', 'selection--verification#table1', 'selection--verification#row1').
+cell('docs/modules/selection/verification.md', 'selection--verification#row1', 'Property').
+cell('docs/modules/selection/verification.md', 'selection--verification#row1', 'Check (deciding test)').
+cell('docs/modules/selection/verification.md', 'selection--verification#row1', 'Limit').
+row('docs/modules/selection/verification.md', 'selection--verification#table1', 'selection--verification#row2').
+cell('docs/modules/selection/verification.md', 'selection--verification#row2', 'Property').
+cell('docs/modules/selection/verification.md', 'selection--verification#row2', 'Check (deciding test)').
+cell('docs/modules/selection/verification.md', 'selection--verification#row2', 'Limit').
+row('docs/modules/selection/verification.md', 'selection--verification#table1', 'selection--verification#row3').
+cell('docs/modules/selection/verification.md', 'selection--verification#row3', 'Property').
+cell('docs/modules/selection/verification.md', 'selection--verification#row3', 'Check (deciding test)').
+cell('docs/modules/selection/verification.md', 'selection--verification#row3', 'Limit').
+row('docs/modules/selection/verification.md', 'selection--verification#table1', 'selection--verification#row4').
+cell('docs/modules/selection/verification.md', 'selection--verification#row4', 'Property').
+cell('docs/modules/selection/verification.md', 'selection--verification#row4', 'Check (deciding test)').
+cell('docs/modules/selection/verification.md', 'selection--verification#row4', 'Limit').
 ref('docs/modules/selection/verification.md', 'selection--verification', 'doc-verify/tests/selection/task61-selector-gate.test.ts', path).
 resolves('docs/modules/selection/verification.md', 'doc-verify/tests/selection/task61-selector-gate.test.ts').
 ref('docs/modules/selection/verification.md', 'selection--verification', 'doc-verify/tests/selection/companion.test.ts', path).
@@ -1138,6 +1994,78 @@ nests('goals/01-document-verification-and-skill-transfer.md', 'document-verifica
 child('goals/01-document-verification-and-skill-transfer.md', 'document-verification-and-skill-transfer---closed-green-2026-09-24', worklog).
 descendant('goals/01-document-verification-and-skill-transfer.md', 'document-verification-and-skill-transfer---closed-green-2026-09-24', worklog).
 nests('goals/01-document-verification-and-skill-transfer.md', 'document-verification-and-skill-transfer---closed-green-2026-09-24', worklog).
+table('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage', 'ac-coverage#table1').
+header('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Row').
+header('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Covering design(s)').
+header('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Phase').
+header('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Locks when').
+table('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence', 'acceptance-evidence#table1').
+header('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'Row').
+header('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'Evidence').
+row('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'ac-coverage#row1').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row1', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row1', 'Covering design(s)').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row1', 'Phase').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row1', 'Locks when').
+row('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'ac-coverage#row2').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row2', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row2', 'Covering design(s)').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row2', 'Phase').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row2', 'Locks when').
+row('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'ac-coverage#row3').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row3', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row3', 'Covering design(s)').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row3', 'Phase').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row3', 'Locks when').
+row('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'ac-coverage#row4').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row4', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row4', 'Covering design(s)').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row4', 'Phase').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row4', 'Locks when').
+row('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'ac-coverage#row5').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row5', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row5', 'Covering design(s)').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row5', 'Phase').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row5', 'Locks when').
+row('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'ac-coverage#row6').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row6', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row6', 'Covering design(s)').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row6', 'Phase').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row6', 'Locks when').
+row('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'ac-coverage#row7').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row7', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row7', 'Covering design(s)').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row7', 'Phase').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row7', 'Locks when').
+row('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'ac-coverage#row8').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row8', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row8', 'Covering design(s)').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row8', 'Phase').
+cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row8', 'Locks when').
+row('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'acceptance-evidence#row1').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row1', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row1', 'Evidence').
+row('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'acceptance-evidence#row2').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row2', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row2', 'Evidence').
+row('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'acceptance-evidence#row3').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row3', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row3', 'Evidence').
+row('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'acceptance-evidence#row4').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row4', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row4', 'Evidence').
+row('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'acceptance-evidence#row5').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row5', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row5', 'Evidence').
+row('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'acceptance-evidence#row6').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row6', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row6', 'Evidence').
+row('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'acceptance-evidence#row7').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row7', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row7', 'Evidence').
+row('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'acceptance-evidence#row8').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row8', 'Row').
+cell('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#row8', 'Evidence').
 ref('goals/01-document-verification-and-skill-transfer.md', 'design-files', 'design/02-programmatic-document-contract-verification.md', path).
 resolves('goals/01-document-verification-and-skill-transfer.md', 'design/02-programmatic-document-contract-verification.md').
 ref('goals/01-document-verification-and-skill-transfer.md', dependencies, 'design/02-programmatic-document-contract-verification.md', path).
@@ -1146,6 +2074,20 @@ ref('goals/01-document-verification-and-skill-transfer.md', 'workflows/design02-
 resolves('goals/01-document-verification-and-skill-transfer.md', 'goals/01-document-verification-and-skill-transfer.md').
 ref('goals/01-document-verification-and-skill-transfer.md', 'rulings-in-force', 'design/02-programmatic-document-contract-verification.md', path).
 resolves('goals/01-document-verification-and-skill-transfer.md', 'design/02-programmatic-document-contract-verification.md').
+ref('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence', 'worklog/02-programmatic-document-contract-verification.md', path).
+resolves('goals/01-document-verification-and-skill-transfer.md', 'worklog/02-programmatic-document-contract-verification.md').
+ref('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence', 'skills/verification/SKILL.md', path).
+resolves('goals/01-document-verification-and-skill-transfer.md', 'skills/verification/SKILL.md').
+ref('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence', 'skills/verification/references/practices.md', path).
+resolves('goals/01-document-verification-and-skill-transfer.md', 'skills/verification/references/practices.md').
+ref('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence', 'doc-verify/tests/report/segments.test.ts', path).
+resolves('goals/01-document-verification-and-skill-transfer.md', 'doc-verify/tests/report/segments.test.ts').
+ref('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence', 'doc-verify/tests/language/language.test.ts', path).
+resolves('goals/01-document-verification-and-skill-transfer.md', 'doc-verify/tests/language/language.test.ts').
+ref('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence', 'doc-verify/tests/selection/companion.test.ts', path).
+resolves('goals/01-document-verification-and-skill-transfer.md', 'doc-verify/tests/selection/companion.test.ts').
+ref('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence', 'doc-verify/tests/oracles/', path).
+resolves('goals/01-document-verification-and-skill-transfer.md', 'doc-verify/tests/oracles/').
 ref('goals/01-document-verification-and-skill-transfer.md', worklog, 'worklog/02-programmatic-document-contract-verification.md', path).
 resolves('goals/01-document-verification-and-skill-transfer.md', 'worklog/02-programmatic-document-contract-verification.md').
 
@@ -1325,6 +2267,30 @@ nests('goals/02-companion-driven-document-verification.md', 'companion-driven-do
 child('goals/02-companion-driven-document-verification.md', 'companion-driven-document-verification---closed-green-2026-09-24', worklog).
 descendant('goals/02-companion-driven-document-verification.md', 'companion-driven-document-verification---closed-green-2026-09-24', worklog).
 nests('goals/02-companion-driven-document-verification.md', 'companion-driven-document-verification---closed-green-2026-09-24', worklog).
+table('goals/02-companion-driven-document-verification.md', 'ac-coverage', 'ac-coverage#table1').
+header('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'Row').
+header('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'Evidence required').
+row('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'ac-coverage#row1').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row1', 'Row').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row1', 'Evidence required').
+row('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'ac-coverage#row2').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row2', 'Row').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row2', 'Evidence required').
+row('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'ac-coverage#row3').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row3', 'Row').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row3', 'Evidence required').
+row('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'ac-coverage#row4').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row4', 'Row').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row4', 'Evidence required').
+row('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'ac-coverage#row5').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row5', 'Row').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row5', 'Evidence required').
+row('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'ac-coverage#row6').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row6', 'Row').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row6', 'Evidence required').
+row('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'ac-coverage#row7').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row7', 'Row').
+cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row7', 'Evidence required').
 ref('goals/02-companion-driven-document-verification.md', 'design-files', 'design/03-companion-driven-document-verification.md', path).
 resolves('goals/02-companion-driven-document-verification.md', 'design/03-companion-driven-document-verification.md').
 ref('goals/02-companion-driven-document-verification.md', 'workflows/design03-companion-driven-document-verificationmd---landed', 'goals/02-companion-driven-document-verification.md', path).
@@ -1498,12 +2464,192 @@ nests('goals/03-modular-verification-language.md', 'modular-verification-languag
 child('goals/03-modular-verification-language.md', 'modular-verification-language---open', worklog).
 descendant('goals/03-modular-verification-language.md', 'modular-verification-language---open', worklog).
 nests('goals/03-modular-verification-language.md', 'modular-verification-language---open', worklog).
+table('goals/03-modular-verification-language.md', 'ac-coverage', 'ac-coverage#table1').
+header('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'Row').
+header('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'Evidence required').
+row('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'ac-coverage#row1').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row1', 'Row').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row1', 'Evidence required').
+row('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'ac-coverage#row2').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row2', 'Row').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row2', 'Evidence required').
+row('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'ac-coverage#row3').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row3', 'Row').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row3', 'Evidence required').
+row('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'ac-coverage#row4').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row4', 'Row').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row4', 'Evidence required').
+row('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'ac-coverage#row5').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row5', 'Row').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row5', 'Evidence required').
+row('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'ac-coverage#row6').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row6', 'Row').
+cell('goals/03-modular-verification-language.md', 'ac-coverage#row6', 'Evidence required').
 ref('goals/03-modular-verification-language.md', 'design-files', 'design/04-modular-verification-language.md', path).
 resolves('goals/03-modular-verification-language.md', 'design/04-modular-verification-language.md').
 ref('goals/03-modular-verification-language.md', 'workflows/design04-modular-verification-languagemd---draft', 'goals/03-modular-verification-language.md', path).
 resolves('goals/03-modular-verification-language.md', 'goals/03-modular-verification-language.md').
 ref('goals/03-modular-verification-language.md', worklog, 'worklog/04-modular-verification-language.md', path).
 resolves('goals/03-modular-verification-language.md', 'worklog/04-modular-verification-language.md').
+
+% goals/04-trusted-kernel.md (goal)
+section('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', root).
+heading('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'Trusted kernel for doc-verify - OPEN').
+depth('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 1).
+order('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 1).
+selected('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open').
+section('goals/04-trusted-kernel.md', goal, 'trusted-kernel-for-doc-verify---open').
+heading('goals/04-trusted-kernel.md', goal, 'Goal').
+depth('goals/04-trusted-kernel.md', goal, 2).
+order('goals/04-trusted-kernel.md', goal, 2).
+selected('goals/04-trusted-kernel.md', goal).
+section('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'trusted-kernel-for-doc-verify---open').
+heading('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'User requirements - frozen root').
+depth('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 2).
+order('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 3).
+selected('goals/04-trusted-kernel.md', 'user-requirements---frozen-root').
+section('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r1---a-trusted-kernel-not-an-invented-one', 'user-requirements---frozen-root').
+heading('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r1---a-trusted-kernel-not-an-invented-one', 'R1 - A trusted kernel, not an invented one').
+depth('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r1---a-trusted-kernel-not-an-invented-one', 3).
+order('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r1---a-trusted-kernel-not-an-invented-one', 4).
+selected('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r1---a-trusted-kernel-not-an-invented-one').
+section('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r2---the-constitution-governs-the-language-does-not', 'user-requirements---frozen-root').
+heading('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r2---the-constitution-governs-the-language-does-not', 'R2 - The constitution governs, the language does not').
+depth('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r2---the-constitution-governs-the-language-does-not', 3).
+order('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r2---the-constitution-governs-the-language-does-not', 5).
+selected('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r2---the-constitution-governs-the-language-does-not').
+section('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r3---candidates-beyond-prolog', 'user-requirements---frozen-root').
+heading('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r3---candidates-beyond-prolog', 'R3 - Candidates beyond Prolog').
+depth('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r3---candidates-beyond-prolog', 3).
+order('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r3---candidates-beyond-prolog', 6).
+selected('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r3---candidates-beyond-prolog').
+section('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r4---judge-facts-derivations-diagnostics', 'user-requirements---frozen-root').
+heading('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r4---judge-facts-derivations-diagnostics', 'R4 - Judge facts, derivations, diagnostics').
+depth('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r4---judge-facts-derivations-diagnostics', 3).
+order('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r4---judge-facts-derivations-diagnostics', 7).
+selected('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r4---judge-facts-derivations-diagnostics').
+section('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r5---a-repeatable-loop', 'user-requirements---frozen-root').
+heading('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r5---a-repeatable-loop', 'R5 - A repeatable loop').
+depth('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r5---a-repeatable-loop', 3).
+order('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r5---a-repeatable-loop', 8).
+selected('goals/04-trusted-kernel.md', 'user-requirements---frozen-root/r5---a-repeatable-loop').
+section('goals/04-trusted-kernel.md', 'design-files', 'trusted-kernel-for-doc-verify---open').
+heading('goals/04-trusted-kernel.md', 'design-files', 'Design files').
+depth('goals/04-trusted-kernel.md', 'design-files', 2).
+order('goals/04-trusted-kernel.md', 'design-files', 9).
+selected('goals/04-trusted-kernel.md', 'design-files').
+section('goals/04-trusted-kernel.md', workstreams, 'trusted-kernel-for-doc-verify---open').
+heading('goals/04-trusted-kernel.md', workstreams, 'Workstreams').
+depth('goals/04-trusted-kernel.md', workstreams, 2).
+order('goals/04-trusted-kernel.md', workstreams, 10).
+selected('goals/04-trusted-kernel.md', workstreams).
+section('goals/04-trusted-kernel.md', 'ac-coverage', 'trusted-kernel-for-doc-verify---open').
+heading('goals/04-trusted-kernel.md', 'ac-coverage', 'AC coverage').
+depth('goals/04-trusted-kernel.md', 'ac-coverage', 2).
+order('goals/04-trusted-kernel.md', 'ac-coverage', 11).
+selected('goals/04-trusted-kernel.md', 'ac-coverage').
+section('goals/04-trusted-kernel.md', worklog, 'trusted-kernel-for-doc-verify---open').
+heading('goals/04-trusted-kernel.md', worklog, 'Worklog').
+depth('goals/04-trusted-kernel.md', worklog, 2).
+order('goals/04-trusted-kernel.md', worklog, 12).
+selected('goals/04-trusted-kernel.md', worklog).
+meta('goals/04-trusted-kernel.md', kind, goal).
+meta('goals/04-trusted-kernel.md', status, open).
+child('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', goal).
+descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', goal).
+nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', goal).
+child('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root').
+descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root').
+nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root').
+child('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r1---a-trusted-kernel-not-an-invented-one').
+descendant('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r1---a-trusted-kernel-not-an-invented-one').
+nests('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r1---a-trusted-kernel-not-an-invented-one').
+descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root/r1---a-trusted-kernel-not-an-invented-one').
+nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root/r1---a-trusted-kernel-not-an-invented-one').
+child('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r2---the-constitution-governs-the-language-does-not').
+descendant('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r2---the-constitution-governs-the-language-does-not').
+nests('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r2---the-constitution-governs-the-language-does-not').
+descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root/r2---the-constitution-governs-the-language-does-not').
+nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root/r2---the-constitution-governs-the-language-does-not').
+child('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r3---candidates-beyond-prolog').
+descendant('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r3---candidates-beyond-prolog').
+nests('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r3---candidates-beyond-prolog').
+descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root/r3---candidates-beyond-prolog').
+nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root/r3---candidates-beyond-prolog').
+child('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r4---judge-facts-derivations-diagnostics').
+descendant('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r4---judge-facts-derivations-diagnostics').
+nests('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r4---judge-facts-derivations-diagnostics').
+descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root/r4---judge-facts-derivations-diagnostics').
+nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root/r4---judge-facts-derivations-diagnostics').
+child('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r5---a-repeatable-loop').
+descendant('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r5---a-repeatable-loop').
+nests('goals/04-trusted-kernel.md', 'user-requirements---frozen-root', 'user-requirements---frozen-root/r5---a-repeatable-loop').
+descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root/r5---a-repeatable-loop').
+nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'user-requirements---frozen-root/r5---a-repeatable-loop').
+child('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'design-files').
+descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'design-files').
+nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'design-files').
+child('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', workstreams).
+descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', workstreams).
+nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', workstreams).
+child('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'ac-coverage').
+descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'ac-coverage').
+nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', 'ac-coverage').
+child('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', worklog).
+descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', worklog).
+nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', worklog).
+table('goals/04-trusted-kernel.md', 'ac-coverage', 'ac-coverage#table1').
+header('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'Requirement').
+header('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'Design').
+header('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'Evidence').
+row('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'ac-coverage#row1').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row1', 'Requirement').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row1', 'Design').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row1', 'Evidence').
+row('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'ac-coverage#row2').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row2', 'Requirement').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row2', 'Design').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row2', 'Evidence').
+row('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'ac-coverage#row3').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row3', 'Requirement').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row3', 'Design').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row3', 'Evidence').
+row('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'ac-coverage#row4').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row4', 'Requirement').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row4', 'Design').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row4', 'Evidence').
+row('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'ac-coverage#row5').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row5', 'Requirement').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row5', 'Design').
+cell('goals/04-trusted-kernel.md', 'ac-coverage#row5', 'Evidence').
+ref('goals/04-trusted-kernel.md', goal, 'docs/doc-verify-constitution.md', path).
+resolves('goals/04-trusted-kernel.md', 'docs/doc-verify-constitution.md').
+ref('goals/04-trusted-kernel.md', workstreams, 'worklog/kernel-trials/', path).
+resolves('goals/04-trusted-kernel.md', 'worklog/kernel-trials/').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'docs/doc-verify-model.md', path).
+resolves('goals/04-trusted-kernel.md', 'docs/doc-verify-model.md').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'worklog/kernel-trials/round-1-verdict.md', path).
+resolves('goals/04-trusted-kernel.md', 'worklog/kernel-trials/round-1-verdict.md').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'worklog/kernel-trials/probe/run-probes.mjs', path).
+resolves('goals/04-trusted-kernel.md', 'worklog/kernel-trials/probe/run-probes.mjs').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'worklog/kernel-trials/round-2-verdict.md', path).
+resolves('goals/04-trusted-kernel.md', 'worklog/kernel-trials/round-2-verdict.md').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'docs/doc-verify-constitution.md', path).
+resolves('goals/04-trusted-kernel.md', 'docs/doc-verify-constitution.md').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'worklog/kernel-trials/gate-ledger.md', path).
+resolves('goals/04-trusted-kernel.md', 'worklog/kernel-trials/gate-ledger.md').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'worklog/kernel-trials/preregistration.md', path).
+resolves('goals/04-trusted-kernel.md', 'worklog/kernel-trials/preregistration.md').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'design/05-trusted-kernel-redesign.md', path).
+resolves('goals/04-trusted-kernel.md', 'design/05-trusted-kernel-redesign.md').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'worklog/kernel-trials/round-3-verdict.md', path).
+resolves('goals/04-trusted-kernel.md', 'worklog/kernel-trials/round-3-verdict.md').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'worklog/kernel-trials/results/round-2-review.md', path).
+resolves('goals/04-trusted-kernel.md', 'worklog/kernel-trials/results/round-2-review.md').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'worklog/kernel-trials/results/round-3-review.md', path).
+resolves('goals/04-trusted-kernel.md', 'worklog/kernel-trials/results/round-3-review.md').
+ref('goals/04-trusted-kernel.md', 'ac-coverage', 'worklog/kernel-trials/decisions.md', path).
+resolves('goals/04-trusted-kernel.md', 'worklog/kernel-trials/decisions.md').
 
 % receipts/process/2026-10-08-receipts-and-task-card.md (receipt)
 section('receipts/process/2026-10-08-receipts-and-task-card.md', 'receipt--governed-receipts-and-task-card-template', root).
