@@ -255,8 +255,16 @@ async function checkRedGreen() {
     }
   }
 
+// ⚠ THE LOCK MUTATION TABLE IS NOT HERE EITHER, for the canonical table's reason: placement.
+// Measured 2026-10-13: `check-lock-mutations.mjs` is ~92 s against ~7 s for the cases, and this
+// check fires on every commit under `skills/`, so an unrelated skill edit paid the table and was
+// blocked by its verdict. The table runs where a change can actually affect it: the
+// `worktree-sop-lock-mutations` hook in the repository `.pre-commit-config.yaml`, scoped to the
+// lock script and its tests, and at the lander's step:
+//
+//   node skills/worktree-sop/tests/check-lock-mutations.mjs
 async function checkLockCases() {
-  for (const file of ["check-lock.mjs", "check-lock-mutations.mjs"]) {
+  for (const file of ["check-lock.mjs"]) {
     const result = await run(process.execPath, [join(ROOT, "tests", file)]);
     if (result.status !== 0) {
       const detail = `${result.stdout}${result.stderr}`
@@ -280,5 +288,5 @@ if (failures.length) {
   process.exit(1);
 }
 console.log(
-  "check-dispatch: ok (surface, serialization red/green, stale recovery, lock classification, seeded mutations, canonical checkout)",
+  "check-dispatch: ok (surface, serialization red/green, stale recovery, lock classification, lock cases, canonical checkout)",
 );

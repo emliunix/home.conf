@@ -30,9 +30,23 @@ repos:
         # Every skill that ships a dispatcher runs its own coverage check. The
         # check asserts reachability (kind -> template -> reference -> anchor),
         # not prose quality, and it starts green so a red is a regression.
-        entry: bash -c 'for f in skills/*/tests/check-dispatch.mjs; do [ -e "$f" ] || continue; node "$f" || exit 1; done'
-        pass_filenames: false
+        # Scoped (2026-10-13) to the skills the staged files belong to: a red in
+        # one skill's check used to block every commit under skills/. An anchor
+        # that points into ANOTHER skill is covered only by the full loop, which
+        # is one command:
+        #   for f in skills/*/tests/check-dispatch.mjs; do node "$f" || exit 1; done
+        entry: bash -c 'for s in $(printf "%s\n" "$@" | sed -n "s#^skills/\([^/]*\)/.*#\1#p" | sort -u); do f="skills/$s/tests/check-dispatch.mjs"; [ -e "$f" ] || continue; node "$f" || exit 1; done' --
+        pass_filenames: true
         files: '^skills/'
+      - id: worktree-sop-lock-mutations
+        name: worktree-sop lock mutation table
+        language: system
+        # Seeded defects in the lock script must each redden a lock case. ~90 s,
+        # so it runs only when the script or its cases change (worktree-sop
+        # SKILL.md, "The mutation table"), not on every skills/ commit.
+        entry: node skills/worktree-sop/tests/check-lock-mutations.mjs
+        pass_filenames: false
+        files: '^skills/worktree-sop/(scripts/gate-lock\.mjs|tests/(check-lock|check-lock-mutations)\.mjs|tests/preloads/.*)$'
         require_serial: true
       - id: skill-l0
         name: skill package lint (L0 + frozen lock)

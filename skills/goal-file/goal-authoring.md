@@ -232,6 +232,18 @@ the slot.
 | R2 | design/01, design/05 | P1, P3 | both landed |
 ```
 
+**Evidence cells** (owner ruling, 2026-10-13). A table under `## AC coverage` or
+`## Acceptance evidence` with an `Evidence` column holds, per row, the evidence
+taken for that requirement. A cell need not cite a file path. It must be a
+reasoning chain: what was observed and where (a run, a file and what it says, a
+measurement), what that shows about the requirement, and the conclusion. A bare
+assertion ("done, works"), a bare pointer (a path or a round number with nothing
+said about what it shows) or a restatement of the requirement fails
+`doc-verify:goal`'s `goal-evidence-reasons` on promotion, one error per row, on
+open and closed goals alike. A path the cell does cite is still checked by
+`paths-resolve`. A column headed `Evidence required` is a plan, not evidence,
+and is not judged.
+
 ## Status rules
 
 - A design, probe, discovery pass, or starting assessment does not complete its named task.

@@ -101,9 +101,11 @@ const MUTATIONS = [
     // Token match is read from the fd opened on OUR inode. renameSync(path)
     // then moves whatever inode currently occupies `path`. Without the
     // identity check, that unlinks a successor that replaced the path
-    // between open and rename. The aged-claim cases observe that deletion.
-    // Recorded GREEN (token check "enough") was stale once those cases existed.
-    expects: ["successor's claim was deleted from the path"],
+    // between open and rename. The `after-shared-open` case installs that
+    // successor and observes the deletion. (Until 2026-10-13 this row pointed
+    // at the aged-claim RECLAIM cases, which never drive release's window, so
+    // the seed stayed green: the row was stale, not the check.)
+    expects: ["deleted from the path by release"],
   },
   {
     // Review F1: release previously did statSync(path) then unlinkSync(path). Restoring the
