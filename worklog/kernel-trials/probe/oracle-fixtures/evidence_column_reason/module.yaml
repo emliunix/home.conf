@@ -1,0 +1,32 @@
+# Round 4 candidate A2, the column grain: one question over the Evidence column of the coverage
+# table (`core.column`, the cells one per line and nothing else), the same three criteria as
+# `evidence_reasons`. Isolates grain from column scope: A2 sees exactly what B's five atoms see,
+# in one question. Fixture-local; never shipped.
+schema_version: 2
+kind: verification-module
+module: round4.cells_column
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [open, blocked, closed-green]
+oracles:
+  evidence_column_reason(D, T, C):
+    ask: >-
+      These are the evidence cells of a goal's AC coverage table, one per line. They hold only if
+      every cell is a reasoning chain: (1) it states observable facts (what was run, read, measured
+      or produced, and where), (2) it draws the requirement's claim from those facts, and (3) it
+      states a conclusion. A bare assertion ("done", "works", "verified"), a bare pointer (a name, a
+      round number or a path with nothing said about what it shows), or a restatement of the
+      requirement fails. A path is not required and its presence alone does not make a cell hold.
+    evidence: core.column(D, T, C)
+    threshold: 0.5
+    max_bytes: 16000
+rules:
+  coverage_section(D, S): top(D, S), core.heading(D, S, H), H in ['AC coverage matrix', 'AC coverage']
+constraints:
+  round4-evidence-column-reason:
+    forall: coverage_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence')
+    require: evidence_column_reason(D, T, 'Evidence')
+    severity: error
+    profiles: [promotion]
+    message: "{T} in {D}: not every evidence cell is a reasoning chain"

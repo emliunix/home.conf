@@ -93,7 +93,7 @@ export function ownConstraintIds(yamlText: string, label: string): string[] {
   if (record.constraints === undefined || record.constraints === null || typeof record.constraints !== "object" || Array.isArray(record.constraints)) {
     throw new UsageError(`mutate ${label}: has no constraints map`);
   }
-  return Object.keys(record.constraints as Record<string, unknown>).sort();
+  return Object.keys(record.constraints).sort();
 }
 
 export function occurrences(text: string, needle: string): number {

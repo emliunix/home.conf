@@ -3,6 +3,11 @@
 # (`status_from: title`): OPEN | BLOCKED | CLOSED-GREEN. The heading lists accept the template's
 # spelling and the earlier spellings goal files still carry ('frozen root', 'AC coverage').
 #
+# Evidence cells (added 2026-10-13, owner direction): a row of the coverage table needs no file
+# path in its evidence; what it needs is a reasoning chain, judged per cell by `evidence_reasons`
+# on promotion. A path, run or commit a cell does cite is still checked by `paths-resolve`
+# (doc-verify:references, through artifact), so the two checks are independent.
+#
 # Shipped with the engine and versioned with it. First authored as visflow's
 # doc-verify/modules/goal.yaml (visflow design 10).
 schema_version: 2
@@ -20,18 +25,34 @@ params:
     - 'User requirements (anchored root)'
     - 'User requirements (frozen root)'
   coverage_headings: ['AC coverage matrix', 'AC coverage']
+  # Where a goal keeps the evidence taken per requirement: the coverage table itself, or the
+  # separate section goals/01 uses. `evidence_reasons` binds every table there that has an
+  # 'Evidence' column.
+  evidence_headings: ['AC coverage matrix', 'AC coverage', 'Acceptance evidence']
 oracles:
   coverage_complete(D, L):
     ask: The AC coverage matrix accounts for every requirement in the anchored root, each mapped to the design or workstream that covers it.
     evidence: core.union(D, L)
     threshold: 0.5
     max_bytes: 16000
+  evidence_reasons(D, R, C):
+    ask: >-
+      This is one evidence cell of a goal's AC coverage table. It holds only if it is a reasoning
+      chain: (1) it states observable facts (what was run, read, measured or produced, and where),
+      (2) it draws the requirement's claim from those facts, and (3) it states a conclusion. A bare
+      assertion ("done", "works", "verified"), a bare pointer (a name, a round number or a path with
+      nothing said about what it shows), or a restatement of the requirement fails. A path is not
+      required and its presence alone does not make the cell hold.
+    evidence: core.cell(D, R, C)
+    threshold: 0.5
+    max_bytes: 4000
 rules:
   root_section(D, S): top(D, S), core.heading(D, S, H), H in $root_headings
   design_files_section(D, S): top(D, S), core.heading(D, S, 'Design files')
   workstreams_section(D, S): top(D, S), core.heading(D, S, 'Workstreams')
   coverage_section(D, S): top(D, S), core.heading(D, S, H), H in $coverage_headings
   worklog_section(D, S): top(D, S), core.heading(D, S, 'Worklog')
+  evidence_section(D, S): top(D, S), core.heading(D, S, H), H in $evidence_headings
 constraints:
   goal-has-anchored-root:
     forall: core.meta(D, kind, goal)
@@ -63,6 +84,24 @@ constraints:
     severity: error
     message: "{D} has no '## Worklog' section"
     repair: "Point to the worklog entries this goal drives."
+  # An open or blocked goal fails on a cell that is not a chain. A closed goal (closed-green) was
+  # accepted before this rule existed (2026-10-13), so on it the same finding is a warning: the
+  # record is not reopened by a later rule. To make it an error there too, move `closed-green`
+  # into the first constraint's status list.
+  goal-evidence-reasons:
+    forall: evidence_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence'), core.row(D, T, R), core.meta(D, status, W), W in [open, blocked]
+    require: core.cell(D, R, 'Evidence'), evidence_reasons(D, R, 'Evidence')
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the evidence cell is empty, a bare assertion or a bare pointer, not a reasoning chain"
+    repair: "Write what was observed (a run, a file, a measurement), what it shows about the requirement, and the conclusion; a path is optional and is checked when present."
+  goal-evidence-reasons-closed:
+    forall: evidence_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence'), core.row(D, T, R), core.meta(D, status, 'closed-green')
+    require: core.cell(D, R, 'Evidence'), evidence_reasons(D, R, 'Evidence')
+    severity: warning
+    profiles: [promotion]
+    message: "{R} in {D} (closed): the evidence cell is empty, a bare assertion or a bare pointer, not a reasoning chain"
+    repair: "The goal is closed; rewrite the cell as a chain when the record is next touched, or leave the warning."
   goal-coverage-complete:
     forall: root_section(D, R), coverage_section(D, C)
     require: coverage_complete(D, [R, C])

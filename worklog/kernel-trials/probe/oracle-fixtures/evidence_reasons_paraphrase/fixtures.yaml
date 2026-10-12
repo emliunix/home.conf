@@ -1,0 +1,42 @@
+# Round 4 candidate set: evidence_reasons_paraphrase. Reuses the evidence_reasons Markdown files (files_from); its
+# module is fixture-local and copied into the scratch clone (extra_files).
+oracle: evidence_reasons_paraphrase
+declared_in: worklog/kernel-trials/probe/oracle-fixtures/evidence_reasons_paraphrase/module.yaml (fixture-local)
+threshold: 0.5
+constraint: round4-evidence-reasons-paraphrase
+files_from: ../evidence_reasons
+extra_files:
+  worklog/kernel-trials/probe/oracle-fixtures/evidence_reasons_paraphrase/module.yaml: module.yaml
+rule:
+  pattern: goals/[0-9][0-9]-*.md
+  artifact_kind: goal
+  modules:
+    - doc-verify:artifact
+    - worklog/kernel-trials/probe/oracle-fixtures/evidence_reasons_paraphrase/module.yaml
+  status_from: title
+document: goals/04-trusted-kernel.md
+companion:
+  path: goals/04-trusted-kernel.yaml
+  file: companion.yaml
+invariant: evidence-column-only
+atom:
+  inputs: "evidence_reasons_paraphrase(D, R, Evidence)"
+  evidence: "core.cell(D, R, C)"
+  sections:
+    - ac-coverage
+  column: Evidence
+  per_row: true
+  rows: 5
+fixtures:
+  - name: terse
+    file: terse.md
+    expect: fails
+  - name: mixed-one-pointer
+    file: mixed-one-pointer.md
+    expect: holds
+    expect_cells:
+      row1: holds
+      row2: holds
+      row3: holds
+      row4: fails
+      row5: holds

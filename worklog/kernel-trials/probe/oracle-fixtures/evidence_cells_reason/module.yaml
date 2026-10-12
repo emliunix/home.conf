@@ -1,0 +1,30 @@
+# Round 4 candidate A, the section grain: one question over the whole '## AC coverage' section
+# (`core.own`), the same three criteria as `evidence_reasons`. Fixture-local; never shipped.
+schema_version: 2
+kind: verification-module
+module: round4.cells_section
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [open, blocked, closed-green]
+oracles:
+  evidence_cells_reason(D, S):
+    ask: >-
+      This is a goal's AC coverage table. It holds only if every evidence cell is a reasoning
+      chain: (1) it states observable facts (what was run, read, measured or produced, and where),
+      (2) it draws the requirement's claim from those facts, and (3) it states a conclusion. A bare
+      assertion ("done", "works", "verified"), a bare pointer (a name, a round number or a path with
+      nothing said about what it shows), or a restatement of the requirement fails. A path is not
+      required and its presence alone does not make a cell hold.
+    evidence: core.own(D, S)
+    threshold: 0.5
+    max_bytes: 16000
+rules:
+  coverage_section(D, S): top(D, S), core.heading(D, S, H), H in ['AC coverage matrix', 'AC coverage']
+constraints:
+  round4-evidence-cells-reason:
+    forall: coverage_section(D, S)
+    require: evidence_cells_reason(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{S} in {D}: not every evidence cell is a reasoning chain"

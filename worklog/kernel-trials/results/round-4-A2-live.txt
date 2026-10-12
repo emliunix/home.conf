@@ -1,0 +1,29 @@
+oracle-test --fixtures (LIVE)
+
+fixture leaves (LIVE)
+  oracle                  fixture                row  expect  got    answered  p     thr  shape    VERDICT  draft-only         bytes  q  worst-q  sep@0.6  edit  paths-warn  stable
+  ----------------------  ---------------------  ---  ------  -----  --------  ----  ---  -------  -------  -----------------  -----  -  -------  -------  ----  ----------  ------
+  evidence_column_reason  good                   -    holds   holds  holds     0.85  0.5  decides  PASS     PASS               3247   1  2        yes      ok    0           n/a   
+  evidence_column_reason  good-nopath            -    holds   holds  holds     0.86  0.5  decides  PASS     PASS               2837   1  2        yes      ok    0           n/a   
+  evidence_column_reason  good-dangling          -    holds   holds  holds     0.85  0.5  decides  PASS     PASS               3249   1  2        yes      ok    1           n/a   
+  evidence_column_reason  terse                  -    fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  655    1  2        yes      ok    0           n/a   
+  evidence_column_reason  defective-bare         -    fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  46     1  2        yes      ok    0           n/a   
+  evidence_column_reason  defective-pointers     -    fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  237    1  2        yes      ok    0           n/a   
+  evidence_column_reason  defective-restatement  -    fails   fails  fails     0.83  0.5  decides  NO-GO    PASS (not caught)  810    1  2        yes      ok    0           n/a   
+  evidence_column_reason  defective-padded       -    fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  2416   1  2        yes      ok    0           n/a   
+  evidence_column_reason  defective-wrongrow     -    holds   holds  holds     0.84  0.5  decides  PASS     PASS               3247   1  2        yes      ok    0           n/a   
+  evidence_column_reason  mixed-one-bare         -    fails   holds  holds     0.51  0.5  decides  PASS     PASS (not caught)  2696   1  2        no       ok    0           n/a   
+  evidence_column_reason  mixed-one-pointer      -    fails   holds  holds     0.83  0.5  decides  PASS     PASS (not caught)  2559   1  2        no       ok    0           n/a   
+
+false pass (defective fixtures whose document VERDICT is PASS)
+  evidence_column_reason/mixed-one-bare PASS
+  evidence_column_reason/mixed-one-pointer PASS
+
+per oracle (separation: good holds and the defective fails, each with p >= 0.6)
+  oracle                  good p        gross  subtle  atom sections  atoms in doc
+  ----------------------  ------------  -----  ------  -------------  ------------
+  evidence_column_reason  holds p=0.85  -      -       ac-coverage    1           
+
+questions: main 11, follow-ups 5, requests 16; worst case live (one follow-up per asked leaf) 22
+ledger: live spent 16 / cap 40
+complete: true

@@ -1,0 +1,61 @@
+# Round 4 candidate set: evidence_cells_reason. Reuses the evidence_reasons Markdown files (files_from); its
+# module is fixture-local and copied into the scratch clone (extra_files).
+oracle: evidence_cells_reason
+declared_in: worklog/kernel-trials/probe/oracle-fixtures/evidence_cells_reason/module.yaml (fixture-local)
+threshold: 0.5
+constraint: round4-evidence-cells-reason
+files_from: ../evidence_reasons
+extra_files:
+  worklog/kernel-trials/probe/oracle-fixtures/evidence_cells_reason/module.yaml: module.yaml
+rule:
+  pattern: goals/[0-9][0-9]-*.md
+  artifact_kind: goal
+  modules:
+    - doc-verify:artifact
+    - worklog/kernel-trials/probe/oracle-fixtures/evidence_cells_reason/module.yaml
+  status_from: title
+document: goals/04-trusted-kernel.md
+companion:
+  path: goals/04-trusted-kernel.yaml
+  file: companion.yaml
+invariant: evidence-column-only
+atom:
+  inputs: "evidence_cells_reason(D, ac-coverage)"
+  evidence: "core.own(D, S)"
+  sections:
+    - ac-coverage
+  column: Evidence
+fixtures:
+  - name: good
+    file: good.md
+    expect: holds
+  - name: good-nopath
+    file: good-nopath.md
+    expect: holds
+  - name: good-dangling
+    file: good-dangling.md
+    expect: holds
+  - name: terse
+    file: terse.md
+    expect: fails
+  - name: defective-bare
+    file: defective-bare.md
+    expect: fails
+  - name: defective-pointers
+    file: defective-pointers.md
+    expect: fails
+  - name: defective-restatement
+    file: defective-restatement.md
+    expect: fails
+  - name: defective-padded
+    file: defective-padded.md
+    expect: fails
+  - name: defective-wrongrow
+    file: defective-wrongrow.md
+    expect: holds
+  - name: mixed-one-bare
+    file: mixed-one-bare.md
+    expect: fails
+  - name: mixed-one-pointer
+    file: mixed-one-pointer.md
+    expect: fails

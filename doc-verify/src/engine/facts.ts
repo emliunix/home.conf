@@ -49,9 +49,30 @@ export interface DocumentFacts {
   sections: Section[];
   parents: Map<string, string>;
   facts: Term[];
+  /** The pipe-table data rows by row id (table facts, added 2026-10-13). */
+  rows: Map<string, TableRow>;
+  /** The pipe tables by table id, each with its section and header cells. */
+  tables: Map<string, Table>;
 }
 
-export const CORE_BASE = ["section/3", "heading/3", "depth/3", "order/3", "meta/3", "selected/2", "ref/4", "resolves/2"] as const;
+/** One pipe table: its section, the line of its header, and the header cells as written. */
+export interface Table {
+  id: string;
+  section: string;
+  line: number;
+  headers: string[];
+}
+
+/** One data row of a pipe table: its table, its section, its document line, and its cells by column header. */
+export interface TableRow {
+  id: string;
+  table: string;
+  section: string;
+  line: number;
+  cells: Map<string, string>;
+}
+
+export const CORE_BASE = ["section/3", "heading/3", "depth/3", "order/3", "meta/3", "selected/2", "ref/4", "resolves/2", "table/3", "header/3", "row/3", "cell/3"] as const;
 export const CORE_DERIVED = ["child/3", "descendant/3", "nests/3", "dangling/4", "spec_unresolved/4"] as const;
 
 export function documentFacts(document: DocumentInput): DocumentFacts {
@@ -107,6 +128,27 @@ export function documentFacts(document: DocumentInput): DocumentFacts {
       }
     }
   }
+  // Table facts (added 2026-10-13): `table(D, S, T)` for every pipe table in section `S`'s own
+  // text (`T` is `<section>#table<n>`), `header(D, T, Column)` for each of its header cells as
+  // written, `row(D, T, R)` for every data row (`R` is `<section>#row<n>`, `n` counting that
+  // section's data rows in document order across its tables), and `cell(D, R, Column)` for each
+  // non-empty cell. A row's text is not a fact; it is evidence, read by `core.cell(D, R, C)` or,
+  // table-wide, `core.column(D, T, C)`.
+  const { tables, rows } = documentTables(document.markdown, sections);
+  for (const table of tables.values()) {
+    facts.push(core("table", [D, atom(table.section), atom(table.id)]));
+    for (const column of new Set(table.headers.filter((header) => header.length > 0))) {
+      facts.push(core("header", [D, atom(table.id), atom(column)]));
+    }
+  }
+  for (const row of rows.values()) {
+    facts.push(core("row", [D, atom(row.table), atom(row.id)]));
+    for (const [column, text] of row.cells) {
+      if (text.length > 0) {
+        facts.push(core("cell", [D, atom(row.id), atom(column)]));
+      }
+    }
+  }
   // References (added 2026-10-05): what the document names, and whether it exists.
   const seen = new Set<string>();
   const context: ReferenceContext = {
@@ -146,7 +188,7 @@ export function documentFacts(document: DocumentInput): DocumentFacts {
       }
     }
   }
-  return { id, sections, parents, facts };
+  return { id, sections, parents, facts, rows, tables };
 }
 
 export interface DocumentReference {
@@ -527,6 +569,159 @@ export function resolvesTarget(documentPath: string, target: string, exists: ((r
 
 function core(name: string, args: Term[]): Term {
   return compound(`core::${name}`, args);
+}
+
+/** A GFM delimiter row: `| --- | :-: |`, at least one cell, nothing but dashes, colons and pipes. */
+const DELIMITER_ROW = /^\s*\|?\s*:?-+:?\s*(?:\|\s*:?-+:?\s*)*\|?\s*$/;
+const FENCE = /^\s{0,3}(?:`{3,}|~{3,})/;
+
+/**
+ * The cells of one pipe-table line: the outer pipes dropped, the rest split on every `|` that
+ * is neither escaped (`\|`) nor inside a backtick code span, each cell trimmed.
+ */
+export function splitCells(line: string): string[] {
+  let text = line.trim();
+  if (text.startsWith("|")) {
+    text = text.slice(1);
+  }
+  if (text.endsWith("|") && !text.endsWith("\\|")) {
+    text = text.slice(0, -1);
+  }
+  const cells: string[] = [];
+  let current = "";
+  let inCode = false;
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index] as string;
+    if (char === "`") {
+      inCode = !inCode;
+      current += char;
+    } else if (char === "\\" && text[index + 1] === "|") {
+      current += "|";
+      index += 1;
+    } else if (char === "|" && !inCode) {
+      cells.push(current.trim());
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  cells.push(current.trim());
+  return cells;
+}
+
+/**
+ * Every pipe table and data row in the document, keyed by id. A table is a header line followed
+ * by a delimiter row with the same cell count, then data lines until a blank line or a line with
+ * no `|`. Fenced code blocks and the front matter are not read. A table sits in the innermost
+ * section open at its header line (`@preamble` before the first heading); its rows are its own.
+ */
+export function documentTables(markdown: string, sections: Section[]): { tables: Map<string, Table>; rows: Map<string, TableRow> } {
+  const tables = new Map<string, Table>();
+  const rows = new Map<string, TableRow>();
+  const tableCounters = new Map<string, number>();
+  const lines = markdown.split("\n");
+  const firstLine = countLines(markdown.slice(0, frontMatterEnd(markdown)));
+  const counters = new Map<string, number>();
+  const sectionAt = (line: number): string => {
+    let current = "@preamble";
+    for (const section of sections) {
+      if (section.depth > 0 && section.startLine <= line) {
+        current = section.id;
+      }
+    }
+    return current;
+  };
+  let inFence = false;
+  let index = firstLine;
+  while (index < lines.length) {
+    const line = lines[index] as string;
+    if (FENCE.test(line)) {
+      inFence = !inFence;
+      index += 1;
+      continue;
+    }
+    const next = lines[index + 1];
+    if (inFence || !line.includes("|") || next === undefined || !DELIMITER_ROW.test(next) || !next.includes("|") && !line.trim().startsWith("|")) {
+      index += 1;
+      continue;
+    }
+    const header = splitCells(line);
+    if (header.length !== splitCells(next).length) {
+      index += 1;
+      continue;
+    }
+    const section = sectionAt(index + 1);
+    const tableOrdinal = (tableCounters.get(section) ?? 0) + 1;
+    tableCounters.set(section, tableOrdinal);
+    const tableId = `${section}#table${String(tableOrdinal)}`;
+    tables.set(tableId, { id: tableId, section, line: index + 1, headers: header });
+    index += 2;
+    while (index < lines.length) {
+      const dataLine = lines[index] as string;
+      if (dataLine.trim().length === 0 || !dataLine.includes("|") || FENCE.test(dataLine)) {
+        break;
+      }
+      const lineNo = index + 1;
+      const ordinal = (counters.get(section) ?? 0) + 1;
+      counters.set(section, ordinal);
+      const id = `${section}#row${String(ordinal)}`;
+      const values = splitCells(dataLine);
+      const cells = new Map<string, string>();
+      header.forEach((column, position) => {
+        if (column.length > 0 && !cells.has(column)) {
+          cells.set(column, values[position] ?? "");
+        }
+      });
+      rows.set(id, { id, table: tableId, section, line: lineNo, cells });
+      index += 1;
+    }
+  }
+  return { tables, rows };
+}
+
+function countLines(text: string): number {
+  let count = 0;
+  for (const char of text) {
+    if (char === "\n") {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+/**
+ * `core.column(D, T, C)`: the non-empty cells under column `C` of table `T`, one line each at
+ * its row's line, in document order. The table grain over one column: what a per-table question
+ * sees when it is shown the cells and nothing else.
+ */
+export function columnEvidence(document: DocumentFacts, tableId: string, column: string): EvidenceText | undefined {
+  const table = document.tables.get(tableId);
+  if (table === undefined) {
+    return undefined;
+  }
+  const rows = [...document.rows.values()].filter((row) => row.table === tableId);
+  const pieces: EvidencePiece[] = [];
+  let offset = 0;
+  for (const row of rows) {
+    const text = row.cells.get(column);
+    if (text === undefined || text.length === 0) {
+      continue;
+    }
+    const line = `${text}\n`;
+    pieces.push({ id: row.id, startLine: row.line, offset, text: line });
+    offset += line.length;
+  }
+  return pieces.length === 0 ? undefined : { sections: [table.section], text: pieces.map((piece) => piece.text).join(""), pieces };
+}
+
+/** `core.cell(D, R, C)`: the text of row `R`'s cell under column `C`, at the row's line. */
+export function cellEvidence(document: DocumentFacts, rowId: string, column: string): EvidenceText | undefined {
+  const row = document.rows.get(rowId);
+  const text = row?.cells.get(column);
+  if (row === undefined || text === undefined || text.length === 0) {
+    return undefined;
+  }
+  return { sections: [row.section], text, pieces: [{ id: rowId, startLine: row.line, offset: 0, text }] };
 }
 
 /**

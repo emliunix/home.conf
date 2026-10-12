@@ -21,7 +21,14 @@ record design rounds, not kernel measurements), so it has its own root.
 - `decisions.md` — one row per landed unit.
 - `gate-ledger.md` — committed predicates, the seeded defect each was seen failing on, open items.
 - `round-1-verdict.md`, `round-2-verdict.md`, `round-3-verdict.md` — written 2026-10-12.
-- `results/round-2-review.md`, `results/round-3-review.md` — the independent seat's reviews, verbatim.
+- `results/round-2-review.md`, `results/round-3-review.md`, `results/round-4-review.md` — the
+  independent seat's reviews, verbatim.
+- `round-4-preregistration.md`, `round-4-verdict.md`, `results/round-4-*-live.txt` — round 4
+  (2026-10-13): the evidence-cell grain. Its fixture sets are
+  `probe/oracle-fixtures/evidence_reasons/` (the Markdown files, reused by the candidate sets
+  `evidence_column_reason/`, `evidence_cells_reason/`, `evidence_reasons_paraphrase/` through
+  `files_from`) and `probe/oracle-fixtures/real-cells/` (the lead's blind labels of goals/01–03's
+  cells and the control module). Ledgers: `probe/oracle-fixtures/.question-count-round4-*`.
 
 ## Not created yet
 
@@ -38,5 +45,10 @@ record design rounds, not kernel measurements), so it has its own root.
 ## Method
 
 Rounds follow the loop bound in the repository `AGENTS.md` §Experiment programmes. Round 1 is
-feasibility (`preregistration.md`); round 2 is model conformance (`round-2-preregistration.md`, done, kernel selected); round 3 is the oracle toolkit's first live run (done; `round-3-verdict.md`); round 4 is `verification_falsifies` in extraction form; round 5 is the trust boundary and scheduler policies (neither written yet). The design
-the rounds feed is `design/05-trusted-kernel-redesign.md`.
+feasibility (`preregistration.md`); round 2 is model conformance (`round-2-preregistration.md`,
+done, kernel selected); round 3 is the oracle toolkit's first live run (done;
+`round-3-verdict.md`); round 4 is the evidence-cell grain for `doc-verify:goal`, which added the
+table facts (`round-4-preregistration.md`; it displaced the planned `verification_falsifies`
+extraction round, now round 4b, which those facts serve); round 5 is the trust boundary and
+scheduler policies (not written). The design the rounds feed is
+`design/05-trusted-kernel-redesign.md`.

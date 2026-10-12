@@ -1,0 +1,33 @@
+{
+  "cap": 30,
+  "live": {
+    "questions": 10,
+    "followups": 5,
+    "requests": 4,
+    "runs": [
+      {
+        "run": "fixtures:evidence_reasons_paraphrase/terse",
+        "main": 5,
+        "followups": 4,
+        "requests": 2,
+        "asked": 5,
+        "worst": 10,
+        "bytes": 650,
+        "at": "2026-10-12T18:14:44.860Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons_paraphrase/mixed-one-pointer",
+        "main": 5,
+        "followups": 1,
+        "requests": 2,
+        "asked": 5,
+        "worst": 10,
+        "bytes": 2554,
+        "at": "2026-10-12T18:14:51.670Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {}
+  }
+}

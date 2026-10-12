@@ -1,7 +1,20 @@
 // Round 3 oracle fixture runner: a prototype of `doc-verify oracle test` (design 05 §Oracle toolkit).
 //
-//   node worklog/kernel-trials/probe/oracle-test.mjs --fixtures [--oracle NAME] [--cap 300]
+//   node worklog/kernel-trials/probe/oracle-test.mjs --fixtures [--oracle NAME] [--cap 300] [--repeat N] [--ledger NAME] [--show-evidence]
 //   node worklog/kernel-trials/probe/oracle-test.mjs --corpus --repeat N [--cap 300]
+//   node worklog/kernel-trials/probe/oracle-test.mjs --real-cells [--cap N] [--ledger NAME]
+//
+// Round 4 additions: a fixture set may name `files_from` (a sibling set whose Markdown files it
+// reuses), `extra_files` (repository path -> file in the set, copied into the scratch clone: a
+// fixture-local module), `invariant: evidence-column-only` (every fixture is the governed document
+// at HEAD except the cells under `atom.column`; checked before the run), and `atom.per_row: true`
+// (the oracle is asked once per table row; a fixture's `expect` is every cell's expected label,
+// overridden per row by `expect_cells`). `--repeat N` runs each fixture's promotion check N times
+// with the cache off and reports label stability per leaf. `--ledger NAME` keeps a separate
+// question ledger (`.question-count-NAME`). `--show-evidence` prints the parsed rows and the cell
+// text each per-row atom is sent. `--real-cells` runs the shipped oracle and a fixture-local
+// control over goals/01-03's coverage cells and compares the labels with
+// `oracle-fixtures/real-cells/labels.yaml`, written blind before the run.
 //
 // DOC_VERIFY_MOCK_JUDGE=1 wires the SDK's mock judge (it answers the first option, so every oracle
 // says its first label): good for wiring and for the exact question count, meaningless as a
@@ -31,8 +44,8 @@ import YAML from "yaml";
 const here = import.meta.dirname;
 const REPO = path.resolve(here, "../../..");
 const FIXTURES = path.join(here, "oracle-fixtures");
-const COUNT_FILE = path.join(FIXTURES, ".question-count");
 const { checkDocuments, mockSupportedBackend } = await import(path.join(REPO, "doc-verify/dist/checker.js"));
+const { documentFacts, cellEvidence, splitCells } = await import(path.join(REPO, "doc-verify/dist/engine/facts.js"));
 
 const MOCK = process.env.DOC_VERIFY_MOCK_JUDGE === "1";
 const TAG = MOCK ? "MOCK" : "LIVE";
@@ -45,6 +58,9 @@ const value = (name, fallback) => {
 const CAP = Number(value("--cap", "300"));
 const REPEAT = Math.max(1, Number(value("--repeat", "1")));
 const ONLY = value("--oracle", undefined);
+const LEDGER_NAME = value("--ledger", undefined);
+const COUNT_FILE = path.join(FIXTURES, LEDGER_NAME === undefined ? ".question-count" : `.question-count-${LEDGER_NAME}`);
+const SHOW_EVIDENCE = flag("--show-evidence");
 const SEP_P = 0.6;
 const STABILITY_MIN_ATOMS = 5;
 
@@ -177,11 +193,46 @@ function loadFixtureSets() {
     .filter((set) => ONLY === undefined || set.spec.oracle === ONLY);
 }
 
+/** Where a set's Markdown files live: its own directory, or the sibling set it names in `files_from`. */
+function filesDir(set) {
+  return set.spec.files_from === undefined ? set.dir : path.resolve(set.dir, set.spec.files_from);
+}
+function fixtureText(set, file) {
+  return readFileSync(path.join(filesDir(set), file), "utf8");
+}
+const headText = (repoPath) => git(REPO, ["show", `HEAD:${repoPath}`], "utf8");
+
+/**
+ * `invariant: evidence-column-only`: the fixture equals the governed document at HEAD line for
+ * line, except that a table data row may differ in the cells under `atom.column` alone.
+ */
+function columnOnlyIntegrity(set, fixture) {
+  const column = set.spec.atom.column;
+  const head = headText(set.spec.document).split("\n");
+  const text = fixtureText(set, fixture.file).split("\n");
+  if (head.length !== text.length) return `line count ${text.length} != HEAD ${head.length}`;
+  let header;
+  for (let i = 0; i < head.length; i += 1) {
+    if (head[i] === text[i]) {
+      if (/^\s*\|/.test(head[i]) && /^\s*\|?\s*:?-+/.test(head[i + 1] ?? "")) header = splitCells(head[i]);
+      continue;
+    }
+    if (!/^\s*\|/.test(head[i]) || header === undefined) return `line ${i + 1} differs outside a table`;
+    const a = splitCells(head[i]), b = splitCells(text[i]);
+    if (a.length !== b.length) return `line ${i + 1}: cell count differs`;
+    for (let c = 0; c < a.length; c += 1) {
+      if (header[c] !== column && a[c] !== b[c]) return `line ${i + 1}: column '${header[c]}' differs`;
+    }
+  }
+  return "ok";
+}
+
 /** A defective fixture must be good.md with exactly its recorded edit applied. */
 function editIntegrity(set, fixture) {
+  if (set.spec.invariant === "evidence-column-only") return columnOnlyIntegrity(set, fixture);
   if (fixture.edit === undefined) return "base";
-  const good = readFileSync(path.join(set.dir, "good.md"), "utf8");
-  const text = readFileSync(path.join(set.dir, fixture.file), "utf8");
+  const good = fixtureText(set, "good.md");
+  const text = fixtureText(set, fixture.file);
   const { from, to } = fixture.edit;
   const at = good.indexOf(from);
   if (at < 0 || good.indexOf(from, at + 1) >= 0) return "from-not-unique";
@@ -193,8 +244,23 @@ function findLeaf(report, set, fixture) {
   const leaves = artifact?.engine?.report?.oracles ?? [];
   // A fixture that renames its section (the receipt's gross rewrite) names its own atom sections.
   const want = [...(fixture.sections ?? set.spec.atom.sections)].sort().join(",");
-  const hits = leaves.filter((leaf) => oracleOf(leaf) === set.spec.oracle && [...leaf.sections].sort().join(",") === want);
+  const hits = leaves.filter((leaf) => oracleOf(leaf) === set.spec.oracle && [...leaf.sections].sort().join(",") === want)
+    .sort((a, b) => rowOf(a).localeCompare(rowOf(b), undefined, { numeric: true }));
   return { artifact, hits, asked: leaves.map((leaf) => `${leaf.atom} [${leaf.sections.join(",")}]`) };
+}
+/** The `rowN` of a per-row atom (`...#rowN, ...`), or "" for a section atom. */
+const rowOf = (leaf) => /#(row\d+)/.exec(leaf.atom)?.[1] ?? "";
+/** The expected label of one leaf: per row when the fixture says so, else the fixture's. */
+const expectedOf = (fixture, leaf) => fixture.expect_cells?.[rowOf(leaf)] ?? fixture.expect;
+/** The parsed table rows and the cell text each per-row atom is sent, for the eye. */
+function showEvidence(set, fixture, markdown) {
+  const facts = documentFacts({ path: set.spec.document, markdown });
+  const rows = [...facts.rows.values()].filter((row) => set.spec.atom.sections.includes(row.section));
+  console.log(`  parsed ${rows.length} rows in ${set.spec.atom.sections.join(",")}`);
+  for (const row of rows) {
+    const text = cellEvidence(facts, row.id, set.spec.atom.column)?.text ?? "(empty)";
+    console.log(`  ${row.id} L${row.line} ${JSON.stringify(text.length > 160 ? `${text.slice(0, 157)}...` : text)}`);
+  }
 }
 
 async function runFixtures() {
@@ -221,10 +287,16 @@ async function runFixtures() {
           complete = false;
           problems.push(`${runKey}: edit integrity ${integrity}`);
         }
-        writeFileSync(path.join(repo, set.spec.document), readFileSync(path.join(set.dir, fixture.file), "utf8"));
+        const markdown = fixtureText(set, fixture.file);
+        writeFileSync(path.join(repo, set.spec.document), markdown);
         if (set.spec.companion !== undefined) {
-          writeFileSync(path.join(repo, set.spec.companion.path), readFileSync(path.join(set.dir, set.spec.companion.file), "utf8"));
+          writeFileSync(path.join(repo, set.spec.companion.path), fixtureText(set, set.spec.companion.file));
         }
+        for (const [repoPath, file] of Object.entries(set.spec.extra_files ?? {})) {
+          mkdirSync(path.dirname(path.join(repo, repoPath)), { recursive: true });
+          writeFileSync(path.join(repo, repoPath), readFileSync(path.join(set.dir, file), "utf8"));
+        }
+        if (SHOW_EVIDENCE && set.spec.atom.per_row) showEvidence(set, fixture, markdown);
         git(repo, ["add", "-A"]);
         try { git(repo, ["commit", "-qm", fixture.name]); } catch { /* unchanged content */ }
         const mode = { kind: "paths", paths: [set.spec.document] };
@@ -246,35 +318,45 @@ async function runFixtures() {
           break;
         }
         const started = performance.now();
-        let report;
-        try {
-          report = await checkDocuments({ root: repo, mode, profile: "promotion", cache: "off", backend: backendForPromotion() });
-        } catch (error) {
-          complete = false;
-          problems.push(`${runKey}: check threw ${error.message}`);
-          continue;
+        const reports = [];
+        let threw = false;
+        for (let run = 1; run <= REPEAT; run += 1) {
+          try {
+            reports.push(await checkDocuments({ root: repo, mode, profile: "promotion", cache: "off", backend: backendForPromotion() }));
+          } catch (error) {
+            complete = false;
+            threw = true;
+            problems.push(`${runKey}: check threw ${error.message}`);
+            break;
+          }
         }
-        const wall = performance.now() - started;
-        const cost = costOf(report);
-        charge(runKey, cost);
-        for (const key of Object.keys(totals)) totals[key] += cost[key];
-        const { artifact, hits, asked } = findLeaf(report, set, fixture);
+        if (threw || reports.length === 0) continue;
+        const wall = (performance.now() - started) / reports.length;
+        const cost = costOf(reports[0]);
+        for (const report of reports) charge(runKey, costOf(report));
+        for (const key of Object.keys(totals)) totals[key] += cost[key] * reports.length;
+        const { artifact, hits, asked } = findLeaf(reports[0], set, fixture);
         if (artifact?.verdict === "BLOCKED") { complete = false; problems.push(`${runKey}: BLOCKED`); }
-        if (hits.length !== 1) {
+        const perRow = set.spec.atom.per_row === true;
+        const wantHits = perRow ? (set.spec.atom.rows ?? hits.length) : 1;
+        if (hits.length !== wantHits || hits.length === 0) {
           complete = false;
           problems.push(`${runKey}: ${hits.length} leaves match ${set.spec.oracle}[${(fixture.sections ?? set.spec.atom.sections).join(",")}]; asked: ${asked.join("; ") || "none"}`);
         }
-        const leaf = hits[0];
-        const p = leaf === undefined ? undefined : peak(leaf);
-        const expectSide = fixture.expect;
-        const separates = leaf !== undefined && leaf.label === expectSide && (p ?? 0) >= SEP_P;
-        rows.push({
-          oracle: set.spec.oracle, fixture: fixture.name, expect: expectSide, got: leaf?.label ?? "NOT-FOUND",
-          answered: leaf?.answered ?? "-", p, threshold: leaf?.threshold, shape: leaf === undefined ? "-" : shapeOf(leaf),
-          verdict: artifact?.verdict ?? "-", draft, bytes: leaf?.bytes, questions: cost.main, worst: cost.worst,
-          separates, wall, edit: integrity, sections: leaf?.sections.join(",") ?? "-",
-          atomsAsked: asked.length,
-        });
+        const warnings = artifact?.findings.filter((f) => f.ruleId.endsWith("paths-resolve")).length ?? 0;
+        const stable = (leaf) => reports.slice(1).every((report) => findLeaf(report, set, fixture).hits.find((other) => other.atom === leaf.atom)?.label === leaf.label);
+        for (const leaf of (hits.length === 0 ? [undefined] : hits)) {
+          const p = leaf === undefined ? undefined : peak(leaf);
+          const expectSide = leaf === undefined ? fixture.expect : expectedOf(fixture, leaf);
+          const separates = leaf !== undefined && leaf.label === expectSide && (p ?? 0) >= SEP_P;
+          rows.push({
+            oracle: set.spec.oracle, fixture: fixture.name, row: leaf === undefined ? "" : rowOf(leaf), expect: expectSide, got: leaf?.label ?? "NOT-FOUND",
+            answered: leaf?.answered ?? "-", p, threshold: leaf?.threshold, shape: leaf === undefined ? "-" : shapeOf(leaf),
+            verdict: artifact?.verdict ?? "-", draft, bytes: leaf?.bytes, questions: cost.main, worst: cost.worst,
+            separates, wall, edit: integrity, sections: leaf?.sections.join(",") ?? "-",
+            atomsAsked: asked.length, warnings, stable: leaf === undefined ? "-" : reports.length < 2 ? "n/a" : stable(leaf) ? "same" : "FLIPS",
+          });
+        }
       }
     } finally {
       rmSync(repo, { recursive: true, force: true });
@@ -285,16 +367,26 @@ async function runFixtures() {
   console.log("");
   console.log(`fixture leaves (${TAG}${MOCK ? ": every label is the mock's first option, not a measurement" : ""})`);
   table(
-    ["oracle", "fixture", "expect", "got", "answered", "p", "thr", "shape", "VERDICT", "draft-only", "bytes", "q", "worst-q", "sep@0.6", "edit"],
-    rows.map((r) => [r.oracle, r.fixture, r.expect, r.got, r.answered, fmt(r.p), fmt(r.threshold, 1), r.shape, r.verdict,
+    ["oracle", "fixture", "row", "expect", "got", "answered", "p", "thr", "shape", "VERDICT", "draft-only", "bytes", "q", "worst-q", "sep@0.6", "edit", "paths-warn", REPEAT > 1 ? `stable×${REPEAT}` : "stable"],
+    rows.map((r) => [r.oracle, r.fixture, r.row || "-", r.expect, r.got, r.answered, fmt(r.p), fmt(r.threshold, 1), r.shape, r.verdict,
       r.expect === "holds" ? r.draft : r.draft === "NO-GO" ? "NO-GO (caught)" : `${r.draft} (not caught)`,
-      r.bytes ?? "-", r.questions, r.worst, r.separates ? "yes" : "no", r.edit]),
+      r.bytes ?? "-", r.questions, r.worst, r.separates ? "yes" : "no", r.edit, r.warnings, r.stable]),
   );
+  const perRowSets = [...new Set(rows.filter((r) => r.row).map((r) => `${r.oracle}/${r.fixture}`))];
+  if (perRowSets.length > 0) {
+    console.log("");
+    console.log(`per fixture (per-row oracles): cells on their expected side at p >= ${SEP_P}`);
+    table(["oracle/fixture", "expected side(s)", "k/n", "separates", "VERDICT"], perRowSets.map((key) => {
+      const cells = rows.filter((r) => `${r.oracle}/${r.fixture}` === key);
+      const k = cells.filter((r) => r.separates).length;
+      return [key, [...new Set(cells.map((r) => r.expect))].join("+"), `${k}/${cells.length}`, k === cells.length ? "yes" : "no", cells[0].verdict];
+    }));
+  }
 
   console.log("");
   console.log("false pass (defective fixtures whose document VERDICT is PASS)");
-  const falsePass = rows.filter((r) => r.expect !== "holds" && r.verdict === "PASS");
-  console.log(falsePass.length === 0 ? "  none" : falsePass.map((r) => `  ${r.oracle}/${r.fixture} PASS`).join("\n"));
+  const falsePass = [...new Set(rows.filter((r) => r.expect !== "holds" && r.verdict === "PASS").map((r) => `${r.oracle}/${r.fixture}`))];
+  console.log(falsePass.length === 0 ? "  none" : falsePass.map((key) => `  ${key} PASS`).join("\n"));
 
   console.log("");
   console.log(`per oracle (separation: good holds and the defective fails, each with p >= ${SEP_P})`);
@@ -405,13 +497,62 @@ async function runCorpus() {
   return finished;
 }
 
+// ---------------------------------------------------------------- --real-cells
+
+async function runRealCells() {
+  console.log(`oracle-test --real-cells (${TAG})`);
+  const dir = path.join(FIXTURES, "real-cells");
+  const labels = YAML.parse(readFileSync(path.join(dir, "labels.yaml"), "utf8"));
+  const repo = MOCK ? snapshotWorkingTree() : cloneRepo();
+  const rows = [];
+  let complete = true;
+  try {
+    const config = YAML.parse(readFileSync(path.join(repo, ".doc-verify.yaml"), "utf8"));
+    const modulePath = "worklog/kernel-trials/probe/oracle-fixtures/real-cells/module.yaml";
+    mkdirSync(path.dirname(path.join(repo, modulePath)), { recursive: true });
+    writeFileSync(path.join(repo, modulePath), readFileSync(path.join(dir, "module.yaml"), "utf8"));
+    const paths = Object.keys(labels.documents);
+    config.documents = paths.map((p) => ({ pattern: p, artifact_kind: "goal", modules: ["doc-verify:goal", modulePath], status_from: "title" }));
+    config.invalidation_patterns = [];
+    writeFileSync(path.join(repo, ".doc-verify.yaml"), YAML.stringify(config));
+    git(repo, ["add", "-A"]);
+    try { git(repo, ["commit", "-qm", "real-cells"]); } catch { /* unchanged */ }
+    const runKey = "real-cells";
+    if (!mayStart(runKey)) { console.log("complete: false"); return false; }
+    const report = await checkDocuments({ root: repo, mode: { kind: "paths", paths }, profile: "promotion", cache: "off", backend: backendForPromotion() });
+    const cost = costOf(report);
+    charge(runKey, cost);
+    for (const [docPath, spec] of Object.entries(labels.documents)) {
+      const artifact = report.artifacts.find((a) => a.path === docPath);
+      if (artifact === undefined || artifact.verdict === "BLOCKED") { complete = false; rows.push([docPath, "-", "-", "-", artifact?.verdict ?? "missing", "-", "-"]); continue; }
+      const leaves = (artifact.engine?.report?.oracles ?? []).filter((leaf) => oracleOf(leaf).startsWith("evidence_reasons"));
+      for (const [rowId, expected] of Object.entries(spec.rows)) {
+        const leaf = leaves.find((entry) => entry.atom.includes(`${rowId},`));
+        if (leaf === undefined) { complete = false; rows.push([docPath, rowId, expected.label, "NOT-FOUND", artifact.verdict, "-", "-"]); continue; }
+        rows.push([docPath, rowId, expected.label, leaf.label, artifact.verdict, fmt(peak(leaf)), leaf.label === expected.label ? "agree" : `DISAGREE (${expected.confidence})`]);
+      }
+    }
+    console.log("");
+    table(["document", "row", "lead", "judge", "VERDICT", "p", "agreement"], rows);
+    const judged = rows.filter((r) => r[6] !== "-");
+    console.log(`agreement: ${judged.filter((r) => r[6] === "agree").length}/${judged.length}; questions: main ${cost.main}, follow-ups ${cost.followups}, worst case ${cost.worst}`);
+    if (!MOCK) console.log(`ledger: live spent ${ledger.live.questions + ledger.live.followups} / cap ${CAP}`);
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
+  }
+  console.log(`complete: ${complete}`);
+  return complete;
+}
+
 // ---------------------------------------------------------------- main
 
 if (flag("--fixtures")) {
   process.exitCode = (await runFixtures()) ? 0 : 1;
 } else if (flag("--corpus")) {
   process.exitCode = (await runCorpus()) ? 0 : 1;
+} else if (flag("--real-cells")) {
+  process.exitCode = (await runRealCells()) ? 0 : 1;
 } else {
-  console.log("usage: oracle-test.mjs --fixtures [--oracle NAME] | --corpus --repeat N   [--cap 300]");
+  console.log("usage: oracle-test.mjs --fixtures [--oracle NAME] [--repeat N] [--show-evidence] | --corpus --repeat N | --real-cells   [--cap 300] [--ledger NAME]");
   process.exitCode = 2;
 }

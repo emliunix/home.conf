@@ -1,0 +1,33 @@
+oracle-test --fixtures (LIVE)
+
+fixture leaves (LIVE)
+  oracle                       fixture            row   expect  got    answered  p     thr  shape    VERDICT  draft-only         bytes  q  worst-q  sep@0.6  edit  paths-warn  stable
+  ---------------------------  -----------------  ----  ------  -----  --------  ----  ---  -------  -------  -----------------  -----  -  -------  -------  ----  ----------  ------
+  evidence_reasons_paraphrase  terse              row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  115    5  10       yes      ok    0           n/a   
+  evidence_reasons_paraphrase  terse              row2  fails   holds  holds     0.50  0.5  decides  NO-GO    PASS (not caught)  121    5  10       no       ok    0           n/a   
+  evidence_reasons_paraphrase  terse              row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  99     5  10       yes      ok    0           n/a   
+  evidence_reasons_paraphrase  terse              row4  fails   fails  fails     0.93  0.5  decides  NO-GO    PASS (not caught)  151    5  10       yes      ok    0           n/a   
+  evidence_reasons_paraphrase  terse              row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  164    5  10       yes      ok    0           n/a   
+  evidence_reasons_paraphrase  mixed-one-pointer  row1  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               731    5  10       yes      ok    0           n/a   
+  evidence_reasons_paraphrase  mixed-one-pointer  row2  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               578    5  10       yes      ok    0           n/a   
+  evidence_reasons_paraphrase  mixed-one-pointer  row3  holds   holds  holds     0.93  0.5  decides  NO-GO    PASS               562    5  10       yes      ok    0           n/a   
+  evidence_reasons_paraphrase  mixed-one-pointer  row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  16     5  10       yes      ok    0           n/a   
+  evidence_reasons_paraphrase  mixed-one-pointer  row5  holds   holds  holds     0.94  0.5  decides  NO-GO    PASS               667    5  10       yes      ok    0           n/a   
+
+per fixture (per-row oracles): cells on their expected side at p >= 0.6
+  oracle/fixture                                 expected side(s)  k/n  separates  VERDICT
+  ---------------------------------------------  ----------------  ---  ---------  -------
+  evidence_reasons_paraphrase/terse              fails             4/5  no         NO-GO  
+  evidence_reasons_paraphrase/mixed-one-pointer  holds+fails       5/5  yes        NO-GO  
+
+false pass (defective fixtures whose document VERDICT is PASS)
+  none
+
+per oracle (separation: good holds and the defective fails, each with p >= 0.6)
+  oracle                       good p  gross  subtle  atom sections  atoms in doc
+  ---------------------------  ------  -----  ------  -------------  ------------
+  evidence_reasons_paraphrase  - p=-   -      -       -              -           
+
+questions: main 10, follow-ups 5, requests 4; worst case live (one follow-up per asked leaf) 20
+ledger: live spent 15 / cap 30
+complete: true

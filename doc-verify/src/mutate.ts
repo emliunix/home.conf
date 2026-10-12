@@ -211,9 +211,9 @@ async function checkScratch(dir: string, documentName: string, profile: "draft" 
 }
 
 async function composedConstraintIds(moduleRef: string, tableDir: string): Promise<string[]> {
-  const readBlob = async (file: RepoPath): Promise<TextBlob> => {
+  const readBlob = (file: RepoPath): Promise<TextBlob> => {
     const content = readFileSync(join(tableDir, file), "utf8");
-    return { path: file, content, hash: sha256(content) };
+    return Promise.resolve({ path: file, content, hash: sha256(content) });
   };
   try {
     const composed = await composeModules([moduleRef], readBlob);

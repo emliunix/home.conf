@@ -1,0 +1,30 @@
+{
+  "cap": 300,
+  "live": {
+    "questions": 24,
+    "followups": 18,
+    "requests": 6,
+    "runs": [
+      {
+        "run": "real-cells",
+        "main": 24,
+        "followups": 18,
+        "requests": 6,
+        "asked": 24,
+        "worst": 48,
+        "bytes": 13629,
+        "at": "2026-10-12T18:12:31.861Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {
+      "real-cells": {
+        "main": 24,
+        "asked": 24,
+        "worst": 48,
+        "requests": 3
+      }
+    }
+  }
+}

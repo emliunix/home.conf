@@ -1,0 +1,28 @@
+# Round 4 real-cell track: the shipped `evidence_reasons` question asked over the 'Evidence
+# required' column of goals/02 and goals/03 (the shipped constraint binds only 'Evidence'). A
+# control: specific text that describes a check rather than evidence taken. Fixture-local.
+schema_version: 2
+kind: verification-module
+module: round4.required_cells
+rounds: 1
+oracles:
+  evidence_reasons_required(D, R, C):
+    ask: >-
+      This is one evidence cell of a goal's AC coverage table. It holds only if it is a reasoning
+      chain: (1) it states observable facts (what was run, read, measured or produced, and where),
+      (2) it draws the requirement's claim from those facts, and (3) it states a conclusion. A bare
+      assertion ("done", "works", "verified"), a bare pointer (a name, a round number or a path with
+      nothing said about what it shows), or a restatement of the requirement fails. A path is not
+      required and its presence alone does not make the cell hold.
+    evidence: core.cell(D, R, C)
+    threshold: 0.5
+    max_bytes: 4000
+rules:
+  required_coverage_section(D, S): core.section(D, S, _), core.depth(D, S, 2), core.heading(D, S, H), H in ['AC coverage matrix', 'AC coverage']
+constraints:
+  round4-evidence-reasons-required:
+    forall: required_coverage_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence required'), core.row(D, T, R)
+    require: core.cell(D, R, 'Evidence required'), evidence_reasons_required(D, R, 'Evidence required')
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the 'Evidence required' cell is not a reasoning chain (control)"

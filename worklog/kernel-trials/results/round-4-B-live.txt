@@ -1,0 +1,153 @@
+oracle-test --fixtures (LIVE)
+  parsed 5 rows in ac-coverage
+  ac-coverage#row1 L55 "`worklog/kernel-trials/round-1-verdict.md` records `worklog/kernel-trials/probe/run-probes.mjs` printing K1–K4 `complete: true` in four agreeing runs on swip..."
+  ac-coverage#row2 L56 "`worklog/kernel-trials/gate-ledger.md` lists the round 2 conformance gates, which test the model's §9 gates, each with a seeded defect seen to flip it: a req..."
+  ac-coverage#row3 L57 "`worklog/kernel-trials/preregistration.md` §Candidates scores C0, C1 and C2 against pass conditions K1–K4 that cite the constitution's invariants (K1 cites i..."
+  ac-coverage#row4 L58 "`worklog/kernel-trials/round-1-verdict.md` records K3 passing: a meta-interpreter returned `node(Goal, Children)` proof trees whose leaves are `fact/1` and `..."
+  ac-coverage#row5 L59 "Rounds 1 to 3 each have a preregistration with its independent review (`worklog/kernel-trials/preregistration.md`, `worklog/kernel-trials/results/round-2-rev..."
+  parsed 5 rows in ac-coverage
+  ac-coverage#row1 L55 "The round 1 verdict records the probe runner printing K1–K4 complete in four agreeing runs on swipl-wasm 8.2.2 (SWI-Prolog 10.1.15), with 24 documents evalua..."
+  ac-coverage#row2 L56 "The programme's gate ledger lists the round 2 conformance gates, which test the model's §9 gates, each with a seeded defect seen to flip it: a require violat..."
+  ac-coverage#row3 L57 "The round 1 preregistration's candidates section scores C0, C1 and C2 against pass conditions K1–K4 that cite the constitution's invariants (K1 cites invaria..."
+  ac-coverage#row4 L58 "The round 1 verdict records K3 passing: a meta-interpreter returned proof trees whose leaves are document facts and answered oracle atoms, and missing litera..."
+  ac-coverage#row5 L59 "Rounds 1 to 3 each have a preregistration with its independent review, a verdict, and rows in the programme's decision log; the kernel selection and the with..."
+  parsed 5 rows in ac-coverage
+  ac-coverage#row1 L55 "`worklog/kernel-trials/round-1-verdict.md` records `worklog/kernel-trials/probe/run-probes.mjs` printing K1–K4 `complete: true` in four agreeing runs on swip..."
+  ac-coverage#row2 L56 "`worklog/kernel-trials/round-2-gates.md` lists the round 2 conformance gates, which test the model's §9 gates, each with a seeded defect seen to flip it: a r..."
+  ac-coverage#row3 L57 "`worklog/kernel-trials/preregistration.md` §Candidates scores C0, C1 and C2 against pass conditions K1–K4 that cite the constitution's invariants (K1 cites i..."
+  ac-coverage#row4 L58 "`worklog/kernel-trials/round-1-verdict.md` records K3 passing: a meta-interpreter returned `node(Goal, Children)` proof trees whose leaves are `fact/1` and `..."
+  ac-coverage#row5 L59 "Rounds 1 to 3 each have a preregistration with its independent review (`worklog/kernel-trials/preregistration.md`, `worklog/kernel-trials/results/round-2-rev..."
+  parsed 5 rows in ac-coverage
+  ac-coverage#row1 L55 "`worklog/kernel-trials/round-1-verdict.md` (feasible); `worklog/kernel-trials/round-2-verdict.md` (kernel selected)"
+  ac-coverage#row2 L56 "`worklog/kernel-trials/round-2-verdict.md` (gates pass, seeded defects flip them); `worklog/kernel-trials/gate-ledger.md`"
+  ac-coverage#row3 L57 "`worklog/kernel-trials/preregistration.md` §Candidates; Z3 named as an analysis stage in design/05"
+  ac-coverage#row4 L58 "`worklog/kernel-trials/round-2-verdict.md` (missing literal, proof leaves); `worklog/kernel-trials/round-3-verdict.md` (oracle discrimination measured)"
+  ac-coverage#row5 L59 "`worklog/kernel-trials/round-1-verdict.md`, `round-2-verdict.md`, `round-3-verdict.md` with their preregistrations and reviews; `worklog/kernel-trials/decisi..."
+  parsed 5 rows in ac-coverage
+  ac-coverage#row1 L55 "done, works"
+  ac-coverage#row2 L56 "verified"
+  ac-coverage#row3 L57 "covered"
+  ac-coverage#row4 L58 "yes, complete"
+  ac-coverage#row5 L59 "ok"
+  parsed 5 rows in ac-coverage
+  ac-coverage#row1 L55 "kernel-trials round 1 verdict; round 2 model conformance"
+  ac-coverage#row2 L56 "the model's gates, seeded (round 2)"
+  ac-coverage#row3 L57 "kernel-trials preregistration §Candidates; Z3 named as an analysis stage"
+  ac-coverage#row4 L58 "kernel-trials K3"
+  ac-coverage#row5 L59 "kernel-trials round 1 files; round 2 preregistration"
+  parsed 5 rows in ac-coverage
+  ac-coverage#row1 L55 "R1 is met: the evaluator is a mature engine with published semantics and our code is confined to a reviewable boundary of encoding, scheduling and extraction."
+  ac-coverage#row2 L56 "R2 is met: the constitution governs rather than the language, and every invariant in it is checked by a seeded defect or a differential test."
+  ac-coverage#row3 L57 "R3 is met: Datalog engines and SMT solvers were in scope as kernels or analysis stages, and every candidate was scored against the constitution rather than t..."
+  ac-coverage#row4 L58 "R4 is met: the judge supplies the facts, the kernel supplies the derivations, and every finding carries its deciding evidence, missing literals and repairs."
+  ac-coverage#row5 L59 "R5 is met: every change of kernel or constitution came from a preregistered, independently reviewed round with a recorded verdict and decision row, and the l..."
+  parsed 5 rows in ac-coverage
+  ac-coverage#row1 L55 "This requirement has been addressed with great care and attention throughout the effort. The team approached the question of trust seriously, considered the ..."
+  ac-coverage#row2 L56 "The constitution has been treated as the true authority at every step, and the work reflects that commitment completely. Every invariant was examined careful..."
+  ac-coverage#row3 L57 "The search for candidates was broad, open-minded and genuinely thorough. Alternatives well beyond the obvious choice were taken seriously and weighed fairly,..."
+  ac-coverage#row4 L58 "The division of responsibilities is now clear, well designed and working exactly as intended. Facts, derivations and diagnostics each live where they belong,..."
+  ac-coverage#row5 L59 "The loop is mature, disciplined and repeatable, and it has been followed faithfully throughout. Every change was made thoughtfully, with proper planning, ind..."
+  parsed 5 rows in ac-coverage
+  ac-coverage#row1 L55 "`worklog/kernel-trials/gate-ledger.md` lists the round 2 conformance gates, which test the model's §9 gates, each with a seeded defect seen to flip it: a req..."
+  ac-coverage#row2 L56 "`worklog/kernel-trials/preregistration.md` §Candidates scores C0, C1 and C2 against pass conditions K1–K4 that cite the constitution's invariants (K1 cites i..."
+  ac-coverage#row3 L57 "`worklog/kernel-trials/round-1-verdict.md` records K3 passing: a meta-interpreter returned `node(Goal, Children)` proof trees whose leaves are `fact/1` and `..."
+  ac-coverage#row4 L58 "Rounds 1 to 3 each have a preregistration with its independent review (`worklog/kernel-trials/preregistration.md`, `worklog/kernel-trials/results/round-2-rev..."
+  ac-coverage#row5 L59 "`worklog/kernel-trials/round-1-verdict.md` records `worklog/kernel-trials/probe/run-probes.mjs` printing K1–K4 `complete: true` in four agreeing runs on swip..."
+  parsed 5 rows in ac-coverage
+  ac-coverage#row1 L55 "`worklog/kernel-trials/round-1-verdict.md` records `worklog/kernel-trials/probe/run-probes.mjs` printing K1–K4 `complete: true` in four agreeing runs on swip..."
+  ac-coverage#row2 L56 "`worklog/kernel-trials/gate-ledger.md` lists the round 2 conformance gates, which test the model's §9 gates, each with a seeded defect seen to flip it: a req..."
+  ac-coverage#row3 L57 "done, works"
+  ac-coverage#row4 L58 "`worklog/kernel-trials/round-1-verdict.md` records K3 passing: a meta-interpreter returned `node(Goal, Children)` proof trees whose leaves are `fact/1` and `..."
+  ac-coverage#row5 L59 "Rounds 1 to 3 each have a preregistration with its independent review (`worklog/kernel-trials/preregistration.md`, `worklog/kernel-trials/results/round-2-rev..."
+  parsed 5 rows in ac-coverage
+  ac-coverage#row1 L55 "`worklog/kernel-trials/round-1-verdict.md` records `worklog/kernel-trials/probe/run-probes.mjs` printing K1–K4 `complete: true` in four agreeing runs on swip..."
+  ac-coverage#row2 L56 "`worklog/kernel-trials/gate-ledger.md` lists the round 2 conformance gates, which test the model's §9 gates, each with a seeded defect seen to flip it: a req..."
+  ac-coverage#row3 L57 "`worklog/kernel-trials/preregistration.md` §Candidates scores C0, C1 and C2 against pass conditions K1–K4 that cite the constitution's invariants (K1 cites i..."
+  ac-coverage#row4 L58 "kernel-trials K3"
+  ac-coverage#row5 L59 "Rounds 1 to 3 each have a preregistration with its independent review (`worklog/kernel-trials/preregistration.md`, `worklog/kernel-trials/results/round-2-rev..."
+
+fixture leaves (LIVE)
+  oracle            fixture                row   expect  got    answered  p     thr  shape    VERDICT  draft-only         bytes  q  worst-q  sep@0.6  edit  paths-warn  stable×2
+  ----------------  ---------------------  ----  ------  -----  --------  ----  ---  -------  -------  -----------------  -----  -  -------  -------  ----  ----------  --------
+  evidence_reasons  good                   row1  holds   holds  holds     1.00  0.5  decides  PASS     PASS               731    6  12       yes      ok    0           same    
+  evidence_reasons  good                   row2  holds   holds  holds     1.00  0.5  decides  PASS     PASS               578    6  12       yes      ok    0           same    
+  evidence_reasons  good                   row3  holds   holds  holds     0.99  0.5  decides  PASS     PASS               562    6  12       yes      ok    0           same    
+  evidence_reasons  good                   row4  holds   holds  holds     1.00  0.5  decides  PASS     PASS               704    6  12       yes      ok    0           same    
+  evidence_reasons  good                   row5  holds   holds  holds     0.99  0.5  decides  PASS     PASS               667    6  12       yes      ok    0           same    
+  evidence_reasons  good-nopath            row1  holds   holds  holds     1.00  0.5  decides  PASS     PASS               649    6  12       yes      ok    0           same    
+  evidence_reasons  good-nopath            row2  holds   holds  holds     1.00  0.5  decides  PASS     PASS               544    6  12       yes      ok    0           same    
+  evidence_reasons  good-nopath            row3  holds   holds  holds     0.98  0.5  decides  PASS     PASS               531    6  12       yes      ok    0           same    
+  evidence_reasons  good-nopath            row4  holds   holds  holds     0.99  0.5  decides  PASS     PASS               640    6  12       yes      ok    0           same    
+  evidence_reasons  good-nopath            row5  holds   holds  holds     0.98  0.5  decides  PASS     PASS               468    6  12       yes      ok    0           same    
+  evidence_reasons  good-dangling          row1  holds   holds  holds     1.00  0.5  decides  PASS     PASS               731    6  12       yes      ok    1           same    
+  evidence_reasons  good-dangling          row2  holds   holds  holds     1.00  0.5  decides  PASS     PASS               580    6  12       yes      ok    1           same    
+  evidence_reasons  good-dangling          row3  holds   holds  holds     0.99  0.5  decides  PASS     PASS               562    6  12       yes      ok    1           same    
+  evidence_reasons  good-dangling          row4  holds   holds  holds     1.00  0.5  decides  PASS     PASS               704    6  12       yes      ok    1           same    
+  evidence_reasons  good-dangling          row5  holds   holds  holds     0.99  0.5  decides  PASS     PASS               667    6  12       yes      ok    1           same    
+  evidence_reasons  terse                  row1  fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  115    6  12       yes      ok    0           same    
+  evidence_reasons  terse                  row2  fails   fails  fails     0.62  0.5  decides  NO-GO    PASS (not caught)  121    6  12       yes      ok    0           same    
+  evidence_reasons  terse                  row3  fails   fails  fails     0.95  0.5  decides  NO-GO    PASS (not caught)  99     6  12       yes      ok    0           same    
+  evidence_reasons  terse                  row4  fails   fails  fails     0.78  0.5  decides  NO-GO    PASS (not caught)  151    6  12       yes      ok    0           same    
+  evidence_reasons  terse                  row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  164    6  12       yes      ok    0           same    
+  evidence_reasons  defective-bare         row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  11     6  12       yes      ok    0           same    
+  evidence_reasons  defective-bare         row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  8      6  12       yes      ok    0           same    
+  evidence_reasons  defective-bare         row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  7      6  12       yes      ok    0           same    
+  evidence_reasons  defective-bare         row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  13     6  12       yes      ok    0           same    
+  evidence_reasons  defective-bare         row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  2      6  12       yes      ok    0           same    
+  evidence_reasons  defective-pointers     row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  56     6  12       yes      ok    0           same    
+  evidence_reasons  defective-pointers     row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  35     6  12       yes      ok    0           same    
+  evidence_reasons  defective-pointers     row3  fails   fails  fails     0.96  0.5  decides  NO-GO    PASS (not caught)  73     6  12       yes      ok    0           same    
+  evidence_reasons  defective-pointers     row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  16     6  12       yes      ok    0           same    
+  evidence_reasons  defective-pointers     row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  52     6  12       yes      ok    0           same    
+  evidence_reasons  defective-restatement  row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  158    6  12       yes      ok    0           same    
+  evidence_reasons  defective-restatement  row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  141    6  12       yes      ok    0           same    
+  evidence_reasons  defective-restatement  row3  fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  175    6  12       yes      ok    0           same    
+  evidence_reasons  defective-restatement  row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  156    6  12       yes      ok    0           same    
+  evidence_reasons  defective-restatement  row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  175    6  12       yes      ok    0           same    
+  evidence_reasons  defective-padded       row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  494    6  12       yes      ok    0           same    
+  evidence_reasons  defective-padded       row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  503    6  12       yes      ok    0           same    
+  evidence_reasons  defective-padded       row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  469    6  12       yes      ok    0           same    
+  evidence_reasons  defective-padded       row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  465    6  12       yes      ok    0           same    
+  evidence_reasons  defective-padded       row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  480    6  12       yes      ok    0           same    
+  evidence_reasons  defective-wrongrow     row1  holds   holds  holds     0.98  0.5  decides  PASS     PASS               578    6  12       yes      ok    0           same    
+  evidence_reasons  defective-wrongrow     row2  holds   holds  holds     0.97  0.5  decides  PASS     PASS               562    6  12       yes      ok    0           same    
+  evidence_reasons  defective-wrongrow     row3  holds   holds  holds     1.00  0.5  decides  PASS     PASS               704    6  12       yes      ok    0           same    
+  evidence_reasons  defective-wrongrow     row4  holds   holds  holds     0.99  0.5  decides  PASS     PASS               667    6  12       yes      ok    0           same    
+  evidence_reasons  defective-wrongrow     row5  holds   holds  holds     1.00  0.5  decides  PASS     PASS               731    6  12       yes      ok    0           same    
+  evidence_reasons  mixed-one-bare         row1  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               731    6  12       yes      ok    0           same    
+  evidence_reasons  mixed-one-bare         row2  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               578    6  12       yes      ok    0           same    
+  evidence_reasons  mixed-one-bare         row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  11     6  12       yes      ok    0           same    
+  evidence_reasons  mixed-one-bare         row4  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               704    6  12       yes      ok    0           same    
+  evidence_reasons  mixed-one-bare         row5  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               667    6  12       yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer      row1  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               731    6  12       yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer      row2  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               578    6  12       yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer      row3  holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               562    6  12       yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer      row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  16     6  12       yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer      row5  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               667    6  12       yes      ok    0           same    
+
+per fixture (per-row oracles): cells on their expected side at p >= 0.6
+  oracle/fixture                          expected side(s)  k/n  separates  VERDICT
+  --------------------------------------  ----------------  ---  ---------  -------
+  evidence_reasons/good                   holds             5/5  yes        PASS   
+  evidence_reasons/good-nopath            holds             5/5  yes        PASS   
+  evidence_reasons/good-dangling          holds             5/5  yes        PASS   
+  evidence_reasons/terse                  fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-bare         fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-pointers     fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-restatement  fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-padded       fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-wrongrow     holds             5/5  yes        PASS   
+  evidence_reasons/mixed-one-bare         holds+fails       5/5  yes        NO-GO  
+  evidence_reasons/mixed-one-pointer      holds+fails       5/5  yes        NO-GO  
+
+false pass (defective fixtures whose document VERDICT is PASS)
+  none
+
+per oracle (separation: good holds and the defective fails, each with p >= 0.6)
+  oracle            good p        gross  subtle  atom sections  atoms in doc
+  ----------------  ------------  -----  ------  -------------  ------------
+  evidence_reasons  holds p=1.00  -      -       ac-coverage    6           
+
+questions: main 132, follow-ups 54, requests 36; worst case live (one follow-up per asked leaf) 264
+ledger: live spent 186 / cap 400
+complete: true

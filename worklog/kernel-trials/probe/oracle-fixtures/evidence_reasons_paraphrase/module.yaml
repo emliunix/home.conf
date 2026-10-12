@@ -1,0 +1,31 @@
+# Round 4 wording control B': the cell grain with a paraphrased question. Run on the two fixtures
+# whose cells are borderline (terse, mixed-one-pointer) to see whether their labels turn on the
+# wording. Fixture-local; never shipped.
+schema_version: 2
+kind: verification-module
+module: round4.cells_paraphrase
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [open, blocked, closed-green]
+oracles:
+  evidence_reasons_paraphrase(D, R, C):
+    ask: >-
+      Read this one cell from the evidence column of a goal's coverage table. Does it argue its
+      case? To hold, the cell must say what was actually observed and where (a run, a file, a
+      number, a document and what it says), then say what that observation establishes about the
+      requirement, and end with the conclusion. It fails if it only asserts success, only names
+      something (a file, a round, a document) without saying what was seen in it, or only repeats
+      the requirement in other words. Citing a path neither helps nor hurts by itself.
+    evidence: core.cell(D, R, C)
+    threshold: 0.5
+    max_bytes: 4000
+rules:
+  coverage_section(D, S): top(D, S), core.heading(D, S, H), H in ['AC coverage matrix', 'AC coverage']
+constraints:
+  round4-evidence-reasons-paraphrase:
+    forall: coverage_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence'), core.row(D, T, R)
+    require: core.cell(D, R, 'Evidence'), evidence_reasons_paraphrase(D, R, 'Evidence')
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the evidence cell does not argue its case"

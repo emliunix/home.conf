@@ -1,0 +1,233 @@
+{
+  "cap": 400,
+  "live": {
+    "questions": 132,
+    "followups": 54,
+    "requests": 36,
+    "runs": [
+      {
+        "run": "fixtures:evidence_reasons/good",
+        "main": 6,
+        "followups": 0,
+        "requests": 1,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 7947,
+        "at": "2026-10-12T18:10:18.805Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good",
+        "main": 6,
+        "followups": 0,
+        "requests": 1,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 7947,
+        "at": "2026-10-12T18:10:18.807Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-nopath",
+        "main": 6,
+        "followups": 0,
+        "requests": 1,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 7127,
+        "at": "2026-10-12T18:10:29.048Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-nopath",
+        "main": 6,
+        "followups": 0,
+        "requests": 1,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 7127,
+        "at": "2026-10-12T18:10:29.049Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-dangling",
+        "main": 6,
+        "followups": 0,
+        "requests": 1,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 7951,
+        "at": "2026-10-12T18:10:39.139Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-dangling",
+        "main": 6,
+        "followups": 0,
+        "requests": 1,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 7951,
+        "at": "2026-10-12T18:10:39.140Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/terse",
+        "main": 6,
+        "followups": 5,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 2763,
+        "at": "2026-10-12T18:10:49.627Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/terse",
+        "main": 6,
+        "followups": 5,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 2763,
+        "at": "2026-10-12T18:10:49.628Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-bare",
+        "main": 6,
+        "followups": 5,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 1545,
+        "at": "2026-10-12T18:11:00.012Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-bare",
+        "main": 6,
+        "followups": 5,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 1545,
+        "at": "2026-10-12T18:11:00.013Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-pointers",
+        "main": 6,
+        "followups": 5,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 1927,
+        "at": "2026-10-12T18:11:10.488Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-pointers",
+        "main": 6,
+        "followups": 5,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 1927,
+        "at": "2026-10-12T18:11:10.489Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-restatement",
+        "main": 6,
+        "followups": 5,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 3073,
+        "at": "2026-10-12T18:11:20.871Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-restatement",
+        "main": 6,
+        "followups": 5,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 3073,
+        "at": "2026-10-12T18:11:20.872Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-padded",
+        "main": 6,
+        "followups": 5,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 6285,
+        "at": "2026-10-12T18:11:32.821Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-padded",
+        "main": 6,
+        "followups": 5,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 6285,
+        "at": "2026-10-12T18:11:32.821Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-wrongrow",
+        "main": 6,
+        "followups": 0,
+        "requests": 1,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 7947,
+        "at": "2026-10-12T18:11:42.479Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-wrongrow",
+        "main": 6,
+        "followups": 0,
+        "requests": 1,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 7947,
+        "at": "2026-10-12T18:11:42.481Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-bare",
+        "main": 6,
+        "followups": 1,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 6845,
+        "at": "2026-10-12T18:11:52.875Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-bare",
+        "main": 6,
+        "followups": 1,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 6845,
+        "at": "2026-10-12T18:11:52.876Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-pointer",
+        "main": 6,
+        "followups": 1,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 6571,
+        "at": "2026-10-12T18:12:03.886Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-pointer",
+        "main": 6,
+        "followups": 1,
+        "requests": 2,
+        "asked": 6,
+        "worst": 12,
+        "bytes": 6571,
+        "at": "2026-10-12T18:12:03.887Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {}
+  }
+}

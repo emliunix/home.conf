@@ -14,7 +14,7 @@ import { PolicyViolationError } from "../judge.js";
 import { BlockedError } from "../types.js";
 import type { Oracle } from "./checker.js";
 import { UNKNOWN, type Demand, type OracleView } from "./evaluate.js";
-import { bodyEvidence, ownEvidence, unionEvidence, type DocumentFacts, type EvidenceText } from "./facts.js";
+import { bodyEvidence, cellEvidence, columnEvidence, ownEvidence, unionEvidence, type DocumentFacts, type EvidenceText } from "./facts.js";
 import type { RequestShape } from "./module.js";
 import { listItems, termText, type Term } from "./terms.js";
 
@@ -141,7 +141,7 @@ export async function askRound(input: {
     const question = renderQuestion(oracle, demand.inputs);
     const options = [...oracle.labels, UNKNOWN];
     if (evidence === undefined) {
-      input.store.leaves.set(demand.key, unaskedLeaf(demand, question, options, input.round, "its evidence names a section the document does not have"));
+      input.store.leaves.set(demand.key, unaskedLeaf(demand, question, options, input.round, "its evidence names a section or cell the document does not have"));
       continue;
     }
     const bytes = Buffer.byteLength(evidence.text);
@@ -533,6 +533,11 @@ function resolveEvidence(oracle: Oracle, args: Term[], document: DocumentFacts):
   if (shape.form === "union") {
     const items = listItems(args[shape.sections] as Term);
     return items === undefined ? undefined : unionEvidence(document, items.map(termText));
+  }
+  if (shape.form === "cell" || shape.form === "column") {
+    const subject = termText(args[shape.row] as Term);
+    const column = termText(args[shape.column] as Term);
+    return shape.form === "cell" ? cellEvidence(document, subject, column) : columnEvidence(document, subject, column);
   }
   const section = termText(args[shape.section] as Term);
   return shape.form === "own" ? ownEvidence(document, section) : bodyEvidence(document, section);

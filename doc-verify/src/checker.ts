@@ -497,8 +497,18 @@ function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, ver
   const proofSpan = bindingSpan(binding);
   const onSections = oracles.filter((oracle) =>
     (oracle.label === "fails" || oracle.label === "unknown") && oracle.sections.some((section) => ids.includes(section)));
-  const oracle = proofSpan === undefined ? onSections.find((entry) => entry.span !== undefined) ?? onSections[0] : undefined;
+  // Several atoms can share a section (one per table row): the leaf that decided THIS binding is
+  // the one whose atom names the binding's values, so among the section's non-passing leaves the
+  // best-matching atom wins. Without this every row's finding quoted the first failing row.
+  const values = Object.values(binding.values).filter((value) => value.length > 0);
+  const score = (leaf: EngineReport["oracles"][number]): number => values.filter((value) => leaf.atom.includes(value)).length;
+  const best = Math.max(0, ...onSections.map(score));
+  const matching = onSections.filter((leaf) => score(leaf) === best);
+  const oracle = proofSpan === undefined ? matching.find((entry) => entry.span !== undefined) ?? matching[0] : undefined;
   const span = proofSpan ?? oracle?.span;
+  // A binding over something finer than a section (a table row) sits at its span's line.
+  const finer = best > 0 && values.some((value) => !sections.some((section) => section.id === value) && oracle?.atom.includes(value));
+  const line = finer && span !== undefined ? span.startLine : undefined;
   if (oracle !== undefined && !basis.some((line) => line.startsWith("answered "))) {
     const distribution = oracle.distribution;
     const peak = distribution.length === 0 ? undefined : Math.max(...distribution);
@@ -512,6 +522,7 @@ function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, ver
     : undefined);
   return {
     ...finding(file, anchor, ruleId, verdict, binding.message),
+    ...(line === undefined ? {} : { line }),
     status: binding.status,
     ...(binding.repair === undefined ? {} : { repair: binding.repair }),
     sections: ids,

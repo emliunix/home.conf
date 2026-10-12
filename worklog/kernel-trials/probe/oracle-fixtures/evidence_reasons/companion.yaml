@@ -1,0 +1,10 @@
+schema_version: 1
+kind: document-contract
+document:
+  path: goals/04-trusted-kernel.md
+  kind: goal
+  depends_on:
+    - design/05-trusted-kernel-redesign.md
+commands:
+  - npm run check
+evidence_level: E1

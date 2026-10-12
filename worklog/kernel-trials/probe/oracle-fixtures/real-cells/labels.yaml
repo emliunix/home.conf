@@ -1,0 +1,45 @@
+# Round 4, real-cell track: the lead's blind labels of every coverage-table cell in goals/01–03,
+# written 2026-10-13 before any live call and against the `evidence_reasons` question (a cell
+# holds only as a reasoning chain: observable facts, the claim drawn from them, a conclusion; a
+# bare assertion, a bare pointer or a restatement fails). The judge's labels are compared with
+# these; disagreement is the measurement, not a reason to change a label.
+#
+# goals/02 and goals/03 head their column 'Evidence required': those cells describe the check a
+# requirement needs, not evidence taken, so the shipped constraint (which binds the 'Evidence'
+# header only) never asks them. They are run here through a fixture-local rule over
+# 'Evidence required' as a control: specific text that is not evidence. goals/01 keeps its
+# evidence in a separate '## Acceptance evidence' section (its coverage table has no Evidence
+# column), which the shipped rule's $evidence_headings covers; its rows are acceptance-evidence#row1–6.
+oracle: evidence_reasons
+documents:
+  goals/01-document-verification-and-skill-transfer.md:
+    column: Evidence
+    rows:
+      acceptance-evidence#row1: { label: holds, confidence: low, why: "a fact (what stays outside the commit) and a conclusion (provenance stays in its repository); no explicit claim" }
+      acceptance-evidence#row2: { label: holds, confidence: medium, why: "facts with counts (12 transferred, 7 rejected) and the landing; conclusion implicit" }
+      acceptance-evidence#row3: { label: holds, confidence: medium, why: "two named checks passed against a named version; conclusion implicit" }
+      acceptance-evidence#row4: { label: fails, confidence: low, why: "a list of test names that passed: a fact, no claim drawn, no conclusion" }
+      acceptance-evidence#row5: { label: holds, confidence: low, why: "what the consumer did on a valid and an invalid document; conclusion implicit" }
+      acceptance-evidence#row6: { label: holds, confidence: low, why: "what design 02 records; reads as a pointer with content" }
+  goals/02-companion-driven-document-verification.md:
+    column: Evidence required
+    rows:
+      ac-coverage#row1: { label: fails, confidence: medium, why: "describes a check to run, not an observation" }
+      ac-coverage#row2: { label: fails, confidence: medium, why: "same" }
+      ac-coverage#row3: { label: fails, confidence: medium, why: "same" }
+      ac-coverage#row4: { label: fails, confidence: medium, why: "same" }
+      ac-coverage#row5: { label: fails, confidence: medium, why: "same" }
+      ac-coverage#row6: { label: fails, confidence: medium, why: "same" }
+      ac-coverage#row7: { label: fails, confidence: medium, why: "same" }
+  goals/03-modular-verification-language.md:
+    column: Evidence required
+    rows:
+      ac-coverage#row1: { label: fails, confidence: medium, why: "describes a check to run, not an observation" }
+      ac-coverage#row2: { label: fails, confidence: medium, why: "same" }
+      ac-coverage#row3: { label: fails, confidence: medium, why: "same" }
+      ac-coverage#row4: { label: fails, confidence: medium, why: "same" }
+      ac-coverage#row5: { label: fails, confidence: medium, why: "same" }
+      ac-coverage#row6: { label: fails, confidence: medium, why: "same" }
+expected_agreement:
+  goals/01: "at least 4 of 6 agree; a judge that says holds on row10 is lenient the way round 3 found"
+  goals/02-03: "the judge says holds on at least half: specific, falsifiable text reads as evidence to a judge that cannot tell planned from taken; this is the prediction, and if it comes out the other way the judge is stricter than the lead expects"

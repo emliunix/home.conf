@@ -9,6 +9,8 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
 | Round 2 conformance, witnesses | the kernel matches the model on every §9 gate | `node worklog/kernel-trials/probe/run-conformance.mjs` | `core.pl` mutated: require violated under `u` forall (1 witness flips); forall-only demand (12 flip) | yes |
 | Round 2 conformance, corpus + random | the kernel matches the model on real documents and on random programs against brute force | `node worklog/kernel-trials/probe/run-conformance.mjs --corpus --random 200 --d3` | the same mutations: 7/100 and 67/100 random programs flip | yes |
 | Round 3 oracle fixtures | each oracle as declared separates its good fixture from its defective ones, and no defective fixture PASSes (the toolkit's gate, not the engine's) | `node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --cap 300` (live; 33 questions) | the seeded defects themselves: `verification_falsifies` fails on both (false PASS at p ≥ 0.97), `problem_resolved` and `scope_explicit` on the subtle one | yes |
+| Round 4 evidence cells | the cell-grain oracle separates every seeded evidence-cell defect (bare, pointer, restatement, padded, one-in-four) from true chains, with and without paths | `node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --oracle evidence_reasons --repeat 2 --ledger round4-B --cap 400` (live; 132 questions) | the seeded fixtures themselves: every defective and mixed fixture NO-GO, `terse` (goals/04 at HEAD before the rewrite) NO-GO on 5/5 cells | yes |
+| Round 4 table facts | the host's table parser yields the rows and cells the oracle is asked over | `npx vitest run doc-verify/tests/language/tables.test.ts` | a table without the column binds nothing (the vacuous-pass case is a test); a scripted judge failing one cell violates that row only | yes |
 | Reference self-check | the naive reference matches hand derivations and brute force | `node worklog/kernel-trials/probe/reference/run-reference.mjs worklog/kernel-trials/probe/witnesses/*.yaml` and `node worklog/kernel-trials/probe/reference/random-brute.mjs 500 1` | reference mutated: demand without goal leaves (15/200), `not u` read as `t` (76/200) | yes |
 
 ## Open items
@@ -20,5 +22,9 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
    of 2026-10-12; round 2 verdict §Findings about the probe method.
 2. **Boundary gate** (round 5): a module that reaches the judge, the network, the filesystem or
    the budget without BLOCKED.
-3. **`verification_falsifies` in extraction form** (round 4): its fixtures must redden under the
-   re-authored oracle before it returns to the design contract.
+3. **`verification_falsifies` in extraction form** (round 4b; the table facts it needs landed in
+   round 4): its fixtures must redden under the re-authored oracle before it returns to the design
+   contract.
+4. **Evidence-cell threshold from real cells** (round 4 §Left unmeasured): goals/01's middling
+   cells land at 0.55–0.66; a fixture set drawn from real goals, not seeded, is what sets the
+   threshold. The wrong-row gap (the judge never sees the requirement text) is open with it.

@@ -1,0 +1,26 @@
+oracle-test --real-cells (LIVE)
+
+  document                                              row                       lead   judge  VERDICT  p     agreement        
+  ----------------------------------------------------  ------------------------  -----  -----  -------  ----  -----------------
+  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row1  holds  holds  NO-GO    0.55  agree            
+  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row2  holds  fails  NO-GO    0.56  DISAGREE (medium)
+  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row3  holds  fails  NO-GO    0.55  DISAGREE (medium)
+  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row4  fails  fails  NO-GO    0.87  agree            
+  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row5  holds  holds  NO-GO    0.79  agree            
+  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row6  holds  fails  NO-GO    0.66  DISAGREE (low)   
+  goals/02-companion-driven-document-verification.md    ac-coverage#row1          fails  fails  NO-GO    0.99  agree            
+  goals/02-companion-driven-document-verification.md    ac-coverage#row2          fails  fails  NO-GO    0.98  agree            
+  goals/02-companion-driven-document-verification.md    ac-coverage#row3          fails  fails  NO-GO    0.99  agree            
+  goals/02-companion-driven-document-verification.md    ac-coverage#row4          fails  fails  NO-GO    0.98  agree            
+  goals/02-companion-driven-document-verification.md    ac-coverage#row5          fails  fails  NO-GO    0.99  agree            
+  goals/02-companion-driven-document-verification.md    ac-coverage#row6          fails  fails  NO-GO    0.97  agree            
+  goals/02-companion-driven-document-verification.md    ac-coverage#row7          fails  fails  NO-GO    0.99  agree            
+  goals/03-modular-verification-language.md             ac-coverage#row1          fails  fails  NO-GO    0.94  agree            
+  goals/03-modular-verification-language.md             ac-coverage#row2          fails  fails  NO-GO    0.79  agree            
+  goals/03-modular-verification-language.md             ac-coverage#row3          fails  fails  NO-GO    0.75  agree            
+  goals/03-modular-verification-language.md             ac-coverage#row4          fails  fails  NO-GO    0.96  agree            
+  goals/03-modular-verification-language.md             ac-coverage#row5          fails  fails  NO-GO    0.86  agree            
+  goals/03-modular-verification-language.md             ac-coverage#row6          fails  fails  NO-GO    0.92  agree            
+agreement: 16/19; questions: main 24, follow-ups 18, worst case 48
+ledger: live spent 42 / cap 70
+complete: true

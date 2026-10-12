@@ -1,0 +1,106 @@
+# Oracle fixture set for evidence_reasons (kernel-trials round 4). The oracle is asked once per
+# Evidence cell of '## AC coverage'; every fixture is goals/04 at HEAD with only the five Evidence
+# cells changed (the runner checks the Design column and the non-table text against HEAD).
+# `expect` is the label of every cell; `expect_cells` (row1 = R1 ... row5 = R5) overrides it.
+oracle: evidence_reasons
+declared_in: doc-verify/lib/goal.yaml (doc-verify:goal)
+ask: 'This is one evidence cell of a goal''s AC coverage table. It holds only if it is a reasoning chain: (1) it states observable facts (what was run, read, measured or produced, and where), (2) it draws the requirement''s claim from those facts, and (3) it states a conclusion. A bare assertion ("done", "works", "verified"), a bare pointer (a name, a round number or a path with nothing said about what it shows), or a restatement of the requirement fails. A path is not required and its presence alone does not make the cell hold.'
+threshold: 0.5
+constraint: goal-evidence-reasons
+rule:
+  pattern: goals/[0-9][0-9]-*.md
+  artifact_kind: goal
+  modules:
+    - doc-verify:goal
+  status_from: title
+document: goals/04-trusted-kernel.md
+companion:
+  path: goals/04-trusted-kernel.yaml
+  file: companion.yaml
+invariant: evidence-column-only
+atom:
+  inputs: "evidence_reasons(D, R, Evidence)"
+  evidence: "core.cell(D, R, C)"
+  sections:
+    - ac-coverage
+  column: Evidence
+  per_row: true
+  rows: 5
+fixtures:
+  - name: good
+    file: good.md
+    expect: holds
+    note: >-
+      Each cell names a file and what it records (runs, counts, verdicts), draws the requirement's claim from it, and concludes, stating what is still open. Every cited path exists and is tracked.
+  - name: good-nopath
+    file: good-nopath.md
+    expect: holds
+    note: >-
+      The good chains with every path and file name replaced by prose ("the round 2 verdict"); the facts are still attributed to named documents, so the chain survives. Measures whether the judge rewards paths rather than reasons.
+  - name: good-dangling
+    file: good-dangling.md
+    expect: holds
+    note: >-
+      good.md with the R2 cell citing worklog/kernel-trials/round-2-gates.md, which does not exist. The oracle reads the cell as text and should still say holds; the dangling path is paths-resolve's to catch (doc-verify:references), not this oracle's, so the two checks stay independent.
+  - name: terse
+    file: terse.md
+    expect: fails
+    expect_cells:
+      row1: fails
+      row2: fails
+      row3: fails
+      row4: fails
+      row5: fails
+    note: >-
+      goals/04 at HEAD, unchanged. Row1 is two paths with one-word labels ("feasible", "kernel selected"); the labels are verdicts, not observed facts, and nothing is drawn about a mature engine or a confined boundary, so pointer. Row2 is the closest to holding ("round-2-verdict.md (gates pass, seeded defects flip them)" is a document-says-Y fact matching R2's seeded-defect clause) but it draws no claim about the constitution governing and states no conclusion; strict reading fails, a lenient judge may say holds. Row3 says design/05 names Z3 as an analysis stage, a fact that bears on R3, but the other half is a bare section pointer and there is no conclusion and nothing about scoring against the constitution; borderline, fails strictly. Row4 is two paths with labels ("missing literal, proof leaves"; "oracle discrimination measured"): names of results, not what was observed, no conclusion, so pointer. Row5 is a list of files with no statement of what they show, so pointer.
+  - name: defective-bare
+    file: defective-bare.md
+    expect: fails
+    why: >-
+      Each cell is a bare assertion ("done, works", "verified", "covered", "yes, complete", "ok") with no fact, no drawn claim and no conclusion beyond the word itself.
+  - name: defective-pointers
+    file: defective-pointers.md
+    expect: fails
+    source: >-
+      the five Evidence cells of goals/04 at 8b1e4a9, verbatim
+    why: >-
+      Each cell names rounds, files or sections ("kernel-trials K3", "the model's gates, seeded (round 2)") without saying what they show, so each is a bare pointer.
+  - name: defective-restatement
+    file: defective-restatement.md
+    expect: fails
+    why: >-
+      Each cell restates its requirement as achieved ("R1 is met: ...") with no observed fact behind it, which the ask names as failing.
+  - name: defective-padded
+    file: defective-padded.md
+    expect: fails
+    why: >-
+      Each cell is 70-77 words of confident prose about thoroughness with no file, run, number or named document, so there is no observable fact to draw the claim from; length and fluency stand in for evidence.
+  - name: defective-wrongrow
+    file: defective-wrongrow.md
+    expect: holds
+    why: >-
+      Each cell is a reasoning chain for a different requirement than its row's, so it does not draw this row's requirement's claim (criterion 2); a reader with the requirement text would fail every cell.
+    note: >-
+      The good chains rotated one row (R1 carries R2's chain, ..., R5 carries R1's). Each cell is still a well-formed reasoning chain; the oracle's inputs are the cell alone (evidence core.cell(D, R, C)), not the row's requirement text, so it cannot tell that the chain argues another requirement. Expected holds; this fixture measures a known gap (a chain in the wrong row) rather than a separation. A fails here would mean the judge infers the row's requirement from the R label in the cell, which the rotated chains do name in their conclusions.
+  - name: mixed-one-bare
+    file: mixed-one-bare.md
+    expect: holds
+    expect_cells:
+      row1: holds
+      row2: holds
+      row3: fails
+      row4: holds
+      row5: holds
+    why: >-
+      The R3 cell is "done, works", a bare assertion; the other four cells are good.md's chains.
+  - name: mixed-one-pointer
+    file: mixed-one-pointer.md
+    expect: holds
+    expect_cells:
+      row1: holds
+      row2: holds
+      row3: holds
+      row4: fails
+      row5: holds
+    why: >-
+      The R4 cell is "kernel-trials K3" (8b1e4a9's cell), a name with nothing said about what it shows; the other four cells are good.md's chains.

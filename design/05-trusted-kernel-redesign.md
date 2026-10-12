@@ -199,7 +199,15 @@ Three parts, three owners, no overlap:
    live, and the only place. First run (kernel-trials round 3, 2026-10-12): the runner exists as
    `worklog/kernel-trials/probe/oracle-test.mjs`; `verification_falsifies` as declared does not
    discriminate (both seeded defects `holds` ≥ 0.97) and is to be re-authored as an extraction
-   oracle; the judge was decisive and stable on the whole corpus.
+   oracle; the judge was decisive and stable on the whole corpus. Second run (kernel-trials
+   round 4, 2026-10-13): the runner takes per-row atoms, reused fixture files, fixture-local
+   modules, an evidence-column-only invariant, repeats and a ledger per track; the first oracle on
+   a table-cell grain (`evidence_reasons`, a goal's evidence cells as reasoning chains) separates
+   55/55 cells over eleven fixtures with no false pass, where a column-only question misses one bad
+   cell in four. The evidence selector vocabulary above gains the cell (`core.cell(D, R, C)`) and
+   the column (`core.column(D, T, C)`), over the host's table facts (`core.table/3`,
+   `core.header/3`, `core.row/3`, `core.cell/3`; an instance of constitution invariant 7's open
+   vocabulary, computed in the host for now like sections and references).
 3. **Engine.** The kernel reads the declaration and trusts it. It is sound relative to the
    contract: a PASS is a theorem given that the oracle's labelled answers mean what the contract
    says. It measures nothing about the oracle, holds no opinion about its threshold, and never

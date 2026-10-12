@@ -195,7 +195,19 @@ Shipped in `doc-verify/lib/`, versioned with the engine and read from its instal
 | `doc-verify:references` | `references-resolve` (error): every Markdown link that is not a URL resolves; `paths-resolve` (warning): every backtick repository path resolves. No judge |
 | `doc-verify:artifact` | extends references: a status word in `$statuses` and a `## Goal` section; defines the `purpose` oracle |
 | `doc-verify:design` | extends artifact: `## Status` holding one of draft, reviewed, pending-retro, landed; on promotion, a verification section whose claims name a failing check, a decision section, and an altitude warning |
-| `doc-verify:goal` | extends artifact: OPEN, BLOCKED or CLOSED-GREEN; the anchored root, Design files, Workstreams, AC coverage and Worklog sections; on promotion, coverage of every root requirement |
+| `doc-verify:goal` | extends artifact: OPEN, BLOCKED or CLOSED-GREEN; the anchored root, Design files, Workstreams, AC coverage and Worklog sections; on promotion, coverage of every root requirement and, per coverage row, an evidence cell that is a reasoning chain (`evidence_reasons`; a path is optional and checked by `paths-resolve` when present) |
+
+Table facts (added 2026-10-13). For each pipe table, `doc-verify:core` provides
+`core.table(D, S, T)` (`S` the innermost section at the header line, `T` named
+`<section>#table<n>`), `core.header(D, T, Column)` for each header cell as written,
+`core.row(D, T, R)` for every data row (`R` named `<section>#row<n>`, `n` counting that
+section's data rows in document order across its tables) and `core.cell(D, R, Column)` for each
+of the row's non-empty cells. A fenced table and the front matter are not read; the header text
+is matched exactly. A cell's text is evidence, not a fact: an oracle declared over
+`core.cell(D, R, C)` is asked one question per cell with the cell's text alone, and its finding
+sits at the row's line; one declared over `core.column(D, T, C)` is asked once per table over
+that column's cells, one per line. The cell grain is what `doc-verify:goal` uses for the
+evidence column, so a seeded bare cell reddens its own row (kernel-trials round 4).
 
 Reference facts (added 2026-10-05; path rules revised the same day). For each document
 `doc-verify:core` also provides `core.ref(D, S, Target, Kind)`, where `S` is the innermost section
