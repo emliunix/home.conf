@@ -92,15 +92,15 @@ section form with context is as good at the document level on this set.
    verified by the fixture author against the verdict files): the one edit to goals/04 this round
    makes, after the verdict.
 4. `skills/goal-file/goal-authoring.md` records the owner's ruling on evidence cells.
-5. **goals/01 (CLOSED-GREEN) fails the check on four of its acceptance-evidence cells**, and the
-   staged hook checks every goal once `doc-verify/**` changes. The check therefore ships at
-   **error on open and blocked goals and warning on closed-green ones**: a record accepted before
-   the rule existed is not reopened by it, and the owner's falsifier ("done, works" must fail)
-   holds on every goal still being worked. One edit to `doc-verify/lib/goal.yaml` (move
-   `closed-green` into the first constraint's status list) makes it an error everywhere; goals/01
-   would then need its cells rewritten. The judge's labels are in
-   `results/round-4-real-cells-live.txt`. (goals/01's table has eight rows, R1–R6 plus A7 and A8;
-   the blind labels covered the six R rows.)
+5. **goals/01 (CLOSED-GREEN) failed the check on five of its eight acceptance-evidence cells**
+   (rows 2, 3, 4, 6 and A7, at 0.51–0.66). The lead first shipped the check as a warning on
+   closed goals; the owner ruled the same day that a closed goal's text may be refined and the
+   check is an error everywhere. goals/01's cells are rewritten as chains grounded in the
+   repository (the landing commit's file list, the shared skill's files and the five skills that
+   cite it, design/02 §Shared verification practices, worklog/02 §C9 and §C10, the test suites),
+   and goals/01 passes at promotion. The judge's labels before the rewrite are in
+   `results/round-4-real-cells-live.txt`. (The blind labels covered the six R rows; the table has
+   A7 and A8 as well.)
 6. A diagnostics defect found by the staged check and fixed before the commit: with several
    atoms on one section (one per row), every row's finding quoted the first failing row's span and
    probability. `bindingFinding` now picks the leaf whose atom names the binding's values and puts

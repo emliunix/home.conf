@@ -161,13 +161,13 @@ closing retrospective are complete.
 
 | Row | Evidence |
 | --- | --- |
-| R1 | Design, goal, worklog, status, and the source manifest remain outside commit `0fa6dea`; source provenance stays in its owning repository. |
-| R2 | The shared `verification` skill and its practice library landed, with references from the five owning skills; 12 reviewed practices are transferred and 7 rejected. |
-| R3 | Local-client/SDK parity passed against JEV `1.13.0`; the forced full design check passed through deterministic ordered clauses. |
-| R4 | Section, rubric-chain, fragment, cycle, escape, and selection tests passed. |
+| R1 | `git show --stat 0fa6dea` lists 41 files, all verifier implementation; design/02, this goal, `worklog/02-programmatic-document-contract-verification.md` and the source manifest are not among them, so the source boundary R1 asks for held at the landing commit and provenance stays in its owning repository. |
+| R2 | `skills/verification/SKILL.md` and `skills/verification/references/practices.md` exist and are referenced from `flow-common`, `flow-grill-review`, `flow-retro`, `flow-supervise` and `goal-file`; design/02 §Shared verification practices tables the twelve transferred manifest ids with their owning skill and names the seven rejected ones with the reason. The shared skill and the transfer R2 asks for are therefore in place. |
+| R3 | `worklog/02-programmatic-document-contract-verification.md` §C9 records the local client and the SDK returning the same normalized typed answer against JEV `1.13.0`, and the forced full promotion check of design/02 passing through deterministic ordered clauses. The rule path is the SDK's and its parity is evidenced, which is what R3 requires. |
+| R4 | `npm test` passes the resolver suites: sections in `doc-verify/tests/report/segments.test.ts`, rubric chains with the recursive-cycle and oracle-in-cycle refusals in `doc-verify/tests/language/language.test.ts`, and selection in `doc-verify/tests/selection/companion.test.ts` (260 tests green on 2026-10-13). Those are the section and rubric resolver tests R4 names, so R4 holds. |
 | R5 | The pinned remote Prek consumer passed a valid staged document and asserted detailed `NO-GO` diagnostics for an invalid one. |
-| R6 | Design 02 records the article claims adopted and rejected and uses the current SDK behavior as executable evidence. |
-| A7 | Grill, implementation, full verification, and the first-principles retrospective are complete; Design 02 is `landed`. |
+| R6 | design/02 §Shared verification practices lists each adopted article claim with the skill that now owns it and the seven rejected claims with why, and its verification section runs the built SDK path (`doc-verify/tests/oracles/`) rather than quoting the article. The adopted claims are therefore recorded and executable, as R6 asks. |
+| A7 | `worklog/02-programmatic-document-contract-verification.md` records the grill with its three rematches, §C9 the implementation gate and full verification, and §C10 the retrospective dated 2026-09-24; design/02 §Status reads `landed`. Every stage A7 names has a dated record, so A7 is complete. |
 | A8 | Live calls loaded the external credential by reference; no credential value or path entered the commit or reports. |
 
 ## Worklog

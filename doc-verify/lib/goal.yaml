@@ -84,24 +84,15 @@ constraints:
     severity: error
     message: "{D} has no '## Worklog' section"
     repair: "Point to the worklog entries this goal drives."
-  # An open or blocked goal fails on a cell that is not a chain. A closed goal (closed-green) was
-  # accepted before this rule existed (2026-10-13), so on it the same finding is a warning: the
-  # record is not reopened by a later rule. To make it an error there too, move `closed-green`
-  # into the first constraint's status list.
+  # Every goal, open or closed, fails on a cell that is not a chain (owner ruling 2026-10-13: a
+  # closed goal's text may be refined; it is not exempt).
   goal-evidence-reasons:
-    forall: evidence_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence'), core.row(D, T, R), core.meta(D, status, W), W in [open, blocked]
+    forall: evidence_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence'), core.row(D, T, R)
     require: core.cell(D, R, 'Evidence'), evidence_reasons(D, R, 'Evidence')
     severity: error
     profiles: [promotion]
     message: "{R} in {D}: the evidence cell is empty, a bare assertion or a bare pointer, not a reasoning chain"
     repair: "Write what was observed (a run, a file, a measurement), what it shows about the requirement, and the conclusion; a path is optional and is checked when present."
-  goal-evidence-reasons-closed:
-    forall: evidence_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence'), core.row(D, T, R), core.meta(D, status, 'closed-green')
-    require: core.cell(D, R, 'Evidence'), evidence_reasons(D, R, 'Evidence')
-    severity: warning
-    profiles: [promotion]
-    message: "{R} in {D} (closed): the evidence cell is empty, a bare assertion or a bare pointer, not a reasoning chain"
-    repair: "The goal is closed; rewrite the cell as a chain when the record is next touched, or leave the warning."
   goal-coverage-complete:
     forall: root_section(D, R), coverage_section(D, C)
     require: coverage_complete(D, [R, C])
