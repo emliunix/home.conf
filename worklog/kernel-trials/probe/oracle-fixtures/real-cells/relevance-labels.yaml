@@ -1,0 +1,57 @@
+# Round 9, real-design track: the lead's labels for every failure-witness row of designs 02, 03
+# and 05 at commit fe6f007 against the relevance question (R1: the cell describes a failure of
+# THIS row's property). Written 2026-10-13 before any live call. Every witness sits on its own
+# row, so every label is `holds`; this track measures over-strictness. `shares_with` names the
+# row whose vocabulary the cell also uses, the rows a strict judge may demote. The two
+# `rewritten: round-N` cells are the ones round 4c and round 6 rewrote for observability.
+oracle: witness_relevant
+commit: fe6f007
+rule:
+  artifact_kind: design
+  modules:
+    - doc-verify:artifact
+    - worklog/kernel-trials/probe/oracle-fixtures/witness_relevant/module.yaml
+extra_files:
+  worklog/kernel-trials/probe/oracle-fixtures/witness_relevant/module.yaml: ../witness_relevant/module.yaml
+documents:
+  design/02-programmatic-document-contract-verification.md:
+    column: Observable failure witness
+    rows:
+      verification-design#row1: { label: holds, confidence: high }
+      verification-design#row2: { label: holds, confidence: high }
+      verification-design#row3: { label: holds, confidence: high }
+      verification-design#row4: { label: holds, confidence: high }
+      verification-design#row5: { label: holds, confidence: medium, why: "a fact set changing the verdict without the trace: the property is the program's determinism" }
+      verification-design#row6: { label: holds, confidence: high }
+      verification-design#row7: { label: holds, confidence: high }
+      verification-design#row8: { label: holds, confidence: high }
+      verification-design#row9: { label: holds, confidence: high }
+      verification-design#row10: { label: holds, confidence: medium, rewritten: round-6, shares_with: row6, why: "the seeded-document PASS clause reads like row 6's unknown-passes" }
+      verification-design#row11: { label: holds, confidence: medium, rewritten: round-6, why: "a check verdict on the repository: the property is that the repository's own contracts pass" }
+  design/03-companion-driven-document-verification.md:
+    column: Failure witness
+    rows:
+      verification-design#row1: { label: holds, confidence: high }
+      verification-design#row2: { label: holds, confidence: high }
+      verification-design#row3: { label: holds, confidence: high }
+      verification-design#row4: { label: holds, confidence: high }
+      verification-design#row5: { label: holds, confidence: high }
+      verification-design#row6: { label: holds, confidence: medium, shares_with: row7, why: "'omits the Prolog decision after promotion' uses row 7's vocabulary" }
+      verification-design#row7: { label: holds, confidence: high }
+      verification-design#row8: { label: holds, confidence: high }
+      verification-design#row9: { label: holds, confidence: medium, rewritten: round-4c, shares_with: row3, why: "the verbose-trace clause is about precedence as much as about current artifacts" }
+  design/05-trusted-kernel-redesign.md:
+    column: Failure witness
+    rows:
+      verification-design#row1: { label: holds, confidence: high }
+      verification-design#row2: { label: holds, confidence: high }
+      verification-design#row3: { label: holds, confidence: high }
+      verification-design#row4: { label: holds, confidence: high }
+      verification-design#row5: { label: holds, confidence: high }
+      verification-design#row6: { label: holds, confidence: medium, shares_with: row3, why: "'a boundary gate that cannot be made to fail' is gate-suite-form vocabulary" }
+      verification-design#row7: { label: holds, confidence: high }
+      verification-design#row8: { label: holds, confidence: high }
+      verification-design#row9: { label: holds, confidence: high }
+      verification-design#row10: { label: holds, confidence: high }
+expected_agreement:
+  overall: "at most 2 rows flagged per design under R1 and under R2; the flagged rows are among those with shares_with"

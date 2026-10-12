@@ -78,8 +78,11 @@ on row 8; "With nested classification unchanged, " + row 13's on row 11), expect
 control text and its class is in `fixtures.yaml` before the run; a hybrid is not counted.
 
 Per-row labels (`fails` / `holds` / `ambiguous`, with confidence) for every fixture are written
-by the lead before the run in each set's `fixtures.yaml`; only unambiguous rows count toward the
-bars. Invariants: `evidence-column-only` for every fixture but the permutations, which use a
+by the lead before the run in `verification_falsifies/relevance-row-labels.yaml` (with the fixed
+permutations: derangement seeds 1 and 2 by mulberry32 Fisher–Yates with rejection, `from` lists
+recorded) and copied by the builder into each set's `fixtures.yaml`; only unambiguous rows
+count toward the bars. Counted rows: `defective-swapped` 10, `derangement-s1` 12,
+`derangement-s2` 13, `adjacent-swap` 2 wrong + 10 right, `shared-1-11` 2, controls 9. Invariants: `evidence-column-only` for every fixture but the permutations, which use a
 `column-permutation` invariant (the witness column is a permutation of HEAD's; every other cell
 equal), with the permutation seeds recorded.
 
@@ -87,10 +90,11 @@ equal), with the permutation seeds recorded.
 
 `real-cells/relevance-labels.yaml` (4c's shape: `oracle`, per document `column` and `rows:
 <section>#rowN: {label, confidence, why, shares_with}`), the lead's labels for every witness
-row of designs 02, 03 and 05 written before the run; expected mostly `holds` (every witness is
+row of designs 02, 03 and 05, written (30 rows, all `holds`, 6 with `shares_with`); expected mostly `holds` (every witness is
 on its own row), so this track measures over-strictness. A **derangement arm** on designs 03 and
-05 (witness column rotated by 3, seed recorded; `derangement` labels in the same file) gives the
-real track a positive class on real vocabulary; expected ≥ 11 of the unambiguous `fails`.
+05 (witness column rotated by 3; labels in `real-cells/relevance-deranged.yaml`, written: 15
+unambiguous `fails`, 4 `ambiguous`) gives the real track a positive class on real vocabulary;
+expected ≥ 11 of the 15 unambiguous `fails`.
 
 ## Measurements
 
