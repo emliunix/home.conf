@@ -77,6 +77,13 @@ are specified in `docs/doc-verify-model.md` §9).
    policy. Termination is guaranteed by tabling plus an inference budget; the only static check the
    kernel needs is groundness of negated goals.
    *Root:* the outbound policy of design/02 and R4. *Falsifier:* a module that reaches the judge, the network or the filesystem, or runs past the budget without BLOCKED, or a non-ground negation accepted (model §9 "Boundary", "Static checks").
+   *In force 2026-10-13 (kernel-trials round 5):* three layers measured on the selected kernel
+   under `swipl-wasm` 8.2.2, each seen failing on a seeded defect and recovering: the instance
+   (no host filesystem, process, network, environment or JavaScript reach), a sandbox gate over
+   every module-derived clause (primitives declared by kind, meta-primitives recursed into,
+   directives and `catch/3`-class control refused) and an inference budget derived from the corpus
+   and sharp to the inference. Not covered: memory as such, native SWI-Prolog, the judge-side
+   outbound policy (design/02's, gated by `npm test -- semantic confidentiality`).
 6. **Identity is by content, never position.** Atoms, evidence hashes, cache keys, answer binding.
    *Root:* R3; a corollary of invariant 2, since an answer bound to the wrong atom makes 2 meaningless. *Falsifier:* two atoms of one oracle receiving each other's answer, or a reordered batch changing any fact (design/04 "Binding by construction").
 7. **The fact vocabulary is open.** *(added by design/05)* The host hands the kernel a mechanical

@@ -1,0 +1,28 @@
+=== --containment : T0 (the WebAssembly instance alone) ===
+build facts (controls):
+  ok  version flag == 100115                     100115
+  ok  library(process) absent                    ok
+  ok  http_open/3 absent                         ok
+  ok  shell/1 unimplemented                      raises
+  ok  getenv('HOME', _) returns a value          yes (fake home)
+  ok  library(sandbox) loads                     yes
+  ok  library(wasm) := bridge present            yes
+host-effect positive control: planted /tmp/dv-escape, detector DETECTED (ok)
+seeds under T0 (outcome / expected / host effect / ms / detail):
+  E1   ran       exp ran       match    host=no     106 ms  NEEDS-REVIEW
+  E2   error     exp error     match    host=no      98 ms  error(system_error,context(shell/2,'Function not implemented'))
+  E3   error     exp error     match    host=no     113 ms  error(existence_error(procedure,http_open/3),context(system:call/1,_106))
+  E4   ran       exp ran       match    host=no     114 ms  NEEDS-REVIEW
+  E8   error     exp error     match    host=no     105 ms  error(js_eval_error('ReferenceError: window is not defined',[_128{args:[[_152{v:"require('fs').writeFileSync('/tmp/dv-es
+  E9   ran       exp ran       match    host=no     108 ms  NEEDS-REVIEW
+  E10  rejected  exp rejected  match    host=no     104 ms  nonground_negation: open('/tmp/dv-escape',write,_96)
+  E13  ran       exp ran       match    host=no     107 ms  NEEDS-REVIEW
+  E14  ran       exp ran       match    host=no     115 ms  NEEDS-REVIEW
+  E5   resource  exp resource  match    host=no     562 ms  match_limit
+  E6   ran       exp ran       match    host=no     144 ms  PASS
+  E15  hang      exp hang      match    host=no   20000 ms  timeout 20000 ms
+  E16  ran       exp ran       match    host=no     174 ms  PASS
+  E17  hang      exp hang      match    host=no   20000 ms  timeout 20000 ms
+  E18  ran       exp ran       match    host=no    3331 ms  NEEDS-REVIEW
+  E19  resource  exp resource  match    host=no    1912 ms  stack
+complete: true

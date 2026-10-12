@@ -1,0 +1,9 @@
+=== --scheduler : measurement track (no hypothesis, no verdict) ===
+corpus round-1 demand (no answers): full 105, prefix 105, documents where they differ 0 of 26
+random programs (generator seed 1, 200 programs, simulated judge, cap 6 rounds):
+  programs where final statuses differ (M1): 0
+  total atoms asked: full 864, prefix 751
+  mean rounds: full 1.99, prefix 2.33
+  multi-leaf programs (a round where full asks > 1): 196
+  prefix vs full total atoms: -13.1% (design default 'prefix' stays unless prefix asks > 20% more)
+complete: true

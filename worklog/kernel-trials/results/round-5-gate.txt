@@ -1,0 +1,21 @@
+=== --gate : T1 (T0 + the static gate at load) ===
+seeds under T1 (outcome / expected / host effect / census / detail):
+  E1   rejected  exp rejected  match    host=no  -                safe_goal rejected a clause body of core_goal/2
+  E2   rejected  exp rejected  match    host=no  -                safe_goal rejected a clause body of core_goal/2
+  E3   rejected  exp rejected  match    host=no  -                safe_goal rejected a clause body of core_goal/2
+  E4   rejected  exp rejected  match    host=no  -                safe_goal rejected a clause body of core_goal/2
+  E8   rejected  exp rejected  match    host=no  -                safe_goal rejected a clause body of core_goal/2
+  E9   rejected  exp rejected  match    host=no  -                safe_goal rejected a clause body of core_goal/2
+  E10  rejected  exp rejected  match    host=no  -                safe_goal rejected a clause body of core_goal/2
+  E13  rejected  exp rejected  match    host=no  -                directive in program text: :- open('/tmp/dv-escape', write, _).
+  E14  rejected  exp rejected  match    host=no  -                safe_goal rejected a clause body of core_forall/2
+  E5   resource  exp resource  match    host=no  def 3/chk 3      match_limit
+  E6   ran       exp ran       match    host=no  def 4/chk 4      PASS
+  E15  hang      exp hang      match    host=no  -                timeout 20000 ms
+  E16  ran       exp ran       match    host=no  def 6/chk 6      PASS
+  E17  rejected  exp rejected  match    host=no  -                safe_goal rejected a clause body of w::first/2
+  E18  ran       exp ran       match    host=no  def 6/chk 6      NEEDS-REVIEW
+  E19  resource  exp resource  match    host=no  def 7/chk 7      stack
+census (policy-invariance): defined module-derived 6, checked 6, unchecked 0 []
+no-false-refusal control (T1 vs T0): all agree (48 witness-steps, 26 corpus documents)
+complete: true

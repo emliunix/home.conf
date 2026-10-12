@@ -1,0 +1,12 @@
+=== --mutations : each gate shown failing (red), then restored (green) ===
+  host-detector      reads a wrong path                 red:RED  green:GREEN    (planted file missed by wrong-path detector)
+  sandbox gate       gate skipped                       red:RED  green:GREEN    (E1 under T1 runs)
+  whitelist          core_count as safe_primitive       red:RED  green:GREEN    (E9 under T1 runs)
+  whitelist          a primitive removed (core_matches) red:RED  green:GREEN    (a real program is refused)
+  census             core.pl set widened (+core_goal)   red:RED  green:GREEN    (unchecked>0 and E14 runs (E14=rejected))
+  directive refusal  refusal skipped                    red:RED  green:GREEN    (E13 under T1 runs at consult)
+  catch refusal      refusal skipped                    red:RED  green:GREEN    (E17 under T2 runs (the budget swallowed))
+  budget wrapper     B = infinity                       red:RED  green:GREEN    (a budget-blocked seed (E18) runs)
+  budget wrapper     B = 1                              red:RED  green:GREEN    (a real corpus document BLOCKED)
+  scheduler check    prefix takes a leaf outside Dem    red:RED  green:GREEN    (the invariance check fails)
+complete: true

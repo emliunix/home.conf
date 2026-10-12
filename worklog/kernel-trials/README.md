@@ -38,6 +38,10 @@ record design rounds, not kernel measurements), so it has its own root.
 - `round-4b-preregistration.md`, `round-4b-verdict.md`, `results/round-4b-review.md`,
   `results/round-4b-*.txt` — round 4b (2026-10-13): clingo with free externals as subject S3
   (`probe/kernel3/subject-clingo.mjs`, `clingo-wasm` vendored beside swipl-wasm).
+- `round-5-preregistration.md`, `round-5-verdict.md`, `results/round-5-review.md`,
+  `results/round-5-*.txt` — round 5 (2026-10-13): the trust boundary (instance, sandbox gate,
+  inference budget; seeds by layer, gate mutations) and a scheduler measurement track
+  (`probe/run-boundary.mjs`).
 
 ## Not created yet
 
@@ -59,5 +63,6 @@ done, kernel selected); round 3 is the oracle toolkit's first live run (done;
 `round-3-verdict.md`); round 4 is the evidence-cell grain for `doc-verify:goal`, which added the
 table facts (`round-4-preregistration.md`; it displaced the planned `verification_falsifies`
 extraction round, now round 4c, which those facts serve); round 4b is clingo as a third kernel
-subject; round 5 is the trust boundary and scheduler policies (not written). The design the rounds feed is
+subject (done; the kernel stays); round 5 is the trust boundary, with the scheduler as a
+measurement track (`round-5-preregistration.md`). The design the rounds feed is
 `design/05-trusted-kernel-redesign.md`.

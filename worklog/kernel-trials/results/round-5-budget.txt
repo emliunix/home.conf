@@ -1,0 +1,43 @@
+=== --budget : calibration, scaling, T2b/T2 seeds, boundary control, overhead ===
+calibration: corpus max evaluation 43847 inferences (design/02-programmatic-document-contract-verification.md); B = K × max = 20 × 43847 = 876940
+scaling probe (goal module, inferences and wall time by section count):
+    10 sections        4360 inferences       0.7 ms  under B
+    30 sections        4380 inferences       0.7 ms  under B
+   100 sections        4450 inferences       0.7 ms  under B
+   300 sections        4650 inferences       0.9 ms  under B
+seeds under T2b (budget alone) and T2 (gate + budget):
+  E1   T2b ran       exp ran       match    host=no     128 ms  NEEDS-REVIEW
+  E1   T2  rejected  exp rejected  match    host=no     208 ms  safe_goal rejected a clause body of core_goal/2
+  E2   T2b error     exp error     match    host=no      97 ms  error(system_error,context(shell/2,'Function not implemented'))
+  E2   T2  rejected  exp rejected  match    host=no     163 ms  safe_goal rejected a clause body of core_goal/2
+  E3   T2b error     exp error     match    host=no     134 ms  error(existence_error(procedure,http_open/3),context(system:call/1,_286))
+  E3   T2  rejected  exp rejected  match    host=no     166 ms  safe_goal rejected a clause body of core_goal/2
+  E4   T2b ran       exp ran       match    host=no     108 ms  NEEDS-REVIEW
+  E4   T2  rejected  exp rejected  match    host=no     155 ms  safe_goal rejected a clause body of core_goal/2
+  E8   T2b error     exp error     match    host=no      96 ms  error(js_eval_error('ReferenceError: window is not defined',[_322{args:[[_346{v:"require('fs').writeFileSync('/tmp/dv-es
+  E8   T2  rejected  exp rejected  match    host=no     150 ms  safe_goal rejected a clause body of core_goal/2
+  E9   T2b ran       exp ran       match    host=no     103 ms  NEEDS-REVIEW
+  E9   T2  rejected  exp rejected  match    host=no     155 ms  safe_goal rejected a clause body of core_goal/2
+  E10  T2b rejected  exp rejected  match    host=no     100 ms  nonground_negation: open('/tmp/dv-escape',write,_254)
+  E10  T2  rejected  exp rejected  match    host=no     164 ms  safe_goal rejected a clause body of core_goal/2
+  E13  T2b ran       exp ran       match    host=no     101 ms  NEEDS-REVIEW
+  E13  T2  rejected  exp rejected  match    host=no      69 ms  directive in program text: :- open('/tmp/dv-escape', write, _).
+  E14  T2b ran       exp ran       match    host=no      99 ms  NEEDS-REVIEW
+  E14  T2  rejected  exp rejected  match    host=no     146 ms  safe_goal rejected a clause body of core_forall/2
+  E5   T2b resource  exp resource  match    host=no     509 ms  match_limit
+  E5   T2  resource  exp resource  match    host=no     567 ms  match_limit
+  E6   T2b ran       exp ran       match    host=no     159 ms  PASS
+  E6   T2  ran       exp ran       match    host=no     195 ms  PASS
+  E15  T2b BLOCKED   exp BLOCKED   match    host=no     123 ms  budget
+  E15  T2  BLOCKED   exp BLOCKED   match    host=no     170 ms  budget
+  E16  T2b ran       exp ran       match    host=no     146 ms  PASS
+  E16  T2  ran       exp ran       match    host=no     197 ms  PASS
+  E17  T2b ran       exp ran       match    host=no     122 ms  NEEDS-REVIEW
+  E17  T2  rejected  exp rejected  match    host=no     151 ms  safe_goal rejected a clause body of w::first/2
+  E18  T2b BLOCKED   exp BLOCKED   match    host=no     194 ms  budget
+  E18  T2  BLOCKED   exp BLOCKED   match    host=no     257 ms  budget
+  E19  T2b BLOCKED   exp BLOCKED   match    host=no     165 ms  budget
+  E19  T2  BLOCKED   exp BLOCKED   match    host=no     202 ms  budget
+budget boundary control (design/02-programmatic-document-contract-verification.md): statistics N=43847, wrapper threshold Neff=43846; B=Neff-1 -> BLOCKED (exp BLOCKED), B=Neff -> ran (exp ran) ok
+overhead control: T0 corpus 26 ms, T2b corpus 27 ms (107% of T0), within 20%: yes
+complete: true

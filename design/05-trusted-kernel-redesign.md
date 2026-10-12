@@ -166,6 +166,17 @@ random programs and decides every binding the WFS kernel leaves undetermined the
 0 of 26 corpus documents, gives no derivation or missing literal, and has a D1-incomplete demand.
 The kernel stays as above; clingo is kept as the differential reference the gate ledger names.
 
+The boundary, measured (kernel-trials round 5, 2026-10-13): the instance contains what the build
+cannot do; a sandbox gate over every module-derived clause at load refuses any primitive outside
+the kernel's declared surface (the three meta-primitives `core_naf/1`, `core_tnot/1` and
+`core_count/3` declared `safe_meta` so their goal arguments are checked), any directive, and the
+`catch/3` class of control, which was found to swallow the inference limit; an inference budget
+B = 20 × the largest corpus evaluation (876 940) around each evaluation is sharp to the
+inference and bounds loops and large builtins at 6% overhead. Ten gate mutations each turn their
+cell red and green. The scheduler default stays `prefix`: on 200 random multi-leaf programs it
+reaches the same final statuses as `full` and asks 13% fewer atoms in 17% more rounds; on the
+corpus the two coincide.
+
 ### Module language
 
 A module is a Prolog file. Rules are clauses. Oracles and constraints are directives:
@@ -244,7 +255,7 @@ constitution line citing it. The loop has no terminal round: a later question re
 | Gate suite form | a universal gate (M1, M2, D1, D2, PASS-is-final) tested only by hand-written cases, or a counterexample reported without a minimal program | property tests with shrinking over a full-language generator, subject pluggable (gate ledger item 1) |
 | Soundness by construction | a PASS is reachable with an undefined leaf in some constraint instance | seeded: an unanswered oracle under a require; expected undefined, never PASS |
 | Demand is the engine's | an atom the verdict no longer depends on is demanded, or one it depends on is never demanded | seeded cases from round 1 K1, kept as regression |
-| Trust boundary (round 5) | a module reaches the judge, the network, the filesystem, or runs past the budget | `library(sandbox)` and inference-limit probes |
+| Trust boundary (round 5, **in force**) | a module reaches the judge, the network, the filesystem, or runs past the budget without BLOCKED; a boundary gate that cannot be made to fail | `node worklog/kernel-trials/probe/run-boundary.mjs --containment`, `--gate`, `--budget`, `--mutations` |
 | Open vocabulary | a structural rule exists in the host | grep gate: no `artifact_kind` branching, no `DATED_PROSE`, no `required_sections` in the host |
 | Constitution governed | a constitution line changes without a citing design | review gate on `docs/doc-verify-constitution.md` |
 | Oracle split | the engine reads anything about an oracle beyond its declaration, or refuses an oracle for lack of fixtures, or the fixture runner changes an engine result | grep gate on the kernel's inputs; a fixture-less oracle evaluates; `oracle test` has no effect on `check` |
