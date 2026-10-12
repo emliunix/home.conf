@@ -30,9 +30,10 @@ record design rounds, not kernel measurements), so it has its own root.
 
 ## Findings about the record itself
 
-- `AGENTS.md` names no programme roles (where programmes live, grounding, gate ledger, plan,
-  verdict, decision rows, model-route table). This tree follows the shape of
-  `worklog/memory-spine-trials/` by analogy. Recorded as an absence, not invented.
+- `AGENTS.md` named no programme roles when this tree was opened; this tree followed the shape of
+  `worklog/memory-spine-trials/` by analogy. **Resolved 2026-10-12**: `AGENTS.md` §Experiment
+  programmes now binds the roles by file name (plan, probes, results, verdict, decision rows, gate
+  ledger, the independent seat). A model-route table is still absent and is recorded there.
 
 ## Method
 

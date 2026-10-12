@@ -109,7 +109,7 @@ an ordinary oracle whose labels are sentence ids.
   (undocumented); a tabled incremental wrapper leaves a stale delay after assert (possible engine
   defect); `tnot/1` accepts non-ground goals. Tracked as visflow design 20.
 
-**Assumed, to be tested in round 2:**
+**Assumed before round 2, since tested (round 2 passed; round 3 measured the oracles):**
 - The kernel passes the model's gates (`docs/doc-verify-model.md` §9) on seeded witnesses derived
   from the model, including the interval `count` encoding, `present`, `matches` on unbound
   operands and `forbid`. The TypeScript evaluator is run against the same gates as a second
@@ -145,7 +145,7 @@ facts. The driving loop:
 
 1. `demand(Policy, Atoms)`: the residual leaves of every constraint instance still undefined,
    filtered by the scheduler policy (`prefix` by default; `cheapest-evidence` and `most-pruning`
-   are candidates for round 3).
+   are candidates for round 5).
 2. The host asks the judge the atoms (one keyed batch per document) with the oracle's declared
    labels only, and asserts `answered(Atom, Label, Distribution)`; the kernel reads it through the
    oracle's valuation map (threshold, undecided labels). Tables are rebuilt per step.
@@ -225,11 +225,11 @@ constitution line citing it. The loop has no terminal round: a later question re
 | Gate suite form | a universal gate (M1, M2, D1, D2, PASS-is-final) tested only by hand-written cases, or a counterexample reported without a minimal program | property tests with shrinking over a full-language generator, subject pluggable (gate ledger item 1) |
 | Soundness by construction | a PASS is reachable with an undefined leaf in some constraint instance | seeded: an unanswered oracle under a require; expected undefined, never PASS |
 | Demand is the engine's | an atom the verdict no longer depends on is demanded, or one it depends on is never demanded | seeded cases from round 1 K1, kept as regression |
-| Trust boundary (round 3) | a module reaches the judge, the network, the filesystem, or runs past the budget | `library(sandbox)` and inference-limit probes |
+| Trust boundary (round 5) | a module reaches the judge, the network, the filesystem, or runs past the budget | `library(sandbox)` and inference-limit probes |
 | Open vocabulary | a structural rule exists in the host | grep gate: no `artifact_kind` branching, no `DATED_PROSE`, no `required_sections` in the host |
 | Constitution governed | a constitution line changes without a citing design | review gate on `docs/doc-verify-constitution.md` |
 | Oracle split | the engine reads anything about an oracle beyond its declaration, or refuses an oracle for lack of fixtures, or the fixture runner changes an engine result | grep gate on the kernel's inputs; a fixture-less oracle evaluates; `oracle test` has no effect on `check` |
-| Oracle calibration (a later round, live key) | an oracle with fixtures that does not separate good from defective, or decides fewer than a declared share of its fixtures | `doc-verify oracle test` per oracle, reported, not a `check` gate |
+| Oracle calibration (round 3, **run**; round 4 re-authors `verification_falsifies`) | an oracle with fixtures that does not separate good from defective, or a defective fixture that PASSes | `node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --cap 300` per oracle, reported, not a `check` gate |
 
 ## Goal
 

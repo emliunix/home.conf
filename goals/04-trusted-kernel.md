@@ -40,8 +40,10 @@ experiment round with a recorded verdict and decision row; the loop can run agai
 
 ## Workstreams
 
-- W1 kernel-trials programme (`worklog/kernel-trials/`): round 1 feasibility done; round 2
-  model conformance; round 3 trust boundary and scheduler policies.
+- W1 kernel-trials programme (`worklog/kernel-trials/`): R1 done (round 1, feasibility);
+  R2 done (round 2, model conformance; kernel selected); R3 done (round 3, the oracle toolkit's
+  first live run); R4 `verification_falsifies` in extraction form (round 4, not yet written);
+  R5 trust boundary and scheduler policies (round 5, not yet written).
 - W2 design/05: host, kernel, module language, process.
 - W3 migration: the engine libraries and home.conf modules onto the kernel; the TypeScript
   evaluator kept as the differential reference until parity, then deleted.
@@ -50,11 +52,11 @@ experiment round with a recorded verdict and decision row; the loop can run agai
 
 | Requirement | Design | Evidence |
 | --- | --- | --- |
-| R1 | design/05 §Design, kernel; docs/doc-verify-model.md | kernel-trials round 1 verdict; round 2 model conformance |
-| R2 | docs/doc-verify-constitution.md; docs/doc-verify-model.md §9 | the model's gates, seeded (round 2) |
-| R3 | design/05 §Rationale, candidates | kernel-trials preregistration §Candidates; Z3 named as an analysis stage |
-| R4 | design/05 §Design, findings | kernel-trials K3 |
-| R5 | design/05 §Process; AGENTS.md §Experiment programmes | kernel-trials round 1 files; round 2 preregistration |
+| R1 | design/05 §Design, kernel; `docs/doc-verify-model.md` | `worklog/kernel-trials/round-1-verdict.md` (feasible); `worklog/kernel-trials/round-2-verdict.md` (kernel selected) |
+| R2 | `docs/doc-verify-constitution.md`; `docs/doc-verify-model.md` §9 | `worklog/kernel-trials/round-2-verdict.md` (gates pass, seeded defects flip them); `worklog/kernel-trials/gate-ledger.md` |
+| R3 | design/05 §Rationale, candidates | `worklog/kernel-trials/preregistration.md` §Candidates; Z3 named as an analysis stage in design/05 |
+| R4 | design/05 §Design, findings; §Oracle toolkit | `worklog/kernel-trials/round-2-verdict.md` (missing literal, proof leaves); `worklog/kernel-trials/round-3-verdict.md` (oracle discrimination measured) |
+| R5 | design/05 §Process; AGENTS.md §Experiment programmes | `worklog/kernel-trials/round-1-verdict.md`, `round-2-verdict.md`, `round-3-verdict.md` with their preregistrations and reviews; `worklog/kernel-trials/decisions.md` |
 
 ## Worklog
 
