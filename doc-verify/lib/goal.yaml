@@ -15,6 +15,7 @@ kind: verification-module
 module: doc-verify.goal
 extends: [doc-verify:artifact]
 rounds: 1
+request_shape: per-atom
 params:
   statuses: [open, blocked, closed-green]
   root_headings:

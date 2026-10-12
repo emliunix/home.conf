@@ -1,0 +1,54 @@
+oracle-test --real-cells --labels labels.yaml (LIVE; shapes batched,per-atom; repeat 2; spans skipped)
+
+run 1 per shape; agreement with the lead's labels is informational only (the labelled cells were rewritten after the labels)
+  shape     document                                              row                       lead   judge  VERDICT  p     agreement     
+  --------  ----------------------------------------------------  ------------------------  -----  -----  -------  ----  --------------
+  batched   goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row1  holds  holds  NO-GO    1.00  agree         
+  batched   goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row2  holds  holds  NO-GO    0.99  agree         
+  batched   goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row3  holds  holds  NO-GO    0.98  agree         
+  batched   goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row4  fails  holds  NO-GO    1.00  DISAGREE (low)
+  batched   goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row5  holds  fails  NO-GO    0.70  DISAGREE (low)
+  batched   goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row6  holds  holds  NO-GO    1.00  agree         
+  batched   goals/02-companion-driven-document-verification.md    ac-coverage#row1          fails  fails  NO-GO    0.99  agree         
+  batched   goals/02-companion-driven-document-verification.md    ac-coverage#row2          fails  fails  NO-GO    0.98  agree         
+  batched   goals/02-companion-driven-document-verification.md    ac-coverage#row3          fails  fails  NO-GO    0.99  agree         
+  batched   goals/02-companion-driven-document-verification.md    ac-coverage#row4          fails  fails  NO-GO    0.99  agree         
+  batched   goals/02-companion-driven-document-verification.md    ac-coverage#row5          fails  fails  NO-GO    0.99  agree         
+  batched   goals/02-companion-driven-document-verification.md    ac-coverage#row6          fails  fails  NO-GO    0.97  agree         
+  batched   goals/02-companion-driven-document-verification.md    ac-coverage#row7          fails  fails  NO-GO    0.99  agree         
+  batched   goals/03-modular-verification-language.md             ac-coverage#row1          fails  fails  NO-GO    0.96  agree         
+  batched   goals/03-modular-verification-language.md             ac-coverage#row2          fails  fails  NO-GO    0.83  agree         
+  batched   goals/03-modular-verification-language.md             ac-coverage#row3          fails  fails  NO-GO    0.79  agree         
+  batched   goals/03-modular-verification-language.md             ac-coverage#row4          fails  fails  NO-GO    0.98  agree         
+  batched   goals/03-modular-verification-language.md             ac-coverage#row5          fails  fails  NO-GO    0.85  agree         
+  batched   goals/03-modular-verification-language.md             ac-coverage#row6          fails  fails  NO-GO    0.96  agree         
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row1  holds  holds  NO-GO    0.97  agree         
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row2  holds  holds  NO-GO    0.97  agree         
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row3  holds  holds  NO-GO    0.86  agree         
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row4  fails  holds  NO-GO    0.97  DISAGREE (low)
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row5  holds  fails  NO-GO    0.58  DISAGREE (low)
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row6  holds  holds  NO-GO    0.96  agree         
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row1          fails  fails  NO-GO    1.00  agree         
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row2          fails  fails  NO-GO    0.99  agree         
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row3          fails  fails  NO-GO    0.89  agree         
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row4          fails  fails  NO-GO    0.90  agree         
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row5          fails  fails  NO-GO    0.99  agree         
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row6          fails  fails  NO-GO    0.68  agree         
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row7          fails  fails  NO-GO    0.89  agree         
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row1          fails  fails  NO-GO    0.71  agree         
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row2          fails  fails  NO-GO    0.66  agree         
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row3          fails  fails  NO-GO    0.65  agree         
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row4          fails  fails  NO-GO    0.98  agree         
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row5          fails  fails  NO-GO    0.94  agree         
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row6          fails  fails  NO-GO    0.91  agree         
+batched: agreement (informational) 17/19; per run: main 24, follow-ups 0, requests 3, worst 24
+per-atom: agreement (informational) 17/19; per run: main 24, follow-ups 0, requests 24, worst 24
+
+requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  batched   normal  2     6         48      0              [3]                      35006       2.24     0           24             2        48              48             
+  per-atom  normal  2     48        48      0              [24]                     39424       15.95    0           24             2        48              48             
+projection (live, this invocation): main 96, worst 96; cap at 1.5x worst = 144; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round6-real-goal.json
+ledger: live spent 96 / cap 144
+complete: true

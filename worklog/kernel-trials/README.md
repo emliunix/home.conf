@@ -42,6 +42,11 @@ record design rounds, not kernel measurements), so it has its own root.
   `results/round-5-*.txt` — round 5 (2026-10-13): the trust boundary (instance, sandbox gate,
   inference budget; seeds by layer, gate mutations) and a scheduler measurement track
   (`probe/run-boundary.mjs`).
+- `round-6-preregistration.md`, `round-6-verdict.md`, `results/round-6-review.md`,
+  `results/round-6-*-live.txt`, `results/round-6-compare.txt` — round 6 (2026-10-13): request
+  shape, batched against per-atom (`probe/compare-shapes.mjs`; sidecars
+  `probe/oracle-fixtures/.leaves-round6-*.json`; reversed-order fixtures under
+  `probe/oracle-fixtures/.reversed/`).
 
 ## Not created yet
 

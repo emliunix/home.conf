@@ -4,8 +4,9 @@ Task #192. Each mutation must REDDEN the named tests and nothing else. Apply one
 `npx vitest run doc-verify/tests/oracles/request-shape.test.ts`, then restore. The point is that
 the guard is load-bearing: a green suite over a setting whose bounds are unchecked proves nothing.
 
-`request_shape` decides how one round's demanded atoms become judge requests. `batched` is the
-shipped behaviour and the default; `per-atom` asks each demanded atom alone, so no answer depends
+`request_shape` decides how one round's demanded atoms become judge requests. `per-atom` is the
+default since kernel-trials round 6 (2026-10-13); `batched` packs a document's atoms into one
+request. `per-atom` asks each demanded atom alone, so no answer depends
 on which other atoms the document demanded in the same round. The setting is read in
 `partitionBatches` (`doc-verify/src/engine/oracles.ts`), declared in `moduleSchema`
 (`doc-verify/src/engine/module.ts`), and composed with the `rounds` idiom (`compose.ts`).
@@ -13,13 +14,13 @@ on which other atoms the document demanded in the same round. The setting is rea
 | # | mutation | observed reddens |
 |---|---|---|
 | M1 | `oracles.ts`: delete the `if (input.requestShape === "per-atom") { return prepared.map((entry) => [entry]); }` branch | **2 tests** — "asks one request per demanded atom under `per-atom`" and "labels the same atom by its batch, changing the verdict" |
-| M2 | `module.ts`: `request_shape ?? "batched"` → `?? "per-atom"` (the default stops being the shipped behaviour) | **2 tests** — "defaults to batching one document's atoms into a single request" and "labels the same atom by its batch, changing the verdict" |
+| M2 | `module.ts`: `request_shape ?? "per-atom"` → `?? "batched"` (the default stops being the declared one) | **1 test** — "defaults to one request per demanded atom (per-atom, kernel-trials round 6)" |
 | M3 | `module.ts`: `request_shape: z.enum(["batched", "per-atom"])` → `z.string()` (an unknown value is silently treated as legacy instead of refused) | **1 test** — "rejects an unknown request_shape at schema load rather than treating it as legacy" |
 | M4 | `compose.ts`: delete the `request_shape !== undefined` guard at the composition site (the refusal an operator actually reaches) | **2 tests** — "refuses an unknown value during composition, before the schema can drop it" and "still carries a legitimate value through composition" |
 
 M1 is the mutation the task names. M2 bounds it from the other side: a guard that only reddens when
 the feature is removed could still have changed every other consumer's behaviour by flip-flopping the
-default, and M2 is what proves the default is still `batched`. M3 pins the third requirement of the
+default, and M2 is what proves the default is still `per-atom`. M3 pins the third requirement of the
 ruling — an unknown value must be refused at schema load rather than silently read as legacy.
 
 **M4 is the correction to my own first object, and it exists because M3 was measuring the wrong

@@ -1,0 +1,368 @@
+oracle-test --fixtures (LIVE; shapes batched,per-atom; repeat 2; reversed arm (batched); spans skipped)
+row-permutation fixtures:evidence_reasons/good-reversed: ok (5 data rows reversed against good.md)
+row-permutation fixtures:evidence_reasons/defective-pointers-reversed: ok (5 data rows reversed against defective-pointers.md)
+row-permutation fixtures:evidence_reasons/defective-restatement-reversed: ok (5 data rows reversed against defective-restatement.md)
+row-permutation fixtures:evidence_reasons/mixed-one-pointer-reversed: ok (5 data rows reversed against mixed-one-pointer.md)
+
+fixture leaves, repeat 1 per shape (LIVE)
+  oracle            fixture                         shape     row   expect  got    answered  p     thr  leaf     VERDICT  draft-only         bytes  q  worst-q  sep@0.6  edit  paths-warn  stable×2
+  ----------------  ------------------------------  --------  ----  ------  -----  --------  ----  ---  -------  -------  -----------------  -----  -  -------  -------  ----  ----------  --------
+  evidence_reasons  good                            batched   row1  holds   holds  holds     1.00  0.5  decides  PASS     PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  good                            batched   row2  holds   holds  holds     1.00  0.5  decides  PASS     PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  good                            batched   row3  holds   holds  holds     0.99  0.5  decides  PASS     PASS               562    6  6        yes      ok    0           same    
+  evidence_reasons  good                            batched   row4  holds   holds  holds     1.00  0.5  decides  PASS     PASS               704    6  6        yes      ok    0           same    
+  evidence_reasons  good                            batched   row5  holds   holds  holds     0.99  0.5  decides  PASS     PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  good                            per-atom  row1  holds   holds  holds     0.98  0.5  decides  PASS     PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  good                            per-atom  row2  holds   holds  holds     0.97  0.5  decides  PASS     PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  good                            per-atom  row3  holds   holds  holds     0.93  0.5  decides  PASS     PASS               562    6  6        yes      ok    0           same    
+  evidence_reasons  good                            per-atom  row4  holds   holds  holds     0.98  0.5  decides  PASS     PASS               704    6  6        yes      ok    0           same    
+  evidence_reasons  good                            per-atom  row5  holds   holds  holds     0.98  0.5  decides  PASS     PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath                     batched   row1  holds   holds  holds     1.00  0.5  decides  PASS     PASS               649    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath                     batched   row2  holds   holds  holds     1.00  0.5  decides  PASS     PASS               544    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath                     batched   row3  holds   holds  holds     0.97  0.5  decides  PASS     PASS               531    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath                     batched   row4  holds   holds  holds     0.99  0.5  decides  PASS     PASS               640    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath                     batched   row5  holds   holds  holds     0.98  0.5  decides  PASS     PASS               468    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath                     per-atom  row1  holds   holds  holds     0.96  0.5  decides  PASS     PASS               649    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath                     per-atom  row2  holds   holds  holds     0.96  0.5  decides  PASS     PASS               544    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath                     per-atom  row3  holds   holds  holds     0.71  0.5  decides  PASS     PASS               531    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath                     per-atom  row4  holds   holds  holds     0.95  0.5  decides  PASS     PASS               640    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath                     per-atom  row5  holds   holds  holds     0.95  0.5  decides  PASS     PASS               468    6  6        yes      ok    0           same    
+  evidence_reasons  good-dangling                   batched   row1  holds   holds  holds     1.00  0.5  decides  PASS     PASS               731    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling                   batched   row2  holds   holds  holds     1.00  0.5  decides  PASS     PASS               580    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling                   batched   row3  holds   holds  holds     0.99  0.5  decides  PASS     PASS               562    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling                   batched   row4  holds   holds  holds     1.00  0.5  decides  PASS     PASS               704    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling                   batched   row5  holds   holds  holds     0.99  0.5  decides  PASS     PASS               667    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling                   per-atom  row1  holds   holds  holds     0.98  0.5  decides  PASS     PASS               731    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling                   per-atom  row2  holds   holds  holds     0.97  0.5  decides  PASS     PASS               580    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling                   per-atom  row3  holds   holds  holds     0.94  0.5  decides  PASS     PASS               562    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling                   per-atom  row4  holds   holds  holds     0.98  0.5  decides  PASS     PASS               704    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling                   per-atom  row5  holds   holds  holds     0.98  0.5  decides  PASS     PASS               667    6  6        yes      ok    1           same    
+  evidence_reasons  terse                           batched   row1  fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  115    6  6        yes      ok    0           same    
+  evidence_reasons  terse                           batched   row2  fails   fails  fails     0.56  0.5  decides  NO-GO    PASS (not caught)  121    6  6        no       ok    0           same    
+  evidence_reasons  terse                           batched   row3  fails   fails  fails     0.96  0.5  decides  NO-GO    PASS (not caught)  99     6  6        yes      ok    0           same    
+  evidence_reasons  terse                           batched   row4  fails   fails  fails     0.70  0.5  decides  NO-GO    PASS (not caught)  151    6  6        yes      ok    0           same    
+  evidence_reasons  terse                           batched   row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  164    6  6        yes      ok    0           same    
+  evidence_reasons  terse                           per-atom  row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  115    6  6        yes      ok    0           same    
+  evidence_reasons  terse                           per-atom  row2  fails   fails  fails     0.72  0.5  decides  NO-GO    PASS (not caught)  121    6  6        yes      ok    0           same    
+  evidence_reasons  terse                           per-atom  row3  fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  99     6  6        yes      ok    0           same    
+  evidence_reasons  terse                           per-atom  row4  fails   fails  fails     0.96  0.5  decides  NO-GO    PASS (not caught)  151    6  6        yes      ok    0           same    
+  evidence_reasons  terse                           per-atom  row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  164    6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare                  batched   row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  11     6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare                  batched   row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  8      6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare                  batched   row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  7      6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare                  batched   row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  13     6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare                  batched   row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  2      6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare                  per-atom  row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  11     6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare                  per-atom  row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  8      6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare                  per-atom  row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  7      6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare                  per-atom  row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  13     6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare                  per-atom  row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  2      6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers              batched   row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  56     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers              batched   row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  35     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers              batched   row3  fails   fails  fails     0.96  0.5  decides  NO-GO    PASS (not caught)  73     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers              batched   row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  16     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers              batched   row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  52     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers              per-atom  row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  56     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers              per-atom  row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  35     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers              per-atom  row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  73     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers              per-atom  row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  16     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers              per-atom  row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  52     6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement           batched   row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  158    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement           batched   row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  141    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement           batched   row3  fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  175    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement           batched   row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  156    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement           batched   row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  175    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement           per-atom  row1  fails   fails  fails     0.93  0.5  decides  NO-GO    PASS (not caught)  158    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement           per-atom  row2  fails   fails  fails     0.92  0.5  decides  NO-GO    PASS (not caught)  141    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement           per-atom  row3  fails   fails  fails     0.66  0.5  decides  NO-GO    PASS (not caught)  175    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement           per-atom  row4  fails   fails  fails     0.93  0.5  decides  NO-GO    PASS (not caught)  156    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement           per-atom  row5  fails   fails  fails     0.96  0.5  decides  NO-GO    PASS (not caught)  175    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded                batched   row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  494    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded                batched   row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  503    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded                batched   row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  469    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded                batched   row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  465    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded                batched   row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  480    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded                per-atom  row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  494    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded                per-atom  row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  503    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded                per-atom  row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  469    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded                per-atom  row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  465    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded                per-atom  row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  480    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow              batched   row1  holds   holds  holds     0.98  0.5  decides  PASS     PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow              batched   row2  holds   holds  holds     0.98  0.5  decides  PASS     PASS               562    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow              batched   row3  holds   holds  holds     1.00  0.5  decides  PASS     PASS               704    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow              batched   row4  holds   holds  holds     0.99  0.5  decides  PASS     PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow              batched   row5  holds   holds  holds     0.99  0.5  decides  PASS     PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow              per-atom  row1  holds   holds  holds     0.97  0.5  decides  PASS     PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow              per-atom  row2  holds   holds  holds     0.93  0.5  decides  PASS     PASS               562    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow              per-atom  row3  holds   holds  holds     0.98  0.5  decides  PASS     PASS               704    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow              per-atom  row4  holds   holds  holds     0.98  0.5  decides  PASS     PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow              per-atom  row5  holds   holds  holds     0.98  0.5  decides  PASS     PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare                  batched   row1  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare                  batched   row2  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare                  batched   row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  11     6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare                  batched   row4  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               704    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare                  batched   row5  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare                  per-atom  row1  holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare                  per-atom  row2  holds   holds  holds     0.97  0.5  decides  NO-GO    PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare                  per-atom  row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  11     6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare                  per-atom  row4  holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               704    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare                  per-atom  row5  holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer               batched   row1  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer               batched   row2  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer               batched   row3  holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               562    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer               batched   row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  16     6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer               batched   row5  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer               per-atom  row1  holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer               per-atom  row2  holds   holds  holds     0.97  0.5  decides  NO-GO    PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer               per-atom  row3  holds   holds  holds     0.94  0.5  decides  NO-GO    PASS               562    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer               per-atom  row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  16     6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer               per-atom  row5  holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  good-reversed                   batched   row1  holds   holds  holds     0.99  0.5  decides  PASS     PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  good-reversed                   batched   row2  holds   holds  holds     1.00  0.5  decides  PASS     PASS               704    6  6        yes      ok    0           same    
+  evidence_reasons  good-reversed                   batched   row3  holds   holds  holds     0.99  0.5  decides  PASS     PASS               562    6  6        yes      ok    0           same    
+  evidence_reasons  good-reversed                   batched   row4  holds   holds  holds     1.00  0.5  decides  PASS     PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  good-reversed                   batched   row5  holds   holds  holds     1.00  0.5  decides  PASS     PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers-reversed     batched   row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  52     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers-reversed     batched   row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  16     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers-reversed     batched   row3  fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  73     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers-reversed     batched   row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  35     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers-reversed     batched   row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  56     6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement-reversed  batched   row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  175    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement-reversed  batched   row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  156    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement-reversed  batched   row3  fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  175    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement-reversed  batched   row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  141    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement-reversed  batched   row5  fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  158    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer-reversed      batched   row1  holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer-reversed      batched   row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  16     6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer-reversed      batched   row3  holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               562    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer-reversed      batched   row4  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer-reversed      batched   row5  holds   holds  holds     1.00  0.5  decides  NO-GO    PASS               731    6  6        yes      ok    0           same    
+
+per fixture and shape (per-row oracles): cells on their expected side at p >= 0.6
+  oracle/fixture@shape                                     expected side(s)  k/n  separates  VERDICT
+  -------------------------------------------------------  ----------------  ---  ---------  -------
+  evidence_reasons/good@batched                            holds             5/5  yes        PASS   
+  evidence_reasons/good@per-atom                           holds             5/5  yes        PASS   
+  evidence_reasons/good-nopath@batched                     holds             5/5  yes        PASS   
+  evidence_reasons/good-nopath@per-atom                    holds             5/5  yes        PASS   
+  evidence_reasons/good-dangling@batched                   holds             5/5  yes        PASS   
+  evidence_reasons/good-dangling@per-atom                  holds             5/5  yes        PASS   
+  evidence_reasons/terse@batched                           fails             4/5  no         NO-GO  
+  evidence_reasons/terse@per-atom                          fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-bare@batched                  fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-bare@per-atom                 fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-pointers@batched              fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-pointers@per-atom             fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-restatement@batched           fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-restatement@per-atom          fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-padded@batched                fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-padded@per-atom               fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-wrongrow@batched              holds             5/5  yes        PASS   
+  evidence_reasons/defective-wrongrow@per-atom             holds             5/5  yes        PASS   
+  evidence_reasons/mixed-one-bare@batched                  holds+fails       5/5  yes        NO-GO  
+  evidence_reasons/mixed-one-bare@per-atom                 holds+fails       5/5  yes        NO-GO  
+  evidence_reasons/mixed-one-pointer@batched               holds+fails       5/5  yes        NO-GO  
+  evidence_reasons/mixed-one-pointer@per-atom              holds+fails       5/5  yes        NO-GO  
+  evidence_reasons/good-reversed@batched                   holds             5/5  yes        PASS   
+  evidence_reasons/defective-pointers-reversed@batched     fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-restatement-reversed@batched  fails             5/5  yes        NO-GO  
+  evidence_reasons/mixed-one-pointer-reversed@batched      holds+fails       5/5  yes        NO-GO  
+
+false pass (defective fixtures whose document VERDICT is PASS)
+  none
+
+positions (batched; request = main request index in the run, pos = actual 0-based place / batch size; the engine orders a batch by key)
+  run                                              arm       rep  atom                                                orig              label  p     request  pos/size  oracles in request                
+  -----------------------------------------------  --------  ---  --------------------------------------------------  ----------------  -----  ----  -------  --------  ----------------------------------
+  evidence_reasons/good                            normal    1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.94  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/good                            normal    1    ac-coverage#row1                                    ac-coverage#row1  holds  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/good                            normal    1    ac-coverage#row2                                    ac-coverage#row2  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/good                            normal    1    ac-coverage#row3                                    ac-coverage#row3  holds  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/good                            normal    1    ac-coverage#row4                                    ac-coverage#row4  holds  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/good                            normal    1    ac-coverage#row5                                    ac-coverage#row5  holds  0.99  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/good                            normal    2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.92  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/good                            normal    2    ac-coverage#row1                                    ac-coverage#row1  holds  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/good                            normal    2    ac-coverage#row2                                    ac-coverage#row2  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/good                            normal    2    ac-coverage#row3                                    ac-coverage#row3  holds  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/good                            normal    2    ac-coverage#row4                                    ac-coverage#row4  holds  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/good                            normal    2    ac-coverage#row5                                    ac-coverage#row5  holds  0.99  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.94  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    1    ac-coverage#row1                                    ac-coverage#row1  holds  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    1    ac-coverage#row2                                    ac-coverage#row2  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    1    ac-coverage#row3                                    ac-coverage#row3  holds  0.97  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    1    ac-coverage#row4                                    ac-coverage#row4  holds  0.99  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    1    ac-coverage#row5                                    ac-coverage#row5  holds  0.98  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.96  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    2    ac-coverage#row1                                    ac-coverage#row1  holds  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    2    ac-coverage#row2                                    ac-coverage#row2  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    2    ac-coverage#row3                                    ac-coverage#row3  holds  0.98  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    2    ac-coverage#row4                                    ac-coverage#row4  holds  0.99  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-nopath                     normal    2    ac-coverage#row5                                    ac-coverage#row5  holds  0.98  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.95  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    1    ac-coverage#row1                                    ac-coverage#row1  holds  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    1    ac-coverage#row2                                    ac-coverage#row2  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    1    ac-coverage#row3                                    ac-coverage#row3  holds  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    1    ac-coverage#row4                                    ac-coverage#row4  holds  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    1    ac-coverage#row5                                    ac-coverage#row5  holds  0.99  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.94  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    2    ac-coverage#row1                                    ac-coverage#row1  holds  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    2    ac-coverage#row2                                    ac-coverage#row2  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    2    ac-coverage#row3                                    ac-coverage#row3  holds  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    2    ac-coverage#row4                                    ac-coverage#row4  holds  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-dangling                   normal    2    ac-coverage#row5                                    ac-coverage#row5  holds  0.99  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.95  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    1    ac-coverage#row1                                    ac-coverage#row1  fails  0.98  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    1    ac-coverage#row2                                    ac-coverage#row2  fails  0.56  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    1    ac-coverage#row3                                    ac-coverage#row3  fails  0.96  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    1    ac-coverage#row4                                    ac-coverage#row4  fails  0.70  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    1    ac-coverage#row5                                    ac-coverage#row5  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.95  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    2    ac-coverage#row1                                    ac-coverage#row1  fails  0.98  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    2    ac-coverage#row2                                    ac-coverage#row2  fails  0.58  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    2    ac-coverage#row3                                    ac-coverage#row3  fails  0.95  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    2    ac-coverage#row4                                    ac-coverage#row4  fails  0.71  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/terse                           normal    2    ac-coverage#row5                                    ac-coverage#row5  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.89  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    1    ac-coverage#row1                                    ac-coverage#row1  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    1    ac-coverage#row2                                    ac-coverage#row2  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    1    ac-coverage#row3                                    ac-coverage#row3  fails  1.00  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    1    ac-coverage#row4                                    ac-coverage#row4  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    1    ac-coverage#row5                                    ac-coverage#row5  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.93  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    2    ac-coverage#row1                                    ac-coverage#row1  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    2    ac-coverage#row2                                    ac-coverage#row2  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    2    ac-coverage#row3                                    ac-coverage#row3  fails  1.00  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    2    ac-coverage#row4                                    ac-coverage#row4  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-bare                  normal    2    ac-coverage#row5                                    ac-coverage#row5  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.92  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    1    ac-coverage#row1                                    ac-coverage#row1  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    1    ac-coverage#row2                                    ac-coverage#row2  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    1    ac-coverage#row3                                    ac-coverage#row3  fails  0.96  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    1    ac-coverage#row4                                    ac-coverage#row4  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    1    ac-coverage#row5                                    ac-coverage#row5  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.94  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    2    ac-coverage#row1                                    ac-coverage#row1  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    2    ac-coverage#row2                                    ac-coverage#row2  fails  0.99  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    2    ac-coverage#row3                                    ac-coverage#row3  fails  0.94  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    2    ac-coverage#row4                                    ac-coverage#row4  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers              normal    2    ac-coverage#row5                                    ac-coverage#row5  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.94  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    1    ac-coverage#row1                                    ac-coverage#row1  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    1    ac-coverage#row2                                    ac-coverage#row2  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    1    ac-coverage#row3                                    ac-coverage#row3  fails  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    1    ac-coverage#row4                                    ac-coverage#row4  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    1    ac-coverage#row5                                    ac-coverage#row5  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.94  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    2    ac-coverage#row1                                    ac-coverage#row1  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    2    ac-coverage#row2                                    ac-coverage#row2  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    2    ac-coverage#row3                                    ac-coverage#row3  fails  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    2    ac-coverage#row4                                    ac-coverage#row4  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement           normal    2    ac-coverage#row5                                    ac-coverage#row5  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.89  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    1    ac-coverage#row1                                    ac-coverage#row1  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    1    ac-coverage#row2                                    ac-coverage#row2  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    1    ac-coverage#row3                                    ac-coverage#row3  fails  1.00  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    1    ac-coverage#row4                                    ac-coverage#row4  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    1    ac-coverage#row5                                    ac-coverage#row5  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.89  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    2    ac-coverage#row1                                    ac-coverage#row1  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    2    ac-coverage#row2                                    ac-coverage#row2  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    2    ac-coverage#row3                                    ac-coverage#row3  fails  1.00  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    2    ac-coverage#row4                                    ac-coverage#row4  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-padded                normal    2    ac-coverage#row5                                    ac-coverage#row5  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.76  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    1    ac-coverage#row1                                    ac-coverage#row1  holds  0.98  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    1    ac-coverage#row2                                    ac-coverage#row2  holds  0.98  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    1    ac-coverage#row3                                    ac-coverage#row3  holds  1.00  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    1    ac-coverage#row4                                    ac-coverage#row4  holds  0.99  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    1    ac-coverage#row5                                    ac-coverage#row5  holds  0.99  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.75  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    2    ac-coverage#row1                                    ac-coverage#row1  holds  0.98  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    2    ac-coverage#row2                                    ac-coverage#row2  holds  0.98  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    2    ac-coverage#row3                                    ac-coverage#row3  holds  1.00  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    2    ac-coverage#row4                                    ac-coverage#row4  holds  0.99  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-wrongrow              normal    2    ac-coverage#row5                                    ac-coverage#row5  holds  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.87  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    1    ac-coverage#row1                                    ac-coverage#row1  holds  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    1    ac-coverage#row2                                    ac-coverage#row2  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    1    ac-coverage#row3                                    ac-coverage#row3  fails  1.00  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    1    ac-coverage#row4                                    ac-coverage#row4  holds  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    1    ac-coverage#row5                                    ac-coverage#row5  holds  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.88  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    2    ac-coverage#row1                                    ac-coverage#row1  holds  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    2    ac-coverage#row2                                    ac-coverage#row2  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    2    ac-coverage#row3                                    ac-coverage#row3  fails  1.00  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    2    ac-coverage#row4                                    ac-coverage#row4  holds  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-bare                  normal    2    ac-coverage#row5                                    ac-coverage#row5  holds  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.88  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    1    ac-coverage#row1                                    ac-coverage#row1  holds  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    1    ac-coverage#row2                                    ac-coverage#row2  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    1    ac-coverage#row3                                    ac-coverage#row3  holds  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    1    ac-coverage#row4                                    ac-coverage#row4  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    1    ac-coverage#row5                                    ac-coverage#row5  holds  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.89  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    2    ac-coverage#row1                                    ac-coverage#row1  holds  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    2    ac-coverage#row2                                    ac-coverage#row2  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    2    ac-coverage#row3                                    ac-coverage#row3  holds  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    2    ac-coverage#row4                                    ac-coverage#row4  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer               normal    2    ac-coverage#row5                                    ac-coverage#row5  holds  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.94  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  1    ac-coverage#row1                                    ac-coverage#row5  holds  0.99  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  1    ac-coverage#row2                                    ac-coverage#row4  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  1    ac-coverage#row3                                    ac-coverage#row3  holds  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  1    ac-coverage#row4                                    ac-coverage#row2  holds  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  1    ac-coverage#row5                                    ac-coverage#row1  holds  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.95  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  2    ac-coverage#row1                                    ac-coverage#row5  holds  0.99  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  2    ac-coverage#row2                                    ac-coverage#row4  holds  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  2    ac-coverage#row3                                    ac-coverage#row3  holds  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  2    ac-coverage#row4                                    ac-coverage#row2  holds  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/good-reversed                   reversed  2    ac-coverage#row5                                    ac-coverage#row1  holds  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.94  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  1    ac-coverage#row1                                    ac-coverage#row5  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  1    ac-coverage#row2                                    ac-coverage#row4  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  1    ac-coverage#row3                                    ac-coverage#row3  fails  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  1    ac-coverage#row4                                    ac-coverage#row2  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  1    ac-coverage#row5                                    ac-coverage#row1  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.94  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  2    ac-coverage#row1                                    ac-coverage#row5  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  2    ac-coverage#row2                                    ac-coverage#row4  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  2    ac-coverage#row3                                    ac-coverage#row3  fails  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  2    ac-coverage#row4                                    ac-coverage#row2  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-pointers-reversed     reversed  2    ac-coverage#row5                                    ac-coverage#row1  fails  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.94  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  1    ac-coverage#row1                                    ac-coverage#row5  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  1    ac-coverage#row2                                    ac-coverage#row4  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  1    ac-coverage#row3                                    ac-coverage#row3  fails  0.98  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  1    ac-coverage#row4                                    ac-coverage#row2  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  1    ac-coverage#row5                                    ac-coverage#row1  fails  0.99  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.94  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  2    ac-coverage#row1                                    ac-coverage#row5  fails  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  2    ac-coverage#row2                                    ac-coverage#row4  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  2    ac-coverage#row3                                    ac-coverage#row3  fails  0.98  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  2    ac-coverage#row4                                    ac-coverage#row2  fails  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/defective-restatement-reversed  reversed  2    ac-coverage#row5                                    ac-coverage#row1  fails  0.99  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  1    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.95  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  1    ac-coverage#row1                                    ac-coverage#row5  holds  0.99  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  1    ac-coverage#row2                                    ac-coverage#row4  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  1    ac-coverage#row3                                    ac-coverage#row3  holds  0.99  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  1    ac-coverage#row4                                    ac-coverage#row2  holds  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  1    ac-coverage#row5                                    ac-coverage#row1  holds  1.00  0        5/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  2    doc-verify.goal.coverage_complete(goals/04-trusted  -                 holds  0.95  0        0/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  2    ac-coverage#row1                                    ac-coverage#row5  holds  1.00  0        1/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  2    ac-coverage#row2                                    ac-coverage#row4  fails  1.00  0        2/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  2    ac-coverage#row3                                    ac-coverage#row3  holds  1.00  0        3/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  2    ac-coverage#row4                                    ac-coverage#row2  holds  1.00  0        4/6       coverage_complete+evidence_reasons
+  evidence_reasons/mixed-one-pointer-reversed      reversed  2    ac-coverage#row5                                    ac-coverage#row1  holds  1.00  0        5/6       coverage_complete+evidence_reasons
+
+questions: main 312, follow-ups 0, requests 162; worst case live 312 (spans skipped: main only)
+
+requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm       runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  --------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  batched   normal    22    22        132     0              [1]                      132744      9.36     0           66             2        132             132            
+  batched   reversed  8     8         48      0              [1]                      43684       3.66     0           24             2        48              48             
+  per-atom  normal    22    132       132     0              [6]                      141874      45.84    0           66             2        132             132            
+projection (live, this invocation): main 312, worst 312; cap at 1.5x worst = 468; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round6-B.json
+ledger: live spent 312 / cap 450
+complete: true

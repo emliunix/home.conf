@@ -1,5 +1,6 @@
 // #192 §Request shape: `request_shape` decides how one round's demanded atoms become judge
-// requests. `batched` (default) packs a document's atoms into one keyed request; `per-atom`
+// requests. `batched` packs a document's atoms into one keyed request; `per-atom` (the default
+// since kernel-trials round 6, 2026-10-13)
 // asks each demanded atom alone, so an answer cannot depend on which other atoms were
 // demanded in the same round. These tests assert the SHAPE (request count, questions per
 // request) and the default; the label consequence is pinned in request-shape.mutations.md.
@@ -32,10 +33,18 @@ const shape = (markdown: string, requestShape?: string): string => {
 };
 
 describe("request shape", () => {
-  it("defaults to batching one document's atoms into a single request", async () => {
+  it("defaults to one request per demanded atom (per-atom, kernel-trials round 6)", async () => {
     const { backend, requests } = scriptedJudge(byHeading(PURPOSES));
     const report = await run(shape(ATOMS), backend);
     // The fixture has six sections (its title and five headings), so six atoms are demanded.
+    expect(requests).toHaveLength(6);
+    expect(report.requests).toHaveLength(6);
+    expect(report.requests.every((request) => request.questions === 1)).toBe(true);
+  });
+
+  it("batches one document's atoms into a single request under `batched`", async () => {
+    const { backend, requests } = scriptedJudge(byHeading(PURPOSES));
+    const report = await run(shape(ATOMS, "batched"), backend);
     expect(requests).toHaveLength(1);
     expect(requests[0]?.questions).toHaveLength(6);
     expect(report.requests).toHaveLength(1);
@@ -90,9 +99,9 @@ describe("request shape", () => {
 // The removal-red for the shape itself: a scripted judge whose answer depends on how many
 // questions share its request, modelling the measured batch-composition effect (design/101
 // `problem_scope_rationale` answers differently in a 5-question round than it does alone).
-// Under the default batching this atom is labelled `problem` and its `error` constraint is
-// violated; under `per-atom` it is `rationale` and the constraint is satisfied. Reverting the
-// module to batching reddens this case, so the shape is load-bearing for a VERDICT, not only a count.
+// Under `batched` this atom is labelled `problem` and its `error` constraint is violated; under
+// `per-atom` (the default since kernel-trials round 6) it is `rationale` and the constraint is
+// satisfied. The shape is load-bearing for a VERDICT, not only a count.
 describe("request shape: the batch effect on a label", () => {
   /** A judge that reads its own request: `refuted` only when co-asked with other atoms. */
   /**
@@ -144,7 +153,7 @@ constraints:
     severity: error
     message: "the rationale section was not judged rationale"
 `;
-    const batched = await run(shape(atom), batchSensitive().backend);
+    const batched = await run(shape(atom, "batched"), batchSensitive().backend);
     const isolated = await run(shape(atom, "per-atom"), batchSensitive().backend);
     const rationale = (report: typeof batched) => report.oracles.find((leaf) => leaf.atom.endsWith(", rationale)"));
     expect(rationale(batched)?.label).toBe("problem");
@@ -159,8 +168,8 @@ constraints:
 // every pre-commit hook and `pnpm check` -- reaches the schema through `composeModules`, which
 // rebuilds the module from a known key list. A value the schema would reject therefore has to be
 // refused *during composition*, or it is dropped before `.strict()` ever runs and the module
-// silently falls back to the `batched` default. This case is the difference between those two
-// routes; without it the suite is green while `request_shape: bogus` behaves as `batched`.
+// silently falls back to the default. This case is the difference between those two routes;
+// without it the suite is green while `request_shape: bogus` behaves as the default.
 describe("request shape: the composed path refuses an unknown value", () => {
   const compose = async (requestShape: string) => {
     const read = (repoPath: string) => {

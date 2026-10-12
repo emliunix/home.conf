@@ -1,20 +1,31 @@
 // Round 3 oracle fixture runner: a prototype of `doc-verify oracle test` (design 05 §Oracle toolkit).
 //
-//   node worklog/kernel-trials/probe/oracle-test.mjs --fixtures [--oracle NAME] [--cap 300] [--repeat N] [--ledger NAME] [--show-evidence]
+//   node worklog/kernel-trials/probe/oracle-test.mjs --fixtures [--oracle NAME] [--cap 300] [--repeat N] [--ledger NAME] [--show-evidence] [--reversed]
 //   node worklog/kernel-trials/probe/oracle-test.mjs --corpus --repeat N [--cap 300]
-//   node worklog/kernel-trials/probe/oracle-test.mjs --real-cells [--cap N] [--ledger NAME]
+//   node worklog/kernel-trials/probe/oracle-test.mjs --real-cells [--labels FILE] [--repeat N] [--cap N] [--ledger NAME]
 //
-// Round 4 additions: a fixture set may name `files_from` (a sibling set whose Markdown files it
-// reuses), `extra_files` (repository path -> file in the set, copied into the scratch clone: a
-// fixture-local module), `invariant: evidence-column-only` (every fixture is the governed document
-// at HEAD except the cells under `atom.column`; checked before the run), and `atom.per_row: true`
-// (the oracle is asked once per table row; a fixture's `expect` is every cell's expected label,
-// overridden per row by `expect_cells`). `--repeat N` runs each fixture's promotion check N times
-// with the cache off and reports label stability per leaf. `--ledger NAME` keeps a separate
-// question ledger (`.question-count-NAME`). `--show-evidence` prints the parsed rows and the cell
-// text each per-row atom is sent. `--real-cells` runs the shipped oracle and a fixture-local
-// control over goals/01-03's coverage cells and compares the labels with
-// `oracle-fixtures/real-cells/labels.yaml`, written blind before the run.
+// Round 6 additions: `--request-shape batched|per-atom|both` (fixtures and real cells) sets the
+// module-level `request_shape` of every module the run's rule names. A repository module (a
+// fixture-local one written through `extra_files`, or any other repository path) is rewritten in
+// the scratch clone; a shipped library `doc-verify:NAME` is copied from doc-verify/lib into the
+// scratch clone under oracle-fixtures/.shapes/NAME.yaml with the field set, the rule names the
+// copy, and every `extends: [doc-verify:NAME]` of a module in the run that names a copied library
+// is pointed at the copy, so no library is composed twice. Libraries reached only through
+// `extends` stay shipped: composition takes `per-atom` from any module in the chain (compose.ts)
+// and the shipped libraries declare no shape, so the top modules decide. `both` interleaves the
+// shapes per fixture in ABBA order (batched 1, per-atom 1, per-atom 2, batched 2 for --repeat 2).
+// `--no-spans` (the default whenever a shape is set; `--spans` keeps them) refuses the span
+// follow-ups before they reach the judge; the engine then attaches the section span.
+// Every promotion run writes its leaves to oracle-fixtures/.leaves-<ledger>.json: full options and
+// distribution, label, answered, threshold, shape, repeat, the main request and the actual position
+// in it, batch size, stateBytes, evidence text hash, judge model and SDK version, wall time per
+// request and per run. A batched run whose main round takes more than one request per document is
+// marked `split` (not a pass). `--reversed` adds the permuted arm (batched only): per chosen
+// fixture, `<name>-reversed` with the column's table data rows in reverse order, `expect_cells`
+// remapped, checked by the `row-permutation` invariant against its source fixture; the generated
+// files are kept in oracle-fixtures/.reversed/. `--invariant-base REV` checks
+// `evidence-column-only` against REV instead of HEAD. `--positions` prints each batched atom's
+// actual position. `compare-shapes.mjs` reads the sidecars.
 //
 // DOC_VERIFY_MOCK_JUDGE=1 wires the SDK's mock judge (it answers the first option, so every oracle
 // says its first label): good for wiring and for the exact question count, meaningless as a
@@ -40,6 +51,7 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, 
 import { tmpdir } from "node:os";
 import path from "node:path";
 import YAML from "yaml";
+import { createHash } from "node:crypto";
 
 const here = import.meta.dirname;
 const REPO = path.resolve(here, "../../..");
@@ -61,8 +73,45 @@ const ONLY = value("--oracle", undefined);
 const LEDGER_NAME = value("--ledger", undefined);
 const COUNT_FILE = path.join(FIXTURES, LEDGER_NAME === undefined ? ".question-count" : `.question-count-${LEDGER_NAME}`);
 const SHOW_EVIDENCE = flag("--show-evidence");
+const SHAPE_ARG = value("--request-shape", undefined);
+if (SHAPE_ARG !== undefined && !["batched", "per-atom", "both"].includes(SHAPE_ARG)) {
+  console.log(`--request-shape must be batched, per-atom or both, not ${SHAPE_ARG}`);
+  process.exit(2);
+}
+/** The shapes this invocation runs; `undefined` leaves every module as written. */
+const SHAPES = SHAPE_ARG === undefined ? [undefined] : SHAPE_ARG === "both" ? ["batched", "per-atom"] : [SHAPE_ARG];
+/** Span follow-ups are skipped by default whenever a shape is set (round 6); `--spans` keeps them. */
+const NO_SPANS = flag("--no-spans") || (SHAPE_ARG !== undefined && !flag("--spans"));
+const POSITIONS = flag("--positions");
+const REVERSED = flag("--reversed");
+const REVERSED_ONLY = value("--reversed-only", undefined)?.split(",");
+const REVERSED_DEFAULT = { evidence_reasons: ["good", "defective-pointers", "controls", "mixed-one-pointer"] };
+const INVARIANT_BASE = value("--invariant-base", "HEAD");
+const SEED_SPLIT_BYTES = value("--seed-split-bytes", undefined) === undefined ? undefined : Number(value("--seed-split-bytes"));
+const ONLY_FIXTURE = value("--fixture", undefined);
+const LEAVES_FILE = path.join(FIXTURES, LEDGER_NAME === undefined ? ".leaves.json" : `.leaves-${LEDGER_NAME}.json`);
+const LIB = path.join(REPO, "doc-verify/lib");
+const SHAPES_DIR = "worklog/kernel-trials/probe/oracle-fixtures/.shapes";
 const SEP_P = 0.6;
 const STABILITY_MIN_ATOMS = 5;
+const sha = (text) => createHash("sha256").update(text).digest("hex").slice(0, 16);
+const SDK_VERSION = (() => {
+  try { return JSON.parse(readFileSync(path.join(REPO, "node_modules/deepclause-sdk/package.json"), "utf8")).version; } catch { return "unknown"; }
+})();
+
+/**
+ * The ABBA schedule: repeat r runs batched then per-atom when r is odd, per-atom then batched when
+ * even, so `--repeat 2` is batched 1, per-atom 1, per-atom 2, batched 2 and drift lands evenly.
+ */
+function schedule(shapes, repeat) {
+  const steps = [];
+  for (let r = 1; r <= repeat; r += 1) {
+    const order = shapes.length === 2 && r % 2 === 0 ? [...shapes].reverse() : shapes;
+    for (const shape of order) steps.push({ shape, repeat: r });
+  }
+  return steps;
+}
+const shapeKey = (runKey, shape) => (shape === undefined ? runKey : `${runKey}@${shape}`);
 
 // ---------------------------------------------------------------- question ledger
 
@@ -94,16 +143,23 @@ function costOf(report) {
       bytes += leaf.bytes;
     }
   }
-  return { main, followups, requests, asked, worst: main + asked, bytes };
+  // With the span follow-ups skipped, the live worst case is the main questions alone.
+  return { main, followups, requests, asked, worst: NO_SPANS ? main : main + asked, bytes };
 }
 
-/** Whether a live run may start; mock runs are never charged. */
-function mayStart(runKey) {
+/** Whether a live run of these (run key, runs) may start; mock runs are never charged. */
+function mayStart(runKeys) {
   if (MOCK) return true;
-  const projected = ledger.mock.projections[runKey]?.worst;
+  const list = Array.isArray(runKeys) ? runKeys : [[runKeys, 1]];
+  let projected = 0;
+  let unknown = false;
+  for (const [key, runs] of list) {
+    const one = ledger.mock.projections[key]?.worst;
+    if (one === undefined) unknown = true; else projected += one * runs;
+  }
   const spent = ledger.live.questions + ledger.live.followups;
-  if (spent >= CAP || (projected !== undefined && spent + projected > CAP)) {
-    console.log(`CAP  refusing ${runKey}: spent ${spent} + projected ${projected ?? "?"} > cap ${CAP}`);
+  if (spent >= CAP || spent + projected > CAP) {
+    console.log(`CAP  refusing ${list.map(([k]) => k).join(", ")}: spent ${spent} + projected ${projected}${unknown ? "+?" : ""} > cap ${CAP}`);
     return false;
   }
   return true;
@@ -124,6 +180,43 @@ function charge(runKey, cost) {
 
 function backendForPromotion() {
   return MOCK ? mockSupportedBackend() : undefined;
+}
+/**
+ * The promotion judge wrapped with a timer: one entry per `complete` call, with its question ids
+ * and a hash of each key's evidence text, so each engine request record gets its wall time and
+ * each leaf its text identity. Live, the judge is built exactly as the checker would
+ * (`productionBackend(config.judge.model)`); without a key it stays undefined and the checker
+ * reports BLOCKED as before. `--no-spans`: a span follow-up (every id `KEY::span`) is refused
+ * before it reaches the judge; the engine then attaches the section span (option C), exactly as
+ * when a follow-up cannot be asked, and records no request for it.
+ */
+async function timedBackend(repo) {
+  const model = YAML.parse(readFileSync(path.join(repo, ".doc-verify.yaml"), "utf8")).judge?.model ?? "unknown";
+  let base = backendForPromotion();
+  if (base === undefined) {
+    const { productionBackend } = await import(path.join(REPO, "doc-verify/dist/judge.js"));
+    try { base = productionBackend(model); } catch { return { backend: undefined, calls: [], model }; }
+  }
+  const calls = [];
+  const backend = {
+    ...base,
+    capabilities: base.capabilities,
+    complete: async (request) => {
+      const ids = request.questions.map((q) => q.id);
+      if (NO_SPANS && ids.length > 0 && ids.every((id) => id.endsWith("::span"))) {
+        calls.push({ ids, ms: 0, skipped: true });
+        throw new Error("span follow-ups disabled (--no-spans)");
+      }
+      const evidence = Object.fromEntries(Object.entries(request.state?.evidence ?? {}).map(([k, v]) => [k, sha(v.text ?? "")]));
+      const started = performance.now();
+      try {
+        return await base.complete(request);
+      } finally {
+        calls.push({ ids, ms: performance.now() - started, evidence });
+      }
+    },
+  };
+  return { backend, calls, model };
 }
 /** Draft runs ask nothing; this judge makes sure of it. */
 function refusingBackend() {
@@ -150,6 +243,10 @@ function cloneRepo() {
   git(dir, ["config", "commit.gpgsign", "false"]);
   return dir;
 }
+function commitAll(repo, message) {
+  git(repo, ["add", "-A"]);
+  try { git(repo, ["commit", "-qm", message]); } catch { /* unchanged content */ }
+}
 /** HEAD plus the working tree's modified and untracked (not ignored) files, uncommitted as at the root. */
 function snapshotWorkingTree() {
   const dir = cloneRepo();
@@ -164,6 +261,86 @@ function snapshotWorkingTree() {
   return dir;
 }
 
+// ---------------------------------------------------------------- request shape
+
+const isLib = (ref) => ref.startsWith("doc-verify:");
+const libName = (ref) => ref.slice("doc-verify:".length);
+const shapeCopy = (ref) => `${SHAPES_DIR}/${libName(ref)}.yaml`;
+/** The rule's module list with each shipped library replaced by its shaped copy (when a shape is set). */
+function shapedModules(modules) {
+  return SHAPE_ARG === undefined ? modules : modules.map((ref) => (isLib(ref) ? shapeCopy(ref) : ref));
+}
+/** `request_shape: SHAPE` set at the module's top level, one line changed or added. */
+function withShape(text, file, shape) {
+  const lines = text.split("\n");
+  const at = lines.findIndex((line) => /^request_shape:/.test(line));
+  if (at >= 0) lines[at] = `request_shape: ${shape}`;
+  else {
+    let after = lines.findIndex((line) => /^rounds:/.test(line));
+    if (after < 0) after = lines.findIndex((line) => /^kind:/.test(line));
+    if (after < 0) throw new Error(`${file}: no top-level kind: line to place request_shape after`);
+    lines.splice(after + 1, 0, `request_shape: ${shape}`);
+  }
+  const out = lines.join("\n");
+  if (YAML.parse(out).request_shape !== shape) throw new Error(`${file}: request_shape did not take`);
+  return out;
+}
+/** `extends: [doc-verify:NAME]` entries that name a copied library, pointed at the copy (flow style only). */
+function withCopiedExtends(text, file, copied) {
+  const parsed = YAML.parse(text);
+  const parents = parsed.extends ?? [];
+  if (!parents.some((ref) => copied.has(ref))) return text;
+  const lines = text.split("\n");
+  const at = lines.findIndex((line) => /^extends:\s*\[/.test(line));
+  if (at < 0) throw new Error(`${file}: extends names a copied library but is not a one-line flow list`);
+  const dir = path.posix.dirname(file);
+  const mapped = parents.map((ref) => (copied.has(ref) ? path.posix.relative(dir, shapeCopy(ref)) : ref));
+  lines[at] = `extends: [${mapped.join(", ")}]`;
+  const out = lines.join("\n");
+  if (JSON.stringify(YAML.parse(out).extends) !== JSON.stringify(mapped)) throw new Error(`${file}: extends rewrite did not take`);
+  return out;
+}
+/** The shape every library a module reaches through `extends` declares, for the record. */
+function libraryShapes(ref, seen = new Map()) {
+  if (seen.has(ref)) return seen;
+  const parsed = YAML.parse(readFileSync(path.join(LIB, `${libName(ref)}.yaml`), "utf8"));
+  seen.set(ref, parsed.request_shape ?? "(none: batched)");
+  for (const parent of parsed.extends ?? []) if (isLib(parent)) libraryShapes(parent, seen);
+  return seen;
+}
+/**
+ * Writes `shape` into every module the rule names, in the scratch clone: shipped libraries are
+ * copied to .shapes/ (fresh from doc-verify/lib each time), repository modules (and the repository
+ * modules they extend) are rewritten in place; an `extends` naming a copied library points at the
+ * copy. Returns what each module of the run declares, for the sidecar.
+ */
+function applyShape(repo, modules, shape) {
+  if (shape === undefined) return [];
+  const copied = new Set(modules.filter(isLib));
+  const declared = [];
+  const done = new Set();
+  const rewrite = (file) => {
+    if (done.has(file)) return;
+    done.add(file);
+    const full = path.join(repo, file);
+    const text = withShape(withCopiedExtends(readFileSync(full, "utf8"), file, copied), file, shape);
+    writeFileSync(full, text);
+    const parsed = YAML.parse(text);
+    declared.push({ module: file, request_shape: parsed.request_shape });
+    for (const parent of parsed.extends ?? []) {
+      if (isLib(parent)) for (const [lib, s] of libraryShapes(parent)) declared.push({ module: lib, request_shape: s, via: "extends (shipped)" });
+      else rewrite(path.posix.normalize(path.posix.join(path.posix.dirname(file), parent)));
+    }
+  };
+  for (const ref of copied) {
+    mkdirSync(path.join(repo, SHAPES_DIR, path.dirname(libName(ref))), { recursive: true });
+    cpSync(path.join(LIB, `${libName(ref)}.yaml`), path.join(repo, shapeCopy(ref)));
+  }
+  for (const ref of modules) rewrite(isLib(ref) ? shapeCopy(ref) : ref);
+  const seen = new Set();
+  return declared.filter((d) => !seen.has(d.module) && seen.add(d.module));
+}
+
 // ---------------------------------------------------------------- leaves
 
 const oracleOf = (leaf) => leaf.atom.split("(")[0].split(/::|\./).at(-1);
@@ -175,13 +352,143 @@ function shapeOf(leaf) {
   if (leaf.label === "unknown") return "threshold-demoted";
   return "decides";
 }
-const fmt = (x, digits = 2) => (x === undefined || Number.isNaN(x) ? "-" : x.toFixed(digits));
+const fmt = (x, digits = 2) => (x === undefined || x === null || Number.isNaN(x) ? "-" : x.toFixed(digits));
 function table(header, rows) {
   const widths = header.map((h, i) => Math.max(String(h).length, ...rows.map((r) => String(r[i]).length)));
   const line = (r) => `  ${r.map((c, i) => String(c).padEnd(widths[i])).join("  ")}`;
   console.log(line(header));
   console.log(line(widths.map((w) => "-".repeat(w))));
   for (const r of rows) console.log(line(r));
+}
+/** The `rowN` of a per-row atom (`...#rowN, ...`), or "" for a section atom. */
+const rowOf = (leaf) => /#(row\d+)/.exec(leaf.atom)?.[1] ?? "";
+const rowIdOf = (atom) => /([a-z0-9-]+#row\d+)/.exec(atom)?.[1] ?? "";
+
+// ---------------------------------------------------------------- leaves sidecar
+
+function loadSidecar() {
+  try {
+    return JSON.parse(readFileSync(LEAVES_FILE, "utf8"));
+  } catch {
+    return { ledger: LEDGER_NAME ?? null, runs: [] };
+  }
+}
+const sidecar = loadSidecar();
+/**
+ * One promotion report as a sidecar run entry; a re-run of the same (run, shape, repeat) replaces
+ * it. Per request: index, kind, round, questions (the batch size), stateBytes, wall time, the
+ * distinct oracles it carries. Per leaf: the full options and distribution, label, answered,
+ * threshold, the main request it went in and its actual 0-based position there (the engine orders
+ * a batch by key), the batch size, the request's stateBytes, a hash of the evidence text the judge
+ * was sent. `split`: a batched run whose main round took more than one request for a document.
+ */
+function recordRun({ runKey, mode, fixture, source, arm, repeat, shape, report, calls, model, wall, modules, labelsFile, expect, lead, origRow }) {
+  const requests = [];
+  const leaves = [];
+  const splits = [];
+  let atomic = true;
+  for (const artifact of report.artifacts) {
+    const engine = artifact.engine?.report;
+    if (engine === undefined) continue;
+    const pending = calls.filter((c) => !c.skipped);
+    const callOf = (keys, round) => {
+      const ids = round === 0 ? keys.map((k) => `${k}::span`) : keys;
+      const i = pending.findIndex((c) => c.ids.length === ids.length && c.ids.every((id, j) => id === ids[j]));
+      return i < 0 ? undefined : pending.splice(i, 1)[0];
+    };
+    const mainOf = new Map();
+    const followed = new Set();
+    const textOf = new Map();
+    const perRound = new Map();
+    const first = requests.length;
+    for (const record of engine.requests) {
+      const index = requests.length;
+      const call = callOf(record.keys, record.round);
+      for (const [k, h] of Object.entries(call?.evidence ?? {})) if (record.round !== 0) textOf.set(k, h);
+      requests.push({ index, document: artifact.path, round: record.round, kind: record.round === 0 ? "follow-up" : "main",
+        questions: record.questions, stateBytes: record.stateBytes, ms: call?.ms ?? null, keys: record.keys, oracles: [] });
+      if (record.round !== 0) {
+        perRound.set(record.round, (perRound.get(record.round) ?? 0) + 1);
+        if (record.questions !== 1) atomic = false;
+      }
+      record.keys.forEach((key, position) => {
+        if (record.round === 0) followed.add(key);
+        else mainOf.set(key, { request: index, position, size: record.keys.length, stateBytes: record.stateBytes });
+      });
+    }
+    for (const [round, count] of perRound) if (count > 1) splits.push({ document: artifact.path, round, requests: count });
+    for (const leaf of engine.oracles) {
+      const at = mainOf.get(leaf.key);
+      const rowId = rowIdOf(leaf.atom);
+      if (at !== undefined) {
+        const list = requests[at.request].oracles;
+        if (!list.includes(oracleOf(leaf))) list.push(oracleOf(leaf));
+      }
+      leaves.push({
+        run: runKey, mode, fixture, source: source ?? fixture, arm: arm ?? "normal", repeat, shape: shape ?? "module-default",
+        document: artifact.path, verdict: artifact.verdict, oracle: oracleOf(leaf), atom: leaf.atom, row: rowOf(leaf), rowId,
+        origRowId: origRow?.(rowId) ?? rowId,
+        key: leaf.key, label: leaf.label, answered: leaf.answered, options: leaf.options, distribution: leaf.distribution, p: peak(leaf) ?? null,
+        threshold: leaf.threshold, leafShape: shapeOf(leaf), finding: leaf.finding ?? null,
+        request: at?.request ?? null, position: at?.position ?? null, requestSize: at?.size ?? null, requestStateBytes: at?.stateBytes ?? null,
+        followup: followed.has(leaf.key), bytes: leaf.bytes, cacheHit: leaf.cacheHit,
+        textHash: textOf.get(leaf.key) ?? null, questionHash: sha(leaf.question ?? ""),
+        expect: expect?.(leaf) ?? null, lead: lead?.(artifact.path, rowId) ?? null,
+      });
+    }
+    void first;
+  }
+  for (const r of requests) r.mixed = r.oracles.length > 1;
+  const cost = costOf(report);
+  const split = shape === "batched" && splits.length > 0;
+  const entry = { run: runKey, mode, fixture, source: source ?? fixture, arm: arm ?? "normal", repeat, shape: shape ?? "module-default", tag: TAG,
+    model, sdk: SDK_VERSION, spans: NO_SPANS ? "skipped" : "asked", labelsFile: labelsFile ?? null, modules,
+    wall_ms: wall, cost, split, splits, atomic: shape === "per-atom" ? atomic : null,
+    verdicts: Object.fromEntries(report.artifacts.map((a) => [a.path, a.verdict])), requests, leaves, at: new Date().toISOString() };
+  sidecar.runs = sidecar.runs.filter((r) => !(r.run === runKey && r.repeat === repeat && r.shape === entry.shape));
+  sidecar.runs.push(entry);
+  mkdirSync(FIXTURES, { recursive: true });
+  writeFileSync(LEAVES_FILE, `${JSON.stringify(sidecar, null, 1)}\n`);
+  if (split) console.log(`SPLIT ${runKey}@batched rep ${repeat}: ${splits.map((s) => `${s.document} round ${s.round} in ${s.requests} requests`).join("; ")} -- not a pass`);
+  if (shape === "per-atom" && !atomic) console.log(`NOT-ATOMIC ${runKey}@per-atom rep ${repeat}: a main request carried more than one question`);
+  return entry;
+}
+/** `--positions`: each atom's main request and its actual place in it. */
+function printPositions(entries) {
+  const list = entries.filter((e) => e.shape === "batched" || SHAPE_ARG === undefined);
+  console.log("");
+  console.log("positions (batched; request = main request index in the run, pos = actual 0-based place / batch size; the engine orders a batch by key)");
+  table(["run", "arm", "rep", "atom", "orig", "label", "p", "request", "pos/size", "oracles in request"],
+    list.flatMap((e) => e.leaves.filter((l) => l.request !== null).map((l) => [e.fixture, e.arm, e.repeat, l.rowId || l.atom.slice(0, 50), l.origRowId || "-", l.label, fmt(l.p),
+      l.request, `${l.position}/${l.requestSize}`, e.requests[l.request].oracles.join("+")])));
+}
+/** Request counts per shape, the split check, and the live projection. */
+function printRequests(entries) {
+  console.log("");
+  console.log(`requests per shape (spans ${NO_SPANS ? "skipped (--no-spans)" : "asked"}; model ${entries[0]?.model ?? "-"}, deepclause-sdk ${SDK_VERSION})`);
+  const shapes = [...new Set(entries.map((e) => e.shape))];
+  const rows = [];
+  for (const shape of shapes) {
+    for (const arm of [...new Set(entries.map((e) => e.arm))]) {
+      const list = entries.filter((e) => e.shape === shape && e.arm === arm);
+      if (list.length === 0) continue;
+      const reqs = list.flatMap((e) => e.requests);
+      const main = reqs.filter((r) => r.kind === "main");
+      const timed = reqs.filter((r) => r.ms !== null);
+      const repeats = Math.max(...list.map((e) => e.repeat));
+      const first = list.filter((e) => e.repeat === 1);
+      const mainQ = first.reduce((a, e) => a + e.cost.main, 0);
+      const worst = first.reduce((a, e) => a + e.cost.worst, 0);
+      rows.push([shape, arm, list.length, main.length, main.reduce((a, r) => a + r.questions, 0), reqs.length - main.length,
+        `[${[...new Set(first.map((e) => e.requests.filter((r) => r.kind === "main").length))].join(",")}]`,
+        main.reduce((a, r) => a + r.stateBytes, 0), (timed.reduce((a, r) => a + r.ms, 0) / 1000).toFixed(2),
+        list.filter((e) => e.split).length, mainQ, repeats, mainQ * repeats, worst * repeats]);
+    }
+  }
+  table(["shape", "arm", "runs", "main req", "main q", "follow-up req", "main req/run (distinct)", "stateBytes", "judge s", "split runs",
+    "main q/repeat", "repeats", "projected main", "projected worst"], rows);
+  const totalWorst = rows.reduce((a, r) => a + r[13], 0);
+  console.log(`projection (live, this invocation): main ${rows.reduce((a, r) => a + r[12], 0)}, worst ${totalWorst}; cap at 1.5x worst = ${Math.ceil(totalWorst * 1.5)}; sidecar ${path.relative(REPO, LEAVES_FILE)}`);
 }
 
 // ---------------------------------------------------------------- --fixtures
@@ -200,17 +507,18 @@ function filesDir(set) {
 function fixtureText(set, file) {
   return readFileSync(path.join(filesDir(set), file), "utf8");
 }
-const headText = (repoPath) => git(REPO, ["show", `HEAD:${repoPath}`], "utf8");
+const baseText = (repoPath) => git(REPO, ["show", `${INVARIANT_BASE}:${repoPath}`], "utf8");
 
 /**
- * `invariant: evidence-column-only`: the fixture equals the governed document at HEAD line for
- * line, except that a table data row may differ in the cells under `atom.column` alone.
+ * `invariant: evidence-column-only`: the fixture equals the governed document at the invariant
+ * base (HEAD unless `--invariant-base REV`) line for line, except that a table data row may differ
+ * in the cells under `atom.column` alone.
  */
-function columnOnlyIntegrity(set, fixture) {
+function columnOnlyIntegrity(set, text0) {
   const column = set.spec.atom.column;
-  const head = headText(set.spec.document).split("\n");
-  const text = fixtureText(set, fixture.file).split("\n");
-  if (head.length !== text.length) return `line count ${text.length} != HEAD ${head.length}`;
+  const head = baseText(set.spec.document).split("\n");
+  const text = text0.split("\n");
+  if (head.length !== text.length) return `line count ${text.length} != ${INVARIANT_BASE} ${head.length}`;
   let header;
   for (let i = 0; i < head.length; i += 1) {
     if (head[i] === text[i]) {
@@ -227,9 +535,53 @@ function columnOnlyIntegrity(set, fixture) {
   return "ok";
 }
 
+/** The one table whose header names `column`: header line index and its data row line indexes. */
+function columnTable(lines, column) {
+  const found = [];
+  for (let i = 0; i + 1 < lines.length; i += 1) {
+    if (!/^\s*\|/.test(lines[i]) || !/^\s*\|?\s*:?-+/.test(lines[i + 1])) continue;
+    if (!splitCells(lines[i]).includes(column)) continue;
+    const rows = [];
+    for (let j = i + 2; j < lines.length && /^\s*\|/.test(lines[j]); j += 1) rows.push(j);
+    found.push({ header: i, rows });
+  }
+  if (found.length !== 1) throw new Error(`${found.length} tables have a '${column}' column; the reversed arm needs exactly one`);
+  return found[0];
+}
+/** The fixture with its table's data rows in reverse order (row ids renumber by document order). */
+function reverseRows(markdown, column) {
+  const lines = markdown.split("\n");
+  const { rows } = columnTable(lines, column);
+  const reversed = rows.map((i) => lines[i]).reverse();
+  rows.forEach((i, k) => { lines[i] = reversed[k]; });
+  return { text: lines.join("\n"), n: rows.length };
+}
+/**
+ * `invariant: row-permutation`: against its source fixture, every data row of the column's table
+ * appears exactly once and nothing else differs.
+ */
+function rowPermutationIntegrity(sourceText, text, column) {
+  const a = sourceText.split("\n"), b = text.split("\n");
+  if (a.length !== b.length) return `line count ${b.length} != source ${a.length}`;
+  const { rows } = columnTable(a, column);
+  const inTable = new Set(rows);
+  for (let i = 0; i < a.length; i += 1) if (!inTable.has(i) && a[i] !== b[i]) return `line ${i + 1} differs outside the table's data rows`;
+  const want = rows.map((i) => a[i]);
+  const got = rows.map((i) => b[i]);
+  if (new Set(want).size !== want.length) return "source has duplicate data rows";
+  const left = [...want];
+  for (const row of got) {
+    const k = left.indexOf(row);
+    if (k < 0) return "a data row is not a source row";
+    left.splice(k, 1);
+  }
+  return left.length === 0 ? "ok" : "a source row is missing";
+}
+
 /** A defective fixture must be good.md with exactly its recorded edit applied. */
 function editIntegrity(set, fixture) {
-  if (set.spec.invariant === "evidence-column-only") return columnOnlyIntegrity(set, fixture);
+  if (fixture.arm === "reversed") return rowPermutationIntegrity(fixtureText(set, fixture.sourceFile), fixture.text, set.spec.atom.column);
+  if (set.spec.invariant === "evidence-column-only") return columnOnlyIntegrity(set, fixtureText(set, fixture.file));
   if (fixture.edit === undefined) return "base";
   const good = fixtureText(set, "good.md");
   const text = fixtureText(set, fixture.file);
@@ -237,6 +589,28 @@ function editIntegrity(set, fixture) {
   const at = good.indexOf(from);
   if (at < 0 || good.indexOf(from, at + 1) >= 0) return "from-not-unique";
   return good.slice(0, at) + to + good.slice(at + from.length) === text ? "ok" : "MISMATCH";
+}
+
+/** The reversed arm's generated fixtures: `<name>-reversed`, `expect_cells` remapped to the new row ids. */
+function reversedFixtures(set, problems) {
+  if (!REVERSED) return [];
+  if (!set.spec.atom.per_row) return [];
+  const names = REVERSED_ONLY ?? REVERSED_DEFAULT[set.spec.oracle] ?? set.spec.fixtures.map((f) => f.name);
+  const out = [];
+  for (const name of names) {
+    const fixture = set.spec.fixtures.find((f) => f.name === name);
+    if (fixture === undefined) { problems.push(`reversed arm: ${set.spec.oracle} has no fixture '${name}' (skipped)`); continue; }
+    const { text, n } = reverseRows(fixtureText(set, fixture.file), set.spec.atom.column);
+    const map = (row) => { const k = Number(/row(\d+)/.exec(row)?.[1]); return Number.isFinite(k) && k >= 1 && k <= n ? `row${n + 1 - k}` : row; };
+    const expectCells = fixture.expect_cells === undefined ? undefined
+      : Object.fromEntries(Object.entries(fixture.expect_cells).map(([row, label]) => [map(row), label]));
+    const dir = path.join(FIXTURES, ".reversed", set.spec.oracle);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(path.join(dir, `${name}-reversed.md`), text);
+    out.push({ name: `${name}-reversed`, file: null, text, arm: "reversed", source: name, sourceFile: fixture.file, n, expect: fixture.expect,
+      ...(expectCells === undefined ? {} : { expect_cells: expectCells }), mapRow: map });
+  }
+  return out;
 }
 
 function findLeaf(report, set, fixture) {
@@ -248,8 +622,6 @@ function findLeaf(report, set, fixture) {
     .sort((a, b) => rowOf(a).localeCompare(rowOf(b), undefined, { numeric: true }));
   return { artifact, hits, asked: leaves.map((leaf) => `${leaf.atom} [${leaf.sections.join(",")}]`) };
 }
-/** The `rowN` of a per-row atom (`...#rowN, ...`), or "" for a section atom. */
-const rowOf = (leaf) => /#(row\d+)/.exec(leaf.atom)?.[1] ?? "";
 /** The expected label of one leaf: per row when the fixture says so, else the fixture's. */
 const expectedOf = (fixture, leaf) => fixture.expect_cells?.[rowOf(leaf)] ?? fixture.expect;
 /** The parsed table rows and the cell text each per-row atom is sent, for the eye. */
@@ -264,30 +636,36 @@ function showEvidence(set, fixture, markdown) {
 }
 
 async function runFixtures() {
-  console.log(`oracle-test --fixtures (${TAG})`);
+  console.log(`oracle-test --fixtures (${TAG}; shapes ${SHAPES.map((s) => s ?? "module-default").join(",")}; repeat ${REPEAT}${REVERSED ? "; reversed arm (batched)" : ""}; spans ${NO_SPANS ? "skipped" : "asked"})`);
   const sets = loadFixtureSets();
   const rows = [];
   const problems = [];
   let complete = true;
   const totals = { main: 0, followups: 0, asked: 0, worst: 0, requests: 0 };
   let stopped = false;
+  const entries = [];
   for (const set of sets) {
     const repo = cloneRepo();
     try {
       // The repository's config with one rule: the fixture's own, narrowed to its governed path, so
       // the run checks this document alone (no dependent artifact is pulled into the closure).
       const config = YAML.parse(readFileSync(path.join(repo, ".doc-verify.yaml"), "utf8"));
-      config.documents = [{ ...set.spec.rule, pattern: set.spec.document }];
+      config.documents = [{ ...set.spec.rule, modules: shapedModules(set.spec.rule.modules), pattern: set.spec.document }];
       config.invalidation_patterns = [];
+      // Seeded defect for the split check only: a byte budget small enough to force sub-batching.
+      if (SEED_SPLIT_BYTES !== undefined) config.policy = { ...config.policy, max_evidence_bytes: SEED_SPLIT_BYTES };
       writeFileSync(path.join(repo, ".doc-verify.yaml"), YAML.stringify(config));
-      for (const fixture of set.spec.fixtures) {
+      const fixtures = [...set.spec.fixtures, ...reversedFixtures(set, problems)].filter((f) => ONLY_FIXTURE === undefined || f.name === ONLY_FIXTURE);
+      for (const fixture of fixtures) {
         const runKey = `fixtures:${set.spec.oracle}/${fixture.name}`;
         const integrity = editIntegrity(set, fixture);
         if (integrity !== "ok" && integrity !== "base") {
           complete = false;
-          problems.push(`${runKey}: edit integrity ${integrity}`);
+          problems.push(`${runKey}: ${fixture.arm === "reversed" ? "row-permutation" : "edit"} integrity ${integrity}`);
+        } else if (fixture.arm === "reversed") {
+          console.log(`row-permutation ${runKey}: ok (${fixture.n} data rows reversed against ${fixture.sourceFile})`);
         }
-        const markdown = fixtureText(set, fixture.file);
+        const markdown = fixture.text ?? fixtureText(set, fixture.file);
         writeFileSync(path.join(repo, set.spec.document), markdown);
         if (set.spec.companion !== undefined) {
           writeFileSync(path.join(repo, set.spec.companion.path), fixtureText(set, set.spec.companion.file));
@@ -296,9 +674,13 @@ async function runFixtures() {
           mkdirSync(path.dirname(path.join(repo, repoPath)), { recursive: true });
           writeFileSync(path.join(repo, repoPath), readFileSync(path.join(set.dir, file), "utf8"));
         }
+        // The reversed arm is batched only.
+        const shapes = fixture.arm === "reversed" ? (SHAPE_ARG === undefined ? [undefined] : ["batched"]) : SHAPES;
+        const steps = schedule(shapes, REPEAT);
+        let current = steps[0].shape;
+        let modules = applyShape(repo, set.spec.rule.modules, current);
         if (SHOW_EVIDENCE && set.spec.atom.per_row) showEvidence(set, fixture, markdown);
-        git(repo, ["add", "-A"]);
-        try { git(repo, ["commit", "-qm", fixture.name]); } catch { /* unchanged content */ }
+        commitAll(repo, fixture.name);
         const mode = { kind: "paths", paths: [set.spec.document] };
         // Structure only: the draft profile with a judge that refuses every call.
         let draft;
@@ -312,50 +694,75 @@ async function runFixtures() {
           draft = `ERROR ${error.message}`;
           complete = false;
         }
-        if (!mayStart(runKey)) {
+        if (!mayStart(shapes.map((s) => [shapeKey(runKey, s), REPEAT]))) {
           complete = false;
           stopped = true;
           break;
         }
-        const started = performance.now();
-        const reports = [];
+        const reportsBy = new Map(shapes.map((s) => [s, []]));
+        const wallBy = new Map(shapes.map((s) => [s, 0]));
         let threw = false;
-        for (let run = 1; run <= REPEAT; run += 1) {
+        for (const step of steps) {
+          if (step.shape !== current) {
+            current = step.shape;
+            modules = applyShape(repo, set.spec.rule.modules, current);
+            commitAll(repo, `${fixture.name} ${current}`);
+          }
           try {
-            reports.push(await checkDocuments({ root: repo, mode, profile: "promotion", cache: "off", backend: backendForPromotion() }));
+            const { backend, calls, model } = await timedBackend(repo);
+            const t0 = performance.now();
+            const report = await checkDocuments({ root: repo, mode, profile: "promotion", cache: "off", backend });
+            const wall = performance.now() - t0;
+            reportsBy.get(step.shape).push(report);
+            wallBy.set(step.shape, wallBy.get(step.shape) + wall);
+            const cost = costOf(report);
+            charge(shapeKey(runKey, step.shape), cost);
+            for (const key of Object.keys(totals)) totals[key] += cost[key];
+            const entry = recordRun({ runKey, mode: "fixtures", fixture: `${set.spec.oracle}/${fixture.name}`, source: `${set.spec.oracle}/${fixture.source ?? fixture.name}`,
+              arm: fixture.arm ?? "normal", repeat: step.repeat, shape: step.shape, report, calls, model, wall, modules,
+              expect: (leaf) => (oracleOf(leaf) === set.spec.oracle ? expectedOf(fixture, leaf) : null),
+              origRow: fixture.mapRow === undefined ? undefined : (rowId) => {
+                const [section, row] = rowId.split("#");
+                return row !== undefined && set.spec.atom.sections.includes(section) ? `${section}#${fixture.mapRow(row)}` : rowId;
+              } });
+            entries.push(entry);
+            if (entry.split) { complete = false; problems.push(`${runKey}@batched rep ${step.repeat}: split (${entry.splits.map((s) => s.requests).join(",")} requests)`); }
+            if (entry.atomic === false) { complete = false; problems.push(`${runKey}@per-atom rep ${step.repeat}: a main request carried more than one question`); }
           } catch (error) {
             complete = false;
             threw = true;
-            problems.push(`${runKey}: check threw ${error.message}`);
+            problems.push(`${runKey}@${step.shape}: check threw ${error.message}`);
             break;
           }
         }
-        if (threw || reports.length === 0) continue;
-        const wall = (performance.now() - started) / reports.length;
-        const cost = costOf(reports[0]);
-        for (const report of reports) charge(runKey, costOf(report));
-        for (const key of Object.keys(totals)) totals[key] += cost[key] * reports.length;
-        const { artifact, hits, asked } = findLeaf(reports[0], set, fixture);
-        if (artifact?.verdict === "BLOCKED") { complete = false; problems.push(`${runKey}: BLOCKED`); }
-        const perRow = set.spec.atom.per_row === true;
-        const wantHits = perRow ? (set.spec.atom.rows ?? hits.length) : 1;
-        if (hits.length !== wantHits || hits.length === 0) {
-          complete = false;
-          problems.push(`${runKey}: ${hits.length} leaves match ${set.spec.oracle}[${(fixture.sections ?? set.spec.atom.sections).join(",")}]; asked: ${asked.join("; ") || "none"}`);
-        }
-        const warnings = artifact?.findings.filter((f) => f.ruleId.endsWith("paths-resolve")).length ?? 0;
-        const stable = (leaf) => reports.slice(1).every((report) => findLeaf(report, set, fixture).hits.find((other) => other.atom === leaf.atom)?.label === leaf.label);
-        for (const leaf of (hits.length === 0 ? [undefined] : hits)) {
-          const p = leaf === undefined ? undefined : peak(leaf);
-          const expectSide = leaf === undefined ? fixture.expect : expectedOf(fixture, leaf);
-          const separates = leaf !== undefined && leaf.label === expectSide && (p ?? 0) >= SEP_P;
-          rows.push({
-            oracle: set.spec.oracle, fixture: fixture.name, row: leaf === undefined ? "" : rowOf(leaf), expect: expectSide, got: leaf?.label ?? "NOT-FOUND",
-            answered: leaf?.answered ?? "-", p, threshold: leaf?.threshold, shape: leaf === undefined ? "-" : shapeOf(leaf),
-            verdict: artifact?.verdict ?? "-", draft, bytes: leaf?.bytes, questions: cost.main, worst: cost.worst,
-            separates, wall, edit: integrity, sections: leaf?.sections.join(",") ?? "-",
-            atomsAsked: asked.length, warnings, stable: leaf === undefined ? "-" : reports.length < 2 ? "n/a" : stable(leaf) ? "same" : "FLIPS",
-          });
+        if (threw) continue;
+        for (const shape of shapes) {
+          const reports = reportsBy.get(shape);
+          if (reports.length === 0) continue;
+          const wall = wallBy.get(shape) / reports.length;
+          const cost = costOf(reports[0]);
+          const { artifact, hits, asked } = findLeaf(reports[0], set, fixture);
+          if (artifact?.verdict === "BLOCKED") { complete = false; problems.push(`${runKey}@${shape}: BLOCKED`); }
+          const perRow = set.spec.atom.per_row === true;
+          const wantHits = perRow ? (set.spec.atom.rows ?? hits.length) : 1;
+          if (hits.length !== wantHits || hits.length === 0) {
+            complete = false;
+            problems.push(`${runKey}: ${hits.length} leaves match ${set.spec.oracle}[${(fixture.sections ?? set.spec.atom.sections).join(",")}]; asked: ${asked.join("; ") || "none"}`);
+          }
+          const warnings = artifact?.findings.filter((f) => f.ruleId.endsWith("paths-resolve")).length ?? 0;
+          const stable = (leaf) => reports.slice(1).every((report) => findLeaf(report, set, fixture).hits.find((other) => other.atom === leaf.atom)?.label === leaf.label);
+          for (const leaf of (hits.length === 0 ? [undefined] : hits)) {
+            const p = leaf === undefined ? undefined : peak(leaf);
+            const expectSide = leaf === undefined ? fixture.expect : expectedOf(fixture, leaf);
+            const separates = leaf !== undefined && leaf.label === expectSide && (p ?? 0) >= SEP_P;
+            rows.push({
+              oracle: set.spec.oracle, fixture: fixture.name, shape: shape ?? "default", row: leaf === undefined ? "" : rowOf(leaf), expect: expectSide, got: leaf?.label ?? "NOT-FOUND",
+              answered: leaf?.answered ?? "-", p, threshold: leaf?.threshold, leafShape: leaf === undefined ? "-" : shapeOf(leaf),
+              verdict: artifact?.verdict ?? "-", draft, bytes: leaf?.bytes, questions: cost.main, worst: cost.worst,
+              separates, wall, edit: integrity, sections: leaf?.sections.join(",") ?? "-",
+              atomsAsked: asked.length, warnings, stable: leaf === undefined ? "-" : reports.length < 2 ? "n/a" : stable(leaf) ? "same" : "FLIPS",
+            });
+          }
         }
       }
     } finally {
@@ -365,19 +772,19 @@ async function runFixtures() {
   }
 
   console.log("");
-  console.log(`fixture leaves (${TAG}${MOCK ? ": every label is the mock's first option, not a measurement" : ""})`);
+  console.log(`fixture leaves, repeat 1 per shape (${TAG}${MOCK ? ": every label is the mock's first option, not a measurement" : ""})`);
   table(
-    ["oracle", "fixture", "row", "expect", "got", "answered", "p", "thr", "shape", "VERDICT", "draft-only", "bytes", "q", "worst-q", "sep@0.6", "edit", "paths-warn", REPEAT > 1 ? `stable×${REPEAT}` : "stable"],
-    rows.map((r) => [r.oracle, r.fixture, r.row || "-", r.expect, r.got, r.answered, fmt(r.p), fmt(r.threshold, 1), r.shape, r.verdict,
+    ["oracle", "fixture", "shape", "row", "expect", "got", "answered", "p", "thr", "leaf", "VERDICT", "draft-only", "bytes", "q", "worst-q", "sep@0.6", "edit", "paths-warn", REPEAT > 1 ? `stable×${REPEAT}` : "stable"],
+    rows.map((r) => [r.oracle, r.fixture, r.shape, r.row || "-", r.expect, r.got, r.answered, fmt(r.p), fmt(r.threshold, 1), r.leafShape, r.verdict,
       r.expect === "holds" ? r.draft : r.draft === "NO-GO" ? "NO-GO (caught)" : `${r.draft} (not caught)`,
       r.bytes ?? "-", r.questions, r.worst, r.separates ? "yes" : "no", r.edit, r.warnings, r.stable]),
   );
-  const perRowSets = [...new Set(rows.filter((r) => r.row).map((r) => `${r.oracle}/${r.fixture}`))];
+  const perRowSets = [...new Set(rows.filter((r) => r.row).map((r) => `${r.oracle}/${r.fixture}@${r.shape}`))];
   if (perRowSets.length > 0) {
     console.log("");
-    console.log(`per fixture (per-row oracles): cells on their expected side at p >= ${SEP_P}`);
-    table(["oracle/fixture", "expected side(s)", "k/n", "separates", "VERDICT"], perRowSets.map((key) => {
-      const cells = rows.filter((r) => `${r.oracle}/${r.fixture}` === key);
+    console.log(`per fixture and shape (per-row oracles): cells on their expected side at p >= ${SEP_P}`);
+    table(["oracle/fixture@shape", "expected side(s)", "k/n", "separates", "VERDICT"], perRowSets.map((key) => {
+      const cells = rows.filter((r) => `${r.oracle}/${r.fixture}@${r.shape}` === key);
       const k = cells.filter((r) => r.separates).length;
       return [key, [...new Set(cells.map((r) => r.expect))].join("+"), `${k}/${cells.length}`, k === cells.length ? "yes" : "no", cells[0].verdict];
     }));
@@ -385,26 +792,13 @@ async function runFixtures() {
 
   console.log("");
   console.log("false pass (defective fixtures whose document VERDICT is PASS)");
-  const falsePass = [...new Set(rows.filter((r) => r.expect !== "holds" && r.verdict === "PASS").map((r) => `${r.oracle}/${r.fixture}`))];
+  const falsePass = [...new Set(rows.filter((r) => r.expect !== "holds" && r.verdict === "PASS").map((r) => `${r.oracle}/${r.fixture}@${r.shape}`))];
   console.log(falsePass.length === 0 ? "  none" : falsePass.map((key) => `  ${key} PASS`).join("\n"));
 
+  if (POSITIONS) printPositions(entries);
   console.log("");
-  console.log(`per oracle (separation: good holds and the defective fails, each with p >= ${SEP_P})`);
-  const oracles = [...new Set(rows.map((r) => r.oracle))];
-  table(["oracle", "good p", "gross", "subtle", "atom sections", "atoms in doc"],
-    oracles.map((name) => {
-      const of = (fx) => rows.find((r) => r.oracle === name && r.fixture === fx);
-      const good = of("good");
-      const sep = (fx) => {
-        const r = of(fx);
-        if (r === undefined) return "-";
-        return `${good?.separates && r.separates ? "separates" : "no"} (${r.got} p=${fmt(r.p)})`;
-      };
-      return [name, `${good?.got ?? "-"} p=${fmt(good?.p)}`, sep("defective-gross"), sep("defective-subtle"), good?.sections ?? "-", good?.atomsAsked ?? "-"];
-    }));
-
-  console.log("");
-  console.log(`questions: main ${totals.main}, follow-ups ${totals.followups}, requests ${totals.requests}; worst case live (one follow-up per asked leaf) ${totals.worst}`);
+  console.log(`questions: main ${totals.main}, follow-ups ${totals.followups}, requests ${totals.requests}; worst case live ${totals.worst}${NO_SPANS ? " (spans skipped: main only)" : " (one follow-up per asked leaf)"}`);
+  if (entries.length > 0) printRequests(entries);
   if (!MOCK) console.log(`ledger: live spent ${ledger.live.questions + ledger.live.followups} / cap ${CAP}`);
   for (const problem of problems) console.log(`problem: ${problem}`);
   console.log(`complete: ${complete && !stopped}`);
@@ -497,15 +891,17 @@ async function runCorpus() {
   return finished;
 }
 
+
 // ---------------------------------------------------------------- --real-cells
 
 async function runRealCells() {
   const labelsFile = value("--labels", "labels.yaml");
-  console.log(`oracle-test --real-cells --labels ${labelsFile} (${TAG})`);
+  console.log(`oracle-test --real-cells --labels ${labelsFile} (${TAG}; shapes ${SHAPES.map((s) => s ?? "module-default").join(",")}; repeat ${REPEAT}; spans ${NO_SPANS ? "skipped" : "asked"})`);
   const dir = path.join(FIXTURES, "real-cells");
   const labels = YAML.parse(readFileSync(path.join(dir, labelsFile), "utf8"));
   const repo = MOCK ? snapshotWorkingTree() : cloneRepo();
   const rows = [];
+  const problems = [];
   let complete = true;
   try {
     const config = YAML.parse(readFileSync(path.join(repo, ".doc-verify.yaml"), "utf8"));
@@ -518,35 +914,63 @@ async function runRealCells() {
     }
     const paths = Object.keys(labels.documents);
     const rule = labels.rule ?? { artifact_kind: "goal", modules: ["doc-verify:goal", Object.keys(files)[0]], status_from: "title" };
-    config.documents = paths.map((p) => ({ ...rule, pattern: p }));
+    config.documents = paths.map((p) => ({ ...rule, modules: shapedModules(rule.modules), pattern: p }));
     config.invalidation_patterns = [];
     writeFileSync(path.join(repo, ".doc-verify.yaml"), YAML.stringify(config));
-    git(repo, ["add", "-A"]);
-    try { git(repo, ["commit", "-qm", "real-cells"]); } catch { /* unchanged */ }
+    const steps = schedule(SHAPES, REPEAT);
+    let current = steps[0].shape;
+    let modules = applyShape(repo, rule.modules, current);
+    commitAll(repo, "real-cells");
     const runKey = `real-cells:${labelsFile}`;
-    if (!mayStart(runKey)) { console.log("complete: false"); return false; }
-    const report = await checkDocuments({ root: repo, mode: { kind: "paths", paths }, profile: "promotion", cache: "off", backend: backendForPromotion() });
-    const cost = costOf(report);
-    charge(runKey, cost);
-    for (const [docPath, spec] of Object.entries(labels.documents)) {
-      const artifact = report.artifacts.find((a) => a.path === docPath);
-      if (artifact === undefined || artifact.verdict === "BLOCKED") { complete = false; rows.push([docPath, "-", "-", "-", artifact?.verdict ?? "missing", "-", "-"]); continue; }
-      const prefix = labels.oracle ?? "evidence_reasons";
-      const leaves = (artifact.engine?.report?.oracles ?? []).filter((leaf) => oracleOf(leaf).startsWith(prefix));
-      for (const [rowId, expected] of Object.entries(spec.rows)) {
-        const leaf = leaves.find((entry) => entry.atom.includes(`${rowId},`));
-        if (leaf === undefined) { complete = false; rows.push([docPath, rowId, expected.label, "NOT-FOUND", artifact.verdict, "-", "-"]); continue; }
-        rows.push([docPath, rowId, expected.label, leaf.label, artifact.verdict, fmt(peak(leaf)), leaf.label === expected.label ? "agree" : `DISAGREE (${expected.confidence})`]);
+    if (!mayStart(SHAPES.map((s) => [shapeKey(runKey, s), REPEAT]))) { console.log("complete: false"); return false; }
+    const entries = [];
+    const firstReport = new Map();
+    const lead = (docPath, rowId) => labels.documents[docPath]?.rows?.[rowId]?.label ?? null;
+    for (const step of steps) {
+      if (step.shape !== current) {
+        current = step.shape;
+        modules = applyShape(repo, rule.modules, current);
+        commitAll(repo, `real-cells ${current}`);
+      }
+      const { backend, calls, model } = await timedBackend(repo);
+      const t0 = performance.now();
+      const report = await checkDocuments({ root: repo, mode: { kind: "paths", paths }, profile: "promotion", cache: "off", backend });
+      const wall = performance.now() - t0;
+      charge(shapeKey(runKey, step.shape), costOf(report));
+      if (!firstReport.has(step.shape)) firstReport.set(step.shape, report);
+      const entry = recordRun({ runKey, mode: "real-cells", fixture: labelsFile, repeat: step.repeat, shape: step.shape, report, calls, model, wall, modules, labelsFile, lead });
+      entries.push(entry);
+      if (entry.split) { complete = false; problems.push(`${runKey}@batched rep ${step.repeat}: split`); }
+      if (entry.atomic === false) { complete = false; problems.push(`${runKey}@per-atom rep ${step.repeat}: a main request carried more than one question`); }
+    }
+    for (const [shape, report] of firstReport) {
+      for (const [docPath, spec] of Object.entries(labels.documents)) {
+        const artifact = report.artifacts.find((a) => a.path === docPath);
+        if (artifact === undefined || artifact.verdict === "BLOCKED") { complete = false; rows.push([shape ?? "default", docPath, "-", "-", "-", artifact?.verdict ?? "missing", "-", "-"]); continue; }
+        const prefix = labels.oracle ?? "evidence_reasons";
+        const leaves = (artifact.engine?.report?.oracles ?? []).filter((leaf) => oracleOf(leaf).startsWith(prefix));
+        for (const [rowId, expected] of Object.entries(spec.rows)) {
+          const leaf = leaves.find((entry) => entry.atom.includes(`${rowId},`));
+          if (leaf === undefined) { complete = false; rows.push([shape ?? "default", docPath, rowId, expected.label, "NOT-FOUND", artifact.verdict, "-", "-"]); continue; }
+          rows.push([shape ?? "default", docPath, rowId, expected.label, leaf.label, artifact.verdict, fmt(peak(leaf)), leaf.label === expected.label ? "agree" : `DISAGREE (${expected.confidence})`]);
+        }
       }
     }
     console.log("");
-    table(["document", "row", "lead", "judge", "VERDICT", "p", "agreement"], rows);
-    const judged = rows.filter((r) => r[6] !== "-");
-    console.log(`agreement: ${judged.filter((r) => r[6] === "agree").length}/${judged.length}; questions: main ${cost.main}, follow-ups ${cost.followups}, worst case ${cost.worst}`);
+    console.log("run 1 per shape; agreement with the lead's labels is informational only (the labelled cells were rewritten after the labels)");
+    table(["shape", "document", "row", "lead", "judge", "VERDICT", "p", "agreement"], rows);
+    for (const shape of firstReport.keys()) {
+      const judged = rows.filter((r) => r[0] === (shape ?? "default") && r[7] !== "-");
+      const cost = costOf(firstReport.get(shape));
+      console.log(`${shape ?? "default"}: agreement (informational) ${judged.filter((r) => r[7] === "agree").length}/${judged.length}; per run: main ${cost.main}, follow-ups ${cost.followups}, requests ${cost.requests}, worst ${cost.worst}`);
+    }
+    if (POSITIONS) printPositions(entries);
+    printRequests(entries);
     if (!MOCK) console.log(`ledger: live spent ${ledger.live.questions + ledger.live.followups} / cap ${CAP}`);
   } finally {
     rmSync(repo, { recursive: true, force: true });
   }
+  for (const problem of problems) console.log(`problem: ${problem}`);
   console.log(`complete: ${complete}`);
   return complete;
 }
@@ -560,6 +984,8 @@ if (flag("--fixtures")) {
 } else if (flag("--real-cells")) {
   process.exitCode = (await runRealCells()) ? 0 : 1;
 } else {
-  console.log("usage: oracle-test.mjs --fixtures [--oracle NAME] [--repeat N] [--show-evidence] | --corpus --repeat N | --real-cells   [--cap 300] [--ledger NAME]");
+  console.log("usage: oracle-test.mjs --fixtures [--oracle NAME] [--repeat N] [--show-evidence] [--reversed [--reversed-only a,b]] [--invariant-base REV]" +
+    " | --corpus --repeat N | --real-cells [--labels FILE] [--repeat N]" +
+    "   [--request-shape batched|per-atom|both] [--no-spans|--spans] [--positions] [--cap 300] [--ledger NAME]");
   process.exitCode = 2;
 }

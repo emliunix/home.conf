@@ -87,9 +87,15 @@ export function run(moduleYaml: string, backend: JudgeBackend, extra: { markdown
   });
 }
 
-/** A module header plus body lines; keeps each test's program readable. */
+/**
+ * A module header plus body lines; keeps each test's program readable. The row tests were
+ * written against batched requests and test that shape's semantics (rounds, budgets, keyed
+ * evidence, the adapter boundary), so the header declares `batched` explicitly now that the
+ * library default is `per-atom` (kernel-trials round 6); a test about the default or about
+ * per-atom builds its own header.
+ */
 export function moduleText(body: string, rounds = 1): string {
-  return `schema_version: 2\nkind: verification-module\nmodule: t\nrounds: ${String(rounds)}\n${body}`;
+  return `schema_version: 2\nkind: verification-module\nmodule: t\nrequest_shape: batched\nrounds: ${String(rounds)}\n${body}`;
 }
 
 export const PURPOSE_ORACLE = `  purpose(D, S, P):

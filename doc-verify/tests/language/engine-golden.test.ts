@@ -35,6 +35,7 @@ const MARKDOWN = [
 const MODULE = `
 schema_version: 2
 kind: verification-module
+request_shape: batched
 module: golden
 params:
   scope_categories: [inclusion, exclusion, non_goal]
@@ -74,6 +75,7 @@ constraints:
 const DEPTH_ONE = `
 schema_version: 2
 kind: verification-module
+request_shape: batched
 module: golden-depth-one
 rounds: 1
 oracles:

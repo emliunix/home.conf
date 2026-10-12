@@ -154,8 +154,11 @@ export async function askRound(input: {
       throw new BlockedError(`evidence key ${key} names both ${clash} and ${demand.key}`);
     }
     usedKeys.set(key, demand.key);
+    // The request shape is part of the key (round 6): a batched answer was given with the
+    // document's other atoms in the prompt and must not serve a per-atom request, or the reverse.
     const cacheKey = sha256(canonicalJson({
       model: input.model, question, labels: options, evidence: sha256(evidence.text), policy: input.policy.version ?? 1,
+      shape: input.requestShape,
     }));
     const cached = await input.cache?.get(cacheKey);
     if (cached !== undefined) {
@@ -292,11 +295,6 @@ export async function askRound(input: {
  * exceeds the budget is BLOCKED over-budget, named; a single atom is never split.
  */
 function partitionBatches(document: string, prepared: Prepared[], input: { policy: OutboundPolicy; backend: JudgeBackend | undefined; requestShape: RequestShape }): Prepared[][] {
-  // `per-atom`: every demanded atom is its own keyed request. The outbound and judge budgets
-  // still apply per request, through the same single-atom check below.
-  if (input.requestShape === "per-atom") {
-    return prepared.map((entry) => [entry]);
-  }
   const size = (list: Prepared[]): number => Buffer.byteLength(canonicalJson({
     schema_version: 2, document, round: 0,
     evidence: Object.fromEntries(list.map((entry) => [entry.key, { sections: entry.evidence.sections, text: entry.evidence.text }])),
@@ -304,13 +302,26 @@ function partitionBatches(document: string, prepared: Prepared[], input: { polic
   // A sub-batch must satisfy both the outbound policy and the judge's own state budget, and hold
   // no more questions than the judge takes.
   const limit = Math.min(input.policy.maxEvidenceBytes, input.backend?.capabilities.stateTokenBudget ?? Number.POSITIVE_INFINITY);
+  const overBudget = (entry: Prepared, alone: number): BlockedError =>
+    new BlockedError(`evidence for ${entry.key} is ${String(alone)} bytes, above the effective budget of ${String(limit)} (max_evidence_bytes ${String(input.policy.maxEvidenceBytes)}, judge state budget ${String(input.backend?.capabilities.stateTokenBudget ?? "none")}); a single atom is not split`);
+  // `per-atom`: every demanded atom is its own keyed request. The outbound and judge budgets
+  // still apply per request, through the same single-atom check as a batch's.
+  if (input.requestShape === "per-atom") {
+    for (const entry of prepared) {
+      const alone = size([entry]);
+      if (alone > limit) {
+        throw overBudget(entry, alone);
+      }
+    }
+    return prepared.map((entry) => [entry]);
+  }
   const maxQuestions = input.backend?.capabilities.maxQuestions ?? Number.POSITIVE_INFINITY;
   const batches: Prepared[][] = [];
   let current: Prepared[] = [];
   for (const entry of prepared) {
     const alone = size([entry]);
     if (alone > limit) {
-      throw new BlockedError(`evidence for ${entry.key} is ${String(alone)} bytes, above the effective budget of ${String(limit)} (max_evidence_bytes ${String(input.policy.maxEvidenceBytes)}, judge state budget ${String(input.backend?.capabilities.stateTokenBudget ?? "none")}); a single atom is not split`);
+      throw overBudget(entry, alone);
     }
     if (current.length > 0 && (current.length >= maxQuestions || size([...current, entry]) > limit)) {
       batches.push(current);

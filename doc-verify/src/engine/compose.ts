@@ -145,8 +145,13 @@ export async function composeModules(
           `${file}: request_shape must be "batched" or "per-atom", not ${JSON.stringify(source.request_shape)}`,
         ]);
       }
+      // Stricter wins: `per-atom` once any module asks atoms alone; otherwise an explicit
+      // `batched` is kept (the library default is `per-atom` since kernel-trials round 6, so a
+      // library calibrated batched must be able to say so and be heard).
       if (source.request_shape === "per-atom") {
         requestShape = "per-atom";
+      } else if (requestShape === undefined) {
+        requestShape = "batched";
       }
     }
     if (typeof source.warning_threshold === "number") {

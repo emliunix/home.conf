@@ -1,0 +1,53 @@
+{
+  "cap": 180,
+  "live": {
+    "questions": 120,
+    "followups": 0,
+    "requests": 66,
+    "runs": [
+      {
+        "run": "real-cells:witness-labels.yaml@batched",
+        "main": 30,
+        "followups": 0,
+        "requests": 3,
+        "asked": 30,
+        "worst": 30,
+        "bytes": 5350,
+        "at": "2026-10-12T20:45:08.229Z"
+      },
+      {
+        "run": "real-cells:witness-labels.yaml@per-atom",
+        "main": 30,
+        "followups": 0,
+        "requests": 30,
+        "asked": 30,
+        "worst": 30,
+        "bytes": 5350,
+        "at": "2026-10-12T20:45:23.507Z"
+      },
+      {
+        "run": "real-cells:witness-labels.yaml@per-atom",
+        "main": 30,
+        "followups": 0,
+        "requests": 30,
+        "asked": 30,
+        "worst": 30,
+        "bytes": 5350,
+        "at": "2026-10-12T20:45:37.415Z"
+      },
+      {
+        "run": "real-cells:witness-labels.yaml@batched",
+        "main": 30,
+        "followups": 0,
+        "requests": 3,
+        "asked": 30,
+        "worst": 30,
+        "bytes": 5350,
+        "at": "2026-10-12T20:45:42.329Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {}
+  }
+}

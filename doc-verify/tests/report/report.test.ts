@@ -15,6 +15,7 @@ import { scriptedJudge } from "../engine-helpers.js";
 
 const MODULE = `schema_version: 2
 kind: verification-module
+request_shape: batched
 module: sample
 oracles:
   falsifies(D, S):

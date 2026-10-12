@@ -7,6 +7,10 @@
 schema_version: 2
 kind: verification-module
 module: doc-verify.module-verification
+# request_shape: these oracles were calibrated batched (kernel-trials round 3, the corpus) and
+# per-atom is unmeasured for them (round 6 measured goal and design oracles only; under
+# per-atom one module page drops below its threshold), so the shape is pinned until measured.
+request_shape: batched
 extends: [doc-verify:references]
 oracles:
   pairs_every_property(D, S):

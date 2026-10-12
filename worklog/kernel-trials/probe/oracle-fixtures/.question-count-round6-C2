@@ -1,0 +1,373 @@
+{
+  "cap": 756,
+  "live": {
+    "questions": 504,
+    "followups": 0,
+    "requests": 192,
+    "runs": [
+      {
+        "run": "fixtures:witness_observable_in_row/good@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:40:38.556Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/good@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:40:47.277Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/good@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:40:55.577Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/good@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:40:59.696Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-gross@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1213,
+        "at": "2026-10-12T20:41:07.519Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-gross@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1213,
+        "at": "2026-10-12T20:41:16.277Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-gross@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1213,
+        "at": "2026-10-12T20:41:25.698Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-gross@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1213,
+        "at": "2026-10-12T20:41:29.544Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2688,
+        "at": "2026-10-12T20:41:36.743Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2688,
+        "at": "2026-10-12T20:41:44.941Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2688,
+        "at": "2026-10-12T20:41:53.497Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2688,
+        "at": "2026-10-12T20:41:57.211Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle3@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2428,
+        "at": "2026-10-12T20:42:04.372Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle3@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2428,
+        "at": "2026-10-12T20:42:13.235Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle3@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2428,
+        "at": "2026-10-12T20:42:21.318Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle3@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2428,
+        "at": "2026-10-12T20:42:25.308Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/controls@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1775,
+        "at": "2026-10-12T20:42:33.526Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/controls@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1775,
+        "at": "2026-10-12T20:42:42.018Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/controls@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1775,
+        "at": "2026-10-12T20:42:50.601Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/controls@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1775,
+        "at": "2026-10-12T20:42:54.590Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-swapped@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:43:02.237Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-swapped@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:43:10.357Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-swapped@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:43:18.703Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-swapped@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:43:22.480Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/good-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:43:29.978Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/good-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:43:33.665Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-gross-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1213,
+        "at": "2026-10-12T20:43:40.749Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-gross-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1213,
+        "at": "2026-10-12T20:43:44.892Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2688,
+        "at": "2026-10-12T20:43:52.067Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2688,
+        "at": "2026-10-12T20:43:55.845Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle3-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2428,
+        "at": "2026-10-12T20:44:03.186Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle3-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2428,
+        "at": "2026-10-12T20:44:06.855Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/controls-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1775,
+        "at": "2026-10-12T20:44:13.999Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/controls-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1775,
+        "at": "2026-10-12T20:44:17.751Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-swapped-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:44:24.889Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-swapped-reversed@batched",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-12T20:44:28.605Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {}
+  }
+}

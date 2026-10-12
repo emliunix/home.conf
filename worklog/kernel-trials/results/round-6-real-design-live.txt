@@ -1,0 +1,76 @@
+oracle-test --real-cells --labels witness-labels.yaml (LIVE; shapes batched,per-atom; repeat 2; spans skipped)
+
+run 1 per shape; agreement with the lead's labels is informational only (the labelled cells were rewritten after the labels)
+  shape     document                                                  row                        lead   judge  VERDICT  p     agreement        
+  --------  --------------------------------------------------------  -------------------------  -----  -----  -------  ----  -----------------
+  batched   design/02-programmatic-document-contract-verification.md  verification-design#row1   holds  holds  PASS     0.99  agree            
+  batched   design/02-programmatic-document-contract-verification.md  verification-design#row2   holds  holds  PASS     0.97  agree            
+  batched   design/02-programmatic-document-contract-verification.md  verification-design#row3   holds  holds  PASS     0.99  agree            
+  batched   design/02-programmatic-document-contract-verification.md  verification-design#row4   holds  holds  PASS     1.00  agree            
+  batched   design/02-programmatic-document-contract-verification.md  verification-design#row5   holds  holds  PASS     0.99  agree            
+  batched   design/02-programmatic-document-contract-verification.md  verification-design#row6   holds  holds  PASS     0.98  agree            
+  batched   design/02-programmatic-document-contract-verification.md  verification-design#row7   holds  holds  PASS     1.00  agree            
+  batched   design/02-programmatic-document-contract-verification.md  verification-design#row8   holds  holds  PASS     0.97  agree            
+  batched   design/02-programmatic-document-contract-verification.md  verification-design#row9   holds  holds  PASS     0.97  agree            
+  batched   design/02-programmatic-document-contract-verification.md  verification-design#row10  holds  holds  PASS     0.75  agree            
+  batched   design/02-programmatic-document-contract-verification.md  verification-design#row11  fails  holds  PASS     0.80  DISAGREE (low)   
+  batched   design/03-companion-driven-document-verification.md       verification-design#row1   holds  holds  PASS     0.95  agree            
+  batched   design/03-companion-driven-document-verification.md       verification-design#row2   holds  holds  PASS     0.79  agree            
+  batched   design/03-companion-driven-document-verification.md       verification-design#row3   holds  holds  PASS     0.60  agree            
+  batched   design/03-companion-driven-document-verification.md       verification-design#row4   holds  holds  PASS     0.96  agree            
+  batched   design/03-companion-driven-document-verification.md       verification-design#row5   holds  holds  PASS     0.95  agree            
+  batched   design/03-companion-driven-document-verification.md       verification-design#row6   holds  holds  PASS     0.99  agree            
+  batched   design/03-companion-driven-document-verification.md       verification-design#row7   holds  holds  PASS     0.98  agree            
+  batched   design/03-companion-driven-document-verification.md       verification-design#row8   holds  holds  PASS     0.95  agree            
+  batched   design/03-companion-driven-document-verification.md       verification-design#row9   fails  holds  PASS     0.94  DISAGREE (medium)
+  batched   design/05-trusted-kernel-redesign.md                      verification-design#row1   fails  holds  PASS     0.99  DISAGREE (medium)
+  batched   design/05-trusted-kernel-redesign.md                      verification-design#row2   fails  holds  PASS     0.68  DISAGREE (low)   
+  batched   design/05-trusted-kernel-redesign.md                      verification-design#row3   holds  holds  PASS     0.91  agree            
+  batched   design/05-trusted-kernel-redesign.md                      verification-design#row4   holds  holds  PASS     0.89  agree            
+  batched   design/05-trusted-kernel-redesign.md                      verification-design#row5   holds  holds  PASS     0.88  agree            
+  batched   design/05-trusted-kernel-redesign.md                      verification-design#row6   holds  holds  PASS     0.98  agree            
+  batched   design/05-trusted-kernel-redesign.md                      verification-design#row7   holds  holds  PASS     0.60  agree            
+  batched   design/05-trusted-kernel-redesign.md                      verification-design#row8   holds  holds  PASS     0.86  agree            
+  batched   design/05-trusted-kernel-redesign.md                      verification-design#row9   holds  holds  PASS     0.94  agree            
+  batched   design/05-trusted-kernel-redesign.md                      verification-design#row10  holds  holds  PASS     0.87  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row1   holds  holds  NO-GO    0.95  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row2   holds  holds  NO-GO    0.81  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row3   holds  holds  NO-GO    0.97  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row4   holds  holds  NO-GO    0.99  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row5   holds  holds  NO-GO    0.96  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row6   holds  holds  NO-GO    0.88  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row7   holds  holds  NO-GO    0.98  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row8   holds  holds  NO-GO    0.90  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row9   holds  holds  NO-GO    0.91  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row10  holds  fails  NO-GO    0.86  DISAGREE (medium)
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row11  fails  fails  NO-GO    0.52  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row1   holds  holds  PASS     0.67  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row2   holds  holds  PASS     0.59  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row3   holds  holds  PASS     0.84  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row4   holds  holds  PASS     0.96  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row5   holds  holds  PASS     0.90  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row6   holds  holds  PASS     0.98  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row7   holds  holds  PASS     0.87  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row8   holds  holds  PASS     0.90  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row9   fails  holds  PASS     0.88  DISAGREE (medium)
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row1   fails  holds  NO-GO    0.97  DISAGREE (medium)
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row2   fails  fails  NO-GO    0.67  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row3   holds  holds  NO-GO    0.82  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row4   holds  holds  NO-GO    0.79  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row5   holds  holds  NO-GO    0.68  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row6   holds  holds  NO-GO    0.92  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row7   holds  fails  NO-GO    0.86  DISAGREE (medium)
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row8   holds  holds  NO-GO    0.97  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row9   holds  holds  NO-GO    0.94  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row10  holds  holds  NO-GO    0.86  agree            
+batched: agreement (informational) 26/30; per run: main 30, follow-ups 0, requests 3, worst 30
+per-atom: agreement (informational) 26/30; per run: main 30, follow-ups 0, requests 30, worst 30
+
+requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  batched   normal  2     6         60      0              [3]                      16728       2.66     0           30             2        60              60             
+  per-atom  normal  2     60        60      0              [30]                     22390       21.89    0           30             2        60              60             
+projection (live, this invocation): main 120, worst 120; cap at 1.5x worst = 180; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round6-real-design.json
+ledger: live spent 120 / cap 180
+complete: true

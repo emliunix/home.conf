@@ -230,6 +230,11 @@ Three parts, three owners, no overlap:
    every document verdict right on six fixtures including style controls, 28/30 blind real cells;
    the judge does not check that a witness belongs to its row's property (a swapped-witness
    fixture passed 14/14), which the extraction form or a relevance question would have to cover.
+   Request shape measured (round 6, 2026-10-13, 1032 questions, batched against per-atom on the
+   same atoms, interleaved): per-atom moves near-threshold answers toward the expected side by
+   0.22 with the interval clear of the noise floor and catches a seeded cell batched missed; it
+   is also stricter on real witness cells and costs 14× the requests. `per-atom` is the declared
+   default, `batched` the opt-in for cost; the cache key carries the shape.
 3. **Engine.** The kernel reads the declaration and trusts it. It is sound relative to the
    contract: a PASS is a theorem given that the oracle's labelled answers mean what the contract
    says. It measures nothing about the oracle, holds no opinion about its threshold, and never
@@ -251,12 +256,12 @@ constitution line citing it. The loop has no terminal round: a later question re
 | Property | Failure witness | Command |
 | --- | --- | --- |
 | Feasibility (round 1) | the probe runner prints `complete: false`, an undefined leaf comes back `t` or `f` (K1), a demanded atom is missing from the demand set or an undemanded one is in it (K2), a proof tree lacks its `fact/1` or `oracle/2` leaves (K3), or the 24-document corpus takes more than a second (K4) | `node worklog/kernel-trials/probe/run-probes.mjs` |
-| Model conformance (round 2, **passed**) | the kernel fails a gate of `docs/doc-verify-model.md` §9 on a seeded witness, a random program with brute-force expectations, or a corpus document | `node worklog/kernel-trials/probe/run-conformance.mjs --corpus --random 200 --d3` |
+| Model conformance (round 2, **passed**) | the conformance runner prints a `MISMATCH` line for the kernel on a §9 witness step, a random program whose statuses differ from brute-force enumeration, or a corpus document whose statuses differ from the reference's expectation | `node worklog/kernel-trials/probe/run-conformance.mjs --corpus --random 200 --d3` |
 | Gate suite form | a universal gate (M1, M2, D1, D2, PASS-is-final) tested only by hand-written cases, or a counterexample reported without a minimal program | property tests with shrinking over a full-language generator, subject pluggable (gate ledger item 1) |
 | Soundness by construction | a PASS is reachable with an undefined leaf in some constraint instance | seeded: an unanswered oracle under a require; expected undefined, never PASS |
 | Demand is the engine's | an atom the verdict no longer depends on is demanded, or one it depends on is never demanded | seeded cases from round 1 K1, kept as regression |
 | Trust boundary (round 5, **in force**) | a module reaches the judge, the network, the filesystem, or runs past the budget without BLOCKED; a boundary gate that cannot be made to fail | `node worklog/kernel-trials/probe/run-boundary.mjs --containment`, `--gate`, `--budget`, `--mutations` |
-| Open vocabulary | a structural rule exists in the host | grep gate: no `artifact_kind` branching, no `DATED_PROSE`, no `required_sections` in the host |
+| Open vocabulary | a grep of the host for `artifact_kind` branching, `DATED_PROSE` or `required_sections` returns a match outside the module language and the dump | grep gate: no `artifact_kind` branching, no `DATED_PROSE`, no `required_sections` in the host |
 | Constitution governed | a constitution line changes without a citing design | review gate on `docs/doc-verify-constitution.md` |
 | Oracle split | the engine reads anything about an oracle beyond its declaration, or refuses an oracle for lack of fixtures, or the fixture runner changes an engine result | grep gate on the kernel's inputs; a fixture-less oracle evaluates; `oracle test` has no effect on `check` |
 | Oracle calibration (round 3, **run**; round 4c re-authored `verification_falsifies` on the cell grain) | an oracle with fixtures that does not separate good from defective, or a defective fixture that PASSes | `node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --cap 300` per oracle, reported, not a `check` gate |

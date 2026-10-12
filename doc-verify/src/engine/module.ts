@@ -73,7 +73,10 @@ export class ModuleError extends Error {
 
 /**
  * How a round's demanded atoms become judge requests. `batched` is the shipped behaviour and
- * the default; `per-atom` is opted into by a module that needs each atom asked alone.
+ * opted into by a module that accepts the shared prompt for cost; `per-atom` is the default
+ * (kernel-trials round 6, 2026-10-13: per-atom moved near-threshold answers toward the expected
+ * side by 0.22 with the interval clear of the noise floor, and caught a seeded cell batched
+ * missed; accuracy is the owner's priority).
  */
 export type RequestShape = "batched" | "per-atom";
 
@@ -154,7 +157,7 @@ export async function loadModule(yamlText: string): Promise<ParsedModule> {
     mode: constraint.require === undefined ? "forbid" as const : "require" as const,
     source: constraint,
   }));
-  return { source, hash: sha256(yamlText), rounds: source.rounds ?? 1, requestShape: source.request_shape ?? "batched", params, oracles, rules, constraints };
+  return { source, hash: sha256(yamlText), rounds: source.rounds ?? 1, requestShape: source.request_shape ?? "per-atom", params, oracles, rules, constraints };
 }
 
 function paramTerm(value: string | number | Array<string | number>): Term {

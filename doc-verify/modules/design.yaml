@@ -15,6 +15,7 @@
 schema_version: 2
 kind: verification-module
 module: home.design
+request_shape: per-atom
 params:
   statuses: [draft, reviewed, pending-retro, landed]
 oracles:
