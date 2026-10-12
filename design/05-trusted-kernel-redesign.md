@@ -1,0 +1,244 @@
+# 05 - Trusted kernel redesign
+
+## User inputs
+
+The owner judged, after an architecture review of doc-verify (2026-10-12), that the risk is the
+hand-written evaluator rather than its dependencies:
+
+> So the size is not major concern, but we don't use a mature impl and invent our own may make
+> mistakes the core prolog model broken is the major concern
+
+The owner widened the candidate set and released the current language:
+
+> We actually accept breaking current language, given we have a strong and trusted kernel. And
+> widen our scope to not just prolog engines, but also datalog and smt like z3, what will it be.
+> And our language design can change given our design is focused on this jev judge gives us the
+> facts. And the logic tree works and we can get enough diagnostics
+
+After kernel-trials round 1 the owner asked for a rethink from the constitution rather than from
+the designed approach:
+
+> So now with more input, let's not be constrained by our designed approaches, but back to the
+> constitution and rethink the problem, anything changes, or we redesign
+
+> Yes, allow repeated such experiments and redesign process.
+
+On oracles, after the question whether the constitution covers the problem, the owner set the
+split between authoring, calibration and the engine:
+
+> what is this unknown value, if unknwon if a value it must be just one inductive case/label we
+> defined, the known unknown.
+
+> So about orcale, sure it's critical, and then when we descend into our engine design, it should
+> be split from 2 ways: 1. the orcale can be authored and the author is provided enough tool like
+> threshold and others declarative by being an orcal so he can be precise. 2. the calibration
+> mechanism provided like the defective / good fixtures like UT. 3. our engine take that the
+> author has the orcal well defined and don't do anything further opinionated about the well
+> beings of the orcal itself
+
+## Problem statement
+
+Design 04 built a two-bound evaluator in TypeScript because the Prolog runtime available at the
+time could not run rules. That evaluator is itself an experiment: about six hundred lines, new,
+not formally verified, the only place the soundness invariant is enforced, and trusted on a dozen
+example tests. It is not a reference and must not be treated as one; it is a candidate like any
+other, and its tests are lessons. Its language is closed over a fact vocabulary
+the host owns, so rules that need other facts leak back into the host as hardcoded checks, which is
+the defect design 04 set out to remove. Its demand schedule is an artifact of literal order rather
+than a declared policy. Its trust boundary is a static checker, because the evaluator runs with
+the host's full access.
+
+## Scope - what we touch
+
+- The constitution as a living document (`docs/doc-verify-constitution.md`), with three amendments
+  and one addition stated in §Constitution amendments.
+- The model (`docs/doc-verify-model.md`): what doc-verify computes, derived from the constitution
+  alone, with every earlier artifact consulted as a lesson. It is the reference every kernel,
+  including the current evaluator, is measured against.
+- The oracle toolkit: oracle declarations, oracle fixtures and their runner, split from the engine
+  as §Design states.
+- The kernel: SWI-Prolog under the well-founded semantics, hosted in WebAssembly, **selected by
+  kernel-trials round 2** (`worklog/kernel-trials/round-2-verdict.md`), conditional on rounds 3
+  and 4.
+- The module language: Prolog module files with directives for oracles and constraints, replacing
+  the YAML envelope of design 04 §Modules and references and §Rule syntax.
+- The host: reduced to selection, a mechanical document dump, the judge client, and rendering.
+- The process: a repeatable experiment-then-redesign loop, bound in `AGENTS.md`.
+
+Non-goals: the judge protocol, caching, the outbound policy, profiles, companions, selection and
+snapshots, mutation tables. Probabilistic propagation stays rejected.
+
+## Rationale
+
+**Why a mature engine.** What was built is not Prolog and not standard Datalog: stratified rules
+evaluated to two bounds with a third value at the leaves. No shelf engine implements that
+directly, so the first question was which mature semantics it coincides with. The answer is the
+well-founded semantics: on stratified author rules over undefined leaves it is the Kleene reading
+design 04 implements, and SWI-Prolog's tabling implements it, exposes the residual program an
+undefined answer depends on. Incremental tabling is *not* relied on: round 2 found stale delays
+after `assertz` (visflow design 20 F15); the kernel re-evaluates per step, about 1 ms on the corpus. Round 1 measured all of this in the
+WebAssembly build (`worklog/kernel-trials/round-1-verdict.md`).
+
+**Why not the other candidates as the kernel.** Answer set programming gives both bounds as
+cautious and brave consequences but no derivations. Datalog engines give derivations and speed
+but need a doubling transformation for the third value, which is where a semantic bug would hide.
+SMT needs grounding and precomputed closures and gives opaque proofs; it is kept as an analysis
+stage over modules (consistency, smallest repair, answer sensitivity), not as the evaluator.
+
+**What round 1 changed in the design.** Three things the previous proposal had wrong:
+- The engine's delay list is not the demand set; the demand set is the leaves of the residual
+  program, and the prefix order is a policy we implement. Hence the split of invariant 3.
+- Unknown is encoded by a negative loop at the leaves, so "no transformation" was false; the
+  author's rules stay untouched, which is what matters.
+- The WebAssembly instance is the trust boundary; the static checker shrinks to a groundness
+  check, because the engine accepts non-ground negation silently.
+
+**What a real Prolog underneath makes cheap.** Facts can be the document's syntax tree, so the
+fact extractor becomes library rules (invariant 7). Cross-document rules are free, since every
+governed document's facts load in one instance in tens of milliseconds. The span follow-up becomes
+an ordinary oracle whose labels are sentence ids.
+
+## Assumptions and evidence
+
+**Observed (kernel-trials round 1, swipl-wasm 8.2.2 embedding SWI-Prolog 10.1.15):**
+- undefined leaves, the prefix demand walk, holds/fails/unknown and a three-label choose behave as
+  expected (K1); incremental re-evaluation works with an untabled oracle wrapper (K2); proof trees
+  and missing literals extract (K3); 24 documents, 1509 facts, 14 constraints evaluate in 2–5 ms,
+  total 46–105 ms including startup (K4).
+- `call_delays/2` returns the goal or `tnot(G)`, not the leaves; delays are listed most-recent-first
+  (undocumented); a tabled incremental wrapper leaves a stale delay after assert (possible engine
+  defect); `tnot/1` accepts non-ground goals. Tracked as visflow design 20.
+
+**Assumed, to be tested in round 2:**
+- The kernel passes the model's gates (`docs/doc-verify-model.md` §9) on seeded witnesses derived
+  from the model, including the interval `count` encoding, `present`, `matches` on unbound
+  operands and `forbid`. The TypeScript evaluator is run against the same gates as a second
+  subject; where the two disagree the model decides.
+- `library(sandbox)` and an inference budget give invariant 5 in the WebAssembly build.
+- The delay order can be pinned by a test, or the scheduler sorts leaves by its own source order.
+
+## Constitution amendments
+
+- Invariant 3 split: demand is the kernel's residual leaves; scheduling is a declared,
+  order-independent policy under a round cap. The design 04 prefix order is the default policy
+  for parity.
+- Invariant 4 clarified: the deliverable is deciding leaves, missing literal and repair; the full
+  derivation is a debugging view.
+- Invariant 5 restated: the boundary is the instance, termination is tabling plus a budget, the
+  static check is groundness of negation.
+- Invariant 7 added: the fact vocabulary is open; facts are the document dump, structure is rules.
+
+## Design
+
+### Host
+
+Selection and snapshots as design 02 and 03. A markdown-to-facts dump: every syntax-tree node as
+`node(Doc, Id, Type, Parent, StartLine, EndLine, Text)` plus metadata facts from the companion and
+the rule. The judge client, per-atom cache and outbound policy as design 04. A findings renderer
+that adds path, line and span to the kernel's records. The host never evaluates a rule.
+
+### Kernel
+
+One SWI-Prolog instance per check, in WebAssembly, loaded with a core library over the dump
+(section tree, references, text predicates, sentence candidates), the composed modules, and the
+facts. The driving loop:
+
+1. `demand(Policy, Atoms)`: the residual leaves of every constraint instance still undefined,
+   filtered by the scheduler policy (`prefix` by default; `cheapest-evidence` and `most-pruning`
+   are candidates for round 3).
+2. The host asks the judge the atoms (one keyed batch per document) with the oracle's declared
+   labels only, and asserts `answered(Atom, Label, Distribution)`; the kernel reads it through the
+   oracle's valuation map (threshold, undecided labels). Tables are rebuilt per step.
+3. Repeat until no demand or the round cap.
+4. `findings(Records)`: per constraint, per binding: status (true, false, undefined under WFS),
+   the residual leaves, the first failing goal literal for a violated require, the message and
+   repair filled, and on request the derivation.
+
+The hole is encoded at the leaves only: a tabled `u(Atom) :- tnot(u(Atom))` and an untabled
+wrapper that reads the answers through the valuation map, so a known-unknown label and a
+below-threshold answer are `u` by the author's declaration, not the engine's. Author rules are
+untouched and may be non-stratified; the engine's semantics decides them, and a binding left
+undefined by a negative loop is reported as *unfounded*.
+
+### Module language
+
+A module is a Prolog file. Rules are clauses. Oracles and constraints are directives:
+
+```prolog
+:- oracle(purpose(D, S, L), [choose([goal, problem, scope, other]), evidence(own(D, S)),
+            threshold(0.5), ask("What is this section for? ...")]).
+:- constraint('design-has-verification', forall(meta(D, kind, design)),
+              require(verification_section(D, _)), severity(error),
+              message("{D} has no section whose purpose is verification"),
+              repair("Add '## Verification' ...")).
+```
+
+`extends` is a module import. Params are facts the importing module supplies. The loader (itself
+Prolog) validates arity, labels, evidence shapes and that every oracle input is bound by facts
+before the oracle literal; it refuses nothing else.
+
+### Oracle toolkit (the split the owner set)
+
+Three parts, three owners, no overlap:
+
+1. **Authoring.** An oracle is a declared contract and nothing else: identity (name, arity, input
+   positions), evidence selector (a declarative expression over the dump: a section's own text,
+   its body, a union, a span list, context arguments such as the parent heading), answer shape
+   (a fixed label set, or a structured answer: a set of ground facts with a schema, so that
+   extraction questions such as "list the claims with their spans" are oracles too), a valuation
+   map reading each label as true, false or undecided (a *known unknown* is a label the author
+   declares and marks undecided; design 04's engine-appended `unknown` option is removed), threshold,
+   byte cap, and request shape (batched or alone). Every knob the author needs to be precise is
+   declarative on the oracle; nothing about an oracle is decided elsewhere.
+2. **Calibration.** Each oracle may carry fixtures, like unit tests: evidence samples labelled
+   good or defective with the expected answer. A runner (`doc-verify oracle test`, the analogue of
+   `mutate` for modules) answers them live and reports, per oracle: separation (do good and
+   defective land on opposite sides), decisiveness (how many answers clear the threshold), and the
+   threshold that would maximise separation. A fixture set that fails is a finding about the
+   oracle, recorded with it. This is where the separation and decisiveness questions of design 04
+   live, and the only place. First run (kernel-trials round 3, 2026-10-12): the runner exists as
+   `worklog/kernel-trials/probe/oracle-test.mjs`; `verification_falsifies` as declared does not
+   discriminate (both seeded defects `holds` ≥ 0.97) and is to be re-authored as an extraction
+   oracle; the judge was decisive and stable on the whole corpus.
+3. **Engine.** The kernel reads the declaration and trusts it. It is sound relative to the
+   contract: a PASS is a theorem given that the oracle's labelled answers mean what the contract
+   says. It measures nothing about the oracle, holds no opinion about its threshold, and never
+   refuses an oracle for lack of fixtures. Structured answers enter as leaf facts exactly as
+   labels do: the whole answer is `t` at or above the threshold and `u` below it, so the model's
+   three-valued treatment is unchanged.
+
+### Process
+
+The experiment-then-redesign loop, bound in `AGENTS.md` §Experiment programmes: a question gets a
+programme root under `worklog/<topic>-trials/`; each round has a preregistration with hypothesis,
+axis, candidates and expectations, an independent review appended before the run, probe files, a
+results file per candidate, a verdict, and a decision row. A verdict that selects a change
+produces a numbered design superseding the affected sections of earlier designs and an amended
+constitution line citing it. The loop has no terminal round: a later question re-enters it.
+
+## Verification design
+
+| Property | Failure witness | Command |
+| --- | --- | --- |
+| Feasibility (round 1) | any of K1–K4 fails | `node worklog/kernel-trials/probe/run-probes.mjs` |
+| Model conformance (round 2, **passed**) | the kernel fails a gate of `docs/doc-verify-model.md` §9 on a seeded witness, a random program with brute-force expectations, or a corpus document | `node worklog/kernel-trials/probe/run-conformance.mjs --corpus --random 200 --d3` |
+| Gate suite form | a universal gate (M1, M2, D1, D2, PASS-is-final) tested only by hand-written cases, or a counterexample reported without a minimal program | property tests with shrinking over a full-language generator, subject pluggable (gate ledger item 1) |
+| Soundness by construction | a PASS is reachable with an undefined leaf in some constraint instance | seeded: an unanswered oracle under a require; expected undefined, never PASS |
+| Demand is the engine's | an atom the verdict no longer depends on is demanded, or one it depends on is never demanded | seeded cases from round 1 K1, kept as regression |
+| Trust boundary (round 3) | a module reaches the judge, the network, the filesystem, or runs past the budget | `library(sandbox)` and inference-limit probes |
+| Open vocabulary | a structural rule exists in the host | grep gate: no `artifact_kind` branching, no `DATED_PROSE`, no `required_sections` in the host |
+| Constitution governed | a constitution line changes without a citing design | review gate on `docs/doc-verify-constitution.md` |
+| Oracle split | the engine reads anything about an oracle beyond its declaration, or refuses an oracle for lack of fixtures, or the fixture runner changes an engine result | grep gate on the kernel's inputs; a fixture-less oracle evaluates; `oracle test` has no effect on `check` |
+| Oracle calibration (a later round, live key) | an oracle with fixtures that does not separate good from defective, or decides fewer than a declared share of its fixtures | `doc-verify oracle test` per oracle, reported, not a `check` gate |
+
+## Goal
+
+goals/04-trusted-kernel.md
+
+## Review
+
+worklog/kernel-trials/ (programme records); a design review is owed before status moves.
+
+## Status
+
+draft

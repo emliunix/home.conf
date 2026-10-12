@@ -1,0 +1,10 @@
+schema_version: 1
+kind: document-contract
+document:
+  path: design/05-trusted-kernel-redesign.md
+  kind: design
+  depends_on:
+    - goals/04-trusted-kernel.md
+    - design/04-modular-verification-language.md
+    - docs/doc-verify-constitution.md
+    - docs/doc-verify-model.md
