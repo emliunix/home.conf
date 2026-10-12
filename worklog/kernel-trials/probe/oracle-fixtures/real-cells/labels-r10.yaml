@@ -1,0 +1,58 @@
+# Round 10, real-cell track, evidence cells: the lead's pre-registered labels on every evidence
+# cell of goals/01–04 at commit f991877, written 2026-10-13 before any live call, against the
+# `evidence_reasons` question (a cell holds only as a reasoning chain: observable facts, the
+# claim drawn from them, a conclusion; a bare assertion, a bare pointer or a restatement fails).
+# These labels are judge-exposed, not blind: the lead saw the judge's p on goals/01–03 in rounds
+# 4 and 6, and every goals/01 row was rewritten after round 4 (R5 again after round 6). Per cell:
+# `since: round-N` (unchanged since first labelled) or `rewritten: round-N` (rewritten after
+# judge exposure; reported as its own line). goals/04's cells were never shown to the judge under
+# this oracle. goals/02–03 'Evidence required' cells are controls (`counted: false`): the shipped
+# constraint never asks them; they run through the fixture-local rule and are reported apart.
+# The 4c-era file `labels.yaml` is untouched as the baseline.
+oracle: evidence_reasons
+commit: f991877
+documents:
+  goals/01-document-verification-and-skill-transfer.md:
+    column: Evidence
+    rows:
+      acceptance-evidence#row1: { label: holds, confidence: high, rewritten: round-4, why: "a git fact (41 files, none of the named documents), the claim (source boundary held at the landing commit), a conclusion (provenance stays in its repository)" }
+      acceptance-evidence#row2: { label: holds, confidence: high, rewritten: round-4, why: "files exist and are referenced from five named skills; the design tables twelve transferred and seven rejected; conclusion: skill and transfer in place" }
+      acceptance-evidence#row3: { label: holds, confidence: high, rewritten: round-4, why: "a worklog section records parity against a named JEV version and a forced promotion check; conclusion: the rule path is the SDK's" }
+      acceptance-evidence#row4: { label: holds, confidence: high, rewritten: round-4, why: "named test files, a count green on a date, and the conclusion that these are the resolver tests R4 names (the round-4 label was fails on a bare test list; the rewrite added the claim)" }
+      acceptance-evidence#row5: { label: holds, confidence: medium, rewritten: round-6, why: "the hook script drives a valid and an invalid staged document; the valid passed, the invalid printed NO-GO diagnostics; conclusion drawn. The second rewrite; the judge demoted the first" }
+      acceptance-evidence#row6: { label: holds, confidence: medium, rewritten: round-4, why: "what design 02 lists and that its verification runs the built SDK path; conclusion: recorded and executable" }
+      acceptance-evidence#row7: { label: holds, confidence: medium, since: round-10, why: "the worklog's three rematches, §C9 and a dated §C10 retrospective, the design's status word; conclusion: every stage has a dated record. Never labelled before (round 4 covered the six R rows)" }
+      acceptance-evidence#row8: { label: holds, confidence: low, since: round-10, why: "a fact (credential loaded by reference) and a claim (no value or path in the commit or reports); no observable named for the claim, and no explicit conclusion. Never labelled before" }
+  goals/02-companion-driven-document-verification.md:
+    column: Evidence required
+    counted: false
+    rows:
+      ac-coverage#row1: { label: fails, confidence: medium, since: round-4, why: "describes a check to run, not an observation" }
+      ac-coverage#row2: { label: fails, confidence: medium, since: round-4, why: "same" }
+      ac-coverage#row3: { label: fails, confidence: medium, since: round-4, why: "same" }
+      ac-coverage#row4: { label: fails, confidence: medium, since: round-4, why: "same" }
+      ac-coverage#row5: { label: fails, confidence: medium, since: round-4, why: "same" }
+      ac-coverage#row6: { label: fails, confidence: medium, since: round-4, why: "same" }
+      ac-coverage#row7: { label: fails, confidence: medium, since: round-4, why: "same" }
+  goals/03-modular-verification-language.md:
+    column: Evidence required
+    counted: false
+    rows:
+      ac-coverage#row1: { label: fails, confidence: medium, since: round-4, why: "describes a check to run, not an observation" }
+      ac-coverage#row2: { label: fails, confidence: medium, since: round-4, why: "same" }
+      ac-coverage#row3: { label: fails, confidence: medium, since: round-4, why: "same" }
+      ac-coverage#row4: { label: fails, confidence: medium, since: round-4, why: "same" }
+      ac-coverage#row5: { label: fails, confidence: medium, since: round-4, why: "same" }
+      ac-coverage#row6: { label: fails, confidence: medium, since: round-4, why: "same" }
+  goals/04-trusted-kernel.md:
+    column: Evidence
+    rows:
+      ac-coverage#row1: { label: holds, confidence: high, since: round-10, why: "two verdict files with what each printed (K1–K4 complete:true in four runs; 24/24 witnesses, 1700 programs, 0 counterexamples), the claim (a mature engine under a published semantics), the conclusion (R1 met for the evaluator, the boundary left to round 5)" }
+      ac-coverage#row2: { label: holds, confidence: high, since: round-10, why: "the gate ledger's seeded-defect counts (1 witness and 7/100; 12 witnesses and 67/100), the S2 14/24 record, the claim that the gates measure invariants not the language; conclusion with the Boundary exception" }
+      ac-coverage#row3: { label: holds, confidence: medium, since: round-10, why: "the preregistration's scoring of C0–C2 against K1–K4 and design 05's weighing of ASP, Datalog and SMT; the conclusion is hedged ('met as scoping, though no Datalog or SMT engine has been run'), which a strict judge may read as the claim outrunning the facts" }
+      ac-coverage#row4: { label: holds, confidence: high, since: round-10, why: "K3's proof-tree and missing-literal output quoted, the missing-literal witness passing, round 3's 3-of-5 separation; conclusion: R4 met except repairs, unmeasured" }
+      ac-coverage#row5: { label: holds, confidence: high, since: round-10, why: "three named preregistration/review files, verdict files and decision rows, two decisions traced; conclusion: the loop has run three times" }
+expected_agreement:
+  goals/01: "7 or 8 of 8 agree; row 8 is the thin one (fact and claim without a conclusion) and may sit in [0.5, 0.7)"
+  goals/04: "5 of 5 agree at p >= 0.8 except row 3, predicted in [0.55, 0.75]; these are long chains with quoted outputs"
+  goals/02-03: "controls, reported apart: the judge said holds on most of them in round 4 (specific text read as evidence); the same is expected per-atom"

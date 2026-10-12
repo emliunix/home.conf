@@ -1,0 +1,93 @@
+# Round 10, real-cell track, witness cells: the lead's pre-registered labels on every
+# failure-witness cell of designs 02, 03, 04, 05 and 06 at commit f991877, written 2026-10-13
+# before any live call, against the C2 question (the cell names an observable condition for THIS
+# property; a restatement, a negation in other words, a verified-assertion, a bare "check X
+# fails" pointer, or a witness for another property fails). Judge-exposed, not blind: the lead
+# saw the judge's p on designs 02, 03, 05 in rounds 4c and 6, and five cells were rewritten after
+# the judge flagged them (`rewritten: round-N`); the rest carry `since: round-4c`. design/04 was
+# the 4c `good` fixture (14 rows, every one `holds` there) and is labelled here as a real
+# document (`since: round-4c`, row 7 amended in round 6). design/06 is the lead's own design,
+# frozen at f991877 and held out (`held_out: true`): its labels are the author's and are reported
+# as a separate line, never counted. The 4c file `witness-labels.yaml` is untouched as the baseline.
+oracle: witness_observable_in_row
+commit: f991877
+rule:
+  artifact_kind: design
+  modules:
+    - doc-verify:artifact
+    - worklog/kernel-trials/probe/oracle-fixtures/witness_observable_in_row/module.yaml
+extra_files:
+  worklog/kernel-trials/probe/oracle-fixtures/witness_observable_in_row/module.yaml: ../witness_observable_in_row/module.yaml
+documents:
+  design/02-programmatic-document-contract-verification.md:
+    column: Observable failure witness
+    rows:
+      verification-design#row1: { label: holds, confidence: high, since: round-4c, why: "wrong segment id or byte range on named inputs" }
+      verification-design#row2: { label: holds, confidence: high, since: round-4c, why: "collision, cycle resolving, v1 rule loading" }
+      verification-design#row3: { label: holds, confidence: high, since: round-4c, why: "staged bytes read unstaged edits; a dependent omitted" }
+      verification-design#row4: { label: holds, confidence: high, since: round-4c, why: "selection differs; trace omits order" }
+      verification-design#row5: { label: holds, confidence: medium, since: round-4c, why: "a prohibited predicate in a program; verdict changes without the trace changing" }
+      verification-design#row6: { label: holds, confidence: medium, since: round-4c, why: "unknown passes, retries occur, attestation reused: four observables" }
+      verification-design#row7: { label: holds, confidence: high, since: round-4c, why: "a canary appears in a named place" }
+      verification-design#row8: { label: holds, confidence: medium, since: round-4c, why: "snapshots disagree after field removal" }
+      verification-design#row9: { label: holds, confidence: high, since: round-4c, why: "a mutation runner reports a non-RED row for a defect" }
+      verification-design#row10: { label: holds, confidence: high, rewritten: round-6, why: "a promotion run prints no semantic-call count, a report lacks label and distribution, or PASS on a seeded document with a false claim: three printed observables (was 'PASS reported when a claim is false', medium)" }
+      verification-design#row11: { label: holds, confidence: medium, rewritten: round-6, why: "`npm run check` reports a verdict other than PASS, or the CI job reports a finding: a named command and what it prints (the 4c label was fails on 'fail their selected rules')" }
+  design/03-companion-driven-document-verification.md:
+    column: Failure witness
+    rows:
+      verification-design#row1: { label: holds, confidence: high, since: round-4c, why: "exits nonzero or lacks a stable warning" }
+      verification-design#row2: { label: holds, confidence: low, since: round-4c, why: "'silently falls back' is observable but thin" }
+      verification-design#row3: { label: holds, confidence: medium, since: round-4c, why: "resolve in the wrong order: observable given the named sources" }
+      verification-design#row4: { label: holds, confidence: high, since: round-4c, why: "omits a referencing document or evaluates unrelated ones" }
+      verification-design#row5: { label: holds, confidence: high, since: round-4c, why: "an unrelated file invokes the hook; a change bypasses it" }
+      verification-design#row6: { label: holds, confidence: high, since: round-4c, why: "emits only an aggregate line; hides scope; omits the decision" }
+      verification-design#row7: { label: holds, confidence: high, since: round-4c, why: "not exactly one JEV call and a Prolog PASS; a hidden result" }
+      verification-design#row8: { label: holds, confidence: high, since: round-4c, why: "multiple calls, fallback use, unsafe evidence reachable" }
+      verification-design#row9: { label: holds, confidence: medium, rewritten: round-4c, why: "`npm run check` reports a verdict other than PASS, or a named profile leaves the selection unchanged in the verbose trace (the 4c label was fails on 'cannot drive the existing checks')" }
+  design/04-modular-verification-language.md:
+    column: Failure witness
+    rows:
+      verification-design#row1: { label: holds, confidence: high, since: round-4c, why: "two atoms receive each other's answer; reordering changes a fact" }
+      verification-design#row2: { label: holds, confidence: high, since: round-4c, why: "a below-threshold answer becomes the opposite label; a rule reads a probability" }
+      verification-design#row3: { label: holds, confidence: high, since: round-4c, why: "forbid/require over an unknown atom is satisfied; not of unknown is true" }
+      verification-design#row4: { label: holds, confidence: high, since: round-4c, why: "a listed unsafe construct is accepted by the loader" }
+      verification-design#row5: { label: holds, confidence: medium, since: round-4c, why: "five composition failures, each observable at load or in a verdict; long" }
+      verification-design#row6: { label: holds, confidence: high, since: round-4c, why: "a round count other than the depth; a split atom's evidence" }
+      verification-design#row7: { label: holds, confidence: medium, rewritten: round-6, why: "atoms not sharing a request under batched, or sharing under per-atom, an unknown shape loading, the default differing from the declared; the round-6 amendment added a dated parenthesis that reads as history inside a witness" }
+      verification-design#row8: { label: holds, confidence: medium, since: round-4c, why: "a child raising a threshold or widening a warning loads without waive; a waiver-free change improves a seeded verdict" }
+      verification-design#row9: { label: holds, confidence: high, since: round-4c, why: "a violation report lacking bindings, population, proof leaf or repair hint" }
+      verification-design#row10: { label: holds, confidence: high, since: round-4c, why: "exact counts against a named commit, and the seeded case giving other than 1" }
+      verification-design#row11: { label: holds, confidence: medium, since: round-4c, why: "repeats row 1's first clause, then a scope child labelled from the wrong evidence; observable, relevance shared with row 1" }
+      verification-design#row12: { label: holds, confidence: high, since: round-4c, why: "a migrated contract's verdict differing from its v1 verdict at the parent commit" }
+      verification-design#row13: { label: holds, confidence: high, since: round-4c, why: "a known-good and a known-bad document on the same side" }
+      verification-design#row14: { label: holds, confidence: medium, since: round-4c, why: "five boundary breaches 'become reachable': observable each, but 'reachable' is a step from what is seen" }
+  design/05-trusted-kernel-redesign.md:
+    column: Failure witness
+    rows:
+      verification-design#row1: { label: holds, confidence: high, rewritten: round-4c, why: "the probe runner prints complete:false, a leaf comes back t/f, a demanded atom missing, a proof tree lacking leaves, the corpus over a second (the 4c label was fails on 'any of K1–K4 fails')" }
+      verification-design#row2: { label: holds, confidence: high, rewritten: round-6, why: "the conformance runner prints a MISMATCH line on a named input (the 4c label was fails, low, on 'fails a gate')" }
+      verification-design#row3: { label: holds, confidence: medium, since: round-4c, why: "a gate tested only by hand-written cases; a counterexample without a minimal program" }
+      verification-design#row4: { label: holds, confidence: high, since: round-4c, why: "a PASS reachable with an undefined leaf" }
+      verification-design#row5: { label: holds, confidence: high, since: round-4c, why: "an atom demanded that the verdict does not depend on, or the converse" }
+      verification-design#row6: { label: holds, confidence: high, since: round-4c, why: "a module reaches the judge, network, filesystem, or runs past the budget without BLOCKED" }
+      verification-design#row7: { label: holds, confidence: high, rewritten: round-6, why: "a grep for three named tokens returns a match outside the module language and the dump (was 'a structural rule exists in the host', medium)" }
+      verification-design#row8: { label: holds, confidence: medium, since: round-4c, why: "a constitution line changes without a citing design" }
+      verification-design#row9: { label: holds, confidence: high, since: round-4c, why: "the engine reads beyond the declaration; refuses an oracle; the runner changes a result" }
+      verification-design#row10: { label: holds, confidence: high, since: round-4c, why: "an oracle that does not separate; a defective fixture that PASSes" }
+  design/06-kernel-migration.md:
+    column: Failure witness
+    held_out: true
+    rows:
+      verification-design#row1: { label: holds, confidence: high, since: round-10, why: "a named test prints a finding with an empty named field or a different JSON shape under one engine" }
+      verification-design#row2: { label: holds, confidence: high, since: round-10, why: "an S1 MISMATCH line, or a golden-diff step outside the known-divergence set" }
+      verification-design#row3: { label: holds, confidence: high, since: round-10, why: "the diff of two JSON reports prints a document" }
+      verification-design#row4: { label: holds, confidence: medium, since: round-10, why: "'the same diff non-empty' leans on the row above; a judge may read it as a pointer" }
+      verification-design#row5: { label: holds, confidence: high, since: round-10, why: "named seeds E1/E17 not rejected, E18 not BLOCKED" }
+      verification-design#row6: { label: holds, confidence: high, since: round-10, why: "the census prints a module path absent from a named file" }
+      verification-design#row7: { label: holds, confidence: high, since: round-10, why: "git grep prints a path, or a command exits 0" }
+      verification-design#row8: { label: holds, confidence: medium, since: round-10, why: "a wall time above a stated floor; the cell is long and defers the exact bar to round 11" }
+expected_agreement:
+  counted: "at least 40 of 44 agree (designs 02, 03, 04, 05); the disagreements fall on design/03 row 2, design/04 rows 7, 11, 14 and design/05 row 3, the medium and low cells, and sit in [0.5, 0.7)"
+  rewritten: "all 5 rewritten cells agree (holds) at p >= 0.7; if one sits below 0.6 the rewrite did not reach the judge's bar and the verdict names it"
+  design/06: "held out; 7 or 8 of 8 holds; row 4 is the likely demotion"
