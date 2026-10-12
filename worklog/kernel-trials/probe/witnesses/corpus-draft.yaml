@@ -1,0 +1,853 @@
+id: corpus-draft
+gate: corpus
+derived_by: reference
+note: "Draft profile (constraints without `profiles`), no answers. Facts: prolog/corpus-facts.pl, qualified core::. Per-document statuses per constraint binding."
+facts_file: prolog/corpus-facts.pl
+config: .doc-verify.yaml
+documents:
+  - design/01-goal-file-workstreams-phases.md
+  - design/02-programmatic-document-contract-verification.md
+  - design/03-companion-driven-document-verification.md
+  - design/04-modular-verification-language.md
+  - docs/modules/language/contract.md
+  - docs/modules/language/model.md
+  - docs/modules/language/properties.md
+  - docs/modules/language/verification.md
+  - docs/modules/oracles/contract.md
+  - docs/modules/oracles/model.md
+  - docs/modules/oracles/properties.md
+  - docs/modules/oracles/verification.md
+  - docs/modules/report/contract.md
+  - docs/modules/report/model.md
+  - docs/modules/report/properties.md
+  - docs/modules/report/verification.md
+  - docs/modules/selection/contract.md
+  - docs/modules/selection/model.md
+  - docs/modules/selection/properties.md
+  - docs/modules/selection/verification.md
+  - goals/01-document-verification-and-skill-transfer.md
+  - goals/02-companion-driven-document-verification.md
+  - goals/03-modular-verification-language.md
+  - receipts/process/2026-10-08-receipts-and-task-card.md
+modules:
+  design/01-goal-file-workstreams-phases.md:
+    - doc-verify:artifact
+    - doc-verify/modules/design.yaml
+  design/02-programmatic-document-contract-verification.md:
+    - doc-verify:artifact
+    - doc-verify/modules/design.yaml
+  design/03-companion-driven-document-verification.md:
+    - doc-verify:artifact
+    - doc-verify/modules/design.yaml
+    - doc-verify/modules/design-03.yaml
+  design/04-modular-verification-language.md:
+    - doc-verify:artifact
+    - doc-verify/modules/design.yaml
+  docs/modules/language/contract.md:
+    - doc-verify:module-contract
+  docs/modules/language/model.md:
+    - doc-verify:module-model
+  docs/modules/language/properties.md:
+    - doc-verify:module-properties
+  docs/modules/language/verification.md:
+    - doc-verify:module-verification
+  docs/modules/oracles/contract.md:
+    - doc-verify:module-contract
+  docs/modules/oracles/model.md:
+    - doc-verify:module-model
+  docs/modules/oracles/properties.md:
+    - doc-verify:module-properties
+  docs/modules/oracles/verification.md:
+    - doc-verify:module-verification
+  docs/modules/report/contract.md:
+    - doc-verify:module-contract
+  docs/modules/report/model.md:
+    - doc-verify:module-model
+  docs/modules/report/properties.md:
+    - doc-verify:module-properties
+  docs/modules/report/verification.md:
+    - doc-verify:module-verification
+  docs/modules/selection/contract.md:
+    - doc-verify:module-contract
+  docs/modules/selection/model.md:
+    - doc-verify:module-model
+  docs/modules/selection/properties.md:
+    - doc-verify:module-properties
+  docs/modules/selection/verification.md:
+    - doc-verify:module-verification
+  goals/01-document-verification-and-skill-transfer.md:
+    - doc-verify:goal
+  goals/02-companion-driven-document-verification.md:
+    - doc-verify:goal
+  goals/03-modular-verification-language.md:
+    - doc-verify:goal
+  receipts/process/2026-10-08-receipts-and-task-card.md:
+    - doc-verify:receipt
+steps:
+  - answers: {}
+    profile: draft
+    expect:
+      documents:
+        design/01-goal-file-workstreams-phases.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: skills/goal-file/goal-authoring.md
+                status: satisfied
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: skills/goal-file/SKILL.md
+                status: satisfied
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: skills/goal-file/template-goal.md
+                status: satisfied
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: goals/2026-09-09-goal-file-funnel.md
+                status: satisfied
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: worklog/01-goal-file-workstreams-phases.md
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: design/01-goal-file-workstreams-phases.md
+                W: draft
+                status: satisfied
+            artifact-has-goal:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            design-has-problem-statement:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            design-has-rationale:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            design-has-review:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            design-has-status-section:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            design-status-is-one-word:
+              - D: design/01-goal-file-workstreams-phases.md
+                S: status
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        design/02-programmatic-document-contract-verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: doc-verify/
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: package.json
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: package-lock.json
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: doc-verify/src/
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: doc-verify/contracts/
+                status: violated
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: doc-verify/tests/
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: jev-prompts/jev.py
+                status: violated
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: .doc-verify.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-pipeline/rubric-library-and-reference-resolution
+                T: .doc-verify.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: snapshots-and-affected-closure
+                T: .doc-verify.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: shared-verification-practices
+                T: skills/verification/SKILL.md
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: .pre-commit-config.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: .pre-commit-hooks.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: doc-verify/
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: .doc-verify.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: .github/workflows/ci.yml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: .github/workflows/judge-advisory.yml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-design
+                T: doc-verify/tests/expected/
+                status: violated
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-design
+                T: doc-verify/tests/language/present.mutations.md
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-design
+                T: doc-verify/tests/language/union-empty.mutations.md
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-design
+                T: doc-verify/tests/oracles/request-shape.mutations.md
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-design
+                T: .github/workflows/judge-advisory.yml
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: design/02-programmatic-document-contract-verification.md
+                W: landed
+                status: satisfied
+            artifact-has-goal:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            design-has-problem-statement:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            design-has-rationale:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            design-has-review:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            design-has-status-section:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            design-status-is-one-word:
+              - D: design/02-programmatic-document-contract-verification.md
+                S: status
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        design/03-companion-driven-document-verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: design/03-companion-driven-document-verification.md
+                S: companion-contract
+                T: .doc-verify.yaml
+                status: satisfied
+              - D: design/03-companion-driven-document-verification.md
+                S: local-credential
+                T: .doc-verify.yaml
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: design/03-companion-driven-document-verification.md
+                W: landed
+                status: satisfied
+            artifact-has-goal:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            design-has-problem-statement:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            design-has-rationale:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            design-has-review:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            design-has-status-section:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            design-status-is-one-word:
+              - D: design/03-companion-driven-document-verification.md
+                S: status
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        design/04-modular-verification-language.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: design/04-modular-verification-language.md
+                S: scope---what-we-touch
+                T: selection.ts
+                status: satisfied
+              - D: design/04-modular-verification-language.md
+                S: verification-design
+                T: .github/workflows/judge-advisory.yml
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: design/04-modular-verification-language.md
+                W: reviewed
+                status: satisfied
+            artifact-has-goal:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            design-has-problem-statement:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            design-has-rationale:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            design-has-review:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            design-has-status-section:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            design-status-is-one-word:
+              - D: design/04-modular-verification-language.md
+                S: status
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/language/contract.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-contract-has-surface:
+              - D: docs/modules/language/contract.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/language/model.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-model-has-content:
+              - D: docs/modules/language/model.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/language/properties.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/language/verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: docs/modules/language/verification.md
+                S: language--verification
+                T: doc-verify/tests/language/modules-check.test.ts
+                status: satisfied
+              - D: docs/modules/language/verification.md
+                S: language--verification
+                T: doc-verify/tests/language/language.test.ts
+                status: satisfied
+              - D: docs/modules/language/verification.md
+                S: language--verification
+                T: doc-verify/tests/language/evaluate.test.ts
+                status: satisfied
+              - D: docs/modules/language/verification.md
+                S: language--verification
+                T: doc-verify/tests/report/diagnostics.test.ts
+                status: satisfied
+              - D: docs/modules/language/verification.md
+                S: language--verification
+                T: doc-verify/tests/language/engine-golden.test.ts
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/oracles/contract.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-contract-has-surface:
+              - D: docs/modules/oracles/contract.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/oracles/model.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-model-has-content:
+              - D: docs/modules/oracles/model.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/oracles/properties.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/oracles/verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: docs/modules/oracles/verification.md
+                S: oracles--verification
+                T: doc-verify/tests/oracles/oracles.test.ts
+                status: satisfied
+              - D: docs/modules/oracles/verification.md
+                S: oracles--verification
+                T: doc-verify/tests/oracles/cache.test.ts
+                status: satisfied
+              - D: docs/modules/oracles/verification.md
+                S: oracles--verification
+                T: doc-verify/tests/oracles/span.test.ts
+                status: satisfied
+              - D: docs/modules/oracles/verification.md
+                S: oracles--verification
+                T: doc-verify/tests/oracles/confidentiality.test.ts
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/report/contract.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-contract-has-surface:
+              - D: docs/modules/report/contract.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/report/model.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-model-has-content:
+              - D: docs/modules/report/model.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/report/properties.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/report/verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: docs/modules/report/verification.md
+                S: report--verification
+                T: doc-verify/tests/report/diagnostics.test.ts
+                status: satisfied
+              - D: docs/modules/report/verification.md
+                S: report--verification
+                T: doc-verify/tests/report/report.test.ts
+                status: satisfied
+              - D: docs/modules/report/verification.md
+                S: report--verification
+                T: doc-verify/tests/report/keyless.test.ts
+                status: satisfied
+              - D: docs/modules/report/verification.md
+                S: report--verification
+                T: doc-verify/tests/report/segments.test.ts
+                status: satisfied
+              - D: docs/modules/report/verification.md
+                S: report--verification
+                T: doc-verify/tests/selection/task61-selector-gate.test.ts
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/selection/contract.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-contract-has-surface:
+              - D: docs/modules/selection/contract.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/selection/model.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-model-has-content:
+              - D: docs/modules/selection/model.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/selection/properties.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        docs/modules/selection/verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: docs/modules/selection/verification.md
+                S: selection--verification
+                T: doc-verify/tests/selection/task61-selector-gate.test.ts
+                status: satisfied
+              - D: docs/modules/selection/verification.md
+                S: selection--verification
+                T: doc-verify/tests/selection/companion.test.ts
+                status: satisfied
+              - D: docs/modules/selection/verification.md
+                S: selection--verification
+                T: doc-verify/tests/selection/snapshots.test.ts
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        goals/01-document-verification-and-skill-transfer.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: design-files
+                T: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: dependencies
+                T: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: workflows/design02-programmatic-document-contract-verificationmd---landed
+                T: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: rulings-in-force
+                T: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: worklog
+                T: worklog/02-programmatic-document-contract-verification.md
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                W: closed-green
+                status: satisfied
+            artifact-has-goal:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            goal-has-anchored-root:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            goal-has-design-files:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            goal-has-workstreams:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            goal-has-coverage:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            goal-has-worklog:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        goals/02-companion-driven-document-verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: goals/02-companion-driven-document-verification.md
+                S: design-files
+                T: design/03-companion-driven-document-verification.md
+                status: satisfied
+              - D: goals/02-companion-driven-document-verification.md
+                S: workflows/design03-companion-driven-document-verificationmd---landed
+                T: goals/02-companion-driven-document-verification.md
+                status: satisfied
+              - D: goals/02-companion-driven-document-verification.md
+                S: worklog
+                T: worklog/03-companion-driven-document-verification.md
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: goals/02-companion-driven-document-verification.md
+                W: closed-green
+                status: satisfied
+            artifact-has-goal:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            goal-has-anchored-root:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            goal-has-design-files:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            goal-has-workstreams:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            goal-has-coverage:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            goal-has-worklog:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        goals/03-modular-verification-language.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: goals/03-modular-verification-language.md
+                S: design-files
+                T: design/04-modular-verification-language.md
+                status: satisfied
+              - D: goals/03-modular-verification-language.md
+                S: workflows/design04-modular-verification-languagemd---draft
+                T: goals/03-modular-verification-language.md
+                status: satisfied
+              - D: goals/03-modular-verification-language.md
+                S: worklog
+                T: worklog/04-modular-verification-language.md
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: goals/03-modular-verification-language.md
+                W: open
+                status: satisfied
+            artifact-has-goal:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            goal-has-anchored-root:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            goal-has-design-files:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            goal-has-workstreams:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            goal-has-coverage:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            goal-has-worklog:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+        receipts/process/2026-10-08-receipts-and-task-card.md:
+          statuses:
+            references-resolve:
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: logs/214-unit-tests.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: logs/214-receipt-verify.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: ../../.doc-verify.yaml
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: ../README.md
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: ../../skills/raft-group-chat/templates/task-card.md
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-build.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-typecheck.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-eslint-changed.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-unit-tests.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-flow-skills.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-capture-log-test.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-receipt-verify.log
+                status: satisfied
+            paths-resolve:
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: receipts/process/2026-10-08-receipts-and-task-card.md
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: doc-verify/lib/receipt.yaml
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}

@@ -1,0 +1,87 @@
+# Oracle fixture set (prototype of the design 05 oracle toolkit format). Each defective
+# fixture is good.md with exactly its edit applied: the runner checks good.replace(from, to).
+oracle: evidence_not_law
+declared_in: doc-verify/lib/receipt.yaml (doc-verify:receipt)
+ask: The receipt records dated work, evidence, commands, or decisions with their sources and names the object or artifact it concerns. It does not assert a new standing rule that belongs in a design or the canon.
+threshold: 0
+constraint: receipt-evidence-not-law
+rule:
+  pattern: receipts/**/*.md
+  artifact_kind: receipt
+  modules:
+    - doc-verify:receipt
+document: receipts/process/2026-10-08-receipts-and-task-card.md
+atom:
+  inputs: evidence_not_law(D, S) for each outermost selected S; with every section selected that is the H1, whose body is the whole receipt
+  evidence: core.body(D, S)
+  sections:
+    - receipt--governed-receipts-and-task-card-template
+fixtures:
+  - name: good
+    file: good.md
+    expect: holds
+    source: receipts/process/2026-10-08-receipts-and-task-card.md at HEAD
+  - name: defective-gross
+    file: defective-gross.md
+    expect: fails
+    sections:
+      - receipt--standing-rules-for-receipts
+    edit:
+      cut: "the whole receipt, heading included, rewritten as standing rules: no date, commit, measurement, log link, command result or named object remains (the H1 is renamed, so the atom's section id changes)"
+      from: |
+        # Receipt — governed receipts and task-card template
+
+        ## Review handoff — receipts and task-card template
+
+        - **Object:** base `a0ce20e8` -> engine commit `0657666`; branch tip and tree are returned with the review handoff
+        - **Artifact:** `receipts/process/2026-10-08-receipts-and-task-card.md`
+        - **Identity:** `doc-verify/lib/receipt.yaml` resolves at the branch tip
+        - **Evidence class:** established
+        - **Selected check:** `npm test` -> 24 files / 201 tests ([log](logs/214-unit-tests.log)); `receipts/**/*.md` draft check -> PASS ([log](logs/214-receipt-verify.log))
+        - **Reviewer action:** inspect
+        - **Residual / decision needed:** none
+        - **Correction class:** behavior
+
+        The receipt surface is defined by [`.doc-verify.yaml`](../../.doc-verify.yaml) and
+        documented in [`receipts/README.md`](../README.md). The reusable task card is
+        [`skills/raft-group-chat/templates/task-card.md`](../../skills/raft-group-chat/templates/task-card.md).
+
+        ## Captured checks
+
+        - `npm run build` -> [log](logs/214-build.log)
+        - `npm run typecheck` -> [log](logs/214-typecheck.log)
+        - changed-file eslint -> [log](logs/214-eslint-changed.log)
+        - `npm test` -> [log](logs/214-unit-tests.log)
+        - flow-skill tests -> [log](logs/214-flow-skills.log)
+        - command-log wrapper test -> [log](logs/214-capture-log-test.log)
+        - governed receipt check -> [log](logs/214-receipt-verify.log)
+      to: |
+        # Receipt — standing rules for receipts
+
+        ## Rules for every receipt
+
+        - Always run the full unit suite before handing work to a reviewer.
+        - Every receipt must link a log for each command it names.
+        - A reviewer must always inspect the tree before approving a change.
+        - Never mark a change as established without a second reviewer.
+        - Task cards must always use the shared template.
+
+        ## Rules for captured checks
+
+        - Always run build, typecheck, lint and the unit tests, in that order, on every change.
+        - Logs must be kept for every run and must never be deleted.
+    why: Every sentence is an unconditional rule ('always', 'must', 'never') and nothing records dated work, evidence or the object concerned, so the body asserts new standing law and fails both halves of the ask.
+  - name: defective-subtle
+    file: defective-subtle.md
+    expect: fails
+    edit:
+      cut: all dated evidence kept; one standing-law sentence added after the surface paragraph
+      from: |
+        documented in [`receipts/README.md`](../README.md). The reusable task card is
+        [`skills/raft-group-chat/templates/task-card.md`](../../skills/raft-group-chat/templates/task-card.md).
+      to: |
+        documented in [`receipts/README.md`](../README.md). The reusable task card is
+        [`skills/raft-group-chat/templates/task-card.md`](../../skills/raft-group-chat/templates/task-card.md).
+        From now on every change to doc-verify must carry a receipt of this form before it
+        may merge.
+    why: "'From now on every change ... must carry a receipt ... before it may merge' is a new standing rule that belongs in a design or the canon, which the ask's second sentence forbids, even though the rest still records evidence."

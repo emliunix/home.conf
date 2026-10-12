@@ -1,0 +1,20 @@
+id: m2-negative-loop-scratch
+gate: M2
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  imports: {core: doc-verify:core}
+  rules:
+    p(D): core.meta(D, kind, _), not q(D)
+    q(D): core.meta(D, kind, _), not p(D)
+  constraints:
+    c: {forall: "core.meta(D, kind, _)", require: "p(D)", severity: error}
+facts:
+  - "meta(d, kind, design)"
+steps:
+  - answers: {}
+    expect:
+      statuses: {c: [{D: d, status: undetermined}]}
+      demand: {full: [], prefix: []}
+      verdict: NEEDS-REVIEW

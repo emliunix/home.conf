@@ -1,0 +1,28 @@
+id: m2-negative-loop
+gate: M2
+reference: unsupported
+unsupported_reason: "unstratified (p and q negate each other); the reference is stratified-only, and the design-04 checker refuses the module; the kernel subject runs it"
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  rules:
+    p(D, S): core.section(D, S, _), not q(D, S)
+    q(D, T): core.section(D, T, _), not p(D, T)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "p(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # Hand derivation: the well-founded model leaves p(d,a) and q(d,a) undefined (negative loop, no
+  # oracle anywhere). Goal u, forall t -> undetermined (§4). No label atom occurs in any residual
+  # derivation -> support ∅ (§6). The binding rests on a negative loop: an "unfounded" finding (§3 M2).
+  # NEEDS-REVIEW (§5). There are no answers to add, so this holds under every ans (M2 amended).
+  - answers: {}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: undetermined}]}
+      demand: {full: [], prefix: []}
+      verdict: NEEDS-REVIEW
+      findings: [{kind: unfounded, constraint: c1, D: d, S: a, atom: "w::p(d,a)"}]

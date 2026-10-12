@@ -1,0 +1,10 @@
+schema_version: 1
+kind: document-contract
+document:
+  path: goals/03-modular-verification-language.md
+  kind: goal
+  depends_on:
+    - design/04-modular-verification-language.md
+commands:
+  - npm run check
+evidence_level: E1

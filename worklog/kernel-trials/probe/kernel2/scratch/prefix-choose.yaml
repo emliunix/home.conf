@@ -1,0 +1,34 @@
+id: prefix-choose-scratch
+gate: policy
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  imports: {core: doc-verify:core}
+  oracles:
+    o1(D, S): {ask: q, evidence: "core.own(D, S)"}
+    o2(D, S): {ask: q, evidence: "core.own(D, S)"}
+    k(D, S, L): {choose: [x, y, z], ask: q, evidence: "core.own(D, S)"}
+  rules:
+    ok(D, S): core.section(D, S, _), o1(D, S), o2(D, S)
+    kx(D, S): core.section(D, S, _), k(D, S, x), not k(D, S, y)
+    named(D, S): core.heading(D, S, H), matches(H, "^Go+al$")
+  constraints:
+    c: {forall: "core.section(D, S, _)", require: "ok(D, S)", severity: error}
+    ck: {forall: "core.section(D, S, _)", require: "kx(D, S)", severity: warning}
+    cm: {forall: "core.section(D, S, _)", require: "named(D, S)", severity: warning}
+facts:
+  - "section(d, a, root)"
+  - "heading(d, a, 'Goal')"
+steps:
+  - answers: {}
+    expect:
+      statuses: {c: [{D: d, S: a, status: undetermined}], ck: [{D: d, S: a, status: undetermined}], cm: [{D: d, S: a, status: satisfied}]}
+      demand: {full: ["w::k(d,a)", "w::o1(d,a)", "w::o2(d,a)"], prefix: ["w::k(d,a)", "w::o1(d,a)"]}
+      verdict: NEEDS-REVIEW
+  - answers: {"w::o1(d,a)": holds, "w::k(d,a)": y}
+    expect:
+      statuses: {c: [{D: d, S: a, status: undetermined}], ck: [{D: d, S: a, status: violated}], cm: [{D: d, S: a, status: satisfied}]}
+      demand: {full: ["w::o2(d,a)"], prefix: ["w::o2(d,a)"]}
+      verdict: NEEDS-REVIEW
+      missing: {ck: [{D: d, S: a, literal: "w::k(d,a,x)"}]}

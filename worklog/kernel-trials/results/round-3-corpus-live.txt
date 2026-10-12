@@ -1,0 +1,75 @@
+oracle-test --corpus --repeat 2 (LIVE)
+run 1: 26 artifacts (PASS 26), 52 oracle leaves, main questions 52, follow-ups 0, requests 26, evidence 62654 bytes, wall 10.5 s; worst case live 104
+run 2: 26 artifacts (PASS 26), 52 oracle leaves, main questions 52, follow-ups 0, requests 26, evidence 62654 bytes, wall 10.4 s; worst case live 104
+
+per oracle, run 1 (LIVE); shares of the oracle's leaves
+  oracle                  n   decides  judge-unknown  thr-demoted  tie/malformed  threshold  stability                         mean |dp|
+  ----------------------  --  -------  -------------  -----------  -------------  ---------  --------------------------------  ---------
+  coverage_complete       4   1.00     0.00           0.00         0.00           0.5        not assessable, n=4 [1.00 (4/4)]  0.023    
+  current_not_history     29  1.00     0.00           0.00         0.00           0.5        1.00 (29/29)                      0.011    
+  evidence_not_law        1   1.00     0.00           0.00         0.00           0          not assessable, n=1 [1.00 (1/1)]  0.000    
+  pairs_every_property    4   1.00     0.00           0.00         0.00           0.5        not assessable, n=4 [1.00 (4/4)]  0.005    
+  problem_resolved        5   1.00     0.00           0.00         0.00           0          1.00 (5/5)                        0.026    
+  properties_are_claims   4   1.00     0.00           0.00         0.00           0.5        not assessable, n=4 [1.00 (4/4)]  0.012    
+  scope_explicit          1   1.00     0.00           0.00         0.00           0          not assessable, n=1 [1.00 (1/1)]  0.010    
+  verification_falsifies  4   1.00     0.00           0.00         0.00           0          not assessable, n=4 [1.00 (4/4)]  0.003    
+
+leaves (run 1)
+  oracle                  document                                                  sections                                           label  answered  p     bytes
+  ----------------------  --------------------------------------------------------  -------------------------------------------------  -----  --------  ----  -----
+  coverage_complete       goals/01-document-verification-and-skill-transfer.md      user-requirements-frozen-root,ac-coverage          holds  holds     0.83  3232 
+  coverage_complete       goals/02-companion-driven-document-verification.md        user-requirements---frozen-root,ac-coverage        holds  holds     0.71  4872 
+  coverage_complete       goals/03-modular-verification-language.md                 user-requirements---frozen-root,ac-coverage        holds  holds     0.73  2905 
+  coverage_complete       goals/04-trusted-kernel.md                                user-requirements---frozen-root,ac-coverage        holds  holds     0.94  1671 
+  current_not_history     docs/modules/language/contract.md                         language--contract                                 holds  holds     0.97  1051 
+  current_not_history     docs/modules/language/contract.md                         public-surface                                     holds  holds     0.96  839  
+  current_not_history     docs/modules/language/model.md                            concepts                                           holds  holds     0.85  451  
+  current_not_history     docs/modules/language/model.md                            language--model                                    holds  holds     0.83  872  
+  current_not_history     docs/modules/language/model.md                            two-bounds                                         holds  holds     0.87  399  
+  current_not_history     docs/modules/language/properties.md                       language--properties                               holds  holds     0.95  667  
+  current_not_history     docs/modules/language/verification.md                     language--verification                             holds  holds     0.92  766  
+  current_not_history     docs/modules/oracles/contract.md                          oracles--contract                                  holds  holds     0.95  835  
+  current_not_history     docs/modules/oracles/contract.md                          public-surface                                     holds  holds     0.95  651  
+  current_not_history     docs/modules/oracles/model.md                             cache                                              holds  holds     0.77  178  
+  current_not_history     docs/modules/oracles/model.md                             concepts                                           holds  holds     0.78  490  
+  current_not_history     docs/modules/oracles/model.md                             evidence-and-spans                                 holds  holds     0.65  439  
+  current_not_history     docs/modules/oracles/model.md                             oracles--model                                     holds  holds     0.82  1128 
+  current_not_history     docs/modules/oracles/properties.md                        oracles--properties                                holds  holds     0.94  811  
+  current_not_history     docs/modules/oracles/verification.md                      oracles--verification                              holds  holds     0.91  721  
+  current_not_history     docs/modules/report/contract.md                           public-surface                                     holds  holds     0.93  907  
+  current_not_history     docs/modules/report/contract.md                           report--contract                                   holds  holds     0.95  1035 
+  current_not_history     docs/modules/report/model.md                              concepts                                           holds  holds     0.86  444  
+  current_not_history     docs/modules/report/model.md                              report--model                                      holds  holds     0.94  903  
+  current_not_history     docs/modules/report/model.md                              verdict                                            holds  holds     0.93  439  
+  current_not_history     docs/modules/report/properties.md                         report--properties                                 holds  holds     0.91  670  
+  current_not_history     docs/modules/report/verification.md                       report--verification                               holds  holds     0.92  874  
+  current_not_history     docs/modules/selection/contract.md                        public-surface                                     holds  holds     0.95  754  
+  current_not_history     docs/modules/selection/contract.md                        selection--contract                                holds  holds     0.98  912  
+  current_not_history     docs/modules/selection/model.md                           concepts                                           holds  holds     0.87  610  
+  current_not_history     docs/modules/selection/model.md                           selection--model                                   holds  holds     0.96  968  
+  current_not_history     docs/modules/selection/model.md                           selection                                          holds  holds     0.98  335  
+  current_not_history     docs/modules/selection/properties.md                      selection--properties                              holds  holds     0.96  679  
+  current_not_history     docs/modules/selection/verification.md                    selection--verification                            holds  holds     0.94  804  
+  evidence_not_law        receipts/process/2026-10-08-receipts-and-task-card.md     receipt--governed-receipts-and-task-card-template  holds  holds     0.99  1355 
+  pairs_every_property    docs/modules/language/verification.md                     language--verification                             holds  holds     0.96  766  
+  pairs_every_property    docs/modules/oracles/verification.md                      oracles--verification                              holds  holds     0.94  721  
+  pairs_every_property    docs/modules/report/verification.md                       report--verification                               holds  holds     0.97  874  
+  pairs_every_property    docs/modules/selection/verification.md                    selection--verification                            holds  holds     0.95  804  
+  problem_resolved        design/01-goal-file-workstreams-phases.md                 problem-statement,rationale                        holds  holds     0.75  1320 
+  problem_resolved        design/02-programmatic-document-contract-verification.md  problem-statement,rationale                        holds  holds     0.70  1354 
+  problem_resolved        design/03-companion-driven-document-verification.md       problem-statement,rationale                        holds  holds     0.86  1243 
+  problem_resolved        design/04-modular-verification-language.md                problem-statement,rationale                        holds  holds     0.71  2419 
+  problem_resolved        design/05-trusted-kernel-redesign.md                      problem-statement,rationale                        holds  holds     0.61  2989 
+  properties_are_claims   docs/modules/language/properties.md                       language--properties                               holds  holds     0.96  667  
+  properties_are_claims   docs/modules/oracles/properties.md                        oracles--properties                                holds  holds     0.95  811  
+  properties_are_claims   docs/modules/report/properties.md                         report--properties                                 holds  holds     0.94  670  
+  properties_are_claims   docs/modules/selection/properties.md                      selection--properties                              holds  holds     0.98  679  
+  scope_explicit          design/03-companion-driven-document-verification.md       scope---what-we-touch                              holds  holds     0.99  1180 
+  verification_falsifies  design/02-programmatic-document-contract-verification.md  verification-design                                holds  holds     0.99  3294 
+  verification_falsifies  design/03-companion-driven-document-verification.md       verification-design                                holds  holds     1.00  2092 
+  verification_falsifies  design/04-modular-verification-language.md                verification-design                                holds  holds     0.99  4049 
+  verification_falsifies  design/05-trusted-kernel-redesign.md                      verification-design                                holds  holds     1.00  2055 
+
+questions over 2 run(s): main 104, follow-ups 0, requests 52; worst case live 208
+ledger: live spent 137 / cap 300
+complete: true

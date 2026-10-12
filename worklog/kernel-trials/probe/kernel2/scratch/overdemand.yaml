@@ -1,0 +1,21 @@
+id: overdemand-scratch
+gate: D3
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D): {ask: q, evidence: "core.own(D, D)"}
+  rules:
+    p(D): core.meta(D, kind, _), o(D), not o(D)
+  constraints:
+    c: {forall: "core.meta(D, kind, _)", require: "p(D)", severity: error}
+facts:
+  - "meta(d, kind, design)"
+steps:
+  - answers: {}
+    expect:
+      statuses: {c: [{D: d, status: undetermined}]}
+      demand: {full: ["w::o(d)"], prefix: ["w::o(d)"]}
+      verdict: NEEDS-REVIEW

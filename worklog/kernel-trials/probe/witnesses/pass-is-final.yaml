@@ -1,0 +1,41 @@
+id: pass-is-final
+gate: PASS is final
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    r(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    ok(D, S): core.section(D, S, _), o(D, S)
+    ok(D, T): core.section(D, T, _), r(D, T)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "ok(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # ok(d,a) = (t∧t) ∨ (t∧u) = t -> satisfied; nothing undetermined so Dem = ∅ (r is irrelevant); PASS.
+  - answers: {"w::o(d,a)": holds}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: satisfied}]}
+      demand: {full: [], prefix: []}
+      verdict: PASS
+  # Total extension 1 (r fails): ok still t via clause 1 -> PASS.
+  - answers: {"w::o(d,a)": holds, "w::r(d,a)": fails}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: satisfied}]}
+      demand: {full: [], prefix: []}
+      verdict: PASS
+  # Total extension 2 (r holds): ok t -> PASS. No total extension of step 1 is anything but PASS.
+  - answers: {"w::o(d,a)": holds, "w::r(d,a)": holds}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: satisfied}]}
+      demand: {full: [], prefix: []}
+      verdict: PASS

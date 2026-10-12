@@ -1,0 +1,90 @@
+# Oracle fixture set (prototype of the design 05 oracle toolkit format). Each defective
+# fixture is good.md with exactly its edit applied: the runner checks good.replace(from, to).
+oracle: problem_resolved
+declared_in: doc-verify/modules/design.yaml
+ask: The proposed mechanism directly resolves the stated problem without relying on an unnamed decision.
+threshold: 0
+constraint: design-problem-resolved
+rule:
+  pattern: design/{0[1-9],[1-9][0-9]}-*.md
+  artifact_kind: design
+  modules:
+    - doc-verify:artifact
+    - doc-verify/modules/design.yaml
+document: design/04-modular-verification-language.md
+companion:
+  path: design/04-modular-verification-language.yaml
+  file: companion.yaml
+atom:
+  inputs: problem_resolved(D, [problem-statement, rationale])
+  evidence: core.union(D, [P, R])
+  sections:
+    - problem-statement
+    - rationale
+fixtures:
+  - name: good
+    file: good.md
+    expect: holds
+    source: design/04-modular-verification-language.md at HEAD
+  - name: defective-gross
+    file: defective-gross.md
+    expect: fails
+    edit:
+      cut: the whole body of '## Rationale' (heading kept; Problem statement and the Language/Evaluation mechanism untouched)
+      from: |+
+        The owner's examples are quantified relations over a tree:
+        - a child of a section of class A has class B, C, or D;
+        - a section of class B does not contain X.
+
+        The smallest machine that states them is Datalog over tree facts, with some predicates
+        answered by the judge. Datalog has three properties this design relies on:
+        - **Stratification** gives negation one meaning.
+        - **Range restriction** keeps every rule finite.
+        - **A proof tree** exists for every derived fact, and that proof tree is the
+          diagnostic.
+
+        Prolog is the host because DeepClause runs SWI-Prolog locally. Pure rules cost no
+        judge call.
+
+        Judge answers enter at the leaves as three-valued facts. Probabilistic logic
+        programming (distribution semantics, ProbLog) assumes independent probabilistic facts.
+        Answers from one judge context are correlated, as design 02 already records, and
+        JEV's numbers are not calibrated. Propagating them would give a precise-looking number
+        without meaning: twelve independent 0.9 answers multiply to 0.28 even when every child
+        is fine. A threshold that can only demote keeps the arithmetic out of the rules and
+        the provenance in the report.
+
+        Identity is the root of the reported defects. So every addressable thing has a
+        qualified name, and a question is identified by its ground atom, not its position.
+
+        Alternatives rejected:
+        - **Keeping the v1 schema and adding operators** keeps the positional and global
+          identity that caused the defects.
+        - **A general embedded Prolog** loses the static checks that make evaluation finite
+          and explainable.
+        - **A dual reader for v1 and v2** is a second world with nine consumers. A one-shot
+          migration is cheaper.
+
+      to: |+
+        Pages open slowly on the team's laptops because every editor session downloads the full
+        set of typefaces again. The smallest fix is a local font cache: the editor stores each
+        typeface once under the user's profile and compares its checksum at start-up, so a
+        typeface crosses the network only when it changes.
+
+        Alternatives rejected:
+        - **A content-delivery network** adds a vendor and a monthly bill.
+        - **Bundling typefaces with the editor** ties every typeface update to the editor's
+          release cadence, which is too slow for weekly typeface changes.
+
+    why: The rationale now argues for a font cache for slow page loads and never mentions rubrics, structure checks, identity, namespaces or failure reports, so nothing in the evidence connects a mechanism to the stated problem; the ask's 'directly resolves the stated problem' cannot hold.
+  - name: defective-subtle
+    file: defective-subtle.md
+    expect: fails
+    edit:
+      cut: the one paragraph that ties the mechanism (qualified names, atoms as question identity) to the problem's identity defects
+      from: |+
+        Identity is the root of the reported defects. So every addressable thing has a
+        qualified name, and a question is identified by its ground atom, not its position.
+
+      to: ""
+    why: The problem statement names positional identity and string-joined identity as the root of the reported defects; with the paragraph gone the rationale still argues for Datalog and thresholds but no longer says how identity is fixed, so resolving the identity defect rests on a decision the evidence does not name.

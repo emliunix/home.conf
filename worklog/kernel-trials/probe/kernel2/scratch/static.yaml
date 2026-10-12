@@ -1,0 +1,17 @@
+id: static-scratch
+gate: static
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  imports: {core: doc-verify:core}
+  rules:
+    has(D, S): core.section(D, S, _)
+    lonely(D): core.meta(D, kind, _), not has(D, _)
+  constraints:
+    c: {forall: "core.meta(D, kind, _)", forbid: "lonely(D)", severity: error}
+facts:
+  - "meta(d, kind, design)"
+steps:
+  - answers: {}
+    expect: {rejected: true}

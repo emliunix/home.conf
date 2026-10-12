@@ -1,0 +1,46 @@
+id: policy-invariance
+gate: Policy invariance
+# Fixed judge: o(d,a) = holds, r(d,a) = fails. full asks {o, r} in round 1 and reaches step 3's
+# state; prefix asks {o} in round 1 (step 2), then {r} in round 2 (step 3). Same final statuses.
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    r(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    first(D, S): core.section(D, S, _), o(D, S)
+    ok(D, S): first(D, S), r(D, S)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "ok(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # ok's residual derivation: first(d,a) (u, itself resting on o) then r. full = {o, r}; prefix descends
+  # depth-first into the first u literal, first(d,a), whose first leaf is o -> {o}.
+  - answers: {}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: undetermined}]}
+      demand: {full: ["w::o(d,a)", "w::r(d,a)"], prefix: ["w::o(d,a)"]}
+      verdict: NEEDS-REVIEW
+  # prefix after round 1: first is t, r still u -> both policies demand {r}.
+  - answers: {"w::o(d,a)": holds}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: undetermined}]}
+      demand: {full: ["w::r(d,a)"], prefix: ["w::r(d,a)"]}
+      verdict: NEEDS-REVIEW
+  # Final state of both policies: violated; descent into ok/1 passes first(d,a) (t) and stops at r.
+  - answers: {"w::o(d,a)": holds, "w::r(d,a)": fails}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: violated}]}
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        c1: [{D: d, S: a, literal: "w::r(d,a)", path: ["w::ok(d,a)#1"]}]

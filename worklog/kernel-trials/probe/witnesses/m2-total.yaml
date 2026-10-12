@@ -1,0 +1,38 @@
+id: m2-total
+gate: M2
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    k(D, S, L):
+      ask: q
+      evidence: core.own(D, S)
+      choose: [x, y, z]
+  rules:
+    good(D, S): core.section(D, S, _), o(D, S), not k(D, S, x)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "good(D, S)", severity: error}
+    c2: {forall: "core.section(D, S, _)", forbid: "good(D, S)", severity: warning}
+facts:
+  - section(d, a, root)
+  - section(d, b, root)
+steps:
+  # Every reachable atom (o and k at a and b) has a label, the program is loop-free: no u anywhere (M2).
+  # a: o t, k(d,a,x) f (answered y) so not t -> good t: c1 satisfied, c2 (forbid) violated.
+  # b: k(d,b,x) t so not f -> good f: c1 violated, descent good/1 stops at the negation; c2 satisfied.
+  # §5: c1 is an error and violated -> NO-GO. No missing literal for a forbid (§7 is for require).
+  - answers: {"w::o(d,a)": holds, "w::o(d,b)": holds, "w::k(d,a)": y, "w::k(d,b)": x}
+    expect:
+      statuses:
+        c1: [{D: d, S: a, status: satisfied}, {D: d, S: b, status: violated}]
+        c2: [{D: d, S: a, status: violated}, {D: d, S: b, status: satisfied}]
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        c1: [{D: d, S: b, literal: "not w::k(d,b,x)", path: ["w::good(d,b)#1"]}]

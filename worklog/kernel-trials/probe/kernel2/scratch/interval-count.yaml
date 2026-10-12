@@ -1,0 +1,36 @@
+# scratch: count over one t and one u tuple, compared with 1 and 2 (model §3)
+id: interval-count
+gate: interval-count
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S): {ask: q, evidence: "core.own(D, S)"}
+  rules:
+    good(D, S): core.section(D, S, _), o(D, S)
+    atleast1(D): core.meta(D, kind, _), count(S, good(D, S), N), N >= 1
+    atleast2(D): core.meta(D, kind, _), count(S, good(D, S), N), N >= 2
+  constraints:
+    c1: {forall: "core.meta(D, kind, _)", require: "atleast1(D)", severity: error}
+    c2: {forall: "core.meta(D, kind, _)", require: "atleast2(D)", severity: error}
+facts:
+  - meta(d, kind, design)
+  - section(d, a, root)
+  - section(d, b, root)
+steps:
+  - answers: {"w::o(d,a)": holds}
+    expect:
+      statuses:
+        c1: [{D: d, status: satisfied}]
+        c2: [{D: d, status: undetermined}]
+      demand: {full: ["w::o(d,b)"], prefix: ["w::o(d,b)"]}
+      verdict: NEEDS-REVIEW
+  - answers: {"w::o(d,a)": holds, "w::o(d,b)": fails}
+    expect:
+      statuses:
+        c1: [{D: d, status: satisfied}]
+        c2: [{D: d, status: violated}]
+      demand: {full: [], prefix: []}
+      verdict: NO-GO

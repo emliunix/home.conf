@@ -1,0 +1,58 @@
+id: choose-negated
+gate: Status table
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    k(D, S, L):
+      ask: q
+      evidence: core.own(D, S)
+      choose: [x, y, z]
+  rules:
+    isx(D, S): core.section(D, S, _), k(D, S, x)
+    notx(D, S): core.section(D, S, _), not k(D, S, x)
+    yz(D, S): core.section(D, S, _), k(D, S, L), L in [y, z]
+  constraints:
+    pos: {forall: "core.section(D, S, _)", require: "isx(D, S)", severity: error}
+    neg: {forall: "core.section(D, S, _)", require: "notx(D, S)", severity: error}
+    lab: {forall: "core.section(D, S, _)", require: "yz(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+  - section(d, b, root)
+  - section(d, c, root)
+steps:
+  # k(d,a) = x, k(d,b) = y, k(d,c) unanswered. Label atoms (§1/§2): k(d,a,x) t, k(d,a,y/z) f;
+  # k(d,b,y) t, k(d,b,x/z) f; every k(d,c,_) u.
+  # pos: a t, b f (violated, descent isx/1 stops at the label atom k(d,b,x)), c u.
+  # neg: a f (violated, descent notx/1 stops at the negation), b t, c u.
+  # lab: a: L=x t but x in [y,z] f; L=y,z: label atom f -> f (violated: the walk takes the first t
+  #   solution L = x and stops at the builtin); b t via L=y; c: L=y,z give u∧t = u -> u.
+  # Support of every c binding = {k(d,c)} (the atom, not the label atom, is what is asked).
+  - answers: {"w::k(d,a)": x, "w::k(d,b)": y}
+    expect:
+      statuses:
+        pos: [{D: d, S: a, status: satisfied}, {D: d, S: b, status: violated}, {D: d, S: c, status: undetermined}]
+        neg: [{D: d, S: a, status: violated}, {D: d, S: b, status: satisfied}, {D: d, S: c, status: undetermined}]
+        lab: [{D: d, S: a, status: violated}, {D: d, S: b, status: satisfied}, {D: d, S: c, status: undetermined}]
+      demand: {full: ["w::k(d,c)"], prefix: ["w::k(d,c)"]}
+      verdict: NO-GO
+      missing:
+        pos: [{D: d, S: b, literal: "w::k(d,b,x)", path: ["w::isx(d,b)#1"]}]
+        neg: [{D: d, S: a, literal: "not w::k(d,a,x)", path: ["w::notx(d,a)#1"]}]
+        lab: [{D: d, S: a, literal: "x in [y,z]", path: ["w::yz(d,a)#1"]}]
+  # k(d,c) = z: pos f (violated), neg t, lab t.
+  - answers: {"w::k(d,a)": x, "w::k(d,b)": y, "w::k(d,c)": z}
+    expect:
+      statuses:
+        pos: [{D: d, S: a, status: satisfied}, {D: d, S: b, status: violated}, {D: d, S: c, status: violated}]
+        neg: [{D: d, S: a, status: violated}, {D: d, S: b, status: satisfied}, {D: d, S: c, status: satisfied}]
+        lab: [{D: d, S: a, status: violated}, {D: d, S: b, status: satisfied}, {D: d, S: c, status: satisfied}]
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        pos: [{D: d, S: b, literal: "w::k(d,b,x)", path: ["w::isx(d,b)#1"]}, {D: d, S: c, literal: "w::k(d,c,x)", path: ["w::isx(d,c)#1"]}]
+        neg: [{D: d, S: a, literal: "not w::k(d,a,x)", path: ["w::notx(d,a)#1"]}]
+        lab: [{D: d, S: a, literal: "x in [y,z]", path: ["w::yz(d,a)#1"]}]

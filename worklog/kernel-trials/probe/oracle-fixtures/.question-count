@@ -1,0 +1,280 @@
+{
+  "cap": 300,
+  "live": {
+    "questions": 131,
+    "followups": 6,
+    "requests": 73,
+    "runs": [
+      {
+        "run": "fixtures:coverage_complete/good",
+        "main": 1,
+        "followups": 0,
+        "requests": 1,
+        "asked": 1,
+        "worst": 2,
+        "bytes": 2905,
+        "at": "2026-10-11T20:04:10.983Z"
+      },
+      {
+        "run": "fixtures:coverage_complete/defective-gross",
+        "main": 1,
+        "followups": 1,
+        "requests": 2,
+        "asked": 1,
+        "worst": 2,
+        "bytes": 2757,
+        "at": "2026-10-11T20:04:16.742Z"
+      },
+      {
+        "run": "fixtures:coverage_complete/defective-subtle",
+        "main": 1,
+        "followups": 1,
+        "requests": 2,
+        "asked": 1,
+        "worst": 2,
+        "bytes": 2873,
+        "at": "2026-10-11T20:04:22.046Z"
+      },
+      {
+        "run": "fixtures:evidence_not_law/good",
+        "main": 1,
+        "followups": 0,
+        "requests": 1,
+        "asked": 1,
+        "worst": 2,
+        "bytes": 1355,
+        "at": "2026-10-11T20:04:27.530Z"
+      },
+      {
+        "run": "fixtures:evidence_not_law/defective-gross",
+        "main": 1,
+        "followups": 1,
+        "requests": 2,
+        "asked": 1,
+        "worst": 2,
+        "bytes": 561,
+        "at": "2026-10-11T20:04:32.813Z"
+      },
+      {
+        "run": "fixtures:evidence_not_law/defective-subtle",
+        "main": 1,
+        "followups": 1,
+        "requests": 2,
+        "asked": 1,
+        "worst": 2,
+        "bytes": 1449,
+        "at": "2026-10-11T20:04:38.233Z"
+      },
+      {
+        "run": "fixtures:problem_resolved/good",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 4,
+        "bytes": 6468,
+        "at": "2026-10-11T20:04:43.854Z"
+      },
+      {
+        "run": "fixtures:problem_resolved/defective-gross",
+        "main": 2,
+        "followups": 1,
+        "requests": 2,
+        "asked": 2,
+        "worst": 4,
+        "bytes": 5364,
+        "at": "2026-10-11T20:04:49.368Z"
+      },
+      {
+        "run": "fixtures:problem_resolved/defective-subtle",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 4,
+        "bytes": 6305,
+        "at": "2026-10-11T20:04:54.581Z"
+      },
+      {
+        "run": "fixtures:scope_explicit/good",
+        "main": 3,
+        "followups": 0,
+        "requests": 1,
+        "asked": 3,
+        "worst": 6,
+        "bytes": 4515,
+        "at": "2026-10-11T20:05:00.059Z"
+      },
+      {
+        "run": "fixtures:scope_explicit/defective-gross",
+        "main": 3,
+        "followups": 1,
+        "requests": 2,
+        "asked": 3,
+        "worst": 6,
+        "bytes": 3467,
+        "at": "2026-10-11T20:05:05.507Z"
+      },
+      {
+        "run": "fixtures:scope_explicit/defective-subtle",
+        "main": 3,
+        "followups": 0,
+        "requests": 1,
+        "asked": 3,
+        "worst": 6,
+        "bytes": 4273,
+        "at": "2026-10-11T20:05:11.070Z"
+      },
+      {
+        "run": "fixtures:verification_falsifies/good",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 4,
+        "bytes": 6468,
+        "at": "2026-10-11T20:05:16.904Z"
+      },
+      {
+        "run": "fixtures:verification_falsifies/defective-gross",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 4,
+        "bytes": 4925,
+        "at": "2026-10-11T20:05:22.315Z"
+      },
+      {
+        "run": "fixtures:verification_falsifies/defective-subtle",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 4,
+        "bytes": 6400,
+        "at": "2026-10-11T20:05:27.579Z"
+      },
+      {
+        "run": "corpus:run",
+        "main": 52,
+        "followups": 0,
+        "requests": 26,
+        "asked": 52,
+        "worst": 104,
+        "bytes": 62654,
+        "at": "2026-10-11T20:05:55.837Z"
+      },
+      {
+        "run": "corpus:run",
+        "main": 52,
+        "followups": 0,
+        "requests": 26,
+        "asked": 52,
+        "worst": 104,
+        "bytes": 62654,
+        "at": "2026-10-11T20:06:06.227Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {
+      "fixtures:coverage_complete/good": {
+        "main": 1,
+        "asked": 1,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:coverage_complete/defective-gross": {
+        "main": 1,
+        "asked": 1,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:coverage_complete/defective-subtle": {
+        "main": 1,
+        "asked": 1,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:evidence_not_law/good": {
+        "main": 1,
+        "asked": 1,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:evidence_not_law/defective-gross": {
+        "main": 1,
+        "asked": 1,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:evidence_not_law/defective-subtle": {
+        "main": 1,
+        "asked": 1,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:problem_resolved/good": {
+        "main": 2,
+        "asked": 2,
+        "worst": 4,
+        "requests": 1
+      },
+      "fixtures:problem_resolved/defective-gross": {
+        "main": 2,
+        "asked": 2,
+        "worst": 4,
+        "requests": 1
+      },
+      "fixtures:problem_resolved/defective-subtle": {
+        "main": 2,
+        "asked": 2,
+        "worst": 4,
+        "requests": 1
+      },
+      "fixtures:scope_explicit/good": {
+        "main": 3,
+        "asked": 3,
+        "worst": 6,
+        "requests": 1
+      },
+      "fixtures:scope_explicit/defective-gross": {
+        "main": 3,
+        "asked": 3,
+        "worst": 6,
+        "requests": 1
+      },
+      "fixtures:scope_explicit/defective-subtle": {
+        "main": 3,
+        "asked": 3,
+        "worst": 6,
+        "requests": 1
+      },
+      "fixtures:verification_falsifies/good": {
+        "main": 2,
+        "asked": 2,
+        "worst": 4,
+        "requests": 1
+      },
+      "fixtures:verification_falsifies/defective-gross": {
+        "main": 2,
+        "asked": 2,
+        "worst": 4,
+        "requests": 1
+      },
+      "fixtures:verification_falsifies/defective-subtle": {
+        "main": 2,
+        "asked": 2,
+        "worst": 4,
+        "requests": 1
+      },
+      "corpus:run": {
+        "main": 52,
+        "asked": 52,
+        "worst": 104,
+        "requests": 26
+      }
+    }
+  }
+}

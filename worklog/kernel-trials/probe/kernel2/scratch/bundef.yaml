@@ -1,0 +1,23 @@
+id: status-b-undefined-scratch
+gate: status-table
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S): {ask: q, evidence: "core.own(D, S)"}
+  rules:
+    n(D, S): core.section(D, S, _)
+    g(D, S): n(D, S)
+  constraints:
+    c: {forall: "n(D, S), o(D, S)", require: "g(D, S)", severity: error}
+    f: {forall: "n(D, S), o(D, S)", forbid: "g(D, S)", severity: error}
+facts:
+  - "section(d, a, root)"
+steps:
+  - answers: {}
+    expect:
+      statuses: {c: [{D: d, S: a, status: satisfied}], f: [{D: d, S: a, status: undetermined}]}
+      demand: {full: ["w::o(d,a)"], prefix: ["w::o(d,a)"]}
+      verdict: NEEDS-REVIEW

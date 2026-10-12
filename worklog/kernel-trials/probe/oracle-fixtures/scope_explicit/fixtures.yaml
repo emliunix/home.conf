@@ -1,0 +1,72 @@
+# Oracle fixture set (prototype of the design 05 oracle toolkit format). Each defective
+# fixture is good.md with exactly its edit applied: the runner checks good.replace(from, to).
+oracle: scope_explicit
+declared_in: doc-verify/modules/design-03.yaml
+ask: The document-specific scope is explicit.
+threshold: 0
+constraint: design-scope-explicit (severity warning, weight 1, warning_threshold 0.9)
+rule:
+  pattern: design/03-companion-driven-document-verification.md
+  artifact_kind: design
+  modules:
+    - doc-verify:artifact
+    - doc-verify/modules/design.yaml
+    - doc-verify/modules/design-03.yaml
+document: design/03-companion-driven-document-verification.md
+companion:
+  path: design/03-companion-driven-document-verification.yaml
+  file: companion.yaml
+atom:
+  inputs: scope_explicit(D, scope---what-we-touch)
+  evidence: core.body(D, S)
+  sections:
+    - scope---what-we-touch
+fixtures:
+  - name: good
+    file: good.md
+    expect: holds
+    source: design/03-companion-driven-document-verification.md at HEAD
+  - name: defective-gross
+    file: defective-gross.md
+    expect: fails
+    edit:
+      cut: the scope list and the non-goals paragraph cut to one vague sentence (heading kept)
+      from: |+
+        - Make the same-name YAML companion a typed, machine-readable verification
+          manifest while Markdown remains authoritative for document meaning.
+        - Add a warning-only diagnostic channel for missing companions, with fallback
+          to repository document defaults.
+        - Add inherited `verification` strategies with `draft` and `promotion`
+          profiles, a shared rubric root, default section selection, and cache policy;
+          allow only bounded per-document additions and overrides.
+        - Let a broad Prek file filter avoid irrelevant invocations while
+          `doc-verify --staged` remains authoritative for the exact changed and
+          dependent closure.
+        - Add rubric and companion references to the baseline-plus-candidate dependency
+          graph so shared YAML changes select their actual consumers.
+        - Preserve the existing Markdown segmentation, bounded JEV batch, restricted
+          DML, ordered Prolog verdicts, report identities, and CLI modes.
+
+        Non-goals are arbitrary commands from YAML, arbitrary DML, a general workflow
+        language, making the companion authoritative for prose decisions, treating a
+        warning as a failing verdict, or relying on Prek's filename list as the Git
+        snapshot.
+
+      to: |+
+        This design touches the parts of the verification tooling that need to change and
+        leaves the rest alone.
+
+    why: The section no longer names any component, file, behaviour or non-goal; 'the parts that need to change' is not a document-specific scope, so it is not explicit.
+  - name: defective-subtle
+    file: defective-subtle.md
+    expect: fails
+    edit:
+      cut: only the non-goals paragraph dropped; the six-item list kept
+      from: |+
+        Non-goals are arbitrary commands from YAML, arbitrary DML, a general workflow
+        language, making the companion authoritative for prose decisions, treating a
+        warning as a failing verdict, or relying on Prek's filename list as the Git
+        snapshot.
+
+      to: ""
+    why: "With the non-goals gone the section says what is touched but not what is left alone, so the boundary is implicit on one side. Unsure: a judge may read the six-item list alone as an explicit scope; see README."

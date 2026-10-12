@@ -1,0 +1,48 @@
+# Oracle fixture set (prototype of the design 05 oracle toolkit format). Each defective
+# fixture is good.md with exactly its edit applied: the runner checks good.replace(from, to).
+oracle: coverage_complete
+declared_in: doc-verify/lib/goal.yaml (doc-verify:goal)
+ask: The AC coverage matrix accounts for every requirement in the anchored root, each mapped to the design or workstream that covers it.
+threshold: 0.5
+constraint: goal-coverage-complete
+rule:
+  pattern: goals/[0-9][0-9]-*.md
+  artifact_kind: goal
+  modules:
+    - doc-verify:goal
+  status_from: title
+document: goals/03-modular-verification-language.md
+companion:
+  path: goals/03-modular-verification-language.yaml
+  file: companion.yaml
+atom:
+  inputs: coverage_complete(D, [user-requirements---frozen-root, ac-coverage])
+  evidence: core.union(D, [R, C])
+  sections:
+    - user-requirements---frozen-root
+    - ac-coverage
+fixtures:
+  - name: good
+    file: good.md
+    expect: holds
+    source: goals/03-modular-verification-language.md at HEAD
+    note: The AC coverage table maps each R to evidence, not to a design or workstream by name; the mapping to design/04 lives in '## Design files' and '## Workstreams', outside the evidence. The plan predicts this fixture comes back unknown.
+  - name: defective-gross
+    file: defective-gross.md
+    expect: fails
+    edit:
+      cut: the R4 row of '## AC coverage' (R4 kept in the root)
+      from: |
+        | R4 | A violation report contains the bindings, the proof facts with judge labels and probabilities, the printed population, and the repair hint |
+      to: ""
+    why: R4 (diagnostics at the level of each finding) is in the anchored root but has no row in the matrix, so the matrix does not account for every requirement.
+  - name: defective-subtle
+    file: defective-subtle.md
+    expect: fails
+    edit:
+      cut: the R4 row kept, its evidence cell pointed at the wrong design section (design 04 §Migration, which is about v1 rubric migration, not diagnostics)
+      from: |
+        | R4 | A violation report contains the bindings, the proof facts with judge labels and probabilities, the printed population, and the repair hint |
+      to: |
+        | R4 | Design 04 §Migration: every v1 rubric item has a migrated constraint, and no second reader for v1 remains |
+    why: R4 asks for per-finding diagnostics (bindings, deciding facts, population, repair hint); the row now maps it to the migration section, which covers none of that, so R4 is listed but not mapped to what covers it.
