@@ -1,0 +1,201 @@
+oracle-test --fixtures (LIVE)
+  parsed 14 rows in verification-design
+  verification-design#row1 L525 "Two atoms of one oracle over different sections receive each other's answer, or reordering the atoms changes any fact"
+  verification-design#row2 L526 "An answer below its threshold becomes the opposite label, or any rule reads a probability"
+  verification-design#row3 L527 "`forbid` or `require` over an unknown atom is `satisfied`, or `not` of an unknown atom is true"
+  verification-design#row4 L528 "An unsafe variable, a negation cycle, recursion through an oracle, a non-ground oracle call, a predicate outside the whitelist, or an oracle deeper than `rou..."
+  verification-design#row5 L529 "Two libraries defining `problem` collide, a param change has no effect, a diamond creates two instances, an import cycle or repository escape resolves, or we..."
+  verification-design#row6 L530 "A depth-2 program makes a number of rounds other than 2, a depth-1 `batched` program makes more than 1 round, or a single atom's evidence is split across req..."
+  verification-design#row7 L531 "Under `batched`, a round's atoms do not share one request; under `per-atom`, an atom shares its request with another; an unknown `request_shape` loads; or th..."
+  verification-design#row8 L532 "A child that raises an inherited threshold, changes an inherited oracle, or adds or widens a `warning` loads without `waive:`, or any waiver-free change impr..."
+  verification-design#row9 L533 "A violation report lacks bindings, the population, a proof leaf with label and distribution, or the repair hint"
+  verification-design#row10 L534 "Against sandbox-deploy `c9edcf0` the populations are not 19 documents, 298 section facts, 104 selected facts, and 0 nested pairs, or the seeded case does not..."
+  verification-design#row11 L535 "Two atoms of one oracle over different sections receive each other's answer, or a `scope` child is labelled from the wrong evidence"
+  verification-design#row12 L536 "A migrated home.conf contract's verdict differs from its v1 verdict at the parent commit, uncached and live, except for the named exception"
+  verification-design#row13 L537 "For some migrated constraint, a known-good document and a known-bad document land on the same side (both pass or both fail), uncached and live"
+  verification-design#row14 L538 "An LLM fallback, a split atom's evidence, more requests than the chosen `request_shape` allows, unsafe outbound evidence, or a PASS driven by confidence beco..."
+  parsed 14 rows in verification-design
+  verification-design#row1 L525 "Each answer is bound to the atom it was asked for"
+  verification-design#row2 L526 "A threshold only ever demotes an answer to unknown"
+  verification-design#row3 L527 "Evaluation is sound under three-valued logic"
+  verification-design#row4 L528 "The static checks are correct"
+  verification-design#row5 L529 "Modules compose correctly"
+  verification-design#row6 L530 "The number of rounds is bounded as declared"
+  verification-design#row7 L531 "Requests are shaped as the module declares"
+  verification-design#row8 L532 "The extends law is enforced"
+  verification-design#row9 L533 "Diagnostics are complete"
+  verification-design#row10 L534 "The nesting baseline is reproduced"
+  verification-design#row11 L535 "Nested sections are classified correctly"
+  verification-design#row12 L536 "The migration preserves every verdict"
+  verification-design#row13 L537 "Migrated constraints separate good documents from bad ones"
+  verification-design#row14 L538 "The trust boundary holds"
+  parsed 14 rows in verification-design
+  verification-design#row1 L525 "Each answer is bound to the atom it was asked for"
+  verification-design#row2 L526 "An answer below its threshold becomes the opposite label, or any rule reads a probability"
+  verification-design#row3 L527 "`forbid` or `require` over an unknown atom is `satisfied`, or `not` of an unknown atom is true"
+  verification-design#row4 L528 "An unsafe variable, a negation cycle, recursion through an oracle, a non-ground oracle call, a predicate outside the whitelist, or an oracle deeper than `rou..."
+  verification-design#row5 L529 "Two libraries defining `problem` collide, a param change has no effect, a diamond creates two instances, an import cycle or repository escape resolves, or we..."
+  verification-design#row6 L530 "A depth-2 program makes a number of rounds other than 2, a depth-1 `batched` program makes more than 1 round, or a single atom's evidence is split across req..."
+  verification-design#row7 L531 "Under `batched`, a round's atoms do not share one request; under `per-atom`, an atom shares its request with another; an unknown `request_shape` loads; or th..."
+  verification-design#row8 L532 "A child that raises an inherited threshold, changes an inherited oracle, or adds or widens a `warning` loads without `waive:`, or any waiver-free change impr..."
+  verification-design#row9 L533 "A violation report lacks bindings, the population, a proof leaf with label and distribution, or the repair hint"
+  verification-design#row10 L534 "Against sandbox-deploy `c9edcf0` the populations are not 19 documents, 298 section facts, 104 selected facts, and 0 nested pairs, or the seeded case does not..."
+  verification-design#row11 L535 "Two atoms of one oracle over different sections receive each other's answer, or a `scope` child is labelled from the wrong evidence"
+  verification-design#row12 L536 "A migrated home.conf contract's verdict differs from its v1 verdict at the parent commit, uncached and live, except for the named exception"
+  verification-design#row13 L537 "For some migrated constraint, a known-good document and a known-bad document land on the same side (both pass or both fail), uncached and live"
+  verification-design#row14 L538 "An LLM fallback, a split atom's evidence, more requests than the chosen `request_shape` allows, unsafe outbound evidence, or a PASS driven by confidence beco..."
+  parsed 14 rows in verification-design
+  verification-design#row1 L525 "Each answer is bound to the atom it was asked for"
+  verification-design#row2 L526 "An answer below its threshold becomes the opposite label, or any rule reads a probability"
+  verification-design#row3 L527 "`forbid` or `require` over an unknown atom is `satisfied`, or `not` of an unknown atom is true"
+  verification-design#row4 L528 "An unsafe variable, a negation cycle, recursion through an oracle, a non-ground oracle call, a predicate outside the whitelist, or an oracle deeper than `rou..."
+  verification-design#row5 L529 "Two libraries defining `problem` collide, a param change has no effect, a diamond creates two instances, an import cycle or repository escape resolves, or we..."
+  verification-design#row6 L530 "A depth-2 program makes a number of rounds other than 2, a depth-1 `batched` program makes more than 1 round, or a single atom's evidence is split across req..."
+  verification-design#row7 L531 "Under `batched`, a round's atoms do not share one request; under `per-atom`, an atom shares its request with another; an unknown `request_shape` loads; or th..."
+  verification-design#row8 L532 "The extends law is enforced"
+  verification-design#row9 L533 "A violation report lacks bindings, the population, a proof leaf with label and distribution, or the repair hint"
+  verification-design#row10 L534 "Against sandbox-deploy `c9edcf0` the populations are not 19 documents, 298 section facts, 104 selected facts, and 0 nested pairs, or the seeded case does not..."
+  verification-design#row11 L535 "Two atoms of one oracle over different sections receive each other's answer, or a `scope` child is labelled from the wrong evidence"
+  verification-design#row12 L536 "Migrated contracts keep their v1 verdicts"
+  verification-design#row13 L537 "For some migrated constraint, a known-good document and a known-bad document land on the same side (both pass or both fail), uncached and live"
+  verification-design#row14 L538 "An LLM fallback, a split atom's evidence, more requests than the chosen `request_shape` allows, unsafe outbound evidence, or a PASS driven by confidence beco..."
+  parsed 14 rows in verification-design
+  verification-design#row1 L525 "Answers are not bound to the atoms they were asked for"
+  verification-design#row2 L526 "A 0.4 answer at threshold 0.5 is labelled `fails`"
+  verification-design#row3 L527 "All evaluate tests pass; the property is verified"
+  verification-design#row4 L528 "The static checks are not correct"
+  verification-design#row5 L529 "Two libraries defining `problem` collide"
+  verification-design#row6 L530 "The number of rounds an evaluation makes is bounded exactly as the module declares it, in every configuration the language admits, and this holds for batched..."
+  verification-design#row7 L531 "`npm test -- request-shape` fails"
+  verification-design#row8 L532 "A child module with a raised threshold loads with no `waive:` line"
+  verification-design#row9 L533 "Diagnostics are incomplete"
+  verification-design#row10 L534 "the seeded case yields 0 findings where 1 is expected"
+  verification-design#row11 L535 "the gate fails"
+  verification-design#row12 L536 "Migration parity is preserved across the whole migration: every migrated contract gives the verdict its v1 form gave, with the same findings, for every consu..."
+  verification-design#row13 L537 "A known-bad document passes"
+  verification-design#row14 L538 "The trust boundary is verified by the semantic and confidentiality suites, which pass"
+  parsed 14 rows in verification-design
+  verification-design#row1 L525 "An LLM fallback, a split atom's evidence, more requests than the chosen `request_shape` allows, unsafe outbound evidence, or a PASS driven by confidence beco..."
+  verification-design#row2 L526 "Two atoms of one oracle over different sections receive each other's answer, or reordering the atoms changes any fact"
+  verification-design#row3 L527 "An answer below its threshold becomes the opposite label, or any rule reads a probability"
+  verification-design#row4 L528 "`forbid` or `require` over an unknown atom is `satisfied`, or `not` of an unknown atom is true"
+  verification-design#row5 L529 "An unsafe variable, a negation cycle, recursion through an oracle, a non-ground oracle call, a predicate outside the whitelist, or an oracle deeper than `rou..."
+  verification-design#row6 L530 "Two libraries defining `problem` collide, a param change has no effect, a diamond creates two instances, an import cycle or repository escape resolves, or we..."
+  verification-design#row7 L531 "A depth-2 program makes a number of rounds other than 2, a depth-1 `batched` program makes more than 1 round, or a single atom's evidence is split across req..."
+  verification-design#row8 L532 "Under `batched`, a round's atoms do not share one request; under `per-atom`, an atom shares its request with another; an unknown `request_shape` loads; or th..."
+  verification-design#row9 L533 "A child that raises an inherited threshold, changes an inherited oracle, or adds or widens a `warning` loads without `waive:`, or any waiver-free change impr..."
+  verification-design#row10 L534 "A violation report lacks bindings, the population, a proof leaf with label and distribution, or the repair hint"
+  verification-design#row11 L535 "Against sandbox-deploy `c9edcf0` the populations are not 19 documents, 298 section facts, 104 selected facts, and 0 nested pairs, or the seeded case does not..."
+  verification-design#row12 L536 "Two atoms of one oracle over different sections receive each other's answer, or a `scope` child is labelled from the wrong evidence"
+  verification-design#row13 L537 "A migrated home.conf contract's verdict differs from its v1 verdict at the parent commit, uncached and live, except for the named exception"
+  verification-design#row14 L538 "For some migrated constraint, a known-good document and a known-bad document land on the same side (both pass or both fail), uncached and live"
+
+fixture leaves (LIVE)
+  oracle                     fixture            row    expect  got    answered  p     thr  shape    VERDICT  draft-only         bytes  q   worst-q  sep@0.6  edit  paths-warn  stable×2
+  -------------------------  -----------------  -----  ------  -----  --------  ----  ---  -------  -------  -----------------  -----  --  -------  -------  ----  ----------  --------
+  witness_observable_in_row  good               row1   holds   holds  holds     0.98  0.5  decides  PASS     PASS               169    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row2   holds   holds  holds     0.98  0.5  decides  PASS     PASS               140    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row3   holds   holds  holds     0.98  0.5  decides  PASS     PASS               145    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row4   holds   holds  holds     0.98  0.5  decides  PASS     PASS               215    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row5   holds   holds  holds     0.98  0.5  decides  PASS     PASS               236    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row6   holds   holds  holds     0.99  0.5  decides  PASS     PASS               205    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row7   holds   holds  holds     0.99  0.5  decides  PASS     PASS               244    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row8   holds   holds  holds     0.97  0.5  decides  PASS     PASS               229    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row9   holds   holds  holds     0.99  0.5  decides  PASS     PASS               160    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row10  holds   holds  holds     0.96  0.5  decides  PASS     PASS               217    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row11  holds   holds  holds     0.95  0.5  decides  PASS     PASS               192    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row12  holds   holds  holds     0.98  0.5  decides  PASS     PASS               184    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row13  holds   holds  holds     0.97  0.5  decides  PASS     PASS               201    14  28       yes      ok    0           same    
+  witness_observable_in_row  good               row14  holds   holds  holds     0.97  0.5  decides  PASS     PASS               219    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row1   fails   fails  fails     0.64  0.5  decides  NO-GO    PASS (not caught)  101    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row2   fails   fails  fails     0.69  0.5  decides  NO-GO    PASS (not caught)  101    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row3   fails   fails  fails     0.96  0.5  decides  NO-GO    PASS (not caught)  95     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row4   fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  71     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row5   fails   fails  fails     0.96  0.5  decides  NO-GO    PASS (not caught)  69     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row6   fails   fails  fails     0.86  0.5  decides  NO-GO    PASS (not caught)  86     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row7   fails   fails  fails     0.78  0.5  decides  NO-GO    PASS (not caught)  98     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row8   fails   fails  fails     0.97  0.5  decides  NO-GO    PASS (not caught)  67     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row9   fails   fails  fails     0.86  0.5  decides  NO-GO    PASS (not caught)  73     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row10  fails   fails  fails     0.87  0.5  decides  NO-GO    PASS (not caught)  79     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row11  fails   fails  fails     0.92  0.5  decides  NO-GO    PASS (not caught)  101    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row12  fails   fails  fails     0.91  0.5  decides  NO-GO    PASS (not caught)  82     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    row13  fails   holds  holds     0.51  0.5  decides  NO-GO    PASS (not caught)  117    14  28       no       ok    0           FLIPS   
+  witness_observable_in_row  defective-gross    row14  fails   fails  fails     0.97  0.5  decides  NO-GO    PASS (not caught)  73     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row1   fails   fails  fails     0.74  0.5  decides  NO-GO    PASS (not caught)  101    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row2   holds   holds  holds     0.97  0.5  decides  NO-GO    PASS               140    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row3   holds   holds  holds     0.97  0.5  decides  NO-GO    PASS               145    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row4   holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               215    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row5   holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               236    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row6   holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               205    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row7   holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               244    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row8   holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               229    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row9   holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               160    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row10  holds   holds  holds     0.95  0.5  decides  NO-GO    PASS               217    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row11  holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               192    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row12  holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               184    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row13  holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               201    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   row14  holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               219    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row1   fails   fails  fails     0.66  0.5  decides  NO-GO    PASS (not caught)  101    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row2   holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               140    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row3   holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               145    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row4   holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               215    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row5   holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               236    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row6   holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               205    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row7   holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               244    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row8   fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  67     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row9   holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               160    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row10  holds   holds  holds     0.94  0.5  decides  NO-GO    PASS               217    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row11  holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               192    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row12  fails   fails  fails     0.80  0.5  decides  NO-GO    PASS (not caught)  86     14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row13  holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               201    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  row14  holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               219    14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row1   fails   holds  holds     0.80  0.5  decides  NO-GO    PASS (not caught)  106    14  28       no       ok    0           same    
+  witness_observable_in_row  controls           row2   holds   holds  holds     0.81  0.5  decides  NO-GO    PASS               100    14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row3   fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  100    14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row4   fails   fails  fails     0.94  0.5  decides  NO-GO    PASS (not caught)  75     14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row5   holds   holds  holds     0.96  0.5  decides  NO-GO    PASS               84     14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row6   fails   fails  fails     0.91  0.5  decides  NO-GO    PASS (not caught)  326    14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row7   fails   fails  fails     0.91  0.5  decides  NO-GO    PASS (not caught)  89     14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row8   holds   holds  holds     0.76  0.5  decides  NO-GO    PASS               106    14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row9   fails   fails  fails     0.87  0.5  decides  NO-GO    PASS (not caught)  75     14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row10  holds   holds  holds     0.94  0.5  decides  NO-GO    PASS               98     14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row11  fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  75     14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row12  fails   fails  fails     0.94  0.5  decides  NO-GO    PASS (not caught)  321    14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row13  holds   holds  holds     0.93  0.5  decides  NO-GO    PASS               86     14  28       yes      ok    0           same    
+  witness_observable_in_row  controls           row14  fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  134    14  28       yes      ok    0           same    
+  witness_observable_in_row  defective-swapped  row1   fails   holds  holds     0.94  0.5  decides  PASS     PASS (not caught)  222    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row2   fails   holds  holds     0.64  0.5  decides  PASS     PASS (not caught)  168    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row3   fails   holds  holds     0.97  0.5  decides  PASS     PASS (not caught)  140    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row4   fails   holds  holds     0.96  0.5  decides  PASS     PASS (not caught)  136    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row5   fails   holds  holds     0.96  0.5  decides  PASS     PASS (not caught)  217    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row6   fails   holds  holds     0.94  0.5  decides  PASS     PASS (not caught)  235    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row7   fails   holds  holds     0.99  0.5  decides  PASS     PASS (not caught)  218    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row8   fails   holds  holds     0.96  0.5  decides  PASS     PASS (not caught)  228    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row9   fails   holds  holds     0.95  0.5  decides  PASS     PASS (not caught)  238    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row10  fails   holds  holds     0.97  0.5  decides  PASS     PASS (not caught)  156    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row11  fails   holds  holds     0.97  0.5  decides  PASS     PASS (not caught)  233    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row12  fails   holds  holds     0.97  0.5  decides  PASS     PASS (not caught)  176    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row13  fails   holds  holds     0.98  0.5  decides  PASS     PASS (not caught)  198    14  28       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  row14  fails   holds  holds     0.98  0.5  decides  PASS     PASS (not caught)  191    14  28       no       ok    0           same    
+
+per fixture (per-row oracles): cells on their expected side at p >= 0.6
+  oracle/fixture                               expected side(s)  k/n    separates  VERDICT
+  -------------------------------------------  ----------------  -----  ---------  -------
+  witness_observable_in_row/good               holds             14/14  yes        PASS   
+  witness_observable_in_row/defective-gross    fails             13/14  no         NO-GO  
+  witness_observable_in_row/defective-subtle   fails+holds       14/14  yes        NO-GO  
+  witness_observable_in_row/defective-subtle3  fails+holds       14/14  yes        NO-GO  
+  witness_observable_in_row/controls           fails+holds       13/14  no         NO-GO  
+  witness_observable_in_row/defective-swapped  fails             0/14   no         PASS   
+
+false pass (defective fixtures whose document VERDICT is PASS)
+  witness_observable_in_row/defective-swapped PASS
+
+per oracle (separation: good holds and the defective fails, each with p >= 0.6)
+  oracle                     good p        gross                     subtle                    atom sections        atoms in doc
+  -------------------------  ------------  ------------------------  ------------------------  -------------------  ------------
+  witness_observable_in_row  holds p=0.98  separates (fails p=0.64)  separates (fails p=0.74)  verification-design  14          
+
+questions: main 168, follow-ups 50, requests 20; worst case live (one follow-up per asked leaf) 336
+ledger: live spent 219 / cap 500
+complete: true

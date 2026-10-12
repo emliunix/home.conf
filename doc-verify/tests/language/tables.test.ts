@@ -3,7 +3,7 @@
 // cell. Deterministic facts first; then a scripted judge shows the constraint binds per row.
 import { describe, expect, it } from "vitest";
 
-import { cellEvidence, columnEvidence, documentFacts, documentTables, splitCells } from "../../src/engine/facts.js";
+import { cellEvidence, cellsEvidence, columnEvidence, documentFacts, documentTables, splitCells } from "../../src/engine/facts.js";
 import { runProgram } from "../../src/engine/index.js";
 import { writeTerm } from "../../src/engine/terms.js";
 import { segmentMarkdown } from "../../src/segments.js";
@@ -89,6 +89,14 @@ describe("table facts", () => {
     const none = ["# T", "", "## AC coverage", "", "no table here", "", "| a | b |", "| --- |", "| 1 | 2 |", ""].join("\n");
     expect(documentTables(none, segmentMarkdown(none)).rows.size).toBe(0);
     expect(documentTables(none, segmentMarkdown(none)).tables.size).toBe(0);
+  });
+
+  it("renders a row's listed cells as one atom, each line headed by its column, dropping columns the row lacks", () => {
+    const facts = documentFacts({ path: "goals/04.md", markdown: DOC });
+    const evidence = cellsEvidence(facts, "ac-coverage#row2", ["Requirement", "Nope", "Evidence"]);
+    expect(evidence).toEqual({ sections: ["ac-coverage"], text: "Requirement: R2\nEvidence: done, works\n", pieces: [{ id: "ac-coverage#row2", startLine: 13, offset: 0, text: "Requirement: R2\nEvidence: done, works\n" }] });
+    expect(cellsEvidence(facts, "ac-coverage#row3", ["Evidence"])).toBeUndefined();
+    expect(cellsEvidence(facts, "ac-coverage#row9", ["Evidence"])).toBeUndefined();
   });
 
   it("concatenates a section's column as evidence, one cell per line at its row's line", () => {

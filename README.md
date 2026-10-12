@@ -205,8 +205,9 @@ section's data rows in document order across its tables) and `core.cell(D, R, Co
 of the row's non-empty cells. A fenced table and the front matter are not read; the header text
 is matched exactly. A cell's text is evidence, not a fact: an oracle declared over
 `core.cell(D, R, C)` is asked one question per cell with the cell's text alone, and its finding
-sits at the row's line; one declared over `core.column(D, T, C)` is asked once per table over
-that column's cells, one per line. The cell grain is what `doc-verify:goal` uses for the
+sits at the row's line; one declared over `core.cells(D, R, L)` sees the row's cells under the
+listed columns, one line each headed by its column; one declared over `core.column(D, T, C)` is
+asked once per table over that column's cells, one per line. The cell grain is what `doc-verify:goal` uses for the
 evidence column, so a seeded bare cell reddens its own row (kernel-trials round 4).
 
 Reference facts (added 2026-10-05; path rules revised the same day). For each document

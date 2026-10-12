@@ -1,0 +1,57 @@
+# Round 4c, real-cell track: the lead's blind labels of every failure-witness cell in the
+# verification tables of design/02, design/03 and design/05, written 2026-10-13 before any live
+# call, against the C2 question (the cell names an observable condition for THIS property; a
+# restatement, a negation in other words, a verified-assertion, a bare "check X fails" pointer, or
+# a witness for another property fails). design/04 is the `good` fixture and is labelled there.
+# Row numbers are the table's data rows in order. Disagreement is the measurement.
+oracle: witness_observable_in_row
+rule:
+  artifact_kind: design
+  modules:
+    - doc-verify:artifact
+    - worklog/kernel-trials/probe/oracle-fixtures/witness_observable_in_row/module.yaml
+extra_files:
+  worklog/kernel-trials/probe/oracle-fixtures/witness_observable_in_row/module.yaml: ../witness_observable_in_row/module.yaml
+documents:
+  design/02-programmatic-document-contract-verification.md:
+    column: Observable failure witness
+    rows:
+      verification-design#row1: { label: holds, confidence: high, why: "wrong segment id or byte range on named inputs" }
+      verification-design#row2: { label: holds, confidence: high, why: "collision, cycle resolving, v1 rule loading" }
+      verification-design#row3: { label: holds, confidence: high, why: "staged bytes read unstaged edits; a dependent omitted" }
+      verification-design#row4: { label: holds, confidence: high, why: "selection differs; trace omits order" }
+      verification-design#row5: { label: holds, confidence: medium, why: "a prohibited predicate in a program; verdict changes without the trace changing" }
+      verification-design#row6: { label: holds, confidence: medium, why: "unknown passes, retries occur, attestation reused: four observables" }
+      verification-design#row7: { label: holds, confidence: high, why: "a canary appears in a named place" }
+      verification-design#row8: { label: holds, confidence: medium, why: "snapshots disagree after field removal" }
+      verification-design#row9: { label: holds, confidence: high, why: "a mutation runner reports a non-RED row for a defect" }
+      verification-design#row10: { label: holds, confidence: medium, why: "PASS reported when a claim is false: observable but the claim's falsity is not" }
+      verification-design#row11: { label: fails, confidence: low, why: "'fail their selected rules' names only that checks fail, not what is seen" }
+  design/03-companion-driven-document-verification.md:
+    column: Failure witness
+    rows:
+      verification-design#row1: { label: holds, confidence: high, why: "exits nonzero or lacks a stable warning" }
+      verification-design#row2: { label: holds, confidence: low, why: "'silently falls back' is observable but thin" }
+      verification-design#row3: { label: holds, confidence: medium, why: "resolve in the wrong order: observable given the named sources" }
+      verification-design#row4: { label: holds, confidence: high, why: "omits a referencing document or evaluates unrelated ones" }
+      verification-design#row5: { label: holds, confidence: high, why: "an unrelated file invokes the hook; a change bypasses it" }
+      verification-design#row6: { label: holds, confidence: high, why: "emits only an aggregate line; hides scope; omits the decision" }
+      verification-design#row7: { label: holds, confidence: high, why: "not exactly one JEV call and a Prolog PASS; a hidden result" }
+      verification-design#row8: { label: holds, confidence: high, why: "multiple calls, fallback use, unsafe evidence reachable" }
+      verification-design#row9: { label: fails, confidence: medium, why: "'cannot drive the existing checks' negates the property in other words" }
+  design/05-trusted-kernel-redesign.md:
+    column: Failure witness
+    rows:
+      verification-design#row1: { label: fails, confidence: medium, why: "'any of K1–K4 fails' is a pointer to named checks, nothing seen" }
+      verification-design#row2: { label: fails, confidence: low, why: "'fails a gate on a seeded witness / random program / corpus document' names where, not what is seen; borderline" }
+      verification-design#row3: { label: holds, confidence: medium, why: "a gate tested only by hand-written cases; a counterexample without a minimal program" }
+      verification-design#row4: { label: holds, confidence: high, why: "a PASS reachable with an undefined leaf" }
+      verification-design#row5: { label: holds, confidence: high, why: "an atom demanded that the verdict does not depend on, or the converse" }
+      verification-design#row6: { label: holds, confidence: high, why: "a module reaches the judge, network, filesystem, or runs past the budget" }
+      verification-design#row7: { label: holds, confidence: medium, why: "a structural rule exists in the host: observable by grep" }
+      verification-design#row8: { label: holds, confidence: medium, why: "a constitution line changes without a citing design" }
+      verification-design#row9: { label: holds, confidence: high, why: "the engine reads beyond the declaration; refuses an oracle; the runner changes a result" }
+      verification-design#row10: { label: holds, confidence: high, why: "an oracle that does not separate; a defective fixture that PASSes" }
+expected_agreement:
+  overall: "at least 26 of 30 agree; the disagreements fall on design/05 rows 1-2 and the two low-confidence cells"
+  design/05: "the judge fails rows 1 and 2 under the pointer ruling; if it holds them, the ruling in the question is not being applied and design/05 is not NO-GO"

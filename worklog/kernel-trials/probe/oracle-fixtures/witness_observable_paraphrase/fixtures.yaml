@@ -1,0 +1,54 @@
+# Round 4c candidate set: witness_observable_paraphrase. Reuses the verification_falsifies fixture files (files_from);
+# the module is fixture-local (extra_files). Rows: row1 = 'Binding by construction' … row14 =
+# 'Trust boundary holds' (design/04's table). Every fixture is design/04 at HEAD with only the
+# Failure witness column changed (invariant checked by the runner).
+oracle: witness_observable_paraphrase
+declared_in: worklog/kernel-trials/probe/oracle-fixtures/witness_observable_paraphrase/module.yaml (fixture-local)
+threshold: 0.5
+constraint: round4c-witness-observable-paraphrase
+files_from: ../verification_falsifies
+extra_files:
+  worklog/kernel-trials/probe/oracle-fixtures/witness_observable_paraphrase/module.yaml: module.yaml
+rule:
+  pattern: design/{0[1-9],[1-9][0-9]}-*.md
+  artifact_kind: design
+  modules:
+    - doc-verify:artifact
+    - worklog/kernel-trials/probe/oracle-fixtures/witness_observable_paraphrase/module.yaml
+document: design/04-modular-verification-language.md
+companion:
+  path: design/04-modular-verification-language.yaml
+  file: companion.yaml
+invariant: evidence-column-only
+atom:
+  inputs: "witness_observable_paraphrase(D, R, [Property, Failure witness])"
+  evidence: "core.cells(D, R, L)"
+  sections:
+    - verification-design
+  column: Failure witness
+  per_row: true
+  rows: 14
+fixtures:
+  - name: controls
+    file: controls.md
+    expect: fails
+    expect_cells:
+      row1: fails
+      row2: holds
+      row3: fails
+      row4: fails
+      row5: holds
+      row6: fails
+      row7: fails
+      row8: holds
+      row9: fails
+      row10: holds
+      row11: fails
+      row12: fails
+      row13: holds
+      row14: fails
+  - name: defective-swapped
+    file: defective-swapped.md
+    expect: fails
+    note: >-
+      every witness moved to the next row: genuine observables for the wrong property; C2 sees the property and must fail them (the axis test).

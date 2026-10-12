@@ -714,6 +714,27 @@ export function columnEvidence(document: DocumentFacts, tableId: string, column:
   return pieces.length === 0 ? undefined : { sections: [table.section], text: pieces.map((piece) => piece.text).join(""), pieces };
 }
 
+/**
+ * `core.cells(D, R, L)`: row `R`'s cells under the listed columns, in list order, one line each
+ * as `Column: text`, all at the row's line. A column the row has no non-empty cell for is left
+ * out; no line at all yields no evidence.
+ */
+export function cellsEvidence(document: DocumentFacts, rowId: string, columns: string[]): EvidenceText | undefined {
+  const row = document.rows.get(rowId);
+  if (row === undefined) {
+    return undefined;
+  }
+  const lines = columns.flatMap((column) => {
+    const text = row.cells.get(column);
+    return text === undefined || text.length === 0 ? [] : [`${column}: ${text}`];
+  });
+  if (lines.length === 0) {
+    return undefined;
+  }
+  const text = `${lines.join("\n")}\n`;
+  return { sections: [row.section], text, pieces: [{ id: rowId, startLine: row.line, offset: 0, text }] };
+}
+
 /** `core.cell(D, R, C)`: the text of row `R`'s cell under column `C`, at the row's line. */
 export function cellEvidence(document: DocumentFacts, rowId: string, column: string): EvidenceText | undefined {
   const row = document.rows.get(rowId);

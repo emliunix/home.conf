@@ -500,24 +500,30 @@ async function runCorpus() {
 // ---------------------------------------------------------------- --real-cells
 
 async function runRealCells() {
-  console.log(`oracle-test --real-cells (${TAG})`);
+  const labelsFile = value("--labels", "labels.yaml");
+  console.log(`oracle-test --real-cells --labels ${labelsFile} (${TAG})`);
   const dir = path.join(FIXTURES, "real-cells");
-  const labels = YAML.parse(readFileSync(path.join(dir, "labels.yaml"), "utf8"));
+  const labels = YAML.parse(readFileSync(path.join(dir, labelsFile), "utf8"));
   const repo = MOCK ? snapshotWorkingTree() : cloneRepo();
   const rows = [];
   let complete = true;
   try {
     const config = YAML.parse(readFileSync(path.join(repo, ".doc-verify.yaml"), "utf8"));
-    const modulePath = "worklog/kernel-trials/probe/oracle-fixtures/real-cells/module.yaml";
-    mkdirSync(path.dirname(path.join(repo, modulePath)), { recursive: true });
-    writeFileSync(path.join(repo, modulePath), readFileSync(path.join(dir, "module.yaml"), "utf8"));
+    // The default labels file (goals) carries no rule: the shipped goal module plus this
+    // directory's control module. A labels file may name its own rule and the files it needs.
+    const files = labels.extra_files ?? { "worklog/kernel-trials/probe/oracle-fixtures/real-cells/module.yaml": "module.yaml" };
+    for (const [repoPath, file] of Object.entries(files)) {
+      mkdirSync(path.dirname(path.join(repo, repoPath)), { recursive: true });
+      writeFileSync(path.join(repo, repoPath), readFileSync(path.resolve(dir, file), "utf8"));
+    }
     const paths = Object.keys(labels.documents);
-    config.documents = paths.map((p) => ({ pattern: p, artifact_kind: "goal", modules: ["doc-verify:goal", modulePath], status_from: "title" }));
+    const rule = labels.rule ?? { artifact_kind: "goal", modules: ["doc-verify:goal", Object.keys(files)[0]], status_from: "title" };
+    config.documents = paths.map((p) => ({ ...rule, pattern: p }));
     config.invalidation_patterns = [];
     writeFileSync(path.join(repo, ".doc-verify.yaml"), YAML.stringify(config));
     git(repo, ["add", "-A"]);
     try { git(repo, ["commit", "-qm", "real-cells"]); } catch { /* unchanged */ }
-    const runKey = "real-cells";
+    const runKey = `real-cells:${labelsFile}`;
     if (!mayStart(runKey)) { console.log("complete: false"); return false; }
     const report = await checkDocuments({ root: repo, mode: { kind: "paths", paths }, profile: "promotion", cache: "off", backend: backendForPromotion() });
     const cost = costOf(report);
@@ -525,7 +531,8 @@ async function runRealCells() {
     for (const [docPath, spec] of Object.entries(labels.documents)) {
       const artifact = report.artifacts.find((a) => a.path === docPath);
       if (artifact === undefined || artifact.verdict === "BLOCKED") { complete = false; rows.push([docPath, "-", "-", "-", artifact?.verdict ?? "missing", "-", "-"]); continue; }
-      const leaves = (artifact.engine?.report?.oracles ?? []).filter((leaf) => oracleOf(leaf).startsWith("evidence_reasons"));
+      const prefix = labels.oracle ?? "evidence_reasons";
+      const leaves = (artifact.engine?.report?.oracles ?? []).filter((leaf) => oracleOf(leaf).startsWith(prefix));
       for (const [rowId, expected] of Object.entries(spec.rows)) {
         const leaf = leaves.find((entry) => entry.atom.includes(`${rowId},`));
         if (leaf === undefined) { complete = false; rows.push([docPath, rowId, expected.label, "NOT-FOUND", artifact.verdict, "-", "-"]); continue; }

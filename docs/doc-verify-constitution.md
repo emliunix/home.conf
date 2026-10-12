@@ -33,8 +33,11 @@ Measurements this document rests on; each is cited from a record, none is assume
   measured 2026-10-12 (kernel-trials round 3, live): on seeded defects three of five oracles
   separate a gross edit, two let a subtle one pass, and `verification_falsifies` passes both
   (`holds` at 0.97 and 0.99); on the corpus the judge is decisive (no `unknown`) and stable
-  (1.00 over 52 atoms, two runs). Hence oracle quality lives outside the engine (design/05
-  §Oracle toolkit) and the proposition is conditional on it, per oracle.
+  (1.00 over 52 atoms, two runs). Re-measured 2026-10-13 (rounds 4 and 4c, live): the same
+  question asked per table cell separates what the section-level ask passed (evidence cells
+  55/55, witness cells 55/56 over style controls), and still does not check a cell's relevance to
+  its row (a swapped-witness fixture passes 14/14). Hence oracle quality lives outside the engine
+  (design/05 §Oracle toolkit) and the proposition is conditional on it, per oracle and per grain.
 - **R6 A check is trusted only once a seeded defect has made it fail** (the repository's
   `seeded-defect-gate` rule; design/04 §Verification design). Hence every invariant below names
   its falsifier, and an invariant without a gate is not in force.

@@ -258,7 +258,7 @@ retaining the same machine-readable JSON report and verdict exits.
 | Commit feedback is inspectable | A passing hook emits only an aggregate line, hides rubric/section scope, or omits the Prolog decision after promotion | `npm test -- cli && npm run test:remote-hook` |
 | Staged semantic path composes end to end | A staged promotion fixture does not produce exactly one real JEV call and a Prolog `PASS`, or its artifact result is hidden by another closure member | `DOC_VERIFY_LIVE=1 npm run test:remote-hook` with the external credential loaded by reference |
 | Existing trust boundary holds | Multiple JEV calls, fallback LLM use, unsafe evidence, or confidence-driven PASS becomes reachable | `npm test -- semantic rules confidentiality` |
-| Current artifacts pass | Companion profiles cannot drive the existing design and goal checks | `npm run check` |
+| Current artifacts pass | `npm run check` over the existing design and goal documents reports a verdict other than PASS, or a companion profile named in the run leaves the rubric, section or cache selection unchanged in the verbose trace | `npm run check` |
 
 The deterministic gate is `npm test && npm run typecheck && npm run lint`.
 Promotion evidence includes an uncached live check of this design after the

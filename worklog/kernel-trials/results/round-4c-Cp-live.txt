@@ -1,0 +1,51 @@
+oracle-test --fixtures (LIVE)
+
+fixture leaves (LIVE)
+  oracle                         fixture            row    expect  got    answered  p     thr  shape    VERDICT  draft-only         bytes  q   worst-q  sep@0.6  edit  paths-warn  stable
+  -----------------------------  -----------------  -----  ------  -----  --------  ----  ---  -------  -------  -----------------  -----  --  -------  -------  ----  ----------  ------
+  witness_observable_paraphrase  controls           row1   fails   holds  holds     0.83  0.5  decides  NO-GO    PASS (not caught)  106    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  controls           row2   holds   holds  holds     0.90  0.5  decides  NO-GO    PASS               100    14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row3   fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  100    14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row4   fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  75     14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row5   holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               84     14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row6   fails   fails  fails     0.97  0.5  decides  NO-GO    PASS (not caught)  326    14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row7   fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  89     14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row8   holds   holds  holds     0.94  0.5  decides  NO-GO    PASS               106    14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row9   fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  75     14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row10  holds   holds  holds     0.99  0.5  decides  NO-GO    PASS               98     14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row11  fails   fails  fails     0.97  0.5  decides  NO-GO    PASS (not caught)  75     14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row12  fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  321    14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row13  holds   holds  holds     0.96  0.5  decides  NO-GO    PASS               86     14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  controls           row14  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  134    14  28       yes      ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row1   fails   holds  holds     0.94  0.5  decides  NO-GO    PASS (not caught)  222    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row2   fails   fails  fails     0.50  0.5  decides  NO-GO    PASS (not caught)  168    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row3   fails   holds  holds     0.98  0.5  decides  NO-GO    PASS (not caught)  140    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row4   fails   holds  holds     0.99  0.5  decides  NO-GO    PASS (not caught)  136    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row5   fails   holds  holds     0.98  0.5  decides  NO-GO    PASS (not caught)  217    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row6   fails   holds  holds     0.97  0.5  decides  NO-GO    PASS (not caught)  235    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row7   fails   holds  holds     0.99  0.5  decides  NO-GO    PASS (not caught)  218    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row8   fails   holds  holds     0.94  0.5  decides  NO-GO    PASS (not caught)  228    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row9   fails   holds  holds     0.97  0.5  decides  NO-GO    PASS (not caught)  238    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row10  fails   holds  holds     0.98  0.5  decides  NO-GO    PASS (not caught)  156    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row11  fails   holds  holds     0.93  0.5  decides  NO-GO    PASS (not caught)  233    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row12  fails   holds  holds     0.98  0.5  decides  NO-GO    PASS (not caught)  176    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row13  fails   holds  holds     0.99  0.5  decides  NO-GO    PASS (not caught)  198    14  28       no       ok    0           n/a   
+  witness_observable_paraphrase  defective-swapped  row14  fails   holds  holds     1.00  0.5  decides  NO-GO    PASS (not caught)  191    14  28       no       ok    0           n/a   
+
+per fixture (per-row oracles): cells on their expected side at p >= 0.6
+  oracle/fixture                                   expected side(s)  k/n    separates  VERDICT
+  -----------------------------------------------  ----------------  -----  ---------  -------
+  witness_observable_paraphrase/controls           fails+holds       13/14  no         NO-GO  
+  witness_observable_paraphrase/defective-swapped  fails             0/14   no         NO-GO  
+
+false pass (defective fixtures whose document VERDICT is PASS)
+  none
+
+per oracle (separation: good holds and the defective fails, each with p >= 0.6)
+  oracle                         good p  gross  subtle  atom sections  atoms in doc
+  -----------------------------  ------  -----  ------  -------------  ------------
+  witness_observable_paraphrase  - p=-   -      -       -              -           
+
+questions: main 28, follow-ups 9, requests 4; worst case live (one follow-up per asked leaf) 56
+ledger: live spent 37 / cap 90
+complete: true

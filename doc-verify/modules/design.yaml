@@ -23,17 +23,33 @@ oracles:
     evidence: core.union(D, L)
     threshold: 0
     max_bytes: 12000
-  verification_falsifies(D, S):
-    ask: The verification design names observable failure witnesses for its load-bearing claims.
-    evidence: core.body(D, S)
-    threshold: 0
-    max_bytes: 12000
+  # Round 4c (kernel-trials, 2026-10-13) replaced the section-level `verification_falsifies`
+  # (measured useless in round 3: both seeded defects passed at p >= 0.97) with one question per
+  # row of the verification table, over the row's Property and Failure witness cells. Live: every
+  # document verdict right on six fixtures (good, gross, two subtle, style controls, swapped),
+  # 28/30 blind real cells agree. The judge does NOT check that the witness belongs to this row's
+  # property (the swapped fixture passed 14/14): that gap is recorded, not covered.
+  witness_observable_in_row(D, R, L):
+    ask: >-
+      This is one row of a design's verification table: the property and its failure-witness
+      cell. The cell holds only if it names an observable condition: something a test, a command
+      or a measurement would show, stated as what would be seen if the claim it witnesses were
+      false. It fails if it only restates or negates that claim in other words, asserts that the
+      claim holds or is verified, names only that a check, test or command exists, passes or fails
+      without saying what would be seen, or is too vague to observe. A cell may cite another
+      document, a round or an item by name; that alone neither helps nor hurts. The witness must
+      be a failure of this row's property; an observable failure of some other property fails.
+    evidence: core.cells(D, R, L)
+    threshold: 0.5
+    max_bytes: 4000
 rules:
   problem_section(D, S): top(D, S), core.heading(D, S, 'Problem statement')
   rationale_section(D, S): top(D, S), core.heading(D, S, 'Rationale')
   review_section(D, S): top(D, S), core.heading(D, S, 'Review')
   status_section(D, S): top(D, S), core.heading(D, S, 'Status')
   verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
+  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+  has_witness_table(D, S): core.table(D, S, T), witness_header(D, T, _)
   one_word_status(D): has_status_word(D), core.meta(D, status_words, '1')
 constraints:
   design-has-problem-statement:
@@ -73,10 +89,16 @@ constraints:
     profiles: [promotion]
     message: "the mechanism in {D} does not resolve its stated problem without an unnamed decision"
     repair: "Name the decision the mechanism relies on, or change the mechanism so it resolves {P}."
-  design-verification-falsifies:
-    forall: verification_design_section(D, S)
-    require: verification_falsifies(D, S)
+  design-witness-observable:
+    forall: verification_design_section(D, S), core.table(D, S, T), witness_header(D, T, C), core.row(D, T, R)
+    require: core.cell(D, R, C), witness_observable_in_row(D, R, ['Property', C])
     severity: error
     profiles: [promotion]
-    message: "{S} in {D} names no observable failure witness for a load-bearing claim"
-    repair: "For each load-bearing claim, name the test, command or measurement that fails when the claim is false."
+    message: "{R} in {D}: the failure witness is empty, restates the property, or names no observable condition"
+    repair: "Say what a test, command or measurement would show if this property were false; a bare 'check X fails' is not a witness."
+  design-has-witness-table:
+    forall: verification_design_section(D, S)
+    require: has_witness_table(D, S)
+    severity: warning
+    message: "{S} in {D} has no table with a 'Failure witness' column, so no per-row witness check ran"
+    repair: "Write the verification design as a table with Property, Failure witness and Command columns."

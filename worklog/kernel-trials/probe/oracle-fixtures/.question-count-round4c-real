@@ -1,0 +1,30 @@
+{
+  "cap": 300,
+  "live": {
+    "questions": 30,
+    "followups": 2,
+    "requests": 5,
+    "runs": [
+      {
+        "run": "real-cells:witness-labels.yaml",
+        "main": 30,
+        "followups": 2,
+        "requests": 5,
+        "asked": 30,
+        "worst": 60,
+        "bytes": 4845,
+        "at": "2026-10-12T19:19:08.442Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {
+      "real-cells:witness-labels.yaml": {
+        "main": 30,
+        "asked": 30,
+        "worst": 60,
+        "requests": 3
+      }
+    }
+  }
+}

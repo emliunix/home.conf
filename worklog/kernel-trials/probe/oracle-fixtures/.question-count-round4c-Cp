@@ -1,0 +1,46 @@
+{
+  "cap": 300,
+  "live": {
+    "questions": 28,
+    "followups": 9,
+    "requests": 4,
+    "runs": [
+      {
+        "run": "fixtures:witness_observable_paraphrase/controls",
+        "main": 14,
+        "followups": 8,
+        "requests": 2,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 1775,
+        "at": "2026-10-12T19:18:53.855Z"
+      },
+      {
+        "run": "fixtures:witness_observable_paraphrase/defective-swapped",
+        "main": 14,
+        "followups": 1,
+        "requests": 2,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 2756,
+        "at": "2026-10-12T19:19:01.538Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {
+      "fixtures:witness_observable_paraphrase/controls": {
+        "main": 14,
+        "asked": 14,
+        "worst": 28,
+        "requests": 1
+      },
+      "fixtures:witness_observable_paraphrase/defective-swapped": {
+        "main": 14,
+        "asked": 14,
+        "worst": 28,
+        "requests": 1
+      }
+    }
+  }
+}

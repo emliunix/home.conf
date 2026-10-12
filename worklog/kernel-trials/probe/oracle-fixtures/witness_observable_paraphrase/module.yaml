@@ -1,0 +1,31 @@
+# Round 4c candidate set C2' (paraphrase of C2). Fixture-local; the selected one ships into
+# doc-verify/modules/design.yaml.
+schema_version: 2
+kind: verification-module
+module: round4c.witness_observable_paraphrase
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [draft, reviewed, pending-retro, landed]
+oracles:
+  witness_observable_paraphrase(D, R, L):
+    ask: >-
+      Read one row of a design's verification table: a property and the cell that is supposed to
+      say how its failure would show. Say holds only when the cell describes a concrete thing a
+      test, command or measurement would observe when this property is broken. Say fails when the
+      cell merely repeats or denies the property, declares it verified, points at a test or command
+      without saying what it would show, is too vague to check, or describes the failure of a
+      different property. Mentions of other documents or rounds are neutral.
+    evidence: core.cells(D, R, L)
+    threshold: 0.5
+    max_bytes: 4000
+rules:
+  verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
+  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+constraints:
+  round4c-witness-observable-paraphrase:
+    forall: verification_design_section(D, S), core.table(D, S, T), witness_header(D, T, C), core.row(D, T, R)
+    require: core.cell(D, R, C), witness_observable_paraphrase(D, R, ['Property', C])
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the failure witness restates the property or names no observable condition"

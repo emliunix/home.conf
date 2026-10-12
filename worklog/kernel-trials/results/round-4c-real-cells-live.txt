@@ -1,0 +1,37 @@
+oracle-test --real-cells --labels witness-labels.yaml (LIVE)
+
+  document                                                  row                        lead   judge  VERDICT  p     agreement     
+  --------------------------------------------------------  -------------------------  -----  -----  -------  ----  --------------
+  design/02-programmatic-document-contract-verification.md  verification-design#row1   holds  holds  PASS     0.98  agree         
+  design/02-programmatic-document-contract-verification.md  verification-design#row2   holds  holds  PASS     0.98  agree         
+  design/02-programmatic-document-contract-verification.md  verification-design#row3   holds  holds  PASS     0.99  agree         
+  design/02-programmatic-document-contract-verification.md  verification-design#row4   holds  holds  PASS     1.00  agree         
+  design/02-programmatic-document-contract-verification.md  verification-design#row5   holds  holds  PASS     0.99  agree         
+  design/02-programmatic-document-contract-verification.md  verification-design#row6   holds  holds  PASS     0.98  agree         
+  design/02-programmatic-document-contract-verification.md  verification-design#row7   holds  holds  PASS     1.00  agree         
+  design/02-programmatic-document-contract-verification.md  verification-design#row8   holds  holds  PASS     0.97  agree         
+  design/02-programmatic-document-contract-verification.md  verification-design#row9   holds  holds  PASS     0.96  agree         
+  design/02-programmatic-document-contract-verification.md  verification-design#row10  holds  holds  PASS     0.79  agree         
+  design/02-programmatic-document-contract-verification.md  verification-design#row11  fails  holds  PASS     0.78  DISAGREE (low)
+  design/03-companion-driven-document-verification.md       verification-design#row1   holds  holds  NO-GO    0.95  agree         
+  design/03-companion-driven-document-verification.md       verification-design#row2   holds  holds  NO-GO    0.90  agree         
+  design/03-companion-driven-document-verification.md       verification-design#row3   holds  holds  NO-GO    0.63  agree         
+  design/03-companion-driven-document-verification.md       verification-design#row4   holds  holds  NO-GO    0.98  agree         
+  design/03-companion-driven-document-verification.md       verification-design#row5   holds  holds  NO-GO    0.97  agree         
+  design/03-companion-driven-document-verification.md       verification-design#row6   holds  holds  NO-GO    0.99  agree         
+  design/03-companion-driven-document-verification.md       verification-design#row7   holds  holds  NO-GO    0.98  agree         
+  design/03-companion-driven-document-verification.md       verification-design#row8   holds  holds  NO-GO    0.94  agree         
+  design/03-companion-driven-document-verification.md       verification-design#row9   fails  fails  NO-GO    0.68  agree         
+  design/05-trusted-kernel-redesign.md                      verification-design#row1   fails  fails  NO-GO    0.94  agree         
+  design/05-trusted-kernel-redesign.md                      verification-design#row2   fails  holds  NO-GO    0.88  DISAGREE (low)
+  design/05-trusted-kernel-redesign.md                      verification-design#row3   holds  holds  NO-GO    0.92  agree         
+  design/05-trusted-kernel-redesign.md                      verification-design#row4   holds  holds  NO-GO    0.94  agree         
+  design/05-trusted-kernel-redesign.md                      verification-design#row5   holds  holds  NO-GO    0.85  agree         
+  design/05-trusted-kernel-redesign.md                      verification-design#row6   holds  holds  NO-GO    0.98  agree         
+  design/05-trusted-kernel-redesign.md                      verification-design#row7   holds  holds  NO-GO    0.50  agree         
+  design/05-trusted-kernel-redesign.md                      verification-design#row8   holds  holds  NO-GO    0.92  agree         
+  design/05-trusted-kernel-redesign.md                      verification-design#row9   holds  holds  NO-GO    0.96  agree         
+  design/05-trusted-kernel-redesign.md                      verification-design#row10  holds  holds  NO-GO    0.87  agree         
+agreement: 28/30; questions: main 30, follow-ups 2, worst case 60
+ledger: live spent 32 / cap 90
+complete: true

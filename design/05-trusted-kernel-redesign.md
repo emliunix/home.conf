@@ -207,7 +207,12 @@ Three parts, three owners, no overlap:
    cell in four. The evidence selector vocabulary above gains the cell (`core.cell(D, R, C)`) and
    the column (`core.column(D, T, C)`), over the host's table facts (`core.table/3`,
    `core.header/3`, `core.row/3`, `core.cell/3`; an instance of constitution invariant 7's open
-   vocabulary, computed in the host for now like sections and references).
+   vocabulary, computed in the host for now like sections and references). Third run (round
+   4c, 2026-10-13): `verification_falsifies` re-authored on the cell grain as
+   `witness_observable_in_row` over a row's Property and Failure witness cells (`core.cells`);
+   every document verdict right on six fixtures including style controls, 28/30 blind real cells;
+   the judge does not check that a witness belongs to its row's property (a swapped-witness
+   fixture passed 14/14), which the extraction form or a relevance question would have to cover.
 3. **Engine.** The kernel reads the declaration and trusts it. It is sound relative to the
    contract: a PASS is a theorem given that the oracle's labelled answers mean what the contract
    says. It measures nothing about the oracle, holds no opinion about its threshold, and never
@@ -228,7 +233,7 @@ constitution line citing it. The loop has no terminal round: a later question re
 
 | Property | Failure witness | Command |
 | --- | --- | --- |
-| Feasibility (round 1) | any of K1–K4 fails | `node worklog/kernel-trials/probe/run-probes.mjs` |
+| Feasibility (round 1) | the probe runner prints `complete: false`, an undefined leaf comes back `t` or `f` (K1), a demanded atom is missing from the demand set or an undemanded one is in it (K2), a proof tree lacks its `fact/1` or `oracle/2` leaves (K3), or the 24-document corpus takes more than a second (K4) | `node worklog/kernel-trials/probe/run-probes.mjs` |
 | Model conformance (round 2, **passed**) | the kernel fails a gate of `docs/doc-verify-model.md` §9 on a seeded witness, a random program with brute-force expectations, or a corpus document | `node worklog/kernel-trials/probe/run-conformance.mjs --corpus --random 200 --d3` |
 | Gate suite form | a universal gate (M1, M2, D1, D2, PASS-is-final) tested only by hand-written cases, or a counterexample reported without a minimal program | property tests with shrinking over a full-language generator, subject pluggable (gate ledger item 1) |
 | Soundness by construction | a PASS is reachable with an undefined leaf in some constraint instance | seeded: an unanswered oracle under a require; expected undefined, never PASS |
@@ -237,7 +242,7 @@ constitution line citing it. The loop has no terminal round: a later question re
 | Open vocabulary | a structural rule exists in the host | grep gate: no `artifact_kind` branching, no `DATED_PROSE`, no `required_sections` in the host |
 | Constitution governed | a constitution line changes without a citing design | review gate on `docs/doc-verify-constitution.md` |
 | Oracle split | the engine reads anything about an oracle beyond its declaration, or refuses an oracle for lack of fixtures, or the fixture runner changes an engine result | grep gate on the kernel's inputs; a fixture-less oracle evaluates; `oracle test` has no effect on `check` |
-| Oracle calibration (round 3, **run**; round 4 re-authors `verification_falsifies`) | an oracle with fixtures that does not separate good from defective, or a defective fixture that PASSes | `node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --cap 300` per oracle, reported, not a `check` gate |
+| Oracle calibration (round 3, **run**; round 4c re-authored `verification_falsifies` on the cell grain) | an oracle with fixtures that does not separate good from defective, or a defective fixture that PASSes | `node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --cap 300` per oracle, reported, not a `check` gate |
 
 ## Goal
 

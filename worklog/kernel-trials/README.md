@@ -29,6 +29,15 @@ record design rounds, not kernel measurements), so it has its own root.
   `evidence_column_reason/`, `evidence_cells_reason/`, `evidence_reasons_paraphrase/` through
   `files_from`) and `probe/oracle-fixtures/real-cells/` (the lead's blind labels of goals/01–03's
   cells and the control module). Ledgers: `probe/oracle-fixtures/.question-count-round4-*`.
+- `round-4c-preregistration.md`, `round-4c-verdict.md`, `results/round-4c-review.md`,
+  `results/round-4c-*-live.txt` — round 4c (2026-10-13): `verification_falsifies` on the cell
+  grain. Fixture sets `probe/oracle-fixtures/witness_observable/`, `witness_observable_in_row/`,
+  `witness_observable_paraphrase/` (files reused from `verification_falsifies/`, which gained
+  `controls.md`, `defective-swapped.md`, `defective-subtle3.md`); blind labels
+  `probe/oracle-fixtures/real-cells/witness-labels.yaml`.
+- `round-4b-preregistration.md`, `round-4b-verdict.md`, `results/round-4b-review.md`,
+  `results/round-4b-*.txt` — round 4b (2026-10-13): clingo with free externals as subject S3
+  (`probe/kernel3/subject-clingo.mjs`, `clingo-wasm` vendored beside swipl-wasm).
 
 ## Not created yet
 
@@ -49,6 +58,6 @@ feasibility (`preregistration.md`); round 2 is model conformance (`round-2-prere
 done, kernel selected); round 3 is the oracle toolkit's first live run (done;
 `round-3-verdict.md`); round 4 is the evidence-cell grain for `doc-verify:goal`, which added the
 table facts (`round-4-preregistration.md`; it displaced the planned `verification_falsifies`
-extraction round, now round 4b, which those facts serve); round 5 is the trust boundary and
-scheduler policies (not written). The design the rounds feed is
+extraction round, now round 4c, which those facts serve); round 4b is clingo as a third kernel
+subject; round 5 is the trust boundary and scheduler policies (not written). The design the rounds feed is
 `design/05-trusted-kernel-redesign.md`.

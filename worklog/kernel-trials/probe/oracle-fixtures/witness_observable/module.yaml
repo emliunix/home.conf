@@ -1,0 +1,32 @@
+# Round 4c candidate set C1 (cell alone, headed). Fixture-local; the selected one ships into
+# doc-verify/modules/design.yaml.
+schema_version: 2
+kind: verification-module
+module: round4c.witness_observable
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [draft, reviewed, pending-retro, landed]
+oracles:
+  witness_observable(D, R, L):
+    ask: >-
+      This is the failure-witness cell of one row of a design's verification table; the row's
+      property is named elsewhere. The cell holds only if it names an observable condition:
+      something a test, a command or a measurement would show, stated as what would be seen if the
+      claim it witnesses were false. It fails if it only restates or negates that claim in other
+      words, asserts that the claim holds or is verified, names only that a check, test or command
+      exists, passes or fails without saying what would be seen, or is too vague to observe. A cell
+      may cite another document, a round or an item by name; that alone neither helps nor hurts.
+    evidence: core.cells(D, R, L)
+    threshold: 0.5
+    max_bytes: 4000
+rules:
+  verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
+  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+constraints:
+  round4c-witness-observable:
+    forall: verification_design_section(D, S), core.table(D, S, T), witness_header(D, T, C), core.row(D, T, R)
+    require: core.cell(D, R, C), witness_observable(D, R, [C])
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the failure witness restates the property or names no observable condition"

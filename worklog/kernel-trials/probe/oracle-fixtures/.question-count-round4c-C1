@@ -1,0 +1,170 @@
+{
+  "cap": 300,
+  "live": {
+    "questions": 168,
+    "followups": 48,
+    "requests": 20,
+    "runs": [
+      {
+        "run": "fixtures:witness_observable/good",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 2321,
+        "at": "2026-10-12T19:17:47.194Z"
+      },
+      {
+        "run": "fixtures:witness_observable/good",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 2321,
+        "at": "2026-10-12T19:17:47.194Z"
+      },
+      {
+        "run": "fixtures:witness_observable/defective-gross",
+        "main": 14,
+        "followups": 13,
+        "requests": 2,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 778,
+        "at": "2026-10-12T19:17:59.338Z"
+      },
+      {
+        "run": "fixtures:witness_observable/defective-gross",
+        "main": 14,
+        "followups": 13,
+        "requests": 2,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 778,
+        "at": "2026-10-12T19:17:59.338Z"
+      },
+      {
+        "run": "fixtures:witness_observable/defective-subtle",
+        "main": 14,
+        "followups": 1,
+        "requests": 2,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 2253,
+        "at": "2026-10-12T19:18:11.627Z"
+      },
+      {
+        "run": "fixtures:witness_observable/defective-subtle",
+        "main": 14,
+        "followups": 1,
+        "requests": 2,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 2253,
+        "at": "2026-10-12T19:18:11.628Z"
+      },
+      {
+        "run": "fixtures:witness_observable/defective-subtle3",
+        "main": 14,
+        "followups": 2,
+        "requests": 2,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 1993,
+        "at": "2026-10-12T19:18:23.250Z"
+      },
+      {
+        "run": "fixtures:witness_observable/defective-subtle3",
+        "main": 14,
+        "followups": 2,
+        "requests": 2,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 1993,
+        "at": "2026-10-12T19:18:23.251Z"
+      },
+      {
+        "run": "fixtures:witness_observable/controls",
+        "main": 14,
+        "followups": 8,
+        "requests": 2,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 1340,
+        "at": "2026-10-12T19:18:34.869Z"
+      },
+      {
+        "run": "fixtures:witness_observable/controls",
+        "main": 14,
+        "followups": 8,
+        "requests": 2,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 1340,
+        "at": "2026-10-12T19:18:34.870Z"
+      },
+      {
+        "run": "fixtures:witness_observable/defective-swapped",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 2321,
+        "at": "2026-10-12T19:18:45.662Z"
+      },
+      {
+        "run": "fixtures:witness_observable/defective-swapped",
+        "main": 14,
+        "followups": 0,
+        "requests": 1,
+        "asked": 14,
+        "worst": 28,
+        "bytes": 2321,
+        "at": "2026-10-12T19:18:45.663Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {
+      "fixtures:witness_observable/good": {
+        "main": 14,
+        "asked": 14,
+        "worst": 28,
+        "requests": 1
+      },
+      "fixtures:witness_observable/defective-gross": {
+        "main": 14,
+        "asked": 14,
+        "worst": 28,
+        "requests": 1
+      },
+      "fixtures:witness_observable/defective-subtle": {
+        "main": 14,
+        "asked": 14,
+        "worst": 28,
+        "requests": 1
+      },
+      "fixtures:witness_observable/defective-subtle3": {
+        "main": 14,
+        "asked": 14,
+        "worst": 28,
+        "requests": 1
+      },
+      "fixtures:witness_observable/controls": {
+        "main": 14,
+        "asked": 14,
+        "worst": 28,
+        "requests": 1
+      },
+      "fixtures:witness_observable/defective-swapped": {
+        "main": 14,
+        "asked": 14,
+        "worst": 28,
+        "requests": 1
+      }
+    }
+  }
+}
