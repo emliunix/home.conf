@@ -174,6 +174,10 @@ export function syntaxProgram(parsed: ParsedModule): TranslateProgram {
       if (!alias || alias.kind !== "atom" || !c) throw new Error("qualified call");
       if (c.kind === "atom") return [{ kind: "pos", predicate: `${alias.name}::${c.name}`, args: [] }];
       if (c.kind !== "compound") throw new Error("qualified call");
+      const spineArity: Record<string, number> = { path: 4, cell_path: 5, section_keyed: 3 };
+      if (alias.name === "core" && spineArity[c.functor] === c.args.length) {
+        return [{ kind: c.functor as "path" | "cell_path" | "section_keyed", args: c.args }];
+      }
       return [{ kind: "pos", predicate: `${alias.name}::${c.functor}`, args: c.args }];
     }
     return [{ kind: "pos", predicate: qualify(t.functor), args: t.args }];
@@ -343,6 +347,10 @@ export function translateProgram(program: TranslateProgram, facts: FactTerm[]): 
         return `core_cmp(${quoteAtom(lit.op)},${writeTerm(lit.left)},${writeTerm(lit.right)})`;
       case "present":
         return `core_present(${writeTerm(lit.document)},${writeTerm(lit.candidates)},${writeTerm(lit.present)})`;
+      case "path":
+      case "cell_path":
+      case "section_keyed":
+        return `core_${lit.kind}(${lit.args.map(writeTerm).join(",")})`;
       case "count": {
         const v = lit.variable.kind === "var" ? lit.variable.name : (() => { throw new Error("count variable"); })();
         const inner = new Set<string>();
@@ -449,6 +457,11 @@ function literalVars(lit: Literal): string[] {
       add(lit.document);
       add(lit.candidates);
       add(lit.present);
+      break;
+    case "path":
+    case "cell_path":
+    case "section_keyed":
+      lit.args.forEach(add);
       break;
     case "count":
       add(lit.variable);

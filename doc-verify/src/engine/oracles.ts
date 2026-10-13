@@ -14,7 +14,7 @@ import { PolicyViolationError } from "../judge.js";
 import { BlockedError } from "../types.js";
 import type { Oracle } from "./checker.js";
 import { UNKNOWN, type Demand, type OracleView } from "./demand.js";
-import { bodyEvidence, cellEvidence, cellsEvidence, columnEvidence, ownEvidence, rowWithColumnEvidence, unionEvidence, type DocumentFacts, type EvidenceText } from "./facts.js";
+import { bodyEvidence, cellEvidence, cellsEvidence, columnEvidence, foldTokens, ownEvidence, rowWithColumnEvidence, unionEvidence, type DocumentFacts, type EvidenceText } from "./facts.js";
 import type { RequestShape } from "./module.js";
 import { listItems, termText, type Term } from "./terms.js";
 
@@ -39,7 +39,10 @@ export interface OracleLeaf {
   atom: string;
   question: string;
   sections: string[];
+  /** Bytes sent for the atom: evidence text plus the "Where:" block (what `max_bytes` bounds). */
   bytes: number;
+  /** Bytes of the "Where:" block alone (0 without `context:`). */
+  contextBytes: number;
   /** The label after thresholding: a declared label or `unknown`. */
   label: string;
   /** The judge's argmax label before thresholding. */
@@ -104,7 +107,14 @@ interface Prepared {
   question: string;
   options: string[];
   evidence: EvidenceText;
+  /** The rendered "Where:" block, sent beside the evidence text, never inside it. */
+  context: string | undefined;
   cacheKey: string;
+}
+
+/** One keyed evidence entry of a request's state: the evidence text, and its "Where:" apart. */
+function stateEntry(entry: { evidence: EvidenceText; context: string | undefined }): { sections: string[]; text: string; context?: string } {
+  return { sections: entry.evidence.sections, text: entry.evidence.text, ...(entry.context === undefined ? {} : { context: entry.context }) };
 }
 
 /**
@@ -144,9 +154,18 @@ export async function askRound(input: {
       input.store.leaves.set(demand.key, unaskedLeaf(demand, question, options, input.round, "its evidence names a section or cell the document does not have"));
       continue;
     }
-    const bytes = Buffer.byteLength(evidence.text);
+    const where = renderWhere(oracle, demand.inputs);
+    const echo = where === undefined ? undefined : echoedLabel(oracle.labels, where.texts);
+    if (echo !== undefined) {
+      // The echo rule's run-time half (design/07): a label the context already spells out is
+      // not asked; the atom is unknown and says why.
+      input.store.leaves.set(demand.key, unaskedLeaf(demand, question, options, input.round, `echo: label ${echo} appears in context`));
+      continue;
+    }
+    const context = where?.text;
+    const bytes = Buffer.byteLength(evidence.text) + (context === undefined ? 0 : Buffer.byteLength(context));
     if (oracle.maxBytes !== undefined && bytes > oracle.maxBytes) {
-      throw new BlockedError(`evidence for ${demand.key} is ${String(bytes)} bytes, above max_bytes ${String(oracle.maxBytes)}`);
+      throw new BlockedError(`evidence for ${demand.key} is ${String(bytes)} bytes${context === undefined ? "" : " with its context"}, above max_bytes ${String(oracle.maxBytes)}`);
     }
     const key = evidenceKey(demand.key);
     const clash = usedKeys.get(key);
@@ -156,20 +175,22 @@ export async function askRound(input: {
     usedKeys.set(key, demand.key);
     // The request shape is part of the key (round 6): a batched answer was given with the
     // document's other atoms in the prompt and must not serve a per-atom request, or the reverse.
+    // The "Where:" block is part of it too (design-07 review B1): an edited ancestor heading
+    // changes what the judge was shown, so the answer is asked again.
     const cacheKey = sha256(canonicalJson({
       model: input.model, question, labels: options, evidence: sha256(evidence.text), policy: input.policy.version ?? 1,
-      shape: input.requestShape,
+      shape: input.requestShape, ...(context === undefined ? {} : { context: sha256(context) }),
     }));
     const cached = await input.cache?.get(cacheKey);
     if (cached !== undefined) {
-      const leaf = thresholdLeaf({ demand, key, question, options, evidence, cacheKey }, cached, input.round, true);
+      const leaf = thresholdLeaf({ demand, key, question, options, evidence, context, cacheKey }, cached, input.round, true);
       if (leaf.label === "fails" || leaf.label === UNKNOWN) {
         const spans = sentenceSpans(evidence);
         if (spans.length === 0) {
           leaf.span = sectionSpan(evidence);
         } else {
           const list = cachedCandidates.get(documentId) ?? [];
-          list.push({ entry: { demand, key, question, options, evidence, cacheKey }, spans });
+          list.push({ entry: { demand, key, question, options, evidence, context, cacheKey }, spans });
           cachedCandidates.set(documentId, list);
         }
       }
@@ -177,7 +198,7 @@ export async function askRound(input: {
       continue;
     }
     const list = byDocument.get(documentId) ?? [];
-    list.push({ demand, key, question, options, evidence, cacheKey });
+    list.push({ demand, key, question, options, evidence, context, cacheKey });
     byDocument.set(documentId, list);
   }
 
@@ -192,7 +213,7 @@ export async function askRound(input: {
         schema_version: 2,
         document,
         round: input.round,
-        evidence: Object.fromEntries(batch.map((entry) => [entry.key, { sections: entry.evidence.sections, text: entry.evidence.text }])),
+        evidence: Object.fromEntries(batch.map((entry) => [entry.key, stateEntry(entry)])),
       };
       const stateJson = canonicalJson(state);
       enforceOutboundPolicy(stateJson, input.policy);
@@ -252,7 +273,7 @@ export async function askRound(input: {
       document,
       round: input.round,
       evidence: Object.fromEntries(candidates.map((candidate) =>
-        [candidate.entry.key, { sections: candidate.entry.evidence.sections, text: candidate.entry.evidence.text }])),
+        [candidate.entry.key, stateEntry(candidate.entry)])),
     };
     const chosen = await askSpans(input, candidates, spanState, document, records);
     for (const entry of prepared) {
@@ -274,7 +295,7 @@ export async function askRound(input: {
       document,
       round: input.round,
       evidence: Object.fromEntries(candidates.map((candidate) =>
-        [candidate.entry.key, { sections: candidate.entry.evidence.sections, text: candidate.entry.evidence.text }])),
+        [candidate.entry.key, stateEntry(candidate.entry)])),
     };
     const chosen = await askSpans(input, candidates, state, document, records);
     for (const candidate of candidates) {
@@ -297,7 +318,7 @@ export async function askRound(input: {
 function partitionBatches(document: string, prepared: Prepared[], input: { policy: OutboundPolicy; backend: JudgeBackend | undefined; requestShape: RequestShape }): Prepared[][] {
   const size = (list: Prepared[]): number => Buffer.byteLength(canonicalJson({
     schema_version: 2, document, round: 0,
-    evidence: Object.fromEntries(list.map((entry) => [entry.key, { sections: entry.evidence.sections, text: entry.evidence.text }])),
+    evidence: Object.fromEntries(list.map((entry) => [entry.key, stateEntry(entry)])),
   }));
   // A sub-batch must satisfy both the outbound policy and the judge's own state budget, and hold
   // no more questions than the judge takes.
@@ -336,12 +357,13 @@ function partitionBatches(document: string, prepared: Prepared[], input: { polic
   return batches;
 }
 
-/** The follow-up's cache key: model, question, sentence ids, evidence hash, policy, and the span marker. */
-function spanCacheKey(model: string, policy: OutboundPolicy, key: string, evidence: EvidenceText, spans: OracleSpan[]): string {
+/** The follow-up's cache key: model, question, sentence ids, evidence and context hashes, policy, and the span marker. */
+function spanCacheKey(model: string, policy: OutboundPolicy, key: string, evidence: EvidenceText, context: string | undefined, spans: OracleSpan[]): string {
   return sha256(canonicalJson({
     model, question: `Judge ONLY state.evidence.${key}. Which sentence decides it?`,
     labels: spans.map((_span, index) => `s${String(index)}`),
     evidence: sha256(evidence.text), policy: policy.version ?? 1, span: true,
+    ...(context === undefined ? {} : { context: sha256(context) }),
   }));
 }
 
@@ -442,7 +464,7 @@ async function askSpans(
   const prepared = await Promise.all(candidates.map(async (candidate) => {
     const options = candidate.spans.map((span, index) => ({ id: `s${String(index)}`, description: span.quote }));
     const instruction = `Judge ONLY state.evidence.${candidate.entry.key}. Which sentence decides it?`;
-    const cacheKey = spanCacheKey(input.model, input.policy, candidate.entry.key, candidate.entry.evidence, candidate.spans);
+    const cacheKey = spanCacheKey(input.model, input.policy, candidate.entry.key, candidate.entry.evidence, candidate.entry.context, candidate.spans);
     const cached = await input.cache?.get(cacheKey);
     if (cached !== undefined) {
       chosen.set(candidate.entry.key, cached.answered);
@@ -520,7 +542,8 @@ function thresholdLeaf(entry: Prepared, answer: CachedAnswer | undefined, round:
     atom: entry.demand.atom,
     question: entry.question,
     sections: entry.evidence.sections,
-    bytes: Buffer.byteLength(entry.evidence.text),
+    bytes: Buffer.byteLength(entry.evidence.text) + (entry.context === undefined ? 0 : Buffer.byteLength(entry.context)),
+    contextBytes: entry.context === undefined ? 0 : Buffer.byteLength(entry.context),
     label,
     answered: answer?.answered ?? UNKNOWN,
     options: entry.options,
@@ -534,7 +557,7 @@ function thresholdLeaf(entry: Prepared, answer: CachedAnswer | undefined, round:
 
 function unaskedLeaf(demand: Demand, question: string, options: string[], round: number, finding: string): OracleLeaf {
   return {
-    key: "-", atom: demand.atom, question, sections: [], bytes: 0, label: UNKNOWN, answered: UNKNOWN, options,
+    key: "-", atom: demand.atom, question, sections: [], bytes: 0, contextBytes: 0, label: UNKNOWN, answered: UNKNOWN, options,
     distribution: [], threshold: demand.oracle.threshold, round, cacheHit: false, finding,
   };
 }
@@ -567,6 +590,59 @@ export function renderQuestion(oracle: Oracle, inputs: Term[]): string {
     const position = oracle.params.indexOf(name);
     const value = position < 0 ? undefined : inputs[position];
     return value === undefined ? match : termText(value);
+  });
+}
+
+/**
+ * The "Where:" block of an oracle with `context:` (design/07, review N3): one indented line per
+ * path step, each context input in turn (a blank line between inputs); `texts` are the steps'
+ * texts, which the echo rule reads. Undefined for an oracle without context.
+ */
+export function renderWhere(oracle: Oracle, inputs: Term[]): { text: string; texts: string[] } | undefined {
+  if (oracle.context.length === 0) {
+    return undefined;
+  }
+  const lines = ["Where:"];
+  const texts: string[] = [];
+  oracle.context.forEach((position, index) => {
+    if (index > 0) {
+      lines.push("");
+    }
+    const value = inputs[position] as Term;
+    for (const step of listItems(value) ?? [value]) {
+      const { line, text } = stepLine(step);
+      lines.push(`  ${line}`);
+      texts.push(...text);
+    }
+  });
+  return { text: lines.join("\n"), texts };
+}
+
+function stepLine(step: Term): { line: string; text: string[] } {
+  if (step.kind === "compound") {
+    const args = step.args.map(termText);
+    const [first, second, third] = args;
+    if (step.functor === "title" && args.length === 1) return { line: `title: ${first as string}`, text: [first as string] };
+    if (step.functor === "heading" && args.length === 2) return { line: `heading ${first as string}: ${second as string}`, text: [second as string] };
+    if (step.functor === "heading" && args.length === 3) return { line: `heading ${first as string}: ${second as string} (occurrence ${third as string})`, text: [second as string] };
+    if (step.functor === "row" && args.length === 1) return { line: `row: ${first as string}`, text: [first as string] };
+    if (step.functor === "column" && args.length === 1) return { line: `column: ${first as string}`, text: [first as string] };
+    if (step.functor === "table" && args.length === 1) {
+      const columns = (listItems(step.args[0] as Term) ?? []).map(termText);
+      return { line: `table: ${columns.join(" | ")}`, text: columns };
+    }
+  }
+  const text = termText(step);
+  return { line: text, text: [text] };
+}
+
+/** The echo rule's run-time test: the first label whose folded tokens are a whole-token run of a step's text. */
+export function echoedLabel(labels: readonly string[], texts: readonly string[]): string | undefined {
+  const steps = texts.map(foldTokens);
+  return labels.find((label) => {
+    const wanted = foldTokens(label);
+    return wanted.length > 0 && steps.some((tokens) => tokens.some((_token, start) =>
+      start + wanted.length <= tokens.length && wanted.every((token, offset) => tokens[start + offset] === token)));
   });
 }
 

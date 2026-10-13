@@ -46,10 +46,23 @@ export const SANDBOX_PRIMITIVES = [
   "core_dangling(_,_,_,_)", "core_spec_unresolved(_,_,_,_)", "core_section_ref(_,_,_,_,_)",
   "core_label(_,_)", "core_not_label(_,_)", "core_choose(_,_,_)",
   "core_matches(_,_)", "core_not_matches(_,_)", "core_cmp(_,_,_)", "core_present(_,_,_)",
+  // Round 12 (design/07): table position and text facts, and the spine relations.
+  "core_header_pos(_,_,_,_)", "core_cell_text(_,_,_,_)",
+  "core_path(_,_,_,_)", "core_cell_path(_,_,_,_,_)", "core_section_keyed(_,_,_)",
 ];
 export const SANDBOX_META: Array<[string, string]> = [
   ["core_naf(G)", "[G]"], ["core_tnot(G)", "[G]"], ["core_count(_,G,_)", "[G]"],
 ];
+
+/** `F/N` of every primitive and meta entry: the core.pl predicates a module body may call. */
+function allowedCore(): string {
+  const heads = [...SANDBOX_PRIMITIVES, ...SANDBOX_META.map(([goal]) => goal)];
+  return heads.map((head) => {
+    const m = /^([a-z_][A-Za-z0-9_]*)(?:\((.*)\))?$/.exec(head);
+    if (m === null) throw new Error(`sandbox entry ${head} is not a head`);
+    return `${m[1] as string}/${String(m[2] === undefined ? 0 : (m[2] as string).split(",").length)}`;
+  }).join(",");
+}
 
 function sandboxDecl(): string {
   const lines = ["", ":- use_module(library(sandbox)).", ":- multifile sandbox:safe_primitive/1.", ":- multifile sandbox:safe_meta/2."];
@@ -219,7 +232,7 @@ export class Kernel {
       const coreList = await corePredicates();
       const goal =
         `(${ENUM_PREDS}),` +
-        `CoreL = [${coreList}], WidenL = [],` +
+        `CoreL = [${coreList}], WidenL = [], AllowedL = [${allowedCore()}],` +
         `subtract(Ps, CoreL, Derived),` +
         `subtract(Derived, WidenL, ToCheck),` +
         `intersection(Derived, WidenL, Unchecked),` +
@@ -227,6 +240,11 @@ export class Kernel {
         `( member(F/N, ToCheck), functor(H, F, N),` +
         `  \\+ forall(clause(user:H, B), ( catch(safe_goal(user:B), _, fail)` +
         `, \\+ ( sub_term(T, B), nonvar(T), compound(T), functor(T, CF, CA), memberchk(CF/CA, [catch/3, catch_with_backtrace/3, setup_call_cleanup/3, call_cleanup/2]) )` +
+        // Round 12: the primitives are a whitelist. A module-derived body may call a core.pl
+        // predicate only when SANDBOX_PRIMITIVES or SANDBOX_META names it; safe_goal alone would
+        // accept any core.pl predicate whose own body happens to be safe, so dropping an entry
+        // from the list changed nothing (the path seed of boundary.test.ts).
+        `, \\+ ( sub_term(T, B), nonvar(T), callable(T), functor(T, CF, CA), memberchk(CF/CA, CoreL), \\+ memberchk(CF/CA, AllowedL) )` +
         ` ))` +
         `  -> Bad = F/N ; Bad = '-' ),` +
         `length(ToCheck, NChk),` +
@@ -321,6 +339,8 @@ function constraintVarNames(program: TranslateProgram): Map<string, string[]> {
         visit(l.document);
         visit(l.candidates);
         visit(l.present);
+      } else if (l.kind === "path" || l.kind === "cell_path" || l.kind === "section_keyed") {
+        l.args.forEach(visit);
       } else {
         visit(l.variable);
         for (const g of l.goal) {

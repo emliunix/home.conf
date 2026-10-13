@@ -24,7 +24,9 @@
 :- dynamic core_section/3, core_heading/3, core_depth/3, core_order/3, core_meta/3,
            core_selected/2, core_ref/4, core_resolves/2, core_child/3, core_descendant/3,
            core_table/3, core_header/3, core_row/3, core_cell/3,
-           core_nests/3, core_dangling/4, core_spec_unresolved/4, core_section_ref/5.
+           core_nests/3, core_dangling/4, core_spec_unresolved/4, core_section_ref/5,
+           core_header_pos/4, core_cell_text/4.
+core_base(core_header_pos/4). core_base(core_cell_text/4).
 core_base(core_section/3). core_base(core_heading/3). core_base(core_depth/3).
 core_base(core_order/3).   core_base(core_meta/3).    core_base(core_selected/2).
 core_base(core_ref/4).     core_base(core_resolves/2). core_base(core_child/3).
@@ -185,6 +187,93 @@ core_text(X, S) :- ( string(X) -> S = X ; atom_string(X, S) ).
 core_present(D, Cs, Ps) :-
     findall(O-S, ( member(S, Cs), core_section(D, S, _), core_order(D, S, O) ), L0),
     sort(L0, L), L \== [], pairs_values(L, Ps).
+
+% ---------------------------------------------------------------------------------------------
+% Spine relations (design/07 §Model; kernel-trials round 12). Each is a derived relation over the
+% dump's facts, called with its inputs ground (the checker's safety rule; a non-ground call is a
+% static error, rejected like an unbound `matches`). Steps run from the document root down and
+% keep only the kinds listed, whatever their order in Kinds:
+%   title         title(Text)          the depth-1 heading in the subject's section chain
+%   heading       heading(N, Text)     each deeper heading of the chain, the subject's own included;
+%                 heading(N, Text, I)  when a sibling (same parent) has the same text, I its
+%                                      1-based place among them in document order
+%   table         table([Col, ...])    the table's header cells in header_pos order
+%   row_key(Col)  row(Text)            the row's cell text under Col (no such cell: no path)
+%   column        column(Col)          the cell's column
+% core_path(D, S, Kinds, P): a section's path (title and heading only).
+% core_cell_path(D, R, Col, Kinds, P): a table cell's path; Col must be a header of R's table.
+% core_section_keyed(D, Key, S): S's heading text has Key as its first token (a token is a
+% maximal run of codes that are neither layout nor punctuation, so `R1` never matches `R10`).
+core_path(D, S, Kinds, P) :-
+    core_ground_or_throw(core_path(D, S, Kinds), unbound_path),
+    core_section(D, S, _),
+    core_chain(D, S, Chain),
+    core_chain_steps(D, Chain, Kinds, P).
+
+core_cell_path(D, R, Col, Kinds, P) :-
+    core_ground_or_throw(core_cell_path(D, R, Col, Kinds), unbound_path),
+    core_row(D, T, R),
+    once(core_header_pos(D, T, Col, _)),
+    core_table(D, S, T),
+    core_chain(D, S, Chain),
+    core_chain_steps(D, Chain, Kinds, P0),
+    (   memberchk(table, Kinds)
+    ->  findall(N-C, core_header_pos(D, T, C, N), H0), sort(H0, H), pairs_values(H, Cols),
+        TS = [table(Cols)]
+    ;   TS = []
+    ),
+    (   memberchk(row_key(K), Kinds)
+    ->  core_cell_text(D, R, K, KT), RS = [row(KT)]
+    ;   RS = []
+    ),
+    (   memberchk(column, Kinds) -> CS = [column(Col)] ; CS = [] ),
+    append([P0, TS, RS, CS], P).
+
+core_section_keyed(D, Key, S) :-
+    core_ground_or_throw(core_section_keyed(D, Key), unbound_path),
+    core_heading(D, S, H),
+    core_first_token(H, Key).
+
+% The chain of sections from the document root down to S (S included); a table outside any
+% section (`@preamble`) has the empty chain.
+core_chain(D, S, Chain) :- core_chain_(D, S, [], Chain).
+core_chain_(D, S, Acc, Chain) :-
+    (   S \== root, core_section(D, S, Parent)
+    ->  core_chain_(D, Parent, [S|Acc], Chain)
+    ;   Chain = Acc
+    ).
+
+core_chain_steps(D, Chain, Kinds, Steps) :-
+    (   memberchk(title, Kinds), member(S1, Chain), core_depth(D, S1, 1)
+    ->  core_heading(D, S1, T1), TS = [title(T1)]
+    ;   TS = []
+    ),
+    (   memberchk(heading, Kinds)
+    ->  findall(St, ( member(S, Chain), core_depth(D, S, N), N > 1, core_heading_step(D, S, N, St) ), HS)
+    ;   HS = []
+    ),
+    append(TS, HS, Steps).
+
+core_heading_step(D, S, N, Step) :-
+    core_section(D, S, Parent), core_heading(D, S, T),
+    findall(O-S2, ( core_section(D, S2, Parent), core_heading(D, S2, T), core_order(D, S2, O) ), L0),
+    sort(L0, L), pairs_values(L, Same),
+    (   Same = [_]
+    ->  Step = heading(N, T)
+    ;   nth1(I, Same, S), !, Step = heading(N, T, I)
+    ).
+
+core_first_token(Text, Token) :-
+    atom_codes(Text, Cs0),
+    core_skip_sep(Cs0, Cs1),
+    core_take_token(Cs1, Tc),
+    Tc \== [],
+    atom_codes(Token, Tc).
+core_skip_sep([C|Cs], Rest) :- core_sep(C), !, core_skip_sep(Cs, Rest).
+core_skip_sep(Cs, Cs).
+core_take_token([C|Cs], [C|T]) :- \+ core_sep(C), !, core_take_token(Cs, T).
+core_take_token(_, []).
+core_sep(C) :- ( code_type(C, space) ; code_type(C, punct) ), !.
 
 % ---------------------------------------------------------------------------------------------
 % §4 Constraints and status. core_forall(Id, Vals) and core_goal(Id, Vals) are tabled per
@@ -437,6 +526,9 @@ core_lit_text_(core_not_matches(X, R), T) :- !, core_arg_text(X, TX), core_arg_t
 core_lit_text_(core_cmp(Op, A, B), T) :- !, core_arg_text(A, TA), core_arg_text(B, TB), format(atom(T), '~s~w~s', [TA, Op, TB]).
 core_lit_text_(core_count(V, G, N), T) :- !, core_arg_text(V, TV), core_lit_text_(G, TG), core_arg_text(N, TN), format(atom(T), 'count(~s,~s,~s)', [TV, TG, TN]).
 core_lit_text_(core_present(D, Cs, Ps), T) :- !, core_arg_text(D, TD), core_arg_text(Cs, TC), core_arg_text(Ps, TP), format(atom(T), 'present(~s,~s,~s)', [TD, TC, TP]).
+core_lit_text_(core_path(D, S, K, P), T) :- !, core_spine_text('core::path', [D, S, K, P], T).
+core_lit_text_(core_cell_path(D, R, C, K, P), T) :- !, core_spine_text('core::cell_path', [D, R, C, K, P], T).
+core_lit_text_(core_section_keyed(D, K, S), T) :- !, core_spine_text('core::section_keyed', [D, K, S], T).
 core_lit_text_(G, T) :-
     G =.. [F|Args],
     (   atom_concat(core_, Name, F), functor(G, F, N), core_base(F/N)
@@ -446,6 +538,10 @@ core_lit_text_(G, T) :-
     maplist(core_arg_text, Args, Ts), atomic_list_concat(Ts, ',', Inner),
     atom_string(QF, QFS),
     format(atom(T), '~s(~s)', [QFS, Inner]).
+
+core_spine_text(Name, Args, T) :-
+    maplist(core_arg_text, Args, Ts), atomic_list_concat(Ts, ',', Inner),
+    format(atom(T), '~w(~s)', [Name, Inner]).
 
 % A choose oracle's negated label literal is reported as the label atom k(i, l); a two-label
 % oracle's as o(i).
@@ -475,11 +571,39 @@ core_arg_text(X, T) :-
 % Atom keys (FORMAT.md / host oracleAtomKey): module::pred(args), functor unquoted,
 % ground args as write_term(quoted), no spaces between args. The host key is a JS string
 % `mod::pred(...)`, not a Prolog source token — so the functor must not be '~w'-quoted.
+% (Round 12, design-07 review S2) The args are quoted exactly as the host's `writeTerm` quotes
+% them (`quoteAtom`: unquoted only for ^[a-z][A-Za-z0-9_]*$, else '...' escaping only \, ' and
+% newline), not by write_term: SWI leaves `été` unquoted and writes a tab as \t, so a path step
+% holding such text would give the kernel and the host two keys for one atom.
 core_atom_key(A, K) :-
     A =.. [F|Args],
-    maplist(core_arg_text, Args, Ts), atomic_list_concat(Ts, ',', Inner),
+    maplist(core_key_text, Args, Ts), atomic_list_concat(Ts, ',', Inner),
     atom_string(F, FS),
     format(atom(K), '~s(~s)', [FS, Inner]).
+
+core_key_text(X, T) :- var(X), !, T = '_'.
+core_key_text(X, T) :- is_list(X), !,
+    maplist(core_key_text, X, Ts), atomic_list_concat(Ts, ',', Inner), atomic_list_concat(['[', Inner, ']'], T).
+core_key_text(X, T) :- atom(X), !, core_key_atom(X, T).
+core_key_text(X, T) :- integer(X), !, format(atom(T), '~d', [X]).
+core_key_text(X, T) :- compound(X), !,
+    X =.. [F|As], core_key_atom(F, FT),
+    maplist(core_key_text, As, Ts), atomic_list_concat(Ts, ',', Inner),
+    atomic_list_concat([FT, '(', Inner, ')'], T).
+core_key_text(X, T) :- with_output_to(atom(T), write_term(X, [quoted(true)])).
+
+core_key_atom(A, A) :- memberchk(A, ['[]', '{}', '!', ';']), !.
+core_key_atom(A, A) :-
+    atom_codes(A, [C|Cs]), C >= 97, C =< 122, forall(member(D, Cs), core_key_alnum(D)), !.
+core_key_atom(A, T) :-
+    atom_codes(A, Cs), core_key_esc(Cs, Es),
+    append([39|Es], [39], Q), atom_codes(T, Q).
+core_key_alnum(C) :- ( C >= 97, C =< 122 ; C >= 65, C =< 90 ; C >= 48, C =< 57 ; C =:= 95 ), !.
+core_key_esc([], []).
+core_key_esc([92|Cs], [92, 92|Es]) :- !, core_key_esc(Cs, Es).
+core_key_esc([39|Cs], [92, 39|Es]) :- !, core_key_esc(Cs, Es).
+core_key_esc([10|Cs], [92, 110|Es]) :- !, core_key_esc(Cs, Es).
+core_key_esc([C|Cs], [C|Es]) :- core_key_esc(Cs, Es).
 
 % Answer state (the host writes it; model §8: the kernel's only input besides P and F).
 core_set_answers(Pairs) :-
@@ -647,6 +771,9 @@ core_prove(core_not_matches(X, R), _, _, [builtin(T)]) :- !, core_lit_text(core_
 core_prove(core_cmp(Op, A, B), _, _, [builtin(T)]) :- !, core_lit_text(core_cmp(Op, A, B), T).
 core_prove(core_count(V, G, N), _, _, [builtin(T)]) :- !, core_lit_text(core_count(V, G, N), T).
 core_prove(core_present(D, C, P), _, _, [builtin(T)]) :- !, core_lit_text(core_present(D, C, P), T).
+core_prove(core_path(D, S, K, P), _, _, [builtin(T)]) :- !, core_lit_text(core_path(D, S, K, P), T).
+core_prove(core_cell_path(D, R, C, K, P), _, _, [builtin(T)]) :- !, core_lit_text(core_cell_path(D, R, C, K, P), T).
+core_prove(core_section_keyed(D, K, S), _, _, [builtin(T)]) :- !, core_lit_text(core_section_keyed(D, K, S), T).
 % Builtins / foreign goals: name them only — never re-execute (E14 injects open/3 into a body).
 core_prove(G, _, _, [builtin(T)]) :-
     callable(G), predicate_property(G, built_in), !,

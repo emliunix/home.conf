@@ -78,7 +78,7 @@ export interface TableRow {
   cells: Map<string, string>;
 }
 
-export const CORE_BASE = ["section/3", "heading/3", "depth/3", "order/3", "meta/3", "selected/2", "ref/4", "resolves/2", "section_ref/5", "table/3", "header/3", "row/3", "cell/3"] as const;
+export const CORE_BASE = ["section/3", "heading/3", "depth/3", "order/3", "meta/3", "selected/2", "ref/4", "resolves/2", "section_ref/5", "table/3", "header/3", "row/3", "cell/3", "header_pos/4", "cell_text/4"] as const;
 export const CORE_DERIVED = ["child/3", "descendant/3", "nests/3", "dangling/4", "spec_unresolved/4"] as const;
 
 export function documentFacts(document: DocumentInput): DocumentFacts {
@@ -146,6 +146,13 @@ export function documentFacts(document: DocumentInput): DocumentFacts {
     for (const column of new Set(table.headers.filter((header) => header.length > 0))) {
       facts.push(core("header", [D, atom(table.id), atom(column)]));
     }
+    // Neutral position facts (design/07 §Model): `header_pos(D, T, Column, N)`, N counting the
+    // header's cells from 1 as written. The host names no key column; a rule does.
+    table.headers.forEach((column, position) => {
+      if (column.length > 0) {
+        facts.push(core("header_pos", [D, atom(table.id), atom(column), number(position + 1)]));
+      }
+    });
   }
   for (const row of rows.values()) {
     facts.push(core("row", [D, atom(row.table), atom(row.id)]));
@@ -153,6 +160,8 @@ export function documentFacts(document: DocumentInput): DocumentFacts {
       if (text.length > 0) {
         facts.push(core("cell", [D, atom(row.id), atom(column)]));
       }
+      // `cell_text(D, R, Column, Text)` (design/07): every cell's text, empty included.
+      facts.push(core("cell_text", [D, atom(row.id), atom(column), atom(text)]));
     }
   }
   // References (added 2026-10-05): what the document names, and whether it exists.

@@ -18,6 +18,14 @@ const oracleSchema = z.object({
   evidence: z.string().min(1),
   threshold: z.number().min(0).max(1).optional(),
   max_bytes: z.number().int().positive().optional(),
+  /**
+   * Input variables the judge sees as a "Where:" block apart from the evidence (design/07):
+   * typically a path bound by `core.path` or `core.cell_path`. Rendered one step per line,
+   * scanned by the outbound policy, counted toward `max_bytes`, and part of the cache key.
+   */
+  context: z.array(z.string().regex(/^[A-Z][A-Za-z0-9_]*$/)).min(1).optional(),
+  /** Waives the static echo rule (a `choose` oracle whose context holds a row key). */
+  context_may_echo: z.boolean().optional(),
 }).strict();
 
 const constraintSchema = z.object({

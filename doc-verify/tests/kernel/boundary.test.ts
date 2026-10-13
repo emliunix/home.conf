@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-import { Kernel, PrologError } from "../../src/kernel/index.js";
+import { Kernel, PrologError, SANDBOX_PRIMITIVES, translateWitness } from "../../src/kernel/index.js";
 import {
   BUDGET,
   CANDIDATES,
@@ -88,6 +88,53 @@ function runHangCell(seedId: string, candName: Candidate): { outcome: Outcome; h
     return { outcome: "error", hostEffect: false };
   }
 }
+
+// Round 12 path seed (design-07 review S7): a module calling core.cell_path evaluates under the
+// gate; with core_cell_path/5 taken out of the sandbox's safe primitives, the same module is
+// rejected at load. The seeded defect (the entry removed from SANDBOX_PRIMITIVES in kernel.ts)
+// turns the first test red.
+const PATH_SEED = {
+  module: `schema_version: 2
+kind: verification-module
+module: w
+rounds: 1
+imports: {core: doc-verify:core}
+rules:
+  addressed(D, R, P): core.row(D, T, R), core.cell_path(D, R, 'Evidence', [heading, row_key('Requirement'), column], P)
+constraints:
+  c1: {forall: "core.row(D, T, R)", require: "addressed(D, R, P)", severity: error}
+`,
+  facts: [
+    "section(d, ac, root)", "heading(d, ac, 'AC coverage')", "depth(d, ac, 2)", "order(d, ac, 1)",
+    "table(d, ac, 'ac#table1')", "header_pos(d, 'ac#table1', 'Requirement', 1)", "header_pos(d, 'ac#table1', 'Evidence', 2)",
+    "row(d, 'ac#table1', 'ac#row1')", "cell_text(d, 'ac#row1', 'Requirement', 'R1')", "cell_text(d, 'ac#row1', 'Evidence', 'ran ok')",
+  ],
+};
+
+describe("kernel boundary: the path seed (round 12)", () => {
+  it("the path module evaluates under the gate", async () => {
+    const built = await translateWitness(PATH_SEED);
+    const r = await runCell("T2", built.text, built.program, {});
+    expect(r.outcome).toBe("ran");
+    const kernel = await Kernel.create();
+    await kernel.load(built.text, { sandbox: true });
+    kernel.setAnswers({});
+    expect(kernel.evaluate(built.program).statuses.c1?.map((row) => row.status)).toEqual(["satisfied"]);
+  });
+
+  it("with core_cell_path/5 removed from the primitives, the same module prints rejected", async () => {
+    const built = await translateWitness(PATH_SEED);
+    const at = SANDBOX_PRIMITIVES.indexOf("core_cell_path(_,_,_,_,_)");
+    expect(at).toBeGreaterThanOrEqual(0);
+    SANDBOX_PRIMITIVES.splice(at, 1);
+    try {
+      const r = await runCell("T2", built.text, built.program, {});
+      expect(r.outcome).toBe("rejected");
+    } finally {
+      SANDBOX_PRIMITIVES.splice(at, 0, "core_cell_path(_,_,_,_,_)");
+    }
+  });
+});
 
 describe("kernel boundary (round 5 gate + budget)", () => {
   const byDoc = loadCorpusFacts();

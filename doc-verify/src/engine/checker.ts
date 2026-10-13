@@ -19,7 +19,22 @@ export type Literal =
   | { kind: "matches"; item: Term; pattern: string; regex: RegExp; negated: boolean }
   | { kind: "cmp"; op: string; left: Term; right: Term }
   | { kind: "count"; variable: Term; goal: Literal[]; result: Term }
-  | { kind: "present"; document: Term; candidates: Term; present: Term };
+  | { kind: "present"; document: Term; candidates: Term; present: Term }
+  /**
+   * The spine relations (design/07 §Model), each a dedicated literal kind with its arguments in
+   * Prolog order: `core.path(D, S, Kinds, P)`, `core.cell_path(D, R, Col, Kinds, P)`,
+   * `core.section_keyed(D, Key, S)`. Inputs must be bound; the last argument is bound by it.
+   */
+  | { kind: "path"; args: Term[] }
+  | { kind: "cell_path"; args: Term[] }
+  | { kind: "section_keyed"; args: Term[] };
+
+export type SpineKind = "path" | "cell_path" | "section_keyed";
+const SPINE_ARITY: Record<SpineKind, number> = { path: 4, cell_path: 5, section_keyed: 3 };
+const PATH_KINDS = new Set(["title", "heading"]);
+const CELL_PATH_KINDS = new Set(["title", "heading", "table", "column"]);
+export const isSpine = (literal: Literal): literal is Extract<Literal, { kind: SpineKind }> =>
+  literal.kind === "path" || literal.kind === "cell_path" || literal.kind === "section_keyed";
 
 export interface Rule {
   predicate: string;
@@ -41,6 +56,10 @@ export interface Oracle {
   threshold: number;
   evidence: { form: "own" | "body"; section: number } | { form: "union"; sections: number } | { form: "cell"; row: number; column: number } | { form: "column"; row: number; column: number } | { form: "cells"; row: number; columns: number } | { form: "row_with_column"; row: number; column: number };
   maxBytes: number | undefined;
+  /** Input positions shown to the judge as the "Where:" block (design/07 `context:`). */
+  context: number[];
+  /** `context_may_echo: true`: the static half of the echo rule is waived for this oracle. */
+  contextMayEcho: boolean;
   source: OracleSource;
 }
 
@@ -160,6 +179,7 @@ export function checkModule(parsed: ParsedModule): Program {
     };
   });
 
+  checkEcho(rules, constraints, oracles, issues);
   checkLabels([...rules.map((rule) => ({ body: rule.body, where: `rules.${local(rule.predicate)}` })),
     ...constraints.map((constraint) => ({ body: [...constraint.forall, ...constraint.goal], where: `constraints.${constraint.id}` }))], oracles, issues);
   const { strata, oracleDependent } = stratify(rules, oracleNames, issues);
@@ -270,6 +290,19 @@ function checkOracleHead(
       issues.push(`${where}.ask: {${placeholder[1] as string}} is not an input argument`);
     }
   }
+  const context: number[] = [];
+  for (const name of declared.source.context ?? []) {
+    if (!inputNames.has(name)) {
+      issues.push(`${where}.context: ${name} is not an input argument`);
+    } else if (context.includes(params.indexOf(name))) {
+      issues.push(`${where}.context: ${name} is listed twice`);
+    } else {
+      context.push(params.indexOf(name));
+    }
+  }
+  if (declared.source.context_may_echo !== undefined && context.length === 0) {
+    issues.push(`${where}.context_may_echo: the oracle has no context`);
+  }
   return {
     predicate: qualify(head.functor),
     arity: params.length,
@@ -280,6 +313,8 @@ function checkOracleHead(
     threshold: declared.source.threshold ?? 0,
     evidence: shape,
     maxBytes: declared.source.max_bytes,
+    context,
+    contextMayEcho: declared.source.context_may_echo === true,
     source: declared.source,
   };
 }
@@ -406,6 +441,10 @@ function resolveLiteral(
     }
     return { kind: "count", variable, goal: inner, result };
   }
+  const spine = spineLiteral(term, where, issues);
+  if (spine !== null) {
+    return spine;
+  }
   let predicate: string;
   let args: Term[];
   if (term.functor === ":" && term.args.length === 2) {
@@ -446,6 +485,78 @@ function resolveLiteral(
   return { kind: "pos", predicate, args };
 }
 
+/**
+ * `core.path`, `core.cell_path` and `core.section_keyed` (design/07): `null` when the term is none
+ * of them, `undefined` when it is one but malformed (an issue is recorded). The arguments stay flat
+ * (module arguments may be lists but no other compound); Kinds is a written list of step kinds.
+ */
+function spineLiteral(term: Term, where: string, issues: string[]): Literal | undefined | null {
+  if (term.kind !== "compound" || term.functor !== ":" || term.args.length !== 2) {
+    return null;
+  }
+  const [alias, call] = term.args as [Term, Term];
+  if (alias.kind !== "atom" || alias.name !== "core" || call.kind !== "compound" || !(call.functor in SPINE_ARITY)) {
+    return null;
+  }
+  const kind = call.functor as SpineKind;
+  const arity = SPINE_ARITY[kind];
+  const name = `core.${kind}`;
+  if (call.args.length !== arity) {
+    issues.push(`${where}: ${name} takes ${String(arity)} arguments, not ${String(call.args.length)}`);
+    return undefined;
+  }
+  const args = call.args;
+  const document = args[0] as Term;
+  const output = args[arity - 1] as Term;
+  if (document.kind !== "var" || output.kind !== "var" || output.name === "_") {
+    issues.push(`${where}: ${name} takes a variable for its document and a named variable for its last argument`);
+    return undefined;
+  }
+  const idLike = (t: Term): boolean => t.kind === "var" || t.kind === "atom";
+  if (kind === "section_keyed") {
+    if (!idLike(args[1] as Term)) {
+      issues.push(`${where}: the key of core.section_keyed is an atom or a variable`);
+      return undefined;
+    }
+    return { kind, args };
+  }
+  const inputs = kind === "path" ? [args[1] as Term] : [args[1] as Term, args[2] as Term];
+  if (!inputs.every(idLike)) {
+    issues.push(`${where}: ${name}'s ${kind === "path" ? "section" : "row and column"} are atoms or variables`);
+    return undefined;
+  }
+  const kinds = listItems(args[arity - 2] as Term);
+  if (kinds === undefined || kinds.length === 0) {
+    issues.push(`${where}: the kinds of ${name} are a non-empty written list`);
+    return undefined;
+  }
+  const allowed = kind === "path" ? PATH_KINDS : CELL_PATH_KINDS;
+  const seen = new Set<string>();
+  for (const item of kinds) {
+    const label = item.kind === "atom" ? item.name : item.kind === "compound" ? `${item.functor}/${String(item.args.length)}` : describe(item);
+    const rowKey = kind === "cell_path" && item.kind === "compound" && item.functor === "row_key" && item.args.length === 1 && idLike(item.args[0] as Term);
+    if (!(item.kind === "atom" && allowed.has(item.name)) && !rowKey) {
+      issues.push(`${where}: ${label} is not a step kind of ${name} (${[...allowed, ...(kind === "cell_path" ? ["row_key(Col)"] : [])].join(", ")})`);
+      return undefined;
+    }
+    const step = rowKey ? "row_key" : label;
+    if (seen.has(step)) {
+      issues.push(`${where}: ${name} lists the kind ${step} twice`);
+      return undefined;
+    }
+    seen.add(step);
+  }
+  return { kind, args };
+}
+
+/** Whether a spine literal's kinds name a `row_key` step (the static echo rule's trigger). */
+export function hasRowKey(literal: Literal): boolean {
+  if (literal.kind !== "cell_path") {
+    return false;
+  }
+  return (listItems(literal.args[3] as Term) ?? []).some((item) => item.kind === "compound" && item.functor === "row_key");
+}
+
 /** Named variables occurring in a literal (anonymous `_` excluded). Shared with the translator. */
 export function literalVarNames(literal: Literal): string[] {
   const s = new Set<string>();
@@ -470,6 +581,11 @@ export function literalVarNames(literal: Literal): string[] {
       add(literal.document);
       add(literal.candidates);
       add(literal.present);
+      break;
+    case "path":
+    case "cell_path":
+    case "section_keyed":
+      literal.args.forEach(add);
       break;
     case "count":
       add(literal.variable);
@@ -631,6 +747,16 @@ function checkSafety(
         requireBound([literal.document], "present(D, Candidates, Present) needs D bound by an earlier positive literal");
         if (literal.present.kind === "var") {
           bound.add(literal.present.name);
+        }
+        break;
+      }
+      case "path":
+      case "cell_path":
+      case "section_keyed": {
+        requireBound(literal.args.slice(0, -1), `core.${literal.kind} needs its inputs bound by an earlier positive literal`);
+        const output = literal.args.at(-1) as Term;
+        if (output.kind === "var") {
+          bound.add(output.name);
         }
         break;
       }
@@ -801,6 +927,68 @@ function checkOracleDepth(rules: Rule[], constraints: Constraint[], oracleNames:
   if (deepest > rounds) {
     issues.push(`rounds: an oracle at depth ${String(deepest)} is deeper than rounds (${String(rounds)})`);
   }
+}
+
+/**
+ * The echo rule's static half (design/07 §Model, review S1): a `choose` oracle whose `context:`
+ * input is bound by a `core.cell_path` whose kinds include `row_key` is refused unless it sets
+ * `context_may_echo: true` (the row key may be the very label the judge is asked to choose: round
+ * 9's E1). The binding is traced through derived predicates: a head argument is tainted when some
+ * rule binds it from a row-keyed path or from a tainted argument of another predicate.
+ */
+function checkEcho(rules: Rule[], constraints: Constraint[], oracles: Oracle[], issues: string[]): void {
+  const watched = new Map(oracles.filter((oracle) => oracle.source.choose !== undefined && oracle.context.length > 0 && !oracle.contextMayEcho)
+    .map((oracle) => [oracle.predicate, oracle]));
+  if (watched.size === 0) {
+    return;
+  }
+  const flat = (body: Literal[]): Literal[] => body.flatMap((literal) => (literal.kind === "count" ? [literal, ...flat(literal.goal)] : [literal]));
+  const tainted = new Set<string>();
+  const taintedVars = (body: Literal[]): Set<string> => {
+    const vars = new Set<string>();
+    for (const literal of flat(body)) {
+      if (literal.kind === "cell_path" && hasRowKey(literal)) {
+        const output = literal.args[4] as Term;
+        if (output.kind === "var") vars.add(output.name);
+      } else if (literal.kind === "pos") {
+        literal.args.forEach((arg, index) => {
+          if (arg.kind === "var" && tainted.has(`${literal.predicate}/${String(index)}`)) vars.add(arg.name);
+        });
+      }
+    }
+    return vars;
+  };
+  for (let changed = true; changed;) {
+    changed = false;
+    for (const rule of rules) {
+      const vars = taintedVars(rule.body);
+      rule.head.forEach((arg, index) => {
+        const key = `${rule.predicate}/${String(index)}`;
+        if (arg.kind === "var" && vars.has(arg.name) && !tainted.has(key)) {
+          tainted.add(key);
+          changed = true;
+        }
+      });
+    }
+  }
+  const reported = new Set<string>();
+  const visit = (body: Literal[]): void => {
+    const vars = taintedVars(body);
+    for (const literal of flat(body)) {
+      const oracle = literal.kind === "pos" ? watched.get(literal.predicate) : undefined;
+      if (oracle === undefined || literal.kind !== "pos") continue;
+      for (const position of oracle.context) {
+        const arg = literal.args[position] as Term;
+        const name = oracle.params[position] as string;
+        if (arg.kind === "var" && vars.has(arg.name) && !reported.has(`${oracle.predicate}/${name}`)) {
+          reported.add(`${oracle.predicate}/${name}`);
+          issues.push(`oracles.${local(oracle.predicate)}.context: ${name} is bound by a core.cell_path with a row_key step, so a label may echo the row key; set context_may_echo: true to allow it`);
+        }
+      }
+    }
+  };
+  for (const rule of rules) visit(rule.body);
+  for (const constraint of constraints) visit([...constraint.forall, ...constraint.goal]);
 }
 
 /** A constant label argument must be one of the oracle's labels, or the literal can never hold. */
