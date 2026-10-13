@@ -124,8 +124,9 @@ proves each case is load-bearing, and it runs at the lander's step rather than i
 the commit hook, because its M6 arm must re-run the case suite nested and costs
 minutes where the cases cost seconds. The lock's table,
 `tests/check-lock-mutations.mjs`, runs the same way (about 90 s against 7 s for
-its cases) and in the commit hook only when `scripts/gate-lock.mjs` or its tests
-change; the dispatch check runs the cases alone.
+its cases) and in CI's mutation job (`npm run test:mutations`), not in the
+commit hook (moved 2026-10-14: a 90 s hook is too slow for a commit); the
+dispatch check runs the cases alone.
   
 ⚠ This is a LANDER'S STEP, not a hook, and that is measured rather than
 preferred: `pre-commit` -- the only stage this repository installs -- does not

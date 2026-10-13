@@ -4,7 +4,10 @@ repos:
       - id: document-contracts
         name: document contracts
         language: system
-        entry: npm exec doc-verify -- check --staged --profile auto --format text
+        # Structural only (draft profile asks no judge): a commit stays offline, free and
+        # deterministic. `--profile auto` checked every non-draft document under promotion, which
+        # asks the live judge at commit time. Promotion runs in judge-advisory.yml.
+        entry: npm exec doc-verify -- check --staged --profile draft --format text
         pass_filenames: false
         files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$'
         require_serial: true
@@ -38,16 +41,6 @@ repos:
         entry: bash -c 'for s in $(printf "%s\n" "$@" | sed -n "s#^skills/\([^/]*\)/.*#\1#p" | sort -u); do f="skills/$s/tests/check-dispatch.mjs"; [ -e "$f" ] || continue; node "$f" || exit 1; done' --
         pass_filenames: true
         files: '^skills/'
-      - id: worktree-sop-lock-mutations
-        name: worktree-sop lock mutation table
-        language: system
-        # Seeded defects in the lock script must each redden a lock case. ~90 s,
-        # so it runs only when the script or its cases change (worktree-sop
-        # SKILL.md, "The mutation table"), not on every skills/ commit.
-        entry: node skills/worktree-sop/tests/check-lock-mutations.mjs
-        pass_filenames: false
-        files: '^skills/worktree-sop/(scripts/gate-lock\.mjs|tests/(check-lock|check-lock-mutations)\.mjs|tests/preloads/.*)$'
-        require_serial: true
       - id: skill-l0
         name: skill package lint (L0 + frozen lock)
         language: system
@@ -58,8 +51,10 @@ repos:
         # entries of report-style's lock named a different vintage of the package and
         # NOTHING read the file, so 'the last behaviorally evaluated surface' named a
         # surface that was not in the tree. A lock nothing verifies is decoration.
-        entry: bash -c 'for f in skills/*/tests/l0.py; do [ -e "$f" ] || continue; uv run --with pyyaml python "$f" || exit 1; done'
-        pass_filenames: false
+        # Scoped (2026-10-14) to the skills the staged files belong to, as skill-dispatch is.
+        # The full loop: for f in skills/*/tests/l0.py; do uv run --with pyyaml python "$f" || exit 1; done
+        entry: bash -c 'for s in $(printf "%s\n" "$@" | sed -n "s#^skills/\([^/]*\)/.*#\1#p" | sort -u); do f="skills/$s/tests/l0.py"; [ -e "$f" ] || continue; uv run --with pyyaml python "$f" || exit 1; done' --
+        pass_filenames: true
         files: '^skills/'
         require_serial: true
       - id: tracked-ignored
