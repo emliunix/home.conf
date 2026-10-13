@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // check-tskill-pytest -- run tskill's pytest suite under the landing hooks (#283).
 //
-// WHY. `tskill/` ships a pytest suite (16 collected tests) that no hook and no CI
-// workflow ran. #268 reworked this code and its verification was a manual run —
-// nothing would redden if the suite went stale. Owner bias: drive it with uv.
+// WHY. `tskill/` ships a pytest suite that no hook and no CI workflow ran.
+// #268 reworked this code and its verification was a manual run — nothing would
+// redden if the suite went stale. Owner bias: drive it with uv. (Do not hardcode
+// the collected count here — the script prints it from `--collect-only`.)
 //
 // COMMAND (from the home.conf root):
 //   uv run --frozen --directory tskill pytest -q
@@ -14,8 +15,8 @@
 // mutating a tracked file while it runs.
 //
 // POPULATION. Print the collected count from `pytest --collect-only`, never a
-// `grep def test_` tally: `tests/conftest.py` holds four fixtures whose names
-// match `def test_*`, so grep over-counts (20) against the real 16.
+// `grep def test_` tally: `tests/conftest.py` holds fixtures whose names match
+// `def test_*`, so grep over-counts against the collect-only population.
 //
 // EXIT: 0 only when the suite is green, the population is non-zero, and
 // `tskill/uv.lock` is clean after the run. `--self-test` proves a seeded red.
