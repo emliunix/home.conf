@@ -71,6 +71,8 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
    a choose conjunction no answer satisfies, behind a loop, keeps its atom in Dem for one round.
    Statuses and verdict are the WFS's; one judge question is wasted. Open precision item; the
    model's syntactic support is the current text.
+   **Accepted 2026-10-14 (owner: "small waste is ok"):** closed as a known cost, not a defect;
+   the slow suite keeps reporting it as an expected class.
 9. **History-dependent `instantiation_error` on a reused kernel instance** (round 7 finding 3):
    one program in 1500 raises it as call 20 of a 28-call sequence on one instance and never on
    a fresh one. Production uses a fresh instance per check; the harness keeps the triple and the
@@ -93,4 +95,8 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
     real deranged; held ≥ 13/14 and ≥ 28/30), with round 9's sets and labels as fixtures;
     `core.row_with_column` and the E1/E2 sets are in the tree for it. Supersedes item 4's
     wrong-row half.
+    **Accepted as a gap 2026-10-14 (owner):** the per-property instrument costs ~15 questions per
+    row for a rare authoring slip; not pursued. `witness_observable_in_row` stays and does not
+    catch a witness on the wrong row. Design 07's spine does not change this (round 9's R1 is a
+    path-with-property question). Reopen only with a cheaper instrument.
 

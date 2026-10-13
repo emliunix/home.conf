@@ -29,7 +29,8 @@ oracles:
   # row of the verification table, over the row's Property and Failure witness cells. Live: every
   # document verdict right on six fixtures (good, gross, two subtle, style controls, swapped),
   # 28/30 blind real cells agree. The judge does NOT check that the witness belongs to this row's
-  # property (the swapped fixture passed 14/14): that gap is recorded, not covered.
+  # property (the swapped fixture passed 14/14): that gap is accepted (gate-ledger item 11, owner
+  # 2026-10-14; round 9 measured five instruments, none met the bar), not covered.
   witness_observable_in_row(D, R, L):
     ask: >-
       This is one row of a design's verification table: the property and its failure-witness
