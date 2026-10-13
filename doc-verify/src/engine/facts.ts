@@ -8,6 +8,7 @@
 
 import path from "node:path";
 
+import GithubSlugger from "github-slugger";
 import type { Root, RootContent } from "mdast";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
@@ -38,6 +39,11 @@ export interface DocumentInput {
    * shape but every such span resolves, matching `exists`.
    */
   resolveSpec?: SpecResolver;
+  /**
+   * A repository file's text, for the headings a section reference names (round 11). Absent,
+   * fragments and `§` references are not checked, and nothing is claimed about them.
+   */
+  readTarget?: (repoPath: string) => string | undefined;
 }
 
 /** Why a `<rev>:<path>` reference did not resolve. */
@@ -72,7 +78,7 @@ export interface TableRow {
   cells: Map<string, string>;
 }
 
-export const CORE_BASE = ["section/3", "heading/3", "depth/3", "order/3", "meta/3", "selected/2", "ref/4", "resolves/2", "table/3", "header/3", "row/3", "cell/3"] as const;
+export const CORE_BASE = ["section/3", "heading/3", "depth/3", "order/3", "meta/3", "selected/2", "ref/4", "resolves/2", "section_ref/5", "table/3", "header/3", "row/3", "cell/3"] as const;
 export const CORE_DERIVED = ["child/3", "descendant/3", "nests/3", "dangling/4", "spec_unresolved/4"] as const;
 
 export function documentFacts(document: DocumentInput): DocumentFacts {
@@ -157,6 +163,7 @@ export function documentFacts(document: DocumentInput): DocumentFacts {
     ...(document.files === undefined ? {} : { files: document.files }),
     ...(document.gitRefs === undefined ? {} : { gitRefs: document.gitRefs }),
     ...(document.resolveSpec === undefined ? {} : { resolveSpec: document.resolveSpec }),
+    ...(document.readTarget === undefined ? {} : { readTarget: document.readTarget }),
   };
   for (const reference of documentReferences(document.markdown, sections, context)) {
     const key = `${reference.section}\u0000${reference.target}\u0000${reference.kind}`;
@@ -188,6 +195,23 @@ export function documentFacts(document: DocumentInput): DocumentFacts {
       }
     }
   }
+  // Section references (kernel-trials round 11, design/07 phase 0): `core.ref(D, S, T, fragment)`
+  // once per reference, `core.section_ref(D, S, T, Line, Closest)` per occurrence (its line, and the
+  // target's nearest headings for a repair), `core.dangling(D, S, T, fragment)` on a miss.
+  const sectionRefs = new Set<string>();
+  for (const reference of sectionReferences(document.markdown, sections, context)) {
+    const key = `${reference.section}\u0000${reference.target}`;
+    const args = [D, atom(reference.section), atom(reference.target), atom("fragment")];
+    if (!sectionRefs.has(key)) {
+      sectionRefs.add(key);
+      facts.push(core("ref", args));
+      if (!reference.resolves) {
+        facts.push(core("dangling", args));
+      }
+    }
+    facts.push(core("section_ref", [D, atom(reference.section), atom(reference.target), number(reference.line),
+      atom(reference.closest.length === 0 ? "none" : reference.closest.join(", "))]));
+  }
   return { id, sections, parents, facts, rows, tables };
 }
 
@@ -213,6 +237,8 @@ export interface ReferenceContext {
   gitRefs?: readonly string[];
   /** Resolves a revision-qualified reference; decides `spec` resolution and its reason. */
   resolveSpec?: SpecResolver;
+  /** A repository file's text (memoised by the host); decides `fragment` references. */
+  readTarget?: (repoPath: string) => string | undefined;
 }
 
 /** A scheme (`https:`, `mailto:`) or a protocol-relative `//host` makes a link a URL. */
@@ -565,6 +591,401 @@ export function resolvesTarget(documentPath: string, target: string, exists: ((r
     }
   }
   return [...candidates].some(exists);
+}
+
+/**
+ * One checked section reference (kernel-trials round 11, design/07 phase 0): a Markdown link's
+ * `#fragment` on a `.md` target, or a document-qualified `§Heading`. `target` is the reference as
+ * written (a link's target; for `§`, the binding document as written, ` §`, and the text up to its
+ * first punctuation mark); `closest` the target document's nearest headings by string distance.
+ */
+export interface SectionReference {
+  section: string;
+  target: string;
+  line: number;
+  resolves: boolean;
+  closest: string[];
+}
+
+/** A target document's headings: text (mdast `toString`), folded tokens, document-global slug. */
+interface TargetHeading {
+  text: string;
+  tokens: string[];
+  slug: string;
+}
+
+/** `#L12`, `#L10-L20`: a line anchor on a rendered file, not a section. */
+const LINE_ANCHOR = /^L[0-9]+(?:-L[0-9]+)?$/;
+/** A `§` whose first token is an id or a number (`§3`, `§9`, `§C9`, `§C1-receipt`) is never checked. */
+const SECTION_ID = /^[A-Za-z]?\d+(?:[.-]\w+)*$/;
+/** `design/NN` (not `design/NN-…`, not a longer number): the single `design/NN-*.md`. */
+const DESIGN_SHORT = /(?<![A-Za-z0-9_./-])design\/([0-9]{2})(?![-0-9])/g;
+/** A path ending `.md`, bare or in backticks. */
+const MD_PATH = /(?<![A-Za-z0-9_./-])[A-Za-z0-9_./-]*[A-Za-z0-9_-]\.md(?![A-Za-z0-9_-])/g;
+/** Where a `§` citation's text stops for its written form and the short-citation test. */
+const CITATION_STOP = /[^\p{L}\p{N}\s'’-]/u;
+/** A list item's first line: the start of a sentence. */
+const LIST_ITEM = /^[ \t]*(?:[-*+]|[0-9]+[.)])[ \t]/;
+/** Inline code inside the masked text: never a citation, a stop for a citation's text. */
+const CODE_MASK = "\u0000";
+
+const headingCaches = new WeakMap<(repoPath: string) => string | undefined, Map<string, TargetHeading[] | undefined>>();
+
+/** Case- and punctuation-folded tokens. */
+export function foldTokens(text: string): string[] {
+  return text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim().split(" ").filter((token) => token.length > 0);
+}
+
+function startsWithTokens(whole: readonly string[], prefix: readonly string[]): boolean {
+  return prefix.length <= whole.length && prefix.every((token, index) => whole[index] === token);
+}
+
+/** Headings in document order with GitHub's document-global slugs (`-1`, `-2` on duplicates). */
+export function targetHeadings(headingTexts: readonly string[]): TargetHeading[] {
+  const slugger = new GithubSlugger();
+  return headingTexts.map((text) => ({ text, tokens: foldTokens(text), slug: slugger.slug(text) }));
+}
+
+function headingsOf(markdown: string): TargetHeading[] {
+  return targetHeadings(segmentMarkdown(markdown).filter((section) => section.depth > 0).map((section) => section.heading));
+}
+
+function readHeadings(context: ReferenceContext, repoPath: string): TargetHeading[] | undefined {
+  const read = context.readTarget;
+  if (read === undefined) {
+    return undefined;
+  }
+  let cache = headingCaches.get(read);
+  if (cache === undefined) {
+    cache = new Map();
+    headingCaches.set(read, cache);
+  }
+  if (!cache.has(repoPath)) {
+    const text = read(repoPath);
+    cache.set(repoPath, text === undefined ? undefined : headingsOf(text));
+  }
+  return cache.get(repoPath);
+}
+
+/**
+ * Whether a `§` citation names a heading: some heading's tokens are a prefix of the text's tokens
+ * up to the sentence end, or the text's tokens up to its first punctuation mark are a non-empty
+ * prefix of some heading's tokens (so `§Rule` resolves against any heading beginning `Rule`).
+ */
+export function citationResolves(headings: readonly { tokens: readonly string[] }[], sentenceText: string, citation: string): boolean {
+  const text = foldTokens(sentenceText);
+  const cited = foldTokens(citation);
+  return headings.some((heading) => (heading.tokens.length > 0 && startsWithTokens(text, heading.tokens))
+    || (cited.length > 0 && startsWithTokens(heading.tokens, cited)));
+}
+
+/** Whether a `§` citation is an id or a number, which is never checked. */
+export function isSectionId(citationText: string): boolean {
+  const first = /^\S+/.exec(citationText.trim())?.[0].replace(/[^A-Za-z0-9]+$/, "") ?? "";
+  return first.length > 0 && SECTION_ID.test(first);
+}
+
+function levenshtein(a: string, b: string): number {
+  let previous = Array.from({ length: b.length + 1 }, (_, index) => index);
+  for (let i = 1; i <= a.length; i += 1) {
+    const current = [i];
+    for (let j = 1; j <= b.length; j += 1) {
+      current[j] = Math.min((previous[j] ?? 0) + 1, (current[j - 1] ?? 0) + 1, (previous[j - 1] ?? 0) + (a[i - 1] === b[j - 1] ? 0 : 1));
+    }
+    previous = current;
+  }
+  return previous[b.length] ?? 0;
+}
+
+/** Up to three closest candidates by edit distance (over `key`), ties in document order. */
+export function closest(wanted: string, candidates: readonly string[], key: (candidate: string) => string = (candidate) => candidate): string[] {
+  return [...new Set(candidates)]
+    .map((candidate, index) => ({ candidate, index, distance: levenshtein(wanted, key(candidate)) }))
+    .sort((left, right) => left.distance - right.distance || left.index - right.index)
+    .slice(0, 3)
+    .map((entry) => entry.candidate);
+}
+
+/** The repository path a target names (relative to the document, then the root), if any. */
+export function resolveTargetPath(documentPath: string, target: string, exists: (repoPath: string) => boolean): string | undefined {
+  const raw = target.split("#")[0]?.split("?")[0] ?? "";
+  if (raw.length === 0) {
+    return undefined;
+  }
+  let decoded = raw;
+  try {
+    decoded = decodeURIComponent(raw);
+  } catch {
+    // keep the target as written
+  }
+  for (const value of new Set([raw, decoded])) {
+    const relative = path.posix.normalize(path.posix.join(path.posix.dirname(documentPath), value));
+    const fromRoot = path.posix.normalize(value.replace(/^\/+/, ""));
+    for (const candidate of value.startsWith("/") ? [fromRoot] : [relative, fromRoot]) {
+      const clean = candidate.replace(/\/+$/, "");
+      if (clean.length > 0 && clean !== "." && !clean.startsWith("../") && clean !== ".." && exists(clean)) {
+        return clean;
+      }
+    }
+  }
+  return undefined;
+}
+
+/** A document a `§` may bind to: where it is written, as written, and the file it names. */
+interface DocumentCandidate {
+  offset: number;
+  text: string;
+  resolve: () => string | undefined;
+}
+
+/**
+ * Section references (round 11): every Markdown link with a `#fragment` on a `.md` target (or a
+ * bare `#fragment`, the document itself), and every `§` citation bound to a document named
+ * earlier in its sentence. Only with `context.readTarget`: without it nothing is checked, and
+ * nothing is reported either way.
+ */
+export function sectionReferences(markdown: string, sections: Section[], context: ReferenceContext): SectionReference[] {
+  if (context.readTarget === undefined) {
+    return [];
+  }
+  const read = context.readTarget;
+  const exists = context.exists ?? ((repoPath: string): boolean => read(repoPath) !== undefined);
+  const tree = unified().use(remarkParse).parse(markdown);
+  const metadataEnd = frontMatterEnd(markdown);
+  const own = targetHeadings(sections.filter((section) => section.depth > 0).map((section) => section.heading));
+  const sectionAt = (line: number): string => {
+    let current = "@preamble";
+    for (const section of sections) {
+      if (section.depth > 0 && section.startLine <= line) {
+        current = section.id;
+      }
+    }
+    return current;
+  };
+  const found: Array<SectionReference & { offset: number }> = [];
+
+  // The text with code blocks and front matter blanked (`prose`) and, further, inline code
+  // replaced by CODE_MASK (`masked`); offsets and line breaks are kept.
+  // One array slot per UTF-16 unit, so offsets stay mdast's.
+  const proseChars = markdown.split("");
+  const blank = (chars: string[], start: number, end: number, fill: string): void => {
+    for (let index = start; index < end && index < chars.length; index += 1) {
+      if (chars[index] !== "\n") {
+        chars[index] = fill;
+      }
+    }
+  };
+  blank(proseChars, 0, metadataEnd, " ");
+  const codeSpans: Array<[number, number]> = [];
+  const links: Array<{ url: string; offset: number; end: number; line: number }> = [];
+  const visit = (node: Root | RootContent): void => {
+    const start = node.position?.start.offset;
+    const end = node.position?.end.offset;
+    if (start === undefined || end === undefined) {
+      if ("children" in node) {
+        node.children.forEach(visit);
+      }
+      return;
+    }
+    if (end <= metadataEnd && metadataEnd > 0) {
+      return;
+    }
+    if (node.type === "code") {
+      blank(proseChars, start, end, " ");
+      return;
+    }
+    if (node.type === "inlineCode") {
+      codeSpans.push([start, end]);
+      return;
+    }
+    if ((node.type === "link" || node.type === "definition") && node.url.trim().length > 0 && !URL_TARGET.test(node.url.trim())) {
+      links.push({ url: node.url.trim(), offset: start, end, line: node.position?.start.line ?? 1 });
+    }
+    if ("children" in node) {
+      node.children.forEach(visit);
+    }
+  };
+  visit(tree);
+  const prose = proseChars.join("");
+  const maskedChars = [...proseChars];
+  for (const [start, end] of codeSpans) {
+    blank(maskedChars, start, end, CODE_MASK);
+  }
+  const masked = maskedChars.join("");
+  const lineStarts = [0];
+  for (let index = 0; index < markdown.length; index += 1) {
+    if (markdown[index] === "\n") {
+      lineStarts.push(index + 1);
+    }
+  }
+  const lineOf = (offset: number): number => {
+    let low = 0;
+    let high = lineStarts.length - 1;
+    while (low < high) {
+      const middle = Math.ceil((low + high) / 2);
+      if ((lineStarts[middle] ?? 0) <= offset) {
+        low = middle;
+      } else {
+        high = middle - 1;
+      }
+    }
+    return low + 1;
+  };
+
+  // Fragments, on Markdown links only.
+  for (const link of links) {
+    const hash = link.url.indexOf("#");
+    if (hash < 0) {
+      continue;
+    }
+    const fragment = link.url.slice(hash + 1);
+    const file = link.url.slice(0, hash).split("?")[0] ?? "";
+    if (fragment.length === 0 || LINE_ANCHOR.test(fragment)) {
+      continue;
+    }
+    let headings: TargetHeading[] | undefined;
+    if (file.length === 0) {
+      headings = own;
+    } else {
+      let decodedFile = file;
+      try {
+        decodedFile = decodeURIComponent(file);
+      } catch {
+        // keep the target as written
+      }
+      if (!/\.md$/i.test(decodedFile)) {
+        continue;
+      }
+      const repoPath = resolveTargetPath(context.path, file, exists);
+      if (repoPath === undefined) {
+        continue; // a missing file is the `link` finding, not a fragment one
+      }
+      headings = readHeadings(context, repoPath);
+    }
+    if (headings === undefined) {
+      continue;
+    }
+    let decoded = fragment;
+    try {
+      decoded = decodeURIComponent(fragment);
+    } catch {
+      // keep the fragment as written
+    }
+    const slugs = new Set(headings.map((heading) => heading.slug));
+    found.push({
+      section: sectionAt(link.line),
+      target: link.url,
+      line: link.line,
+      offset: link.offset,
+      resolves: slugs.has(fragment) || slugs.has(decoded),
+      closest: closest(decoded, headings.map((heading) => heading.slug)).map((slug) => `#${slug}`),
+    });
+  }
+
+  // `§` citations: sentence boundaries over `masked`.
+  const boundaries: number[] = [0];
+  for (let index = 0; index < lineStarts.length; index += 1) {
+    const start = lineStarts[index] ?? 0;
+    const end = lineStarts[index + 1] ?? masked.length + 1;
+    const lineText = masked.slice(start, end - 1);
+    if (lineText.trim().length === 0 || LIST_ITEM.test(lineText)) {
+      boundaries.push(start);
+    }
+    if (lineText.trim().length === 0) {
+      boundaries.push(end - 1);
+    }
+  }
+  for (let index = 0; index < masked.length; index += 1) {
+    const char = masked[index];
+    if (char === "|" && masked[index - 1] !== "\\") {
+      boundaries.push(index, index + 1);
+    } else if ((char === "." || char === "!" || char === "?") && /\s/.test(masked[index + 1] ?? "")) {
+      boundaries.push(index + 1);
+    }
+  }
+  boundaries.push(masked.length);
+  boundaries.sort((left, right) => left - right);
+  const sentenceAt = (offset: number): [number, number] => {
+    let start = 0;
+    let end = masked.length;
+    for (const boundary of boundaries) {
+      if (boundary <= offset) {
+        start = boundary;
+      } else {
+        end = boundary;
+        break;
+      }
+    }
+    return [start, end];
+  };
+
+  // Documents a `§` may bind to: links, `.md` paths (bare or in backticks) and `design/NN`.
+  const insideLink = (offset: number): boolean => links.some((link) => link.offset <= offset && offset < link.end);
+  const candidates: DocumentCandidate[] = links.map((link) => ({
+    offset: link.offset,
+    text: link.url,
+    resolve: () => resolveTargetPath(context.path, link.url, exists),
+  }));
+  for (const match of prose.matchAll(MD_PATH)) {
+    if (!insideLink(match.index)) {
+      candidates.push({ offset: match.index, text: match[0], resolve: () => resolveTargetPath(context.path, match[0], exists) });
+    }
+  }
+  for (const match of prose.matchAll(DESIGN_SHORT)) {
+    if (!insideLink(match.index)) {
+      const prefix = `design/${match[1] ?? ""}-`;
+      candidates.push({
+        offset: match.index,
+        text: match[0],
+        resolve: () => {
+          const matches = (context.files ?? []).filter((file) => file.startsWith(prefix) && file.endsWith(".md") && !file.slice(prefix.length).includes("/"));
+          return matches.length === 1 ? matches[0] : undefined;
+        },
+      });
+    }
+  }
+  candidates.sort((left, right) => right.offset - left.offset);
+
+  for (let index = masked.indexOf("§"); index >= 0; index = masked.indexOf("§", index + 1)) {
+    const [sentenceStart, sentenceEnd] = sentenceAt(index);
+    const rest = masked.slice(index + 1, sentenceEnd);
+    if (rest.trimStart().startsWith(CODE_MASK) || isSectionId(rest)) {
+      continue;
+    }
+    const stop = CITATION_STOP.exec(rest);
+    const citation = (stop === null ? rest : rest.slice(0, stop.index)).replace(/\s+/g, " ").trim();
+    if (citation.length === 0) {
+      continue;
+    }
+    let bound: { candidate: DocumentCandidate; repoPath: string } | undefined;
+    for (const candidate of candidates) {
+      if (candidate.offset >= index || candidate.offset < sentenceStart) {
+        continue;
+      }
+      const repoPath = candidate.resolve();
+      if (repoPath !== undefined) {
+        bound = { candidate, repoPath };
+        break;
+      }
+    }
+    if (bound === undefined || !/\.md$/i.test(bound.repoPath)) {
+      continue;
+    }
+    const headings = readHeadings(context, bound.repoPath);
+    if (headings === undefined) {
+      continue;
+    }
+    const line = lineOf(index);
+    found.push({
+      section: sectionAt(line),
+      target: `${bound.candidate.text} §${citation}`,
+      line,
+      offset: index,
+      resolves: citationResolves(headings, rest.replaceAll(CODE_MASK, " "), citation),
+      closest: closest(foldTokens(citation).join(" "), headings.map((heading) => heading.text), (text) => foldTokens(text).join(" ")),
+    });
+  }
+  return found.sort((left, right) => left.offset - right.offset).map(({ offset: _offset, ...reference }) => reference);
 }
 
 function core(name: string, args: Term[]): Term {

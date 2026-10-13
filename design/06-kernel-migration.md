@@ -74,10 +74,10 @@ implementation of the model's decided part, now in the slow test suite instead o
 | Earlier text | Replaced by |
 | --- | --- |
 | this design's first version: steps 1–4 as rounds 11–14, `--engine ts`, the known-divergence set, the default flip | one replacement gated by the test suite (§Decision); no rounds 11–14, no flag |
-| design/04 §Engine: `evaluate.ts` as the evaluator of a composed module | the kernel behind the same `runProgram` |
+| design/04 §Evaluation: `evaluate.ts` as the evaluator of a composed module | the kernel behind the same `runProgram` |
 | design/05 §Design, kernel: "The host never evaluates a rule" (true of the probe path) | true of the production path |
 | design/05 §Design, module language: "it refuses nothing else" | the kernel's static checks also refuse ungrounded negation and unbound `matches`; each module so refused is listed in §Language breaks with its repair |
-| design/05 §Verification rows pointing at `worklog/kernel-trials/probe/` (trust boundary, model conformance) | the same rows pointed at `doc-verify/src/kernel/` and the test files below; S2 removed |
+| design/05 §Verification design: the rows pointing at `worklog/kernel-trials/probe/` (trust boundary, model conformance) | the same rows pointed at `doc-verify/src/kernel/` and the test files below; S2 removed |
 | constitution invariant 5 "In force … under swipl-wasm 8.2.2" on the probe path | the production path (amended 2026-10-14, citing this design) |
 
 ## Decision

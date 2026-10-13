@@ -51,7 +51,7 @@ the host's full access.
 ## Scope - what we touch
 
 - The constitution as a living document (`docs/doc-verify-constitution.md`), with three amendments
-  and one addition stated in §Constitution amendments.
+  and one addition stated in design/05 §Constitution amendments.
 - The model (`docs/doc-verify-model.md`): what doc-verify computes, derived from the constitution
   alone, with every earlier artifact consulted as a lesson. It is the reference every kernel,
   including the current evaluator, is measured against.

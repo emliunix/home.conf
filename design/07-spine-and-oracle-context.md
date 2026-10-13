@@ -141,14 +141,15 @@ not worth measuring). Two halves:
 
 - `#fragment` on a link to a `.md` target resolves when a document-global `GithubSlugger` pass over
   the target's headings yields that slug. GitHub numbers duplicates per document (`-1`, `-2`),
-  unlike the segmenter's per-parent ids (`doc-verify/src/segments.ts` lines 47–59). A fragment also
-  resolves when it equals a section id under `normalizeSectionId` (`doc-verify/src/normalize.ts`).
+  unlike the segmenter's per-parent ids (`doc-verify/src/segments.ts` lines 47–59). There is no fallback
+  to normalised section ids, since GitHub would not land on one either (round 11).
   Line anchors (`#L12`, `#L10-L20`) and non-`.md` targets are skipped.
 - `§` references are checked only when a resolvable document (a link, a path, or `design/NN`)
-  precedes them in the same sentence. They match the longest heading prefix of the text after `§`,
-  case- and punctuation-folded. A bare `§N` or `§3` never fails.
-- The host reads targets through a `readTarget` callback: headings only, memoised per run by path
-  and modification time, restricted to the repository tree. A cited document outside the checked
+  precedes them in the same sentence (sentences end at `.`, `!`, `?`, a blank line, a table cell or
+  a list item). They match a heading by the two token-prefix tests of round 11's plan, case- and
+  punctuation-folded. A bare `§N`, `§3` or id form (`§C9`) never fails.
+- The host reads targets through a `readTarget` callback: headings only, memoised per run by path,
+  restricted to the repository tree. A cited document outside the checked
   set is read the same way, never checked itself.
 - A miss is the fact `core.dangling(D, S, Target, fragment)`, read by a `doc-verify:references`
   constraint (as `paths-resolve` reads `core.dangling(D, S, T, path)`), so the finding stays a rule
@@ -218,7 +219,7 @@ proceed"). Taken:
 - B3: neutral facts only; the rule names the key column.
 - S1: the two-part echo rule.
 - S2: the key round-trip row compares kernel and host keys and catches unrouted answers.
-- S3: a document-global slugger; line anchors and non-`.md` targets skipped; `normalizeSectionId`.
+- S3: a document-global slugger; line anchors and non-`.md` targets skipped; no normalised-id fallback (round 11).
 - S4: `§` only after a resolvable document, longest heading prefix, never on bare `§N`; labelled
   before the run.
 - S5: `readTarget`, and a `dangling` fact of kind `fragment` read by a rule.

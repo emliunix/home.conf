@@ -24,13 +24,13 @@
 :- dynamic core_section/3, core_heading/3, core_depth/3, core_order/3, core_meta/3,
            core_selected/2, core_ref/4, core_resolves/2, core_child/3, core_descendant/3,
            core_table/3, core_header/3, core_row/3, core_cell/3,
-           core_nests/3, core_dangling/4, core_spec_unresolved/4.
+           core_nests/3, core_dangling/4, core_spec_unresolved/4, core_section_ref/5.
 core_base(core_section/3). core_base(core_heading/3). core_base(core_depth/3).
 core_base(core_order/3).   core_base(core_meta/3).    core_base(core_selected/2).
 core_base(core_ref/4).     core_base(core_resolves/2). core_base(core_child/3).
 core_base(core_table/3).   core_base(core_header/3).   core_base(core_row/3).     core_base(core_cell/3).
 core_base(core_descendant/3). core_base(core_nests/3). core_base(core_dangling/4).
-core_base(core_spec_unresolved/4).
+core_base(core_spec_unresolved/4). core_base(core_section_ref/5).
 
 % Declarations written by translate.mjs.
 %   core_oracle_decl(Functor, Arity, Labels, InputPositions, Kind)  Kind = ask | choose
