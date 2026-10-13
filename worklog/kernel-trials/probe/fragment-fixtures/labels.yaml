@@ -1,34 +1,49 @@
-# Round 11 (design/07 phase 0): the lead's labels, written 2026-10-14 before any implementation.
-# Every reference the fragment check must read; `dangling` ones must produce exactly one finding each,
-# `resolves` and `skipped` none.
-fixture:
+# Round 11 (design/07 phase 0): the lead's labels, written 2026-10-14 before any implementation,
+# amended after the plan review (results/round-11-review.md) before the build. Keyed by
+# (file, line, target as written, backticks stripped). `dangling` must produce exactly one
+# `fragment` finding at that line; `resolves` and `skipped` none.
+fixture:   # worklog/kernel-trials/probe/fragment-fixtures/fixture.md
   resolves:
-    - docs/doc-verify-model.md#3-semantics
-    - docs/doc-verify-model.md#4-constraints-and-status
-    - design/05-trusted-kernel-redesign.md#kernel
-    - design/03-companion-driven-document-verification.md#companion-contract
-    - "#links-with-fragments"
-    - design/05 §Oracle toolkit
-    - design/03 §Report contract
-    - design/04 §Rule syntax
-    - design/06 §Language breaks
-    - AGENTS.md §Experiment programmes
+    - [5, "../../../../docs/doc-verify-model.md#3-semantics"]
+    - [5, "../../../../docs/doc-verify-model.md#4-constraints-and-status"]
+    - [6, "../../../../design/05-trusted-kernel-redesign.md#kernel"]
+    - [6, "../../../../design/03-companion-driven-document-verification.md#companion-contract"]
+    - [7, "#links-with-fragments"]
+    - [7, "../../../../docs/doc-verify-model.md#where-u-comes-from"]
+    - [8, "dup-target.md#notes-1"]
+    - [18, "design/05 §Oracle toolkit"]
+    - [18, "design/03 §Report contract"]
+    - [18, "design/04 §Rule syntax"]
+    - [18, "design/06 §Language breaks"]
+    - [18, "AGENTS.md §Experiment programmes"]
   dangling:
-    - design/06-kernel-migration.md#no-such-section
-    - docs/doc-verify-model.md#semantics
-    - design/05-trusted-kernel-redesign.md#kernal
-    - "#not-a-heading"
-    - design/03-companion-driven-document-verification.md#language
-    - design/05 §Interpreter
-    - design/03 §Reporting contract
-    - design/04 §Engine
-    - design/06 §Rounds eleven to fourteen
-    - AGENTS.md §Experiments loop
-  skipped: ["#L12", "#L10-L20", "§3", "model §9", "§C1-receipt", "design 04 §Engine", "code-span §Nowhere"]
-corpus:   # the 28 documents `check --all` selects, 2026-10-14
+    - [10, "../../../../design/06-kernel-migration.md#no-such-section"]
+    - [10, "../../../../docs/doc-verify-model.md#semantics"]
+    - [11, "../../../../design/05-trusted-kernel-redesign.md#kernal"]
+    - [11, "#not-a-heading"]
+    - [11, "../../../../design/03-companion-driven-document-verification.md#language"]
+    - [12, "dup-target.md#notes-2"]
+    - [20, "design/05 §Interpreter"]
+    - [20, "design/03 §Reporting contract"]
+    - [20, "design/04 §Engine"]
+    - [20, "design/06 §Rounds eleven to fourteen"]
+    - [20, "AGENTS.md §Experiments loop"]
+  skipped:
+    - [14, "#L12"]
+    - [14, "#L10-L20"]
+    - [22, "§3"]
+    - [22, "model §9"]
+    - [22, "§C1-receipt"]
+    - [22, "design 04 §Engine"]     # nothing resolvable precedes it; tests binding, not the no-slash rule
+    - [22, "design/06 §Nowhere"]    # inside a code span
+    - [24, "docs/doc-verify-model.md §9"]   # id rule
+    - [24, "design/05 §C1-receipt"]        # id rule
+corpus:   # the 28 documents `check --all --profile draft` selects, 2026-10-14
   dangling:
-    - design/06-kernel-migration.md: "design/04 §Engine"              # design 04 has no Engine section
-    - design/06-kernel-migration.md: "design/05 §Verification rows"   # heading is 'Verification design'
+    - [design/06-kernel-migration.md, 77, "design/04 §Engine"]              # design 04 has no Engine section
+    - [design/06-kernel-migration.md, 80, "design/05 §Verification rows"]   # heading is 'Verification design'
+    - [design/05-trusted-kernel-redesign.md, 54, "docs/doc-verify-constitution.md §Constitution amendments"]  # binds to the constitution as written; the author meant design/05's own section
   known_misses:
-    - goals/01-document-verification-and-skill-transfer.md: "§C9, §C10 after design/02"   # id form, skipped by rule; design 02 has no C9/C10
-  resolves_or_skipped: every other § use and fragment in the 28 documents (53 § uses; 0 fragment links)
+    - [goals/01-document-verification-and-skill-transfer.md, 166, "§C9"]   # id form; design 02 has no C9
+    - [goals/01-document-verification-and-skill-transfer.md, 170, "§C10"]
+  everything_else: silent   # 53 § uses, 0 fragment links (design/07's are in code spans)
