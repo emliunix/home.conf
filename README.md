@@ -205,7 +205,8 @@ Shipped in `doc-verify/lib/`, versioned with the engine and read from its instal
 
 Table facts (added 2026-10-13). For each pipe table, `doc-verify:core` provides
 `core.table(D, S, T)` (`S` the innermost section at the header line, `T` named
-`<section>#table<n>`), `core.header(D, T, Column)` for each header cell as written,
+`<section>#table<n>`), `core.header_pos(D, T, Column, N)` for each header cell as written (`N` its position from 1;
+`core.header/3` was removed in kernel-trials round 12, design/07: write `core.header_pos(D, T, C, _)`),
 `core.row(D, T, R)` for every data row (`R` named `<section>#row<n>`, `n` counting that
 section's data rows in document order across its tables) and `core.cell(D, R, Column)` for each
 of the row's non-empty cells. A fenced table and the front matter are not read; the header text

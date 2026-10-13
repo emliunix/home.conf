@@ -118,6 +118,7 @@ checker the language changes in two places, each a refusal at module load with i
 | --- | --- | --- |
 | a negated literal with a variable shared with another literal of the same body but unbound at that point | refused (`static-nonground-not`) | bind the variable before the negation, or move the negated goal into a helper rule |
 | an oracle negation with an unbound input (`not purpose(D, Z, other)`, `Z` free) | refused | bind the input first; the judge is never asked about an unbound atom |
+| a constraint goal using a forall count's result (`forall: …, count(C, G, N), N >= 1` with `require: N >= 2`) | refused (2026-10-14) | count again in the goal; a count in a forall filters bindings, it does not bind |
 
 `not p(X, _)` and any negated literal whose unbound variables occur nowhere else stays legal: the
 translator lifts it into a tabled helper (no `Y` with `p(X, Y)`). Two expectations of the old

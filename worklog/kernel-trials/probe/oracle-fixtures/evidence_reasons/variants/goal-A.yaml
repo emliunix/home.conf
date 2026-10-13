@@ -63,8 +63,8 @@ rules:
   coverage_section(D, S): top(D, S), core.heading(D, S, H), H in $coverage_headings
   worklog_section(D, S): top(D, S), core.heading(D, S, 'Worklog')
   evidence_section(D, S): top(D, S), core.heading(D, S, H), H in $evidence_headings
-  key_col(D, T, K): core.header(D, T, K), K in $key_headers
-  row_path(D, R, C, P): core.row(D, T, R), core.header(D, T, C), key_col(D, T, K), core.cell_path(D, R, C, [title, heading, row_key(K), column], P)
+  key_col(D, T, K): core.header_pos(D, T, K, _), K in $key_headers
+  row_path(D, R, C, P): core.row(D, T, R), core.header_pos(D, T, C, _), key_col(D, T, K), core.cell_path(D, R, C, [title, heading, row_key(K), column], P)
 constraints:
   goal-has-anchored-root:
     forall: core.meta(D, kind, goal)
@@ -99,7 +99,7 @@ constraints:
   # Every goal, open or closed, fails on a cell that is not a chain (owner ruling 2026-10-13: a
   # closed goal's text may be refined; it is not exempt).
   goal-evidence-reasons:
-    forall: evidence_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence'), core.row(D, T, R)
+    forall: evidence_section(D, S), core.table(D, S, T), core.header_pos(D, T, 'Evidence', _), core.row(D, T, R)
     require: core.cell(D, R, 'Evidence'), row_path(D, R, 'Evidence', P), evidence_reasons(D, R, P, 'Evidence')
     severity: error
     profiles: [promotion]

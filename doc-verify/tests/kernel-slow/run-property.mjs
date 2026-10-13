@@ -206,7 +206,7 @@ function logRecord(head, g, problems, min) {
 
 // ---- one arm -------------------------------------------------------------------------------------
 
-async function runArm(subject, armName, n, seeds) {
+async function runArm(subject, armName, n, seeds, { floors = true } = {}) {
   const { featuresOn, shrink } = ARMS[armName];
   const t0 = performance.now();
   let checkMs = 0, shrinkMs = 0, minimalMs = 0, timedOut = false;
@@ -337,7 +337,9 @@ async function runArm(subject, armName, n, seeds) {
   const share = (v) => (programsRun ? +(v / programsRun).toFixed(3) : 0);
   const cov = Object.fromEntries([...NAMED_FEATURES, "countBound", "countCorrelated", "countSiblingVar", "unboundMatches", "loopReachable", ...Object.keys(GAP_FLOORS)].map((k) => [k, share(featureHits[k] ?? 0)]));
   const trig = Object.fromEntries(Object.entries(triggerHits).map(([k, v]) => [k, share(v)]));
-  if (featuresOn) {
+  // A smoke run (a handful of programs) checks the plumbing, not coverage: floors are not applied.
+  if (!floors) log("floors not checked (smoke run)");
+  if (featuresOn && floors) {
     for (const k of NAMED_FEATURES) if (cov[k] < 0.05) reasons.push(`coverage narrowed: ${k}=${cov[k]}`);
     for (const [k, floor] of Object.entries(TRIGGER_FLOORS)) if (trig[k] < floor) reasons.push(`trigger floor missed: ${k}=${trig[k]} < ${floor}`);
     for (const [k, floor] of Object.entries(GAP_FLOORS)) if (cov[k] < floor) reasons.push(`gap floor missed: ${k}=${cov[k]} < ${floor}`);

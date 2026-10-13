@@ -21,7 +21,7 @@ rules:
   required_coverage_section(D, S): core.section(D, S, _), core.depth(D, S, 2), core.heading(D, S, H), H in ['AC coverage matrix', 'AC coverage']
 constraints:
   round4-evidence-reasons-required:
-    forall: required_coverage_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence required'), core.row(D, T, R)
+    forall: required_coverage_section(D, S), core.table(D, S, T), core.header_pos(D, T, 'Evidence required', _), core.row(D, T, R)
     require: core.cell(D, R, 'Evidence required'), evidence_reasons_required(D, R, 'Evidence required')
     severity: error
     profiles: [promotion]

@@ -91,7 +91,7 @@ constraints:
   # Every goal, open or closed, fails on a cell that is not a chain (owner ruling 2026-10-13: a
   # closed goal's text may be refined; it is not exempt).
   goal-evidence-reasons:
-    forall: evidence_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence'), core.row(D, T, R)
+    forall: evidence_section(D, S), core.table(D, S, T), core.header_pos(D, T, 'Evidence', _), core.row(D, T, R)
     require: core.cell(D, R, 'Evidence'), evidence_reasons(D, R, 'Evidence')
     severity: error
     profiles: [promotion]

@@ -25,7 +25,7 @@ rules:
   coverage_section(D, S): top(D, S), core.heading(D, S, H), H in ['AC coverage matrix', 'AC coverage']
 constraints:
   round4-evidence-column-reason:
-    forall: coverage_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence')
+    forall: coverage_section(D, S), core.table(D, S, T), core.header_pos(D, T, 'Evidence', _)
     require: evidence_column_reason(D, T, 'Evidence')
     severity: error
     profiles: [promotion]

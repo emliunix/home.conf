@@ -1,10 +1,891 @@
 {
   "cap": 172,
   "live": {
-    "questions": 0,
+    "questions": 528,
     "followups": 0,
-    "requests": 0,
-    "runs": []
+    "requests": 528,
+    "runs": [
+      {
+        "run": "fixtures:evidence_reasons/good@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7947,
+        "at": "2026-10-13T21:29:36.966Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8477,
+        "at": "2026-10-13T21:29:44.439Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8477,
+        "at": "2026-10-13T21:29:51.884Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8964,
+        "at": "2026-10-13T21:29:59.508Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8964,
+        "at": "2026-10-13T21:30:06.961Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8477,
+        "at": "2026-10-13T21:30:14.417Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8477,
+        "at": "2026-10-13T21:30:21.822Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7947,
+        "at": "2026-10-13T21:30:29.003Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-nopath@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7127,
+        "at": "2026-10-13T21:30:41.800Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-nopath@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7657,
+        "at": "2026-10-13T21:30:49.509Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-nopath@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7657,
+        "at": "2026-10-13T21:30:56.957Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-nopath@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8144,
+        "at": "2026-10-13T21:31:04.293Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-nopath@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8144,
+        "at": "2026-10-13T21:31:11.804Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-nopath@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7657,
+        "at": "2026-10-13T21:31:19.280Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-nopath@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7657,
+        "at": "2026-10-13T21:31:26.651Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-nopath@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7127,
+        "at": "2026-10-13T21:31:33.983Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-dangling@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7951,
+        "at": "2026-10-13T21:31:46.790Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-dangling@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8481,
+        "at": "2026-10-13T21:31:54.847Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-dangling@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8481,
+        "at": "2026-10-13T21:32:02.252Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-dangling@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8968,
+        "at": "2026-10-13T21:32:09.664Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-dangling@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8968,
+        "at": "2026-10-13T21:32:17.279Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-dangling@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8481,
+        "at": "2026-10-13T21:32:24.681Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-dangling@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8481,
+        "at": "2026-10-13T21:32:32.176Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/good-dangling@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7951,
+        "at": "2026-10-13T21:32:39.455Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/terse@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2763,
+        "at": "2026-10-13T21:32:52.056Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/terse@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3293,
+        "at": "2026-10-13T21:32:59.629Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/terse@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3293,
+        "at": "2026-10-13T21:33:07.723Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/terse@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3780,
+        "at": "2026-10-13T21:33:15.505Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/terse@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3780,
+        "at": "2026-10-13T21:33:22.958Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/terse@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3293,
+        "at": "2026-10-13T21:33:30.559Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/terse@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3293,
+        "at": "2026-10-13T21:33:37.840Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/terse@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2763,
+        "at": "2026-10-13T21:33:45.176Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-bare@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 1545,
+        "at": "2026-10-13T21:33:57.712Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-bare@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2075,
+        "at": "2026-10-13T21:34:05.028Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-bare@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2075,
+        "at": "2026-10-13T21:34:12.412Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-bare@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2562,
+        "at": "2026-10-13T21:34:19.734Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-bare@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2562,
+        "at": "2026-10-13T21:34:27.397Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-bare@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2075,
+        "at": "2026-10-13T21:34:34.745Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-bare@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2075,
+        "at": "2026-10-13T21:34:41.787Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-bare@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 1545,
+        "at": "2026-10-13T21:34:49.085Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-pointers@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 1927,
+        "at": "2026-10-13T21:35:01.115Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-pointers@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2457,
+        "at": "2026-10-13T21:35:08.132Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-pointers@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2457,
+        "at": "2026-10-13T21:35:15.305Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-pointers@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2944,
+        "at": "2026-10-13T21:35:22.472Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-pointers@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2944,
+        "at": "2026-10-13T21:35:29.745Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-pointers@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2457,
+        "at": "2026-10-13T21:35:37.013Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-pointers@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 2457,
+        "at": "2026-10-13T21:35:43.956Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-pointers@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 1927,
+        "at": "2026-10-13T21:35:51.122Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-restatement@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3073,
+        "at": "2026-10-13T21:36:03.283Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-restatement@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3603,
+        "at": "2026-10-13T21:36:10.667Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-restatement@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3603,
+        "at": "2026-10-13T21:36:18.019Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-restatement@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 4090,
+        "at": "2026-10-13T21:36:25.101Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-restatement@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 4090,
+        "at": "2026-10-13T21:36:32.148Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-restatement@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3603,
+        "at": "2026-10-13T21:36:39.241Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-restatement@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3603,
+        "at": "2026-10-13T21:36:46.595Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-restatement@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 3073,
+        "at": "2026-10-13T21:36:53.711Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-padded@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 6285,
+        "at": "2026-10-13T21:37:05.963Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-padded@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 6815,
+        "at": "2026-10-13T21:37:13.144Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-padded@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 6815,
+        "at": "2026-10-13T21:37:20.408Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-padded@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7302,
+        "at": "2026-10-13T21:37:27.731Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-padded@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7302,
+        "at": "2026-10-13T21:37:35.331Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-padded@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 6815,
+        "at": "2026-10-13T21:37:42.833Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-padded@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 6815,
+        "at": "2026-10-13T21:37:50.311Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-padded@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 6285,
+        "at": "2026-10-13T21:37:58.293Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-wrongrow@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7947,
+        "at": "2026-10-13T21:38:11.171Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-wrongrow@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8477,
+        "at": "2026-10-13T21:38:18.490Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-wrongrow@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8477,
+        "at": "2026-10-13T21:38:25.895Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-wrongrow@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8964,
+        "at": "2026-10-13T21:38:33.344Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-wrongrow@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8964,
+        "at": "2026-10-13T21:38:40.819Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-wrongrow@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8477,
+        "at": "2026-10-13T21:38:48.214Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-wrongrow@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8477,
+        "at": "2026-10-13T21:38:55.510Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/defective-wrongrow@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7947,
+        "at": "2026-10-13T21:39:02.922Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-bare@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 6845,
+        "at": "2026-10-13T21:39:15.702Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-bare@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7375,
+        "at": "2026-10-13T21:39:23.176Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-bare@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7375,
+        "at": "2026-10-13T21:39:30.754Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-bare@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7862,
+        "at": "2026-10-13T21:39:38.107Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-bare@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7862,
+        "at": "2026-10-13T21:39:45.600Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-bare@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7375,
+        "at": "2026-10-13T21:39:53.079Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-bare@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7375,
+        "at": "2026-10-13T21:40:00.754Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-bare@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 6845,
+        "at": "2026-10-13T21:40:08.335Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-pointer@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 6571,
+        "at": "2026-10-13T21:40:21.331Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-pointer@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7101,
+        "at": "2026-10-13T21:40:28.937Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-pointer@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7101,
+        "at": "2026-10-13T21:40:36.398Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-pointer@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7588,
+        "at": "2026-10-13T21:40:43.818Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-pointer@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7588,
+        "at": "2026-10-13T21:40:51.500Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-pointer@per-atom#D",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7101,
+        "at": "2026-10-13T21:40:59.289Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-pointer@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7101,
+        "at": "2026-10-13T21:41:07.032Z"
+      },
+      {
+        "run": "fixtures:evidence_reasons/mixed-one-pointer@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 6571,
+        "at": "2026-10-13T21:41:15.124Z"
+      }
+    ]
   },
   "mock": {
     "projections": {

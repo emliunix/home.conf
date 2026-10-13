@@ -1,4 +1,4 @@
-:- discontiguous section/3, heading/3, depth/3, order/3, meta/3, selected/2, child/3, descendant/3, nests/3, ref/4, resolves/2, dangling/4, spec_unresolved/4, table/3, header/3, row/3, cell/3.
+:- discontiguous section/3, heading/3, depth/3, order/3, meta/3, selected/2, child/3, descendant/3, nests/3, ref/4, resolves/2, dangling/4, spec_unresolved/4, table/3, header_pos/4, row/3, cell/3.
 
 % design/01-goal-file-workstreams-phases.md (design)
 section('design/01-goal-file-workstreams-phases.md', '01--workstreams-phases-and-the-three-graph-funnel', root).
@@ -138,26 +138,26 @@ child('design/01-goal-file-workstreams-phases.md', '01--workstreams-phases-and-t
 descendant('design/01-goal-file-workstreams-phases.md', '01--workstreams-phases-and-the-three-graph-funnel', status).
 nests('design/01-goal-file-workstreams-phases.md', '01--workstreams-phases-and-the-three-graph-funnel', status).
 table('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule', 'generative-edge-rule#table1').
-header('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'Signal').
-header('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'Generative when').
+header_pos('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'Signal', 1).
+header_pos('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'Generative when', 2).
 table('design/01-goal-file-workstreams-phases.md', 'three-graph-layering', 'three-graph-layering#table1').
-header('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Graph').
-header('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Nodes').
-header('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Edges').
-header('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'When rendered').
-header('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Edge label').
+header_pos('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Graph', 1).
+header_pos('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Nodes', 2).
+header_pos('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Edges', 3).
+header_pos('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'When rendered', 4).
+header_pos('design/01-goal-file-workstreams-phases.md', 'three-graph-layering#table1', 'Edge label', 5).
 table('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart', 'per-workstream-workflow-flowchart#table1').
-header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'Node').
-header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'Type').
-header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'What it is').
+header_pos('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'Node', 1).
+header_pos('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'Type', 2).
+header_pos('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table1', 'What it is', 3).
 table('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart', 'per-workstream-workflow-flowchart#table2').
-header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'Label').
-header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'From').
-header('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'Routes to').
+header_pos('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'Label', 1).
+header_pos('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'From', 2).
+header_pos('design/01-goal-file-workstreams-phases.md', 'per-workstream-workflow-flowchart#table2', 'Routes to', 3).
 table('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability', 'resource-analysis-and-parallelizability#table1').
-header('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'Resource node').
-header('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'Position').
-header('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'Purpose').
+header_pos('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'Resource node', 1).
+header_pos('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'Position', 2).
+header_pos('design/01-goal-file-workstreams-phases.md', 'resource-analysis-and-parallelizability#table1', 'Purpose', 3).
 row('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#table1', 'generative-edge-rule#row1').
 cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row1', 'Signal').
 cell('design/01-goal-file-workstreams-phases.md', 'generative-edge-rule#row1', 'Generative when').
@@ -466,23 +466,23 @@ child('design/02-programmatic-document-contract-verification.md', '02---programm
 descendant('design/02-programmatic-document-contract-verification.md', '02---programmatic-document-contract-verification', status).
 nests('design/02-programmatic-document-contract-verification.md', '02---programmatic-document-contract-verification', status).
 table('design/02-programmatic-document-contract-verification.md', 'authority-model', 'authority-model#table1').
-header('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'Artifact').
-header('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'Authority').
+header_pos('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'Artifact', 1).
+header_pos('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'Authority', 2).
 table('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure', 'snapshots-and-affected-closure#table1').
-header('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Mode').
-header('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Baseline').
-header('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Candidate').
-header('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Changed roots and graph universe').
+header_pos('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Mode', 1).
+header_pos('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Baseline', 2).
+header_pos('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Candidate', 3).
+header_pos('design/02-programmatic-document-contract-verification.md', 'snapshots-and-affected-closure#table1', 'Changed roots and graph universe', 4).
 table('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices', 'shared-verification-practices#table1').
-header('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table1', 'Level').
-header('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table1', 'Evidence').
+header_pos('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table1', 'Level', 1).
+header_pos('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table1', 'Evidence', 2).
 table('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices', 'shared-verification-practices#table2').
-header('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table2', 'Manifest IDs').
-header('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table2', 'Target owner in this change').
+header_pos('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table2', 'Manifest IDs', 1).
+header_pos('design/02-programmatic-document-contract-verification.md', 'shared-verification-practices#table2', 'Target owner in this change', 2).
 table('design/02-programmatic-document-contract-verification.md', 'verification-design', 'verification-design#table1').
-header('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'Property').
-header('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'Observable failure witness').
-header('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'Command').
+header_pos('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'Property', 1).
+header_pos('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'Observable failure witness', 2).
+header_pos('design/02-programmatic-document-contract-verification.md', 'verification-design#table1', 'Command', 3).
 row('design/02-programmatic-document-contract-verification.md', 'authority-model#table1', 'authority-model#row1').
 cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row1', 'Artifact').
 cell('design/02-programmatic-document-contract-verification.md', 'authority-model#row1', 'Authority').
@@ -744,16 +744,16 @@ child('design/03-companion-driven-document-verification.md', '03---companion-dri
 descendant('design/03-companion-driven-document-verification.md', '03---companion-driven-document-verification', status).
 nests('design/03-companion-driven-document-verification.md', '03---companion-driven-document-verification', status).
 table('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract', 'trigger-and-snapshot-contract#table1').
-header('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'Changed path').
-header('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'Affected root').
+header_pos('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'Changed path', 1).
+header_pos('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'Affected root', 2).
 table('design/03-companion-driven-document-verification.md', 'companion-contract', 'companion-contract#table1').
-header('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'Field').
-header('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'Precedence').
-header('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'Reference base or fallback').
+header_pos('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'Field', 1).
+header_pos('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'Precedence', 2).
+header_pos('design/03-companion-driven-document-verification.md', 'companion-contract#table1', 'Reference base or fallback', 3).
 table('design/03-companion-driven-document-verification.md', 'verification-design', 'verification-design#table1').
-header('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'Property').
-header('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'Failure witness').
-header('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'Command').
+header_pos('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'Property', 1).
+header_pos('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'Failure witness', 2).
+header_pos('design/03-companion-driven-document-verification.md', 'verification-design#table1', 'Command', 3).
 row('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#table1', 'trigger-and-snapshot-contract#row1').
 cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row1', 'Changed path').
 cell('design/03-companion-driven-document-verification.md', 'trigger-and-snapshot-contract#row1', 'Affected root').
@@ -988,9 +988,9 @@ child('design/04-modular-verification-language.md', '04---modular-verification-l
 descendant('design/04-modular-verification-language.md', '04---modular-verification-language', status).
 nests('design/04-modular-verification-language.md', '04---modular-verification-language', status).
 table('design/04-modular-verification-language.md', 'verification-design', 'verification-design#table1').
-header('design/04-modular-verification-language.md', 'verification-design#table1', 'Property').
-header('design/04-modular-verification-language.md', 'verification-design#table1', 'Failure witness').
-header('design/04-modular-verification-language.md', 'verification-design#table1', 'Command').
+header_pos('design/04-modular-verification-language.md', 'verification-design#table1', 'Property', 1).
+header_pos('design/04-modular-verification-language.md', 'verification-design#table1', 'Failure witness', 2).
+header_pos('design/04-modular-verification-language.md', 'verification-design#table1', 'Command', 3).
 row('design/04-modular-verification-language.md', 'verification-design#table1', 'verification-design#row1').
 cell('design/04-modular-verification-language.md', 'verification-design#row1', 'Property').
 cell('design/04-modular-verification-language.md', 'verification-design#row1', 'Failure witness').
@@ -1202,9 +1202,9 @@ child('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', st
 descendant('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', status).
 nests('design/05-trusted-kernel-redesign.md', '05---trusted-kernel-redesign', status).
 table('design/05-trusted-kernel-redesign.md', 'verification-design', 'verification-design#table1').
-header('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'Property').
-header('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'Failure witness').
-header('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'Command').
+header_pos('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'Property', 1).
+header_pos('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'Failure witness', 2).
+header_pos('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'Command', 3).
 row('design/05-trusted-kernel-redesign.md', 'verification-design#table1', 'verification-design#row1').
 cell('design/05-trusted-kernel-redesign.md', 'verification-design#row1', 'Property').
 cell('design/05-trusted-kernel-redesign.md', 'verification-design#row1', 'Failure witness').
@@ -1282,9 +1282,9 @@ child('docs/modules/language/contract.md', 'language--contract', 'public-surface
 descendant('docs/modules/language/contract.md', 'language--contract', 'public-surface').
 nests('docs/modules/language/contract.md', 'language--contract', 'public-surface').
 table('docs/modules/language/contract.md', 'public-surface', 'public-surface#table1').
-header('docs/modules/language/contract.md', 'public-surface#table1', 'Module').
-header('docs/modules/language/contract.md', 'public-surface#table1', 'Exports').
-header('docs/modules/language/contract.md', 'public-surface#table1', 'Rule callers rely on').
+header_pos('docs/modules/language/contract.md', 'public-surface#table1', 'Module', 1).
+header_pos('docs/modules/language/contract.md', 'public-surface#table1', 'Exports', 2).
+header_pos('docs/modules/language/contract.md', 'public-surface#table1', 'Rule callers rely on', 3).
 row('docs/modules/language/contract.md', 'public-surface#table1', 'public-surface#row1').
 cell('docs/modules/language/contract.md', 'public-surface#row1', 'Module').
 cell('docs/modules/language/contract.md', 'public-surface#row1', 'Exports').
@@ -1338,9 +1338,9 @@ order('docs/modules/language/properties.md', 'language--properties', 1).
 selected('docs/modules/language/properties.md', 'language--properties').
 meta('docs/modules/language/properties.md', kind, 'module-properties').
 table('docs/modules/language/properties.md', 'language--properties', 'language--properties#table1').
-header('docs/modules/language/properties.md', 'language--properties#table1', 'Id').
-header('docs/modules/language/properties.md', 'language--properties#table1', 'Property').
-header('docs/modules/language/properties.md', 'language--properties#table1', 'Statement').
+header_pos('docs/modules/language/properties.md', 'language--properties#table1', 'Id', 1).
+header_pos('docs/modules/language/properties.md', 'language--properties#table1', 'Property', 2).
+header_pos('docs/modules/language/properties.md', 'language--properties#table1', 'Statement', 3).
 row('docs/modules/language/properties.md', 'language--properties#table1', 'language--properties#row1').
 cell('docs/modules/language/properties.md', 'language--properties#row1', 'Id').
 cell('docs/modules/language/properties.md', 'language--properties#row1', 'Property').
@@ -1366,9 +1366,9 @@ order('docs/modules/language/verification.md', 'language--verification', 1).
 selected('docs/modules/language/verification.md', 'language--verification').
 meta('docs/modules/language/verification.md', kind, 'module-verification').
 table('docs/modules/language/verification.md', 'language--verification', 'language--verification#table1').
-header('docs/modules/language/verification.md', 'language--verification#table1', 'Property').
-header('docs/modules/language/verification.md', 'language--verification#table1', 'Check (deciding test)').
-header('docs/modules/language/verification.md', 'language--verification#table1', 'Limit').
+header_pos('docs/modules/language/verification.md', 'language--verification#table1', 'Property', 1).
+header_pos('docs/modules/language/verification.md', 'language--verification#table1', 'Check (deciding test)', 2).
+header_pos('docs/modules/language/verification.md', 'language--verification#table1', 'Limit', 3).
 row('docs/modules/language/verification.md', 'language--verification#table1', 'language--verification#row1').
 cell('docs/modules/language/verification.md', 'language--verification#row1', 'Property').
 cell('docs/modules/language/verification.md', 'language--verification#row1', 'Check (deciding test)').
@@ -1412,9 +1412,9 @@ child('docs/modules/oracles/contract.md', 'oracles--contract', 'public-surface')
 descendant('docs/modules/oracles/contract.md', 'oracles--contract', 'public-surface').
 nests('docs/modules/oracles/contract.md', 'oracles--contract', 'public-surface').
 table('docs/modules/oracles/contract.md', 'public-surface', 'public-surface#table1').
-header('docs/modules/oracles/contract.md', 'public-surface#table1', 'Module').
-header('docs/modules/oracles/contract.md', 'public-surface#table1', 'Exports').
-header('docs/modules/oracles/contract.md', 'public-surface#table1', 'Rule callers rely on').
+header_pos('docs/modules/oracles/contract.md', 'public-surface#table1', 'Module', 1).
+header_pos('docs/modules/oracles/contract.md', 'public-surface#table1', 'Exports', 2).
+header_pos('docs/modules/oracles/contract.md', 'public-surface#table1', 'Rule callers rely on', 3).
 row('docs/modules/oracles/contract.md', 'public-surface#table1', 'public-surface#row1').
 cell('docs/modules/oracles/contract.md', 'public-surface#row1', 'Module').
 cell('docs/modules/oracles/contract.md', 'public-surface#row1', 'Exports').
@@ -1468,9 +1468,9 @@ order('docs/modules/oracles/properties.md', 'oracles--properties', 1).
 selected('docs/modules/oracles/properties.md', 'oracles--properties').
 meta('docs/modules/oracles/properties.md', kind, 'module-properties').
 table('docs/modules/oracles/properties.md', 'oracles--properties', 'oracles--properties#table1').
-header('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'Id').
-header('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'Property').
-header('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'Statement').
+header_pos('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'Id', 1).
+header_pos('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'Property', 2).
+header_pos('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'Statement', 3).
 row('docs/modules/oracles/properties.md', 'oracles--properties#table1', 'oracles--properties#row1').
 cell('docs/modules/oracles/properties.md', 'oracles--properties#row1', 'Id').
 cell('docs/modules/oracles/properties.md', 'oracles--properties#row1', 'Property').
@@ -1500,9 +1500,9 @@ order('docs/modules/oracles/verification.md', 'oracles--verification', 1).
 selected('docs/modules/oracles/verification.md', 'oracles--verification').
 meta('docs/modules/oracles/verification.md', kind, 'module-verification').
 table('docs/modules/oracles/verification.md', 'oracles--verification', 'oracles--verification#table1').
-header('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'Property').
-header('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'Check (deciding test)').
-header('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'Limit').
+header_pos('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'Property', 1).
+header_pos('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'Check (deciding test)', 2).
+header_pos('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'Limit', 3).
 row('docs/modules/oracles/verification.md', 'oracles--verification#table1', 'oracles--verification#row1').
 cell('docs/modules/oracles/verification.md', 'oracles--verification#row1', 'Property').
 cell('docs/modules/oracles/verification.md', 'oracles--verification#row1', 'Check (deciding test)').
@@ -1548,9 +1548,9 @@ child('docs/modules/report/contract.md', 'report--contract', 'public-surface').
 descendant('docs/modules/report/contract.md', 'report--contract', 'public-surface').
 nests('docs/modules/report/contract.md', 'report--contract', 'public-surface').
 table('docs/modules/report/contract.md', 'public-surface', 'public-surface#table1').
-header('docs/modules/report/contract.md', 'public-surface#table1', 'Module').
-header('docs/modules/report/contract.md', 'public-surface#table1', 'Exports').
-header('docs/modules/report/contract.md', 'public-surface#table1', 'Rule callers rely on').
+header_pos('docs/modules/report/contract.md', 'public-surface#table1', 'Module', 1).
+header_pos('docs/modules/report/contract.md', 'public-surface#table1', 'Exports', 2).
+header_pos('docs/modules/report/contract.md', 'public-surface#table1', 'Rule callers rely on', 3).
 row('docs/modules/report/contract.md', 'public-surface#table1', 'public-surface#row1').
 cell('docs/modules/report/contract.md', 'public-surface#row1', 'Module').
 cell('docs/modules/report/contract.md', 'public-surface#row1', 'Exports').
@@ -1608,9 +1608,9 @@ order('docs/modules/report/properties.md', 'report--properties', 1).
 selected('docs/modules/report/properties.md', 'report--properties').
 meta('docs/modules/report/properties.md', kind, 'module-properties').
 table('docs/modules/report/properties.md', 'report--properties', 'report--properties#table1').
-header('docs/modules/report/properties.md', 'report--properties#table1', 'Id').
-header('docs/modules/report/properties.md', 'report--properties#table1', 'Property').
-header('docs/modules/report/properties.md', 'report--properties#table1', 'Statement').
+header_pos('docs/modules/report/properties.md', 'report--properties#table1', 'Id', 1).
+header_pos('docs/modules/report/properties.md', 'report--properties#table1', 'Property', 2).
+header_pos('docs/modules/report/properties.md', 'report--properties#table1', 'Statement', 3).
 row('docs/modules/report/properties.md', 'report--properties#table1', 'report--properties#row1').
 cell('docs/modules/report/properties.md', 'report--properties#row1', 'Id').
 cell('docs/modules/report/properties.md', 'report--properties#row1', 'Property').
@@ -1640,9 +1640,9 @@ order('docs/modules/report/verification.md', 'report--verification', 1).
 selected('docs/modules/report/verification.md', 'report--verification').
 meta('docs/modules/report/verification.md', kind, 'module-verification').
 table('docs/modules/report/verification.md', 'report--verification', 'report--verification#table1').
-header('docs/modules/report/verification.md', 'report--verification#table1', 'Property').
-header('docs/modules/report/verification.md', 'report--verification#table1', 'Check (deciding test)').
-header('docs/modules/report/verification.md', 'report--verification#table1', 'Limit').
+header_pos('docs/modules/report/verification.md', 'report--verification#table1', 'Property', 1).
+header_pos('docs/modules/report/verification.md', 'report--verification#table1', 'Check (deciding test)', 2).
+header_pos('docs/modules/report/verification.md', 'report--verification#table1', 'Limit', 3).
 row('docs/modules/report/verification.md', 'report--verification#table1', 'report--verification#row1').
 cell('docs/modules/report/verification.md', 'report--verification#row1', 'Property').
 cell('docs/modules/report/verification.md', 'report--verification#row1', 'Check (deciding test)').
@@ -1690,9 +1690,9 @@ child('docs/modules/selection/contract.md', 'selection--contract', 'public-surfa
 descendant('docs/modules/selection/contract.md', 'selection--contract', 'public-surface').
 nests('docs/modules/selection/contract.md', 'selection--contract', 'public-surface').
 table('docs/modules/selection/contract.md', 'public-surface', 'public-surface#table1').
-header('docs/modules/selection/contract.md', 'public-surface#table1', 'Module').
-header('docs/modules/selection/contract.md', 'public-surface#table1', 'Exports').
-header('docs/modules/selection/contract.md', 'public-surface#table1', 'Rule callers rely on').
+header_pos('docs/modules/selection/contract.md', 'public-surface#table1', 'Module', 1).
+header_pos('docs/modules/selection/contract.md', 'public-surface#table1', 'Exports', 2).
+header_pos('docs/modules/selection/contract.md', 'public-surface#table1', 'Rule callers rely on', 3).
 row('docs/modules/selection/contract.md', 'public-surface#table1', 'public-surface#row1').
 cell('docs/modules/selection/contract.md', 'public-surface#row1', 'Module').
 cell('docs/modules/selection/contract.md', 'public-surface#row1', 'Exports').
@@ -1738,9 +1738,9 @@ order('docs/modules/selection/properties.md', 'selection--properties', 1).
 selected('docs/modules/selection/properties.md', 'selection--properties').
 meta('docs/modules/selection/properties.md', kind, 'module-properties').
 table('docs/modules/selection/properties.md', 'selection--properties', 'selection--properties#table1').
-header('docs/modules/selection/properties.md', 'selection--properties#table1', 'Id').
-header('docs/modules/selection/properties.md', 'selection--properties#table1', 'Property').
-header('docs/modules/selection/properties.md', 'selection--properties#table1', 'Statement').
+header_pos('docs/modules/selection/properties.md', 'selection--properties#table1', 'Id', 1).
+header_pos('docs/modules/selection/properties.md', 'selection--properties#table1', 'Property', 2).
+header_pos('docs/modules/selection/properties.md', 'selection--properties#table1', 'Statement', 3).
 row('docs/modules/selection/properties.md', 'selection--properties#table1', 'selection--properties#row1').
 cell('docs/modules/selection/properties.md', 'selection--properties#row1', 'Id').
 cell('docs/modules/selection/properties.md', 'selection--properties#row1', 'Property').
@@ -1766,9 +1766,9 @@ order('docs/modules/selection/verification.md', 'selection--verification', 1).
 selected('docs/modules/selection/verification.md', 'selection--verification').
 meta('docs/modules/selection/verification.md', kind, 'module-verification').
 table('docs/modules/selection/verification.md', 'selection--verification', 'selection--verification#table1').
-header('docs/modules/selection/verification.md', 'selection--verification#table1', 'Property').
-header('docs/modules/selection/verification.md', 'selection--verification#table1', 'Check (deciding test)').
-header('docs/modules/selection/verification.md', 'selection--verification#table1', 'Limit').
+header_pos('docs/modules/selection/verification.md', 'selection--verification#table1', 'Property', 1).
+header_pos('docs/modules/selection/verification.md', 'selection--verification#table1', 'Check (deciding test)', 2).
+header_pos('docs/modules/selection/verification.md', 'selection--verification#table1', 'Limit', 3).
 row('docs/modules/selection/verification.md', 'selection--verification#table1', 'selection--verification#row1').
 cell('docs/modules/selection/verification.md', 'selection--verification#row1', 'Property').
 cell('docs/modules/selection/verification.md', 'selection--verification#row1', 'Check (deciding test)').
@@ -1995,13 +1995,13 @@ child('goals/01-document-verification-and-skill-transfer.md', 'document-verifica
 descendant('goals/01-document-verification-and-skill-transfer.md', 'document-verification-and-skill-transfer---closed-green-2026-09-24', worklog).
 nests('goals/01-document-verification-and-skill-transfer.md', 'document-verification-and-skill-transfer---closed-green-2026-09-24', worklog).
 table('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage', 'ac-coverage#table1').
-header('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Row').
-header('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Covering design(s)').
-header('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Phase').
-header('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Locks when').
+header_pos('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Row', 1).
+header_pos('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Covering design(s)', 2).
+header_pos('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Phase', 3).
+header_pos('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'Locks when', 4).
 table('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence', 'acceptance-evidence#table1').
-header('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'Row').
-header('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'Evidence').
+header_pos('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'Row', 1).
+header_pos('goals/01-document-verification-and-skill-transfer.md', 'acceptance-evidence#table1', 'Evidence', 2).
 row('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#table1', 'ac-coverage#row1').
 cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row1', 'Row').
 cell('goals/01-document-verification-and-skill-transfer.md', 'ac-coverage#row1', 'Covering design(s)').
@@ -2268,8 +2268,8 @@ child('goals/02-companion-driven-document-verification.md', 'companion-driven-do
 descendant('goals/02-companion-driven-document-verification.md', 'companion-driven-document-verification---closed-green-2026-09-24', worklog).
 nests('goals/02-companion-driven-document-verification.md', 'companion-driven-document-verification---closed-green-2026-09-24', worklog).
 table('goals/02-companion-driven-document-verification.md', 'ac-coverage', 'ac-coverage#table1').
-header('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'Row').
-header('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'Evidence required').
+header_pos('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'Row', 1).
+header_pos('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'Evidence required', 2).
 row('goals/02-companion-driven-document-verification.md', 'ac-coverage#table1', 'ac-coverage#row1').
 cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row1', 'Row').
 cell('goals/02-companion-driven-document-verification.md', 'ac-coverage#row1', 'Evidence required').
@@ -2465,8 +2465,8 @@ child('goals/03-modular-verification-language.md', 'modular-verification-languag
 descendant('goals/03-modular-verification-language.md', 'modular-verification-language---open', worklog).
 nests('goals/03-modular-verification-language.md', 'modular-verification-language---open', worklog).
 table('goals/03-modular-verification-language.md', 'ac-coverage', 'ac-coverage#table1').
-header('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'Row').
-header('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'Evidence required').
+header_pos('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'Row', 1).
+header_pos('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'Evidence required', 2).
 row('goals/03-modular-verification-language.md', 'ac-coverage#table1', 'ac-coverage#row1').
 cell('goals/03-modular-verification-language.md', 'ac-coverage#row1', 'Row').
 cell('goals/03-modular-verification-language.md', 'ac-coverage#row1', 'Evidence required').
@@ -2599,9 +2599,9 @@ child('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', work
 descendant('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', worklog).
 nests('goals/04-trusted-kernel.md', 'trusted-kernel-for-doc-verify---open', worklog).
 table('goals/04-trusted-kernel.md', 'ac-coverage', 'ac-coverage#table1').
-header('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'Requirement').
-header('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'Design').
-header('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'Evidence').
+header_pos('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'Requirement', 1).
+header_pos('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'Design', 2).
+header_pos('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'Evidence', 3).
 row('goals/04-trusted-kernel.md', 'ac-coverage#table1', 'ac-coverage#row1').
 cell('goals/04-trusted-kernel.md', 'ac-coverage#row1', 'Requirement').
 cell('goals/04-trusted-kernel.md', 'ac-coverage#row1', 'Design').

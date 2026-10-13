@@ -149,7 +149,7 @@ module: spine
 params:
   key_headers: ['Requirement', 'Row']
 rules:
-  key_col(D, T, K): core.header(D, T, K), K in $key_headers
+  key_col(D, T, K): core.header_pos(D, T, K, _), K in $key_headers
   claim(D, R, S): core.row(D, T, R), key_col(D, T, K), core.cell_text(D, R, K, Key), core.section_keyed(D, Key, S)
 constraints:
   every-row-has-a-claim:

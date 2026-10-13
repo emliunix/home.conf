@@ -54,7 +54,7 @@ oracles:
     evidence: core.cell(D, R, C)
     context: [P]
 rules:
-  addressed(D, R, C, P): core.row(D, T, R), core.header(D, T, C), core.cell_path(D, R, C, [title, heading, row_key('Requirement'), column], P)
+  addressed(D, R, C, P): core.row(D, T, R), core.header_pos(D, T, C, _), core.cell_path(D, R, C, [title, heading, row_key('Requirement'), column], P)
 constraints:
   c:
     forall: core.row(D, T, R)

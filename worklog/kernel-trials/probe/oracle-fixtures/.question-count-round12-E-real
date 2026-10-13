@@ -1,10 +1,251 @@
 {
   "cap": 78,
   "live": {
-    "questions": 0,
+    "questions": 180,
     "followups": 0,
-    "requests": 0,
-    "runs": []
+    "requests": 180,
+    "runs": [
+      {
+        "run": "real-cells:labels-r10.yaml:goals/01-document-verification-and-skill-transfer.md@per-atom#N",
+        "main": 9,
+        "followups": 0,
+        "requests": 9,
+        "asked": 9,
+        "worst": 9,
+        "bytes": 5746,
+        "at": "2026-10-13T21:27:00.179Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/01-document-verification-and-skill-transfer.md@per-atom#A",
+        "main": 9,
+        "followups": 0,
+        "requests": 9,
+        "asked": 9,
+        "worst": 9,
+        "bytes": 6914,
+        "at": "2026-10-13T21:27:07.371Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/01-document-verification-and-skill-transfer.md@per-atom#C",
+        "main": 9,
+        "followups": 0,
+        "requests": 9,
+        "asked": 9,
+        "worst": 9,
+        "bytes": 7755,
+        "at": "2026-10-13T21:27:14.044Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/01-document-verification-and-skill-transfer.md@per-atom#C",
+        "main": 9,
+        "followups": 0,
+        "requests": 9,
+        "asked": 9,
+        "worst": 9,
+        "bytes": 7755,
+        "at": "2026-10-13T21:27:20.697Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/01-document-verification-and-skill-transfer.md@per-atom#A",
+        "main": 9,
+        "followups": 0,
+        "requests": 9,
+        "asked": 9,
+        "worst": 9,
+        "bytes": 6914,
+        "at": "2026-10-13T21:27:27.323Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/01-document-verification-and-skill-transfer.md@per-atom#N",
+        "main": 9,
+        "followups": 0,
+        "requests": 9,
+        "asked": 9,
+        "worst": 9,
+        "bytes": 5746,
+        "at": "2026-10-13T21:27:34.054Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/02-companion-driven-document-verification.md@per-atom#N",
+        "main": 8,
+        "followups": 0,
+        "requests": 8,
+        "asked": 8,
+        "worst": 8,
+        "bytes": 5674,
+        "at": "2026-10-13T21:27:40.342Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/02-companion-driven-document-verification.md@per-atom#A",
+        "main": 8,
+        "followups": 0,
+        "requests": 8,
+        "asked": 8,
+        "worst": 8,
+        "bytes": 5674,
+        "at": "2026-10-13T21:27:46.781Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/02-companion-driven-document-verification.md@per-atom#C",
+        "main": 8,
+        "followups": 0,
+        "requests": 8,
+        "asked": 8,
+        "worst": 8,
+        "bytes": 5674,
+        "at": "2026-10-13T21:27:53.202Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/02-companion-driven-document-verification.md@per-atom#C",
+        "main": 8,
+        "followups": 0,
+        "requests": 8,
+        "asked": 8,
+        "worst": 8,
+        "bytes": 5674,
+        "at": "2026-10-13T21:27:59.404Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/02-companion-driven-document-verification.md@per-atom#A",
+        "main": 8,
+        "followups": 0,
+        "requests": 8,
+        "asked": 8,
+        "worst": 8,
+        "bytes": 5674,
+        "at": "2026-10-13T21:28:05.899Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/02-companion-driven-document-verification.md@per-atom#N",
+        "main": 8,
+        "followups": 0,
+        "requests": 8,
+        "asked": 8,
+        "worst": 8,
+        "bytes": 5674,
+        "at": "2026-10-13T21:28:12.480Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/03-modular-verification-language.md@per-atom#N",
+        "main": 7,
+        "followups": 0,
+        "requests": 7,
+        "asked": 7,
+        "worst": 7,
+        "bytes": 3751,
+        "at": "2026-10-13T21:28:18.473Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/03-modular-verification-language.md@per-atom#A",
+        "main": 7,
+        "followups": 0,
+        "requests": 7,
+        "asked": 7,
+        "worst": 7,
+        "bytes": 3751,
+        "at": "2026-10-13T21:28:24.516Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/03-modular-verification-language.md@per-atom#C",
+        "main": 7,
+        "followups": 0,
+        "requests": 7,
+        "asked": 7,
+        "worst": 7,
+        "bytes": 3751,
+        "at": "2026-10-13T21:28:30.494Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/03-modular-verification-language.md@per-atom#C",
+        "main": 7,
+        "followups": 0,
+        "requests": 7,
+        "asked": 7,
+        "worst": 7,
+        "bytes": 3751,
+        "at": "2026-10-13T21:28:36.356Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/03-modular-verification-language.md@per-atom#A",
+        "main": 7,
+        "followups": 0,
+        "requests": 7,
+        "asked": 7,
+        "worst": 7,
+        "bytes": 3751,
+        "at": "2026-10-13T21:28:42.251Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/03-modular-verification-language.md@per-atom#N",
+        "main": 7,
+        "followups": 0,
+        "requests": 7,
+        "asked": 7,
+        "worst": 7,
+        "bytes": 3751,
+        "at": "2026-10-13T21:28:48.139Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/04-trusted-kernel.md@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7947,
+        "at": "2026-10-13T21:28:53.804Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/04-trusted-kernel.md@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8477,
+        "at": "2026-10-13T21:28:59.684Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/04-trusted-kernel.md@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8964,
+        "at": "2026-10-13T21:29:05.506Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/04-trusted-kernel.md@per-atom#C",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8964,
+        "at": "2026-10-13T21:29:11.197Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/04-trusted-kernel.md@per-atom#A",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 8477,
+        "at": "2026-10-13T21:29:16.742Z"
+      },
+      {
+        "run": "real-cells:labels-r10.yaml:goals/04-trusted-kernel.md@per-atom#N",
+        "main": 6,
+        "followups": 0,
+        "requests": 6,
+        "asked": 6,
+        "worst": 6,
+        "bytes": 7947,
+        "at": "2026-10-13T21:29:22.334Z"
+      }
+    ]
   },
   "mock": {
     "projections": {

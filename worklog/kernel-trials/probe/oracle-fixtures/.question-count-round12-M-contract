@@ -1,10 +1,251 @@
 {
   "cap": 221,
   "live": {
-    "questions": 0,
+    "questions": 16,
     "followups": 0,
-    "requests": 0,
-    "runs": []
+    "requests": 16,
+    "runs": [
+      {
+        "run": "fixtures:module_contract_pages/good@per-atom#N",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 486,
+        "at": "2026-10-13T21:48:03.574Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/good@per-atom#A",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 594,
+        "at": "2026-10-13T21:48:09.376Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/good@per-atom#A",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 594,
+        "at": "2026-10-13T21:48:14.829Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/good@per-atom#N",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 486,
+        "at": "2026-10-13T21:48:20.315Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/good-near@per-atom#N",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 774,
+        "at": "2026-10-13T21:48:30.495Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/good-near@per-atom#A",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 882,
+        "at": "2026-10-13T21:48:35.979Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/good-near@per-atom#A",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 882,
+        "at": "2026-10-13T21:48:41.395Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/good-near@per-atom#N",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 774,
+        "at": "2026-10-13T21:48:46.874Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-1@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:48:56.213Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-1@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:49:00.867Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-1@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:49:05.500Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-1@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:49:10.190Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-2@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:49:19.441Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-2@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:49:24.095Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-2@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:49:28.698Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-2@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:49:33.365Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-3@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:49:42.640Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-3@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:49:47.275Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-3@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:49:51.858Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/subtle-3@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:49:56.469Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/gross@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:50:05.703Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/gross@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:50:10.349Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/gross@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:50:14.934Z"
+      },
+      {
+        "run": "fixtures:module_contract_pages/gross@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T21:50:19.564Z"
+      }
+    ]
   },
   "mock": {
     "projections": {

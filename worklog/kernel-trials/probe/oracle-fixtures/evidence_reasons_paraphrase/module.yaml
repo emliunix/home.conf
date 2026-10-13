@@ -24,7 +24,7 @@ rules:
   coverage_section(D, S): top(D, S), core.heading(D, S, H), H in ['AC coverage matrix', 'AC coverage']
 constraints:
   round4-evidence-reasons-paraphrase:
-    forall: coverage_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence'), core.row(D, T, R)
+    forall: coverage_section(D, S), core.table(D, S, T), core.header_pos(D, T, 'Evidence', _), core.row(D, T, R)
     require: core.cell(D, R, 'Evidence'), evidence_reasons_paraphrase(D, R, 'Evidence')
     severity: error
     profiles: [promotion]

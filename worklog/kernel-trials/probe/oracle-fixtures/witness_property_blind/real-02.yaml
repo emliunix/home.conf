@@ -42,7 +42,7 @@ oracles:
     max_bytes: 6000
 rules:
   verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
-  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+  witness_header(D, T, C): core.header_pos(D, T, C, _), C in ['Failure witness', 'Observable failure witness']
 constraints:
   # Measurement only, as ./module.yaml: the atom is demanded for every witness row; `none` fails it.
   round9-witness-property-blind-d02:

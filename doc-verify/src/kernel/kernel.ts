@@ -43,7 +43,7 @@ export class PrologError extends Error {
 export const SANDBOX_PRIMITIVES = [
   "core_section(_,_,_)", "core_heading(_,_,_)", "core_depth(_,_,_)", "core_order(_,_,_)", "core_meta(_,_,_)",
   "core_selected(_,_)", "core_ref(_,_,_,_)", "core_resolves(_,_)", "core_child(_,_,_)", "core_descendant(_,_,_)",
-  "core_table(_,_,_)", "core_header(_,_,_)", "core_row(_,_,_)", "core_cell(_,_,_)", "core_nests(_,_,_)",
+  "core_table(_,_,_)", "core_row(_,_,_)", "core_cell(_,_,_)", "core_nests(_,_,_)",
   "core_dangling(_,_,_,_)", "core_spec_unresolved(_,_,_,_)", "core_section_ref(_,_,_,_,_)",
   "core_label(_,_)", "core_not_label(_,_)", "core_choose(_,_,_)",
   "core_matches(_,_)", "core_not_matches(_,_)", "core_cmp(_,_,_)", "core_present(_,_,_)",

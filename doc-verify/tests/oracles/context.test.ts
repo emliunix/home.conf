@@ -56,7 +56,7 @@ oracles:
     threshold: 0.5
     max_bytes: 4000
 ${extra}rules:
-  addressed(D, R, C, P): core.row(D, T, R), core.header(D, T, C), core.cell_path(D, R, C, [title, heading, row_key('Requirement'), column], P)
+  addressed(D, R, C, P): core.row(D, T, R), core.header_pos(D, T, C, _), core.cell_path(D, R, C, [title, heading, row_key('Requirement'), column], P)
 constraints:
   evidence-reasons:
     forall: core.table(D, S, T), core.row(D, T, R)
@@ -152,7 +152,7 @@ oracles:
     context: [P]
 EXTRA
 rules:
-  addressed(D, R, C, P): core.row(D, T, R), core.header(D, T, C), core.cell_path(D, R, C, [heading, row_key('Requirement')], P)
+  addressed(D, R, C, P): core.row(D, T, R), core.header_pos(D, T, C, _), core.cell_path(D, R, C, [heading, row_key('Requirement')], P)
 constraints:
   c:
     forall: core.row(D, T, R)
@@ -170,7 +170,7 @@ constraints:
       .replace(/^extends:.*\n/m, "")
       .replace("witness_property_choose(D, R, C, L):", "witness_property_choose(D, R, C, P, L):")
       .replace("    evidence: core.row_with_column(D, R, C)", "    evidence: core.row_with_column(D, R, C)\n    context: [P]")
-      .replace("rules:\n", "rules:\n  addressed(D, R, C, P): core.row(D, T, R), core.header(D, T, C), core.cell_path(D, R, C, [heading, row_key('Property'), column], P)\n  top(D, S): core.section(D, S, _)\n")
+      .replace("rules:\n", "rules:\n  addressed(D, R, C, P): core.row(D, T, R), core.header_pos(D, T, C, _), core.cell_path(D, R, C, [heading, row_key('Property'), column], P)\n  top(D, S): core.section(D, S, _)\n")
       .replace("require: core.cell(D, R, C), witness_property_choose(D, R, C, P),", "require: core.cell(D, R, C), addressed(D, R, C, A), witness_property_choose(D, R, C, A, P),");
     expect(e1).toContain("context: [P]");
     expect(e1).toContain("addressed(D, R, C, A), witness_property_choose(D, R, C, A, P)");

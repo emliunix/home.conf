@@ -25,7 +25,7 @@ oracles:
     max_bytes: 6000
 rules:
   verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
-  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+  witness_header(D, T, C): core.header_pos(D, T, C, _), C in ['Failure witness', 'Observable failure witness']
 constraints:
   round9-witness-relevant-in-table:
     forall: verification_design_section(D, S), core.table(D, S, T), witness_header(D, T, C), core.row(D, T, R)

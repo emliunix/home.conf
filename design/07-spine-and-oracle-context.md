@@ -178,6 +178,15 @@ the run, each leaving `npm test` and `npm run test:kernel-slow` green. Bars are 
 | 2 | list-item facts and an `item(I)` step | only if phase 1 ships `context:` and its census finds a shipped oracle whose evidence is list-grain |
 | 3 | `via`: one hop into a cited document | only if phase 1 ships `context:` with an `evidence_reasons` gain |
 
+**Outcome (2026-10-14).** Phase 0 shipped (round 11: fixture 32/32 as labelled, the corpus's 3
+pre-registered dangling references found and fixed). Phase 1 (round 12): no arm caught a single
+wrong-row evidence cell (0 of 11 real, 0 of 5 seeded, under address, address of another row, and
+address plus claim), and the address harmed `witness_observable_in_row` (3 right cells to wrong);
+so by the table's last row the path relations ship for rules, `context:` stays in the language and
+no shipped library uses it, and phases 2 and 3 are declined. `core.header/3` was removed in favour
+of `core.header_pos/4` (home.conf migrated). Verdicts: `worklog/kernel-trials/round-11-verdict.md`,
+`round-12-verdict.md`.
+
 Phase 1 records, per oracle: right→wrong and wrong→right moves, mean P(expected) shifts with
 confidence intervals, the context bytes against `max_bytes` and the outbound budget, atom-key
 length growth, and the census of shipped oracles by evidence grain. Item 11 (a witness on the
@@ -229,4 +238,7 @@ proceed"). Taken:
 
 ## Status
 
-reviewed
+landed
+
+Note: phases 0 and 1 decided by rounds 11 and 12 (2026-10-14); phases 2 and 3 declined by round 12's
+verdict; nothing merged to `main`.

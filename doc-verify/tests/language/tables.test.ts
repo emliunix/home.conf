@@ -62,7 +62,8 @@ describe("table facts", () => {
     const facts = documentFacts({ path: "goals/04.md", markdown: DOC });
     const written = facts.facts.map(writeTerm);
     expect(written).toContain("'core::table'('goals/04.md','ac-coverage','ac-coverage#table1')");
-    expect(written).toContain("'core::header'('goals/04.md','ac-coverage#table1','Evidence')");
+    expect(written).toContain("'core::header_pos'('goals/04.md','ac-coverage#table1','Evidence',3)");
+    expect(written.some((fact) => fact.startsWith("'core::header'("))).toBe(false);
     expect(written).toContain("'core::row'('goals/04.md','ac-coverage#table1','ac-coverage#row1')");
     expect(written).toContain("'core::cell'('goals/04.md','ac-coverage#row1','Evidence')");
     expect(written).toContain("'core::cell'('goals/04.md','ac-coverage#row3','Requirement')");
@@ -119,7 +120,7 @@ rules:
   coverage(D, S): core.heading(D, S, 'AC coverage')
 constraints:
   rows-reason:
-    forall: coverage(D, S), core.table(D, S, T), core.header(D, T, 'Evidence'), core.row(D, T, R)
+    forall: coverage(D, S), core.table(D, S, T), core.header_pos(D, T, 'Evidence', _), core.row(D, T, R)
     require: core.cell(D, R, 'Evidence'), reasons(D, R, 'Evidence')
     severity: error
     message: "{R} is not a chain"

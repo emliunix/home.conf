@@ -1,0 +1,2197 @@
+{
+ "ledger": "round12-M-contract",
+ "runs": [
+  {
+   "run": "fixtures:module_contract_pages/good",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/good",
+   "source": "module_contract_pages/good",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5592.801875,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 486
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 439,
+     "ms": 437.5164999999997,
+     "keys": [
+      "current_not_history-d804570b3878"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 402,
+     "ms": 300.9974999999995,
+     "keys": [
+      "current_not_history-0c26b33ca37b"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_contract_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good",
+     "source": "module_contract_pages/good",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, acme-widget--contract)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--contract",
+     "origRowId": "",
+     "key": "current_not_history-d804570b3878",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.02,
+      0.01
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 439,
+     "followup": false,
+     "bytes": 257,
+     "contextBytes": 0,
+     "keyLength": 105,
+     "cacheHit": false,
+     "textHash": "21d751b420158c08",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_contract_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good",
+     "source": "module_contract_pages/good",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, public-surface)",
+     "row": "",
+     "rowId": "",
+     "section": "public-surface",
+     "origRowId": "",
+     "key": "current_not_history-0c26b33ca37b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.02,
+      0.01
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 402,
+     "followup": false,
+     "bytes": 229,
+     "contextBytes": 0,
+     "keyLength": 98,
+     "cacheHit": false,
+     "textHash": "eb44a6b6d74c61c8",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:48:03.575Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/good",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/good",
+   "source": "module_contract_pages/good",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5551.003791000001,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 594
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 485,
+     "ms": 384.91704200000095,
+     "keys": [
+      "current_not_history-c0ff3ca408d9"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 493,
+     "ms": 384.20300000000134,
+     "keys": [
+      "current_not_history-debda8a3e03b"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_contract_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good",
+     "source": "module_contract_pages/good",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, [title('acme-widget — contract'), heading(2,'Public surface')], public-surface)",
+     "row": "",
+     "rowId": "",
+     "section": "public-surface",
+     "origRowId": "",
+     "key": "current_not_history-c0ff3ca408d9",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.99,
+      0.01,
+      0
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 485,
+     "followup": false,
+     "bytes": 297,
+     "contextBytes": 68,
+     "keyLength": 162,
+     "cacheHit": false,
+     "textHash": "eb44a6b6d74c61c8",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_contract_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good",
+     "source": "module_contract_pages/good",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, [title('acme-widget — contract')], acme-widget--contract)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--contract",
+     "origRowId": "",
+     "key": "current_not_history-debda8a3e03b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 493,
+     "followup": false,
+     "bytes": 297,
+     "contextBytes": 40,
+     "keyLength": 140,
+     "cacheHit": false,
+     "textHash": "21d751b420158c08",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:48:09.377Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/good",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/good",
+   "source": "module_contract_pages/good",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5451.262916,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 594
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 485,
+     "ms": 422.7260419999984,
+     "keys": [
+      "current_not_history-c0ff3ca408d9"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 493,
+     "ms": 290.3477079999975,
+     "keys": [
+      "current_not_history-debda8a3e03b"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_contract_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good",
+     "source": "module_contract_pages/good",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, [title('acme-widget — contract'), heading(2,'Public surface')], public-surface)",
+     "row": "",
+     "rowId": "",
+     "section": "public-surface",
+     "origRowId": "",
+     "key": "current_not_history-c0ff3ca408d9",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.99,
+      0.01,
+      0
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 485,
+     "followup": false,
+     "bytes": 297,
+     "contextBytes": 68,
+     "keyLength": 162,
+     "cacheHit": false,
+     "textHash": "eb44a6b6d74c61c8",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_contract_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good",
+     "source": "module_contract_pages/good",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, [title('acme-widget — contract')], acme-widget--contract)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--contract",
+     "origRowId": "",
+     "key": "current_not_history-debda8a3e03b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.99,
+      0.01,
+      0
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 493,
+     "followup": false,
+     "bytes": 297,
+     "contextBytes": 40,
+     "keyLength": 140,
+     "cacheHit": false,
+     "textHash": "21d751b420158c08",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:48:14.830Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/good",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/good",
+   "source": "module_contract_pages/good",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5438.730208000001,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 486
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 439,
+     "ms": 366.130250000002,
+     "keys": [
+      "current_not_history-d804570b3878"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 402,
+     "ms": 273.4808329999978,
+     "keys": [
+      "current_not_history-0c26b33ca37b"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_contract_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good",
+     "source": "module_contract_pages/good",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, acme-widget--contract)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--contract",
+     "origRowId": "",
+     "key": "current_not_history-d804570b3878",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.02,
+      0.01
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 439,
+     "followup": false,
+     "bytes": 257,
+     "contextBytes": 0,
+     "keyLength": 105,
+     "cacheHit": false,
+     "textHash": "21d751b420158c08",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_contract_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good",
+     "source": "module_contract_pages/good",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, public-surface)",
+     "row": "",
+     "rowId": "",
+     "section": "public-surface",
+     "origRowId": "",
+     "key": "current_not_history-0c26b33ca37b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.02,
+      0.01
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 402,
+     "followup": false,
+     "bytes": 229,
+     "contextBytes": 0,
+     "keyLength": 98,
+     "cacheHit": false,
+     "textHash": "eb44a6b6d74c61c8",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:48:20.316Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/good-near",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/good-near",
+   "source": "module_contract_pages/good-near",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5468.634540999999,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 774
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 585,
+     "ms": 399.07758399999875,
+     "keys": [
+      "current_not_history-d804570b3878"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 548,
+     "ms": 297.90312500000437,
+     "keys": [
+      "current_not_history-0c26b33ca37b"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_contract_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good-near",
+     "source": "module_contract_pages/good-near",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, acme-widget--contract)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--contract",
+     "origRowId": "",
+     "key": "current_not_history-d804570b3878",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.01,
+      0.01
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 585,
+     "followup": false,
+     "bytes": 401,
+     "contextBytes": 0,
+     "keyLength": 105,
+     "cacheHit": false,
+     "textHash": "8a8cfe793302add0",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_contract_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good-near",
+     "source": "module_contract_pages/good-near",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, public-surface)",
+     "row": "",
+     "rowId": "",
+     "section": "public-surface",
+     "origRowId": "",
+     "key": "current_not_history-0c26b33ca37b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.01,
+      0.01
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 548,
+     "followup": false,
+     "bytes": 373,
+     "contextBytes": 0,
+     "keyLength": 98,
+     "cacheHit": false,
+     "textHash": "b5103d8158a2fe30",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:48:30.496Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/good-near",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/good-near",
+   "source": "module_contract_pages/good-near",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5431.837917000004,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 882
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 631,
+     "ms": 382.6502079999991,
+     "keys": [
+      "current_not_history-c0ff3ca408d9"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 639,
+     "ms": 291.84220800000185,
+     "keys": [
+      "current_not_history-debda8a3e03b"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_contract_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good-near",
+     "source": "module_contract_pages/good-near",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, [title('acme-widget — contract'), heading(2,'Public surface')], public-surface)",
+     "row": "",
+     "rowId": "",
+     "section": "public-surface",
+     "origRowId": "",
+     "key": "current_not_history-c0ff3ca408d9",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.01,
+      0.01
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 631,
+     "followup": false,
+     "bytes": 441,
+     "contextBytes": 68,
+     "keyLength": 162,
+     "cacheHit": false,
+     "textHash": "b5103d8158a2fe30",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_contract_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good-near",
+     "source": "module_contract_pages/good-near",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, [title('acme-widget — contract')], acme-widget--contract)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--contract",
+     "origRowId": "",
+     "key": "current_not_history-debda8a3e03b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.01,
+      0.01
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 639,
+     "followup": false,
+     "bytes": 441,
+     "contextBytes": 40,
+     "keyLength": 140,
+     "cacheHit": false,
+     "textHash": "8a8cfe793302add0",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:48:35.979Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/good-near",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/good-near",
+   "source": "module_contract_pages/good-near",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5415.423582999996,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 882
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 631,
+     "ms": 407.5167089999959,
+     "keys": [
+      "current_not_history-c0ff3ca408d9"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 639,
+     "ms": 274.8582499999975,
+     "keys": [
+      "current_not_history-debda8a3e03b"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_contract_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good-near",
+     "source": "module_contract_pages/good-near",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, [title('acme-widget — contract'), heading(2,'Public surface')], public-surface)",
+     "row": "",
+     "rowId": "",
+     "section": "public-surface",
+     "origRowId": "",
+     "key": "current_not_history-c0ff3ca408d9",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.01,
+      0.01
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 631,
+     "followup": false,
+     "bytes": 441,
+     "contextBytes": 68,
+     "keyLength": 162,
+     "cacheHit": false,
+     "textHash": "b5103d8158a2fe30",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_contract_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good-near",
+     "source": "module_contract_pages/good-near",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, [title('acme-widget — contract')], acme-widget--contract)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--contract",
+     "origRowId": "",
+     "key": "current_not_history-debda8a3e03b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.01,
+      0.01
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 639,
+     "followup": false,
+     "bytes": 441,
+     "contextBytes": 40,
+     "keyLength": 140,
+     "cacheHit": false,
+     "textHash": "8a8cfe793302add0",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:48:41.396Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/good-near",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/good-near",
+   "source": "module_contract_pages/good-near",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5430.877499999995,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 774
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 585,
+     "ms": 404.1298749999987,
+     "keys": [
+      "current_not_history-d804570b3878"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/contract.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 548,
+     "ms": 284.70812500000466,
+     "keys": [
+      "current_not_history-0c26b33ca37b"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_contract_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good-near",
+     "source": "module_contract_pages/good-near",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, acme-widget--contract)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--contract",
+     "origRowId": "",
+     "key": "current_not_history-d804570b3878",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.01,
+      0.01
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 585,
+     "followup": false,
+     "bytes": 401,
+     "contextBytes": 0,
+     "keyLength": 105,
+     "cacheHit": false,
+     "textHash": "8a8cfe793302add0",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_contract_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_contract_pages/good-near",
+     "source": "module_contract_pages/good-near",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/contract.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-contract.current_not_history(docs/modules/_fixtures/contract.md, public-surface)",
+     "row": "",
+     "rowId": "",
+     "section": "public-surface",
+     "origRowId": "",
+     "key": "current_not_history-0c26b33ca37b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.01,
+      0.01
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 548,
+     "followup": false,
+     "bytes": 373,
+     "contextBytes": 0,
+     "keyLength": 98,
+     "cacheHit": false,
+     "textHash": "b5103d8158a2fe30",
+     "questionHash": "3811ce87e9300d1e",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:48:46.875Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-1",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-1",
+   "source": "module_contract_pages/subtle-1",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4626.3270829999965,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:48:56.213Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-1",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-1",
+   "source": "module_contract_pages/subtle-1",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4607.985332999997,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:49:00.867Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-1",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-1",
+   "source": "module_contract_pages/subtle-1",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4632.265874999997,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:49:05.500Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-1",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-1",
+   "source": "module_contract_pages/subtle-1",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4646.320666,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:49:10.190Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-2",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-2",
+   "source": "module_contract_pages/subtle-2",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4587.880040999997,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:49:19.442Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-2",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-2",
+   "source": "module_contract_pages/subtle-2",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4603.107749999996,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:49:24.095Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-2",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-2",
+   "source": "module_contract_pages/subtle-2",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4602.536125000013,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:49:28.699Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-2",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-2",
+   "source": "module_contract_pages/subtle-2",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4622.502790999992,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:49:33.365Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-3",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-3",
+   "source": "module_contract_pages/subtle-3",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4629.199915999998,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:49:42.640Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-3",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-3",
+   "source": "module_contract_pages/subtle-3",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4590.035250000001,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:49:47.275Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-3",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-3",
+   "source": "module_contract_pages/subtle-3",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4580.974291999999,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:49:51.858Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/subtle-3",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/subtle-3",
+   "source": "module_contract_pages/subtle-3",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4567.501375000007,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:49:56.469Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/gross",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/gross",
+   "source": "module_contract_pages/gross",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4579.199749999985,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:50:05.704Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/gross",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/gross",
+   "source": "module_contract_pages/gross",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4597.573583999998,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:50:10.350Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/gross",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/gross",
+   "source": "module_contract_pages/gross",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4583.284125000006,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:50:14.934Z"
+  },
+  {
+   "run": "fixtures:module_contract_pages/gross",
+   "mode": "fixtures",
+   "fixture": "module_contract_pages/gross",
+   "source": "module_contract_pages/gross",
+   "set": "module_contract_pages",
+   "ledger": "round12-M-contract",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-contract.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4580.371625,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/contract.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:50:19.564Z"
+  }
+ ]
+}

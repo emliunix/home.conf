@@ -227,7 +227,7 @@ Three parts, three owners, no overlap:
    55/55 cells over eleven fixtures with no false pass, where a column-only question misses one bad
    cell in four. The evidence selector vocabulary above gains the cell (`core.cell(D, R, C)`) and
    the column (`core.column(D, T, C)`), over the host's table facts (`core.table/3`,
-   `core.header/3`, `core.row/3`, `core.cell/3`; an instance of constitution invariant 7's open
+   `core.header/3` (since round 12 `core.header_pos/4`, design/07), `core.row/3`, `core.cell/3`; an instance of constitution invariant 7's open
    vocabulary, computed in the host for now like sections and references). Third run (round
    4c, 2026-10-13): `verification_falsifies` re-authored on the cell grain as
    `witness_observable_in_row` over a row's Property and Failure witness cells (`core.cells`);

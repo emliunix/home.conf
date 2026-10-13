@@ -78,7 +78,7 @@ export interface TableRow {
   cells: Map<string, string>;
 }
 
-export const CORE_BASE = ["section/3", "heading/3", "depth/3", "order/3", "meta/3", "selected/2", "ref/4", "resolves/2", "section_ref/5", "table/3", "header/3", "row/3", "cell/3", "header_pos/4", "cell_text/4"] as const;
+export const CORE_BASE = ["section/3", "heading/3", "depth/3", "order/3", "meta/3", "selected/2", "ref/4", "resolves/2", "section_ref/5", "table/3", "row/3", "cell/3", "header_pos/4", "cell_text/4"] as const;
 export const CORE_DERIVED = ["child/3", "descendant/3", "nests/3", "dangling/4", "spec_unresolved/4"] as const;
 
 export function documentFacts(document: DocumentInput): DocumentFacts {
@@ -135,17 +135,14 @@ export function documentFacts(document: DocumentInput): DocumentFacts {
     }
   }
   // Table facts (added 2026-10-13): `table(D, S, T)` for every pipe table in section `S`'s own
-  // text (`T` is `<section>#table<n>`), `header(D, T, Column)` for each of its header cells as
-  // written, `row(D, T, R)` for every data row (`R` is `<section>#row<n>`, `n` counting that
+  // text (`T` is `<section>#table<n>`), `header_pos(D, T, Column, N)` for each of its header cells
+  // as written (below; `header/3` was removed in round 12), `row(D, T, R)` for every data row (`R` is `<section>#row<n>`, `n` counting that
   // section's data rows in document order across its tables), and `cell(D, R, Column)` for each
   // non-empty cell. A row's text is not a fact; it is evidence, read by `core.cell(D, R, C)` or,
   // table-wide, `core.column(D, T, C)`.
   const { tables, rows } = documentTables(document.markdown, sections);
   for (const table of tables.values()) {
     facts.push(core("table", [D, atom(table.section), atom(table.id)]));
-    for (const column of new Set(table.headers.filter((header) => header.length > 0))) {
-      facts.push(core("header", [D, atom(table.id), atom(column)]));
-    }
     // Neutral position facts (design/07 §Model): `header_pos(D, T, Column, N)`, N counting the
     // header's cells from 1 as written. The host names no key column; a rule does.
     table.headers.forEach((column, position) => {

@@ -1,0 +1,2197 @@
+{
+ "ledger": "round12-M-properties",
+ "runs": [
+  {
+   "run": "fixtures:module_properties_pages/good",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/good",
+   "source": "module_properties_pages/good",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5439.2586670000455,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 554
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 462,
+     "ms": 467.2581670000218,
+     "keys": [
+      "current_not_history-70464f5b8725"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 464,
+     "ms": 276.7369170000311,
+     "keys": [
+      "properties_are_claims-0cc97b1f578e"
+     ],
+     "oracles": [
+      "properties_are_claims"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_properties_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good",
+     "source": "module_properties_pages/good",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "current_not_history-70464f5b8725",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.02,
+      0.05
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 462,
+     "followup": false,
+     "bytes": 277,
+     "contextBytes": 0,
+     "keyLength": 111,
+     "cacheHit": false,
+     "textHash": "3e1b7064b877302a",
+     "questionHash": "77309178242f989d",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_properties_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good",
+     "source": "module_properties_pages/good",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "properties_are_claims",
+     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "properties_are_claims-0cc97b1f578e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      1,
+      0,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 464,
+     "followup": false,
+     "bytes": 277,
+     "contextBytes": 0,
+     "keyLength": 113,
+     "cacheHit": false,
+     "textHash": "3e1b7064b877302a",
+     "questionHash": "6ebd85126cad8d04",
+     "expect": null,
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:52:56.854Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/good",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/good",
+   "source": "module_properties_pages/good",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5434.816791000019,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 596
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 518,
+     "ms": 373.9857920000213,
+     "keys": [
+      "current_not_history-fc7a66204499"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 464,
+     "ms": 276.4853749999893,
+     "keys": [
+      "properties_are_claims-0cc97b1f578e"
+     ],
+     "oracles": [
+      "properties_are_claims"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_properties_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good",
+     "source": "module_properties_pages/good",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, [title('acme-widget — properties')], acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "current_not_history-fc7a66204499",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.02,
+      0.02
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 518,
+     "followup": false,
+     "bytes": 319,
+     "contextBytes": 42,
+     "keyLength": 148,
+     "cacheHit": false,
+     "textHash": "3e1b7064b877302a",
+     "questionHash": "77309178242f989d",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_properties_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good",
+     "source": "module_properties_pages/good",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "properties_are_claims",
+     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "properties_are_claims-0cc97b1f578e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      1,
+      0,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 464,
+     "followup": false,
+     "bytes": 277,
+     "contextBytes": 0,
+     "keyLength": 113,
+     "cacheHit": false,
+     "textHash": "3e1b7064b877302a",
+     "questionHash": "6ebd85126cad8d04",
+     "expect": null,
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:53:02.445Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/good",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/good",
+   "source": "module_properties_pages/good",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5600.293000000005,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 596
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 518,
+     "ms": 403.4532079999917,
+     "keys": [
+      "current_not_history-fc7a66204499"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 464,
+     "ms": 385.38120799994795,
+     "keys": [
+      "properties_are_claims-0cc97b1f578e"
+     ],
+     "oracles": [
+      "properties_are_claims"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_properties_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good",
+     "source": "module_properties_pages/good",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, [title('acme-widget — properties')], acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "current_not_history-fc7a66204499",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.01,
+      0.02
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 518,
+     "followup": false,
+     "bytes": 319,
+     "contextBytes": 42,
+     "keyLength": 148,
+     "cacheHit": false,
+     "textHash": "3e1b7064b877302a",
+     "questionHash": "77309178242f989d",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_properties_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good",
+     "source": "module_properties_pages/good",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "properties_are_claims",
+     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "properties_are_claims-0cc97b1f578e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      1,
+      0,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 464,
+     "followup": false,
+     "bytes": 277,
+     "contextBytes": 0,
+     "keyLength": 113,
+     "cacheHit": false,
+     "textHash": "3e1b7064b877302a",
+     "questionHash": "6ebd85126cad8d04",
+     "expect": null,
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:53:08.046Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/good",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/good",
+   "source": "module_properties_pages/good",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5421.698290999979,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 554
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 462,
+     "ms": 392.03724999999395,
+     "keys": [
+      "current_not_history-70464f5b8725"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 464,
+     "ms": 280.4940840000054,
+     "keys": [
+      "properties_are_claims-0cc97b1f578e"
+     ],
+     "oracles": [
+      "properties_are_claims"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_properties_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good",
+     "source": "module_properties_pages/good",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "current_not_history-70464f5b8725",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.02,
+      0.05
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 462,
+     "followup": false,
+     "bytes": 277,
+     "contextBytes": 0,
+     "keyLength": 111,
+     "cacheHit": false,
+     "textHash": "3e1b7064b877302a",
+     "questionHash": "77309178242f989d",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_properties_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good",
+     "source": "module_properties_pages/good",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "properties_are_claims",
+     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "properties_are_claims-0cc97b1f578e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      1,
+      0,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 464,
+     "followup": false,
+     "bytes": 277,
+     "contextBytes": 0,
+     "keyLength": 113,
+     "cacheHit": false,
+     "textHash": "3e1b7064b877302a",
+     "questionHash": "6ebd85126cad8d04",
+     "expect": null,
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:53:13.515Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/good-near",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/good-near",
+   "source": "module_properties_pages/good-near",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5357.931833000039,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 804
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 589,
+     "ms": 384.4399170000106,
+     "keys": [
+      "current_not_history-70464f5b8725"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 591,
+     "ms": 277.7199580000015,
+     "keys": [
+      "properties_are_claims-0cc97b1f578e"
+     ],
+     "oracles": [
+      "properties_are_claims"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_properties_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good-near",
+     "source": "module_properties_pages/good-near",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "current_not_history-70464f5b8725",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.63,
+      0.02,
+      0.35
+     ],
+     "p": 0.63,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 589,
+     "followup": false,
+     "bytes": 402,
+     "contextBytes": 0,
+     "keyLength": 111,
+     "cacheHit": false,
+     "textHash": "2d5e73fd613cdcc1",
+     "questionHash": "77309178242f989d",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_properties_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good-near",
+     "source": "module_properties_pages/good-near",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "properties_are_claims",
+     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "properties_are_claims-0cc97b1f578e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      1,
+      0,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 591,
+     "followup": false,
+     "bytes": 402,
+     "contextBytes": 0,
+     "keyLength": 113,
+     "cacheHit": false,
+     "textHash": "2d5e73fd613cdcc1",
+     "questionHash": "6ebd85126cad8d04",
+     "expect": null,
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:53:23.569Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/good-near",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/good-near",
+   "source": "module_properties_pages/good-near",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5414.4347919999855,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 846
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 645,
+     "ms": 392.9517910000286,
+     "keys": [
+      "current_not_history-fc7a66204499"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 591,
+     "ms": 294.6408330000122,
+     "keys": [
+      "properties_are_claims-0cc97b1f578e"
+     ],
+     "oracles": [
+      "properties_are_claims"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_properties_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good-near",
+     "source": "module_properties_pages/good-near",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, [title('acme-widget — properties')], acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "current_not_history-fc7a66204499",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.72,
+      0.02,
+      0.26
+     ],
+     "p": 0.72,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 645,
+     "followup": false,
+     "bytes": 444,
+     "contextBytes": 42,
+     "keyLength": 148,
+     "cacheHit": false,
+     "textHash": "2d5e73fd613cdcc1",
+     "questionHash": "77309178242f989d",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_properties_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good-near",
+     "source": "module_properties_pages/good-near",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "properties_are_claims",
+     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "properties_are_claims-0cc97b1f578e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      1,
+      0,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 591,
+     "followup": false,
+     "bytes": 402,
+     "contextBytes": 0,
+     "keyLength": 113,
+     "cacheHit": false,
+     "textHash": "2d5e73fd613cdcc1",
+     "questionHash": "6ebd85126cad8d04",
+     "expect": null,
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:53:29.030Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/good-near",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/good-near",
+   "source": "module_properties_pages/good-near",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5380.289833999996,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 846
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 645,
+     "ms": 369.32137499999953,
+     "keys": [
+      "current_not_history-fc7a66204499"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 591,
+     "ms": 277.87283300003037,
+     "keys": [
+      "properties_are_claims-0cc97b1f578e"
+     ],
+     "oracles": [
+      "properties_are_claims"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_properties_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good-near",
+     "source": "module_properties_pages/good-near",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, [title('acme-widget — properties')], acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "current_not_history-fc7a66204499",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.67,
+      0.02,
+      0.31
+     ],
+     "p": 0.67,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 645,
+     "followup": false,
+     "bytes": 444,
+     "contextBytes": 42,
+     "keyLength": 148,
+     "cacheHit": false,
+     "textHash": "2d5e73fd613cdcc1",
+     "questionHash": "77309178242f989d",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_properties_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good-near",
+     "source": "module_properties_pages/good-near",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "properties_are_claims",
+     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "properties_are_claims-0cc97b1f578e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      1,
+      0,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 591,
+     "followup": false,
+     "bytes": 402,
+     "contextBytes": 0,
+     "keyLength": 113,
+     "cacheHit": false,
+     "textHash": "2d5e73fd613cdcc1",
+     "questionHash": "6ebd85126cad8d04",
+     "expect": null,
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:53:34.411Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/good-near",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/good-near",
+   "source": "module_properties_pages/good-near",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5391.53570800001,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 804
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 589,
+     "ms": 376.1722080000327,
+     "keys": [
+      "current_not_history-70464f5b8725"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 591,
+     "ms": 294.608292000019,
+     "keys": [
+      "properties_are_claims-0cc97b1f578e"
+     ],
+     "oracles": [
+      "properties_are_claims"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_properties_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good-near",
+     "source": "module_properties_pages/good-near",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "current_not_history-70464f5b8725",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.68,
+      0.02,
+      0.3
+     ],
+     "p": 0.68,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 589,
+     "followup": false,
+     "bytes": 402,
+     "contextBytes": 0,
+     "keyLength": 111,
+     "cacheHit": false,
+     "textHash": "2d5e73fd613cdcc1",
+     "questionHash": "77309178242f989d",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_properties_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good-near",
+     "source": "module_properties_pages/good-near",
+     "order": "normal",
+     "variant": "N",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "properties_are_claims",
+     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "properties_are_claims-0cc97b1f578e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      1,
+      0,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 591,
+     "followup": false,
+     "bytes": 402,
+     "contextBytes": 0,
+     "keyLength": 113,
+     "cacheHit": false,
+     "textHash": "2d5e73fd613cdcc1",
+     "questionHash": "6ebd85126cad8d04",
+     "expect": null,
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T21:53:39.848Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-1",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-1",
+   "source": "module_properties_pages/subtle-1",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4577.647958000016,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:53:49.058Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-1",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-1",
+   "source": "module_properties_pages/subtle-1",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4586.49883300002,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:53:53.689Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-1",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-1",
+   "source": "module_properties_pages/subtle-1",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4566.697207999998,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:53:58.256Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-1",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-1",
+   "source": "module_properties_pages/subtle-1",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4593.754124999978,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:54:02.898Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-2",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-2",
+   "source": "module_properties_pages/subtle-2",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4611.843499999959,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:54:12.153Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-2",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-2",
+   "source": "module_properties_pages/subtle-2",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4593.292249999999,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:54:16.791Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-2",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-2",
+   "source": "module_properties_pages/subtle-2",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4582.099457999982,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:54:21.374Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-2",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-2",
+   "source": "module_properties_pages/subtle-2",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4600.087416999973,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:54:26.018Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-3",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-3",
+   "source": "module_properties_pages/subtle-3",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4624.01770799997,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:54:35.279Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-3",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-3",
+   "source": "module_properties_pages/subtle-3",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4561.567457999976,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:54:39.885Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-3",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-3",
+   "source": "module_properties_pages/subtle-3",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4592.52112499997,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:54:44.479Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/subtle-3",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/subtle-3",
+   "source": "module_properties_pages/subtle-3",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4552.298582999967,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:54:49.075Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/gross",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/gross",
+   "source": "module_properties_pages/gross",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4575.014000000025,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:54:58.278Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/gross",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/gross",
+   "source": "module_properties_pages/gross",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4569.861540999962,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:55:02.898Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/gross",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/gross",
+   "source": "module_properties_pages/gross",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4551.251457999984,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:55:07.450Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/gross",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/gross",
+   "source": "module_properties_pages/gross",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "N",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-properties.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4584.536625000008,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T21:55:12.082Z"
+  }
+ ]
+}

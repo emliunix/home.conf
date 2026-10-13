@@ -52,7 +52,7 @@ if (smoke) {
 
 if (!flag("skip-property")) {
   await suite("property", async () => {
-    const r = await runArm("S1", "C5", programs, seeds);
+    const r = await runArm("S1", "C5", programs, seeds, { floors: !smoke });
     return r;
   });
 }

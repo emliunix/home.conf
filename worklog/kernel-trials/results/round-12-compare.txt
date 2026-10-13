@@ -1,0 +1,167 @@
+(.leaves-round12-E-fix.json; tags LIVE; models jev-1.13.0)
+== round12-E-fix: arms N,A,D,C, 2 repeats
+labels found per arm (every labelled cell, every repeat)
+  arm  found
+  ---  -----
+  N    55/55
+  A    55/55
+  D    55/55
+  C    55/55
+
+oracle evidence_reasons: base rate 1 (N repeats on different sides: 0, + 1)
+  arm  cells  no-harm  right->wrong  wrong->right  unknown loss  flips  caught        ambiguous  harm  ctx bytes med/max  key len med/max  key growth  fallback
+  ---  -----  -------  ------------  ------------  ------------  -----  ------------  ---------  ----  -----------------  ---------------  ----------  --------
+  N    55     50       0             0             0             0      wrongrow 0/5  -          -     0/0                88/88            -           -       
+  A    55     50       0             0             0             0      wrongrow 0/5  -          no    106/106            194/194          106         -       
+  D    55     50       0             0             0             0      wrongrow 0/5  -          no    106/106            194/194          106         -       
+  C    55     50       0             0             0             0      wrongrow 0/5  -          no    208/218            299/309          211         0       
+  near-threshold (N repeat-1 P in [0.4, 0.8], n=3; reported, not a bar): null N rep2 - rep1 0.02 [-0.02, 0.06]
+    A rep2 - N rep2: -0.07 [-0.10, -0.04] over 3, 0 up
+    D rep2 - N rep2: -0.11 [-0.16, -0.06] over 3, 0 up
+    C rep2 - N rep2: -0.02 [-0.04, -0.01] over 3, 0 up
+
+bars
+  oracle            bar                                                                 value     met
+  ----------------  ------------------------------------------------------------------  --------  ---
+  evidence_reasons  E-fix wrongrow C >= 3 of 5                                          0         NO 
+  evidence_reasons  D control: A's wrongrow catches are not matched by D (else length)  D 0, A 0  yes
+  evidence_reasons  no harm A: right->wrong <= base rate 1, unknown losses <= 2         0, 0      yes
+  evidence_reasons  no harm D: right->wrong <= base rate 1, unknown losses <= 2         0, 0      yes
+  evidence_reasons  no harm C: right->wrong <= base rate 1, unknown losses <= 2         0, 0      yes
+complete: true
+
+(.leaves-round12-E-real.json; tags LIVE; models jev-1.13.0)
+== round12-E-real: arms N,A,C, 2 repeats
+labels found per arm (every labelled cell, every repeat)
+  arm  found
+  ---  -----
+  N    26/26
+  A    26/26
+  C    26/26
+
+oracle evidence_reasons: base rate 1 (N repeats on different sides: 0, + 1)
+  arm  cells  no-harm  right->wrong  wrong->right  unknown loss  flips  caught  ambiguous  harm  ctx bytes med/max  key len med/max  key growth  fallback
+  ---  -----  -------  ------------  ------------  ------------  -----  ------  ---------  ----  -----------------  ---------------  ----------  --------
+  N    13     13       0             0             0             0      -       -          -     0/0                128/128          -           -       
+  A    13     13       0             0             0             0      -       -          no    146/146            274/274          146         -       
+  C    13     13       0             0             0             0      -       -          no    220/272            351/403          223         0       
+  near-threshold (N repeat-1 P in [0.4, 0.8], n=1; reported, not a bar): null N rep2 - rep1 -0.04 [-0.04, -0.04]
+    A rep2 - N rep2: 0.01 [0.01, 0.01] over 1, 1 up
+    C rep2 - N rep2: 0.14 [0.14, 0.14] over 1, 1 up
+
+oracle evidence_reasons_required: base rate 1 (N repeats on different sides: 0, + 1); 13 cells reported apart (counted: false / held_out)
+  arm  cells  no-harm  right->wrong  wrong->right  unknown loss  flips  caught  ambiguous  harm  ctx bytes med/max  key len med/max  key growth  fallback
+  ---  -----  -------  ------------  ------------  ------------  -----  ------  ---------  ----  -----------------  ---------------  ----------  --------
+  N    13     0        0             0             0             0      -       -          -     0/0                136/136          -           -       
+  A    13     0        0             0             0             0      -       -          no    0/0                136/136          0           -       
+  C    13     0        0             0             0             0      -       -          no    0/0                136/136          0           0       
+  near-threshold (N repeat-1 P in [0.4, 0.8], n=0; reported, not a bar): null N rep2 - rep1 - [-, -]
+    A rep2 - N rep2: - [-, -] over 0, 0 up
+    C rep2 - N rep2: - [-, -] over 0, 0 up
+
+bars
+  oracle                     bar                                                          value  met
+  -------------------------  -----------------------------------------------------------  -----  ---
+  evidence_reasons           no harm A: right->wrong <= base rate 1, unknown losses <= 2  0, 0   yes
+  evidence_reasons           no harm C: right->wrong <= base rate 1, unknown losses <= 2  0, 0   yes
+  evidence_reasons_required  no harm A: right->wrong <= base rate 1, unknown losses <= 2  0, 0   yes
+  evidence_reasons_required  no harm C: right->wrong <= base rate 1, unknown losses <= 2  0, 0   yes
+complete: true
+
+(.leaves-round12-E-der.json; tags LIVE; models jev-1.13.0)
+== round12-E-der: arms N,A,C, 2 repeats
+labels found per arm (every labelled cell, every repeat)
+  arm  found
+  ---  -----
+  N    13/13
+  A    13/13
+  C    13/13
+
+oracle evidence_reasons: base rate 1 (N repeats on different sides: 0, + 1)
+  arm  cells  no-harm  right->wrong  wrong->right  unknown loss  flips  caught      ambiguous                                                          harm  ctx bytes med/max  key len med/max  key growth  fallback
+  ---  -----  -------  ------------  ------------  ------------  -----  ----------  -----------------------------------------------------------------  ----  -----------------  ---------------  ----------  --------
+  N    13     0        0             0             0             0      E-der 0/11  ac-coverage#row2:holds/holds acceptance-evidence#row3:holds/holds  -     0/0                186/186          -           -       
+  A    13     0        0             0             0             0      E-der 0/11  ac-coverage#row2:holds/holds acceptance-evidence#row3:holds/holds  no    146/146            332/332          146         -       
+  C    13     0        0             0             0             0      E-der 0/11  ac-coverage#row2:holds/holds acceptance-evidence#row3:fails/holds  no    220/272            409/461          223         0       
+  near-threshold (N repeat-1 P in [0.4, 0.8], n=0; reported, not a bar): null N rep2 - rep1 - [-, -]
+    A rep2 - N rep2: - [-, -] over 0, 0 up
+    C rep2 - N rep2: - [-, -] over 0, 0 up
+
+bars
+  oracle            bar                                                          value  met
+  ----------------  -----------------------------------------------------------  -----  ---
+  evidence_reasons  E-der C >= 7 of 11                                           0      NO 
+  evidence_reasons  E-der A >= 5 of 11                                           0      NO 
+  evidence_reasons  no harm A: right->wrong <= base rate 1, unknown losses <= 2  0, 0   yes
+  evidence_reasons  no harm C: right->wrong <= base rate 1, unknown losses <= 2  0, 0   yes
+complete: true
+
+(.leaves-round12-W-fix.json; tags LIVE; models jev-1.13.0)
+== round12-W-fix: arms N,A, 2 repeats
+labels found per arm (every labelled cell, every repeat)
+  arm  found
+  ---  -----
+  N    84/84
+  A    84/84
+
+oracle witness_observable_in_row: base rate 1 (N repeats on different sides: 0, + 1)
+  arm  cells  no-harm  right->wrong  wrong->right  unknown loss  flips  caught  ambiguous  harm  ctx bytes med/max  key len med/max  key growth  fallback
+  ---  -----  -------  ------------  ------------  ------------  -----  ------  ---------  ----  -----------------  ---------------  ----------  --------
+  N    84     84       0             0             0             0      -       -          -     0/0                158/159          -           -       
+  A    84     84       3             0             0             0      -       -          HARM  109/109            266/267          108         -       
+  moved under A: verification-design#row3 right->wrong; verification-design#row3 right->wrong; verification-design#row3 right->wrong
+  near-threshold (N repeat-1 P in [0.4, 0.8], n=10; reported, not a bar): null N rep2 - rep1 -0.03 [-0.06, 0.01]
+    A rep2 - N rep2: -0.01 [-0.06, 0.02] over 10, 5 up
+
+bars
+  oracle                     bar                                                          value  met
+  -------------------------  -----------------------------------------------------------  -----  ---
+  witness_observable_in_row  no harm A: right->wrong <= base rate 1, unknown losses <= 2  3, 0   NO 
+complete: true
+
+(.leaves-round12-W-real.json; tags LIVE; models jev-1.13.0)
+== round12-W-real: arms N,A, 2 repeats
+labels found per arm (every labelled cell, every repeat)
+  arm  found
+  ---  -----
+  N    52/52
+  A    52/52
+
+oracle witness_observable_in_row: base rate 1 (N repeats on different sides: 0, + 1); 8 cells reported apart (counted: false / held_out)
+  arm  cells  no-harm  right->wrong  wrong->right  unknown loss  flips  caught  ambiguous  harm  ctx bytes med/max  key len med/max  key growth  fallback
+  ---  -----  -------  ------------  ------------  ------------  -----  ------  ---------  ----  -----------------  ---------------  ----------  --------
+  N    52     44       0             0             0             0      -       -          -     0/0                158/184          -           -       
+  A    52     44       1             0             0             0      -       -          no    118/141            283/317          125         -       
+  moved under A: verification-design#row3 right->wrong
+  near-threshold (N repeat-1 P in [0.4, 0.8], n=6; reported, not a bar): null N rep2 - rep1 -0.01 [-0.04, 0.02]
+    A rep2 - N rep2: 0.00 [-0.04, 0.05] over 6, 2 up
+
+bars
+  oracle                     bar                                                          value  met
+  -------------------------  -----------------------------------------------------------  -----  ---
+  witness_observable_in_row  no harm A: right->wrong <= base rate 1, unknown losses <= 2  1, 0   yes
+complete: true
+
+(.leaves-round12-M-contract.json, .leaves-round12-M-model.json, .leaves-round12-M-properties.json, .leaves-round12-M-verification.json; tags LIVE; models jev-1.13.0)
+== round12-M: arms N,A, 2 repeats
+labels found per arm (every labelled cell, every repeat)
+  arm  found
+  ---  -----
+  N    12/12
+  A    12/12
+
+oracle current_not_history: base rate 1 (N repeats on different sides: 0, + 1)
+  arm  cells  no-harm  right->wrong  wrong->right  unknown loss  flips  caught  ambiguous  harm  ctx bytes med/max  key len med/max  key growth  fallback
+  ---  -----  -------  ------------  ------------  ------------  -----  ------  ---------  ----  -----------------  ---------------  ----------  --------
+  N    12     12       0             0             0             0      -       -          -     0/0                102/117          -           -       
+  A    12     12       0             0             0             0      -       -          no    43/68              144/162          43          -       
+  near-threshold (N repeat-1 P in [0.4, 0.8], n=1; reported, not a bar): null N rep2 - rep1 0.05 [0.05, 0.05]
+    A rep2 - N rep2: -0.01 [-0.01, -0.01] over 1, 0 up
+
+bars
+  oracle               bar                                                          value  met
+  -------------------  -----------------------------------------------------------  -----  ---
+  current_not_history  no harm A: right->wrong <= base rate 1, unknown losses <= 2  0, 0   yes
+complete: true
+
+complete (all prefixes): true

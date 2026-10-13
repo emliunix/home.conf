@@ -1,10 +1,211 @@
 {
   "cap": 135,
   "live": {
-    "questions": 0,
+    "questions": 208,
     "followups": 0,
-    "requests": 0,
-    "runs": []
+    "requests": 208,
+    "runs": [
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/02-programmatic-document-contract-verification.md@per-atom#N",
+        "main": 11,
+        "followups": 0,
+        "requests": 11,
+        "asked": 11,
+        "worst": 11,
+        "bytes": 2294,
+        "at": "2026-10-13T21:45:45.360Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/02-programmatic-document-contract-verification.md@per-atom#A",
+        "main": 11,
+        "followups": 0,
+        "requests": 11,
+        "asked": 11,
+        "worst": 11,
+        "bytes": 3768,
+        "at": "2026-10-13T21:45:52.378Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/02-programmatic-document-contract-verification.md@per-atom#A",
+        "main": 11,
+        "followups": 0,
+        "requests": 11,
+        "asked": 11,
+        "worst": 11,
+        "bytes": 3768,
+        "at": "2026-10-13T21:45:59.016Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/02-programmatic-document-contract-verification.md@per-atom#N",
+        "main": 11,
+        "followups": 0,
+        "requests": 11,
+        "asked": 11,
+        "worst": 11,
+        "bytes": 2294,
+        "at": "2026-10-13T21:46:05.850Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/03-companion-driven-document-verification.md@per-atom#N",
+        "main": 9,
+        "followups": 0,
+        "requests": 9,
+        "asked": 9,
+        "worst": 9,
+        "bytes": 1501,
+        "at": "2026-10-13T21:46:12.051Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/03-companion-driven-document-verification.md@per-atom#A",
+        "main": 9,
+        "followups": 0,
+        "requests": 9,
+        "asked": 9,
+        "worst": 9,
+        "bytes": 2563,
+        "at": "2026-10-13T21:46:18.253Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/03-companion-driven-document-verification.md@per-atom#A",
+        "main": 9,
+        "followups": 0,
+        "requests": 9,
+        "asked": 9,
+        "worst": 9,
+        "bytes": 2563,
+        "at": "2026-10-13T21:46:24.310Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/03-companion-driven-document-verification.md@per-atom#N",
+        "main": 9,
+        "followups": 0,
+        "requests": 9,
+        "asked": 9,
+        "worst": 9,
+        "bytes": 1501,
+        "at": "2026-10-13T21:46:30.607Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/04-modular-verification-language.md@per-atom#N",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2899,
+        "at": "2026-10-13T21:46:38.181Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/04-modular-verification-language.md@per-atom#A",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 4425,
+        "at": "2026-10-13T21:46:45.730Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/04-modular-verification-language.md@per-atom#A",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 4425,
+        "at": "2026-10-13T21:46:53.605Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/04-modular-verification-language.md@per-atom#N",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2899,
+        "at": "2026-10-13T21:47:01.794Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/05-trusted-kernel-redesign.md@per-atom#N",
+        "main": 10,
+        "followups": 0,
+        "requests": 10,
+        "asked": 10,
+        "worst": 10,
+        "bytes": 2008,
+        "at": "2026-10-13T21:47:08.649Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/05-trusted-kernel-redesign.md@per-atom#A",
+        "main": 10,
+        "followups": 0,
+        "requests": 10,
+        "asked": 10,
+        "worst": 10,
+        "bytes": 3038,
+        "at": "2026-10-13T21:47:15.329Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/05-trusted-kernel-redesign.md@per-atom#A",
+        "main": 10,
+        "followups": 0,
+        "requests": 10,
+        "asked": 10,
+        "worst": 10,
+        "bytes": 3038,
+        "at": "2026-10-13T21:47:21.861Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/05-trusted-kernel-redesign.md@per-atom#N",
+        "main": 10,
+        "followups": 0,
+        "requests": 10,
+        "asked": 10,
+        "worst": 10,
+        "bytes": 2008,
+        "at": "2026-10-13T21:47:28.480Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/06-kernel-migration.md@per-atom#N",
+        "main": 8,
+        "followups": 0,
+        "requests": 8,
+        "asked": 8,
+        "worst": 8,
+        "bytes": 1675,
+        "at": "2026-10-13T21:47:34.526Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/06-kernel-migration.md@per-atom#A",
+        "main": 8,
+        "followups": 0,
+        "requests": 8,
+        "asked": 8,
+        "worst": 8,
+        "bytes": 2803,
+        "at": "2026-10-13T21:47:40.264Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/06-kernel-migration.md@per-atom#A",
+        "main": 8,
+        "followups": 0,
+        "requests": 8,
+        "asked": 8,
+        "worst": 8,
+        "bytes": 2803,
+        "at": "2026-10-13T21:47:46.085Z"
+      },
+      {
+        "run": "real-cells:witness-labels-r10.yaml:design/06-kernel-migration.md@per-atom#N",
+        "main": 8,
+        "followups": 0,
+        "requests": 8,
+        "asked": 8,
+        "worst": 8,
+        "bytes": 1675,
+        "at": "2026-10-13T21:47:51.892Z"
+      }
+    ]
   },
   "mock": {
     "projections": {
