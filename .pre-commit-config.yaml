@@ -59,6 +59,21 @@ repos:
         entry: node scripts/check-tracked-ignored.mjs
         pass_filenames: false
         always_run: true
+      - id: symlink-containment
+        name: no tracked symlink escapes the repository
+        language: system
+        # Claim: a tracked mode-120000 entry's RESOLVED target stays inside the
+        # repository root. Separate from tracked-ignored by subject: that guard
+        # sees the tracked-AND-ignored intersection, so a non-ignored symlink is
+        # outside its population by construction. `tskill`'s manage_skill can move
+        # a target link into the versioned source tree, which makes this the
+        # repository-level backstop. A relative `../../outside` escapes and is the
+        # form an absoluteness predicate misses; the script's --self-test requires
+        # each escape arm CAUGHT and both legitimate internal links ALLOWED, and
+        # exits 2 (not a gate) rather than 0 when it cannot run.
+        entry: node scripts/check-symlink-containment.mjs
+        pass_filenames: false
+        always_run: true
         require_serial: true
       - id: flow-skills-eval-lock
         name: flow-skills-eval frozen prefix lock
