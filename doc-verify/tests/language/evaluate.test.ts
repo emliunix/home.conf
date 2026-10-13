@@ -76,14 +76,15 @@ ${PURPOSE_ORACLE}constraints:
 
 describe("stratified negation, recursion and count", () => {
   it("evaluates negation over a lower stratum with no judge call", async () => {
+    // Model § static-nonground-not: `not core.child(D, S, _)` is refused; ground via a
+    // lower-stratum rule (has_child) instead of the design-04 bare form.
     const program = moduleText(`rules:
   has_child(D, S): core.child(D, S, _)
   leaf(D, S): core.section(D, S, _), not has_child(D, S)
-  bare(D, S): core.section(D, S, _), not core.child(D, S, _)
 constraints:
   top-level-is-leaf:
     forall: core.section(D, S, _), core.depth(D, S, 2)
-    require: leaf(D, S), bare(D, S)
+    require: leaf(D, S)
     severity: error
 `);
     const { backend, requests } = scriptedJudge(() => ({ value: "unknown" }));
@@ -151,7 +152,9 @@ describe("rounds", () => {
       ? { value: question.text.includes("Owner") ? "inclusion" : "other" }
       : byHeading(PURPOSES)(question));
     const report = await run(DEPTH_TWO, backend);
-    expect(requests.map((request) => request.questions.length)).toEqual([6, 2]);
+    // Prefix demand (round-2 over-demand: d2-minimal / pass-is-final / missing-literal):
+    // round 1 asks 2 purpose atoms, not design 04's 6.
+    expect(requests.map((request) => request.questions.length)).toEqual([2, 2]);
     expect(report.requests.map((request) => request.round)).toEqual([1, 2]);
     const kinds = report.oracles.filter((entry) => entry.atom.startsWith("t.kind"));
     expect(kinds.map((entry) => entry.sections[0])).toEqual(["scope/lunch-menu", "scope/owner-index"]);

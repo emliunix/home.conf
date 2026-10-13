@@ -115,8 +115,23 @@ export interface UnfoundedRow {
   [key: string]: string | undefined;
 }
 
+export interface KernelPopulation {
+  possible: number;
+  certain: number;
+}
+
+export interface KernelProofRow {
+  values: Record<string, string>;
+  /** write_canonical text of the proof term */
+  tree: string;
+}
+
 export interface KernelReport {
   statuses: Record<string, StatusRow[]>;
+  /** Bindings whose forall is certain (TB = t), keyed by constraint id. */
+  certain: Record<string, Array<Record<string, string>>>;
+  populations: Record<string, KernelPopulation>;
+  proofs: Record<string, KernelProofRow[]>;
   demand: { full: string[]; prefix: string[] };
   verdict?: string;
   missing: Record<string, MissingRow[]>;
@@ -254,16 +269,18 @@ export class Kernel {
           `call_with_inference_limit(core_report(R0), ${opts.budget}, Res), (Res == inference_limit_exceeded -> R = '$budget' ; R = R0)`,
           "~w",
         );
-        if (out === "$budget") return { statuses: {}, demand: { full: [], prefix: [] }, missing: {}, unfounded: {}, blocked: "budget", budget: opts.budget };
+        if (out === "$budget") {
+          return emptyReport({ blocked: "budget", budget: opts.budget });
+        }
         text = out;
       }
     } catch (e) {
       const prolog = e instanceof PrologError ? e.prolog : "";
       const m = /core_rejected\(([^,]+),(.*)\)$/.exec(prolog);
-      if (m) return { statuses: {}, demand: { full: [], prefix: [] }, missing: {}, unfounded: {}, rejected: `${m[1]}: ${m[2]}` };
+      if (m) return emptyReport({ rejected: `${m[1]}: ${m[2]}` });
       const r = /resource_error\((\w+)\)/.exec(prolog);
       if (r && r[1] !== undefined) {
-        return { statuses: {}, demand: { full: [], prefix: [] }, missing: {}, unfounded: {}, resource: r[1] };
+        return emptyReport({ resource: r[1] });
       }
       throw e;
     }
@@ -317,14 +334,22 @@ function constraintVarNames(program: TranslateProgram): Map<string, string[]> {
   return names;
 }
 
-function parseReport(text: string, program: TranslateProgram): KernelReport {
-  const names = constraintVarNames(program);
-  const res: KernelReport = {
+function emptyReport(extra: Partial<KernelReport> = {}): KernelReport {
+  return {
     statuses: {},
+    certain: {},
+    populations: {},
+    proofs: {},
     demand: { full: [], prefix: [] },
     missing: {},
     unfounded: {},
+    ...extra,
   };
+}
+
+function parseReport(text: string, program: TranslateProgram): KernelReport {
+  const names = constraintVarNames(program);
+  const res = emptyReport();
   for (const c of program.constraints) res.statuses[c.id] = [];
   const row = (id: string, vals: string[], status?: string): Record<string, string> => {
     if (vals.length === 1 && vals[0] === "\x1dpopulation") {
@@ -332,6 +357,7 @@ function parseReport(text: string, program: TranslateProgram): KernelReport {
     }
     return Object.fromEntries((names.get(id) ?? []).map((n, i) => [n, vals[i] as string]));
   };
+  const nVars = (id: string) => (names.get(id) ?? []).length;
   for (const line of text.split("\n").filter(Boolean)) {
     const f = line.split(SEP);
     const kind = f[0];
@@ -341,6 +367,19 @@ function parseReport(text: string, program: TranslateProgram): KernelReport {
         const status = f[2] as string;
         const rows = res.statuses[id] ?? (res.statuses[id] = []);
         rows.push({ ...row(id, f.slice(3), status), status });
+        break;
+      }
+      case "certain":
+        (res.certain[id] ??= []).push(row(id, f.slice(2)));
+        break;
+      case "population":
+        res.populations[id] = { possible: Number(f[2]), certain: Number(f[3]) };
+        break;
+      case "proof": {
+        const nv = nVars(id);
+        const vals = f.slice(2, 2 + nv);
+        const tree = f[2 + nv] ?? "";
+        (res.proofs[id] ??= []).push({ values: row(id, vals), tree });
         break;
       }
       case "demand": {

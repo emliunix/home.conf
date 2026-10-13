@@ -13,7 +13,7 @@ import { canonicalJson, sha256 } from "../hash.js";
 import { PolicyViolationError } from "../judge.js";
 import { BlockedError } from "../types.js";
 import type { Oracle } from "./checker.js";
-import { UNKNOWN, type Demand, type OracleView } from "./evaluate.js";
+import { UNKNOWN, type Demand, type OracleView } from "./demand.js";
 import { bodyEvidence, cellEvidence, cellsEvidence, columnEvidence, ownEvidence, rowWithColumnEvidence, unionEvidence, type DocumentFacts, type EvidenceText } from "./facts.js";
 import type { RequestShape } from "./module.js";
 import { listItems, termText, type Term } from "./terms.js";

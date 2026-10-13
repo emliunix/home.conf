@@ -63,7 +63,7 @@ describe("kernel corpus (S1)", () => {
           composed.set(key, (await compileWitnessModule(c.yaml)).program);
         }
         const program = composed.get(key) as Awaited<ReturnType<typeof compileWitnessModule>>["program"];
-        const inProfile = (c: { profiles?: string[] }) =>
+        const inProfile = (c: { profiles?: string[] | undefined }) =>
           c.profiles === undefined || step.profile === undefined || c.profiles.includes(step.profile);
         const p1 = { ...program, constraints: program.constraints.filter(inProfile) };
         const kernel = await Kernel.create();

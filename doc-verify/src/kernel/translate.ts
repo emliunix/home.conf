@@ -37,7 +37,7 @@ export interface TranslateConstraint {
   severity: "error" | "warning";
   weight: number;
   nonempty: boolean;
-  profiles?: string[];
+  profiles?: string[] | undefined;
   source: ConstraintSource;
 }
 

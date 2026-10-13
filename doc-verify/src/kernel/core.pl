@@ -424,12 +424,12 @@ core_lit_text(L, T) :- copy_term(L, L1), core_lit_text_(L1, T).
 core_lit_text_(core_tnot(G), T) :- !, core_lit_text_(G, T0), atom_concat('not ', T0, T).
 core_lit_text_(\+ G, T) :- !, core_lit_text_(G, T0), atom_concat('not ', T0, T).
 core_lit_text_(core_not_label(A, L), T) :- !, core_label_atom(A, L, LA), core_lit_text_(LA, T0), atom_concat('not ', T0, T).
-core_lit_text_(memberchk(X, Ls), T) :- !, core_arg_text(X, TX), core_arg_text(Ls, TL), format(atom(T), '~w in ~w', [TX, TL]).
-core_lit_text_(core_matches(X, R), T) :- !, core_arg_text(X, TX), core_arg_text(R, TR), format(atom(T), 'matches(~w,~w)', [TX, TR]).
-core_lit_text_(core_not_matches(X, R), T) :- !, core_arg_text(X, TX), core_arg_text(R, TR), format(atom(T), 'not matches(~w,~w)', [TX, TR]).
-core_lit_text_(core_cmp(Op, A, B), T) :- !, core_arg_text(A, TA), core_arg_text(B, TB), format(atom(T), '~w~w~w', [TA, Op, TB]).
-core_lit_text_(core_count(V, G, N), T) :- !, core_arg_text(V, TV), core_lit_text_(G, TG), core_arg_text(N, TN), format(atom(T), 'count(~w,~w,~w)', [TV, TG, TN]).
-core_lit_text_(core_present(D, Cs, Ps), T) :- !, core_arg_text(D, TD), core_arg_text(Cs, TC), core_arg_text(Ps, TP), format(atom(T), 'present(~w,~w,~w)', [TD, TC, TP]).
+core_lit_text_(memberchk(X, Ls), T) :- !, core_arg_text(X, TX), core_arg_text(Ls, TL), format(atom(T), '~s in ~s', [TX, TL]).
+core_lit_text_(core_matches(X, R), T) :- !, core_arg_text(X, TX), core_arg_text(R, TR), format(atom(T), 'matches(~s,~s)', [TX, TR]).
+core_lit_text_(core_not_matches(X, R), T) :- !, core_arg_text(X, TX), core_arg_text(R, TR), format(atom(T), 'not matches(~s,~s)', [TX, TR]).
+core_lit_text_(core_cmp(Op, A, B), T) :- !, core_arg_text(A, TA), core_arg_text(B, TB), format(atom(T), '~s~w~s', [TA, Op, TB]).
+core_lit_text_(core_count(V, G, N), T) :- !, core_arg_text(V, TV), core_lit_text_(G, TG), core_arg_text(N, TN), format(atom(T), 'count(~s,~s,~s)', [TV, TG, TN]).
+core_lit_text_(core_present(D, Cs, Ps), T) :- !, core_arg_text(D, TD), core_arg_text(Cs, TC), core_arg_text(Ps, TP), format(atom(T), 'present(~s,~s,~s)', [TD, TC, TP]).
 core_lit_text_(G, T) :-
     G =.. [F|Args],
     (   atom_concat(core_, Name, F), functor(G, F, N), core_base(F/N)
@@ -437,7 +437,8 @@ core_lit_text_(G, T) :-
     ;   QF = F
     ),
     maplist(core_arg_text, Args, Ts), atomic_list_concat(Ts, ',', Inner),
-    format(atom(T), '~w(~w)', [QF, Inner]).
+    atom_string(QF, QFS),
+    format(atom(T), '~s(~s)', [QFS, Inner]).
 
 % A choose oracle's negated label literal is reported as the label atom k(i, l); a two-label
 % oracle's as o(i).
@@ -449,16 +450,29 @@ core_label_atom(A, L, LA) :-
 
 core_arg_text(X, T) :- var(X), !, T = '_'.
 core_arg_text(core_iv(L, H, _), T) :- !, format(atom(T), '~w..~w', [L, H]).   % an interval [L, H]
+% Lists: tight commas (write_term's spacing(next_argument) still spaces list elements).
+core_arg_text(X, T) :-
+    is_list(X), !,
+    maplist(core_arg_text, X, Ts), atomic_list_concat(Ts, ',', Inner),
+    format(atom(T), '[~s]', [Inner]).
+core_arg_text(X, T) :-
+    compound(X), \+ is_list(X), !,
+    X =.. [F|Args], maplist(core_arg_text, Args, Ts), atomic_list_concat(Ts, ',', Inner),
+    with_output_to(atom(FS), write_term(F, [quoted(true)])),
+    format(atom(T), '~s(~s)', [FS, Inner]).
 core_arg_text(X, T) :-
     copy_term(X, Y), term_variables(Y, Vs), maplist(=('$VAR'('_')), Vs),
-    with_output_to(atom(T), write_term(Y, [quoted(true), numbervars(true), spacing(standard)])).
+    with_output_to(atom(T), write_term(Y, [quoted(true), numbervars(true)])).
 
 % ---------------------------------------------------------------------------------------------
-% Atom keys (FORMAT.md): module::pred(args), ground args written with ~q, no spaces.
+% Atom keys (FORMAT.md / host oracleAtomKey): module::pred(args), functor unquoted,
+% ground args as write_term(quoted), no spaces between args. The host key is a JS string
+% `mod::pred(...)`, not a Prolog source token — so the functor must not be '~w'-quoted.
 core_atom_key(A, K) :-
     A =.. [F|Args],
     maplist(core_arg_text, Args, Ts), atomic_list_concat(Ts, ',', Inner),
-    format(atom(K), '~w(~w)', [F, Inner]).
+    atom_string(F, FS),
+    format(atom(K), '~s(~s)', [FS, Inner]).
 
 % Answer state (the host writes it; model §8: the kernel's only input besides P and F).
 core_set_answers(Pairs) :-
@@ -468,6 +482,9 @@ core_set_answers(Pairs) :-
 % ---------------------------------------------------------------------------------------------
 % One evaluation, as lines for the host (fields separated by \x1f):
 %   status <Id> <Status> <V1> ... (values written with ~w, keyed by the forall's variable order)
+%   certain <Id> <V1> ...          (forall TB = t for this binding)
+%   population <Id> <Possible> <Certain>
+%   proof <Id> <V1> ... <Tree>     (Tree = write_canonical of the proof term)
 %   demand <full|prefix> <Key>
 %   missing <Id> <Literal> <ClausePath> <PassedU> <V1> ...  (lists joined by \x1e)
 %   unfounded <Id> <V1> ...           (§3 M2: an undetermined binding with empty support)
@@ -483,6 +500,23 @@ core_report_line(Line) :-
     member(b(Vals0, St), Rows),
     ( Vals0 == population -> Ts = ['\x1d\population'] ; maplist(core_val_text, Vals0, Ts) ),
     atomic_list_concat([status, Id, St|Ts], '\x1f\', Line).
+core_report_line(Line) :-
+    core_binding_status(Id, Vals, t, _, _),
+    maplist(core_val_text, Vals, Ts),
+    atomic_list_concat([certain, Id|Ts], '\x1f\', Line).
+core_report_line(Line) :-
+    core_constraint(Id, _, _, _, _, _, _, _),
+    findall(TB, core_binding_status(Id, _, TB, _, _), TBs),
+    length(TBs, Possible),
+    include(=(t), TBs, Certs), length(Certs, Certain),
+    atomic_list_concat([population, Id, Possible, Certain], '\x1f\', Line).
+core_report_line(Line) :-
+    core_binding_status(Id, Vals, TB, TG, Status),
+    core_proof_term(Id, Vals, TB, TG, Status, Tree),
+    with_output_to(atom(Canon), write_canonical(Tree)),
+    maplist(core_val_text, Vals, Ts),
+    atomic_list_concat([proof, Id|Ts], '\x1f\', Pref),
+    atomic_list_concat([Pref, Canon], '\x1f\', Line).
 core_report_line(Line) :-
     member(Policy, [full, prefix]),
     core_demand(Policy, As), member(A, As), core_atom_key(A, K),
@@ -512,3 +546,137 @@ core_val_text(V, T) :- format(atom(T), '~w', [V]).
 
 % Labels of a demanded atom (for the host's D3 measurement, model §6).
 core_atom_labels(A, Ls) :- functor(A, F, _), core_oracle_decl(F, _, Ls, _, _).
+
+% ---------------------------------------------------------------------------------------------
+% Proof trees (design 06; prototype worklog/kernel-trials/probe/prolog/k3-proof.pl).
+% Tree = tree(forall(Mode, Kids), goal(Mode, Kids), MissingList)
+%   Mode = certain | possible
+%   Kid  = rule(Atom, RuleText, Kids) | fact(Atom) | oracle(Key) | unasked(Key)
+%        | not(Kid) | builtin(Text) | missing(LitText)
+% A node is certain when its goal is t, possible when u; cycles are cut by Seen.
+
+core_proof_term(Id, Vals, TB, TG, Status, tree(forall(FM, FK), goal(GM, GK), Miss)) :-
+    core_mode(TB, FM), core_mode(TG, GM),
+    core_prove_goal(core_forall(Id, Vals), TB, [], FK),
+    (   Status == violated, core_constraint(Id, require, _, _, _, _, _, _)
+    ->  GK = [],
+        (   once(core_missing_proof(Id, Vals, Lit, After))
+        ->  Miss = [missing(Lit, After)]
+        ;   Miss = []
+        )
+    ;   core_prove_goal(core_goal(Id, Vals), TG, [], GK), Miss = []
+    ).
+
+core_mode(t, certain) :- !.
+core_mode(_, possible).
+
+% Prefix proof up to the first f literal (design 04 missing.after), then that literal.
+core_missing_proof(Id, Vals, Lit, After) :-
+    core_constraint(Id, require, _, _, _, NV, _, Goal0),
+    copy_term(NV-Goal0, NV1-Goal),
+    pairs_values_eq(NV1, Vals),
+    core_conj(Goal, Ls),
+    core_descend_prove(Ls, [], Lit, After).
+
+core_descend_prove([L|Ls], Acc, Lit, Kids) :-
+    (   call_delays(L, true)
+    ->  core_prove(L, t, [], PK), append(Acc, PK, Acc1),
+        core_descend_prove(Ls, Acc1, Lit, Kids)
+    ;   call_delays(L, _)
+    ->  core_prove(L, u, [], PK), append(Acc, PK, Acc1),
+        core_descend_prove(Ls, Acc1, Lit, Kids)
+    ;   core_derived_lit(L)
+    ->  once(clause(L, Body)), core_conj(Body, Bs),
+        core_descend_prove(Bs, Acc, Lit, Kids)
+    ;   core_lit_text(L, Lit), Kids = Acc
+    ).
+
+core_prove_goal(_G, f, _, []) :- !.
+% Expand core_forall / core_goal to their bodies so the host's goal/forall nodes
+% hold the premises (facts, oracles), not a wrapper rule(core_goal(...), ...).
+% Do not call_delays the whole body again: status already decided the binding, and
+% re-running would re-execute injected side effects (boundary E14's open/3).
+core_prove_goal(core_forall(Id, Vals), Mode, Seen, Kids) :- !,
+    once((clause(core_forall(Id, Vals), Body), core_prove(Body, Mode, Seen, Kids))).
+core_prove_goal(core_goal(Id, Vals), Mode, Seen, Kids) :- !,
+    once((clause(core_goal(Id, Vals), Body), core_prove(Body, Mode, Seen, Kids))).
+core_prove_goal(G, Mode, Seen, Kids) :-
+    (   Mode == t -> call_delays(G, true) ; call_delays(G, _) ),
+    once(core_prove(G, Mode, Seen, Kids0)),
+    Kids = Kids0.
+
+% core_prove(+Goal, +Mode, +Seen, -Kids): Kids is a list of proof nodes for Goal's body.
+core_prove(true, _, _, []) :- !.
+core_prove((A, B), Mode, Seen, Kids) :- !,
+    core_prove(A, Mode, Seen, KA), core_prove(B, Mode, Seen, KB), append(KA, KB, Kids).
+core_prove(core_label(A, _), _Mode, _, [N]) :- !,
+    core_atom_key(A, K),
+    % Any answer (including `unknown` from a threshold demotion) is an oracle leaf; only
+    % never-asked atoms are unasked.
+    (   core_answered(A, _) -> N = oracle(K) ; N = unasked(K) ).
+core_prove(core_not_label(A, _), _Mode, _, [not(N)]) :- !,
+    core_atom_key(A, K),
+    (   core_answered(A, _) -> N = oracle(K) ; N = unasked(K) ).
+core_prove(core_choose(A, _, _), Mode, Seen, Kids) :- !,
+    core_prove(core_label(A, _), Mode, Seen, Kids).
+core_prove(core_tnot(G), Mode, Seen, [not(Child)]) :- !,
+    core_prove_one(G, Mode, Seen, Child).
+core_prove(core_naf(G), Mode, Seen, [not(Child)]) :- !,
+    core_prove_one(G, Mode, Seen, Child).
+core_prove(\+ G, Mode, Seen, [not(Child)]) :- !,
+    core_prove_one(G, Mode, Seen, Child).
+core_prove(memberchk(X, L), _, _, [builtin(T)]) :- !,
+    core_lit_text(memberchk(X, L), T).
+core_prove(core_matches(X, R), _, _, [builtin(T)]) :- !, core_lit_text(core_matches(X, R), T).
+core_prove(core_not_matches(X, R), _, _, [builtin(T)]) :- !, core_lit_text(core_not_matches(X, R), T).
+core_prove(core_cmp(Op, A, B), _, _, [builtin(T)]) :- !, core_lit_text(core_cmp(Op, A, B), T).
+core_prove(core_count(V, G, N), _, _, [builtin(T)]) :- !, core_lit_text(core_count(V, G, N), T).
+core_prove(core_present(D, C, P), _, _, [builtin(T)]) :- !, core_lit_text(core_present(D, C, P), T).
+% Builtins / foreign goals: name them only — never re-execute (E14 injects open/3 into a body).
+core_prove(G, _, _, [builtin(T)]) :-
+    callable(G), predicate_property(G, built_in), !,
+    core_lit_text(G, T).
+core_prove(G, _, _, [builtin(T)]) :-
+    callable(G), predicate_property(G, foreign), !,
+    core_lit_text(G, T).
+core_prove(G, Mode, Seen, [Node]) :-
+    callable(G), functor(G, F, N),
+    (   core_base(F/N) -> core_lit_text(G, T), Node = fact(T)
+    ;   core_oracle_decl(F, _, _, _, _) ->
+            G =.. [F|Args],
+            (   core_oracle_decl(F, _, _, Inputs, choose)
+            ->  length(Inputs, K), length(In, K), append(In, [_], Args), Atom =.. [F|In]
+            ;   Atom = G
+            ),
+            core_atom_key(Atom, Key),
+            (   core_answered(Atom, _) -> Node = oracle(Key) ; Node = unasked(Key) )
+    ;   core_prove_derived(G, Mode, Seen, Node)
+    ).
+
+core_prove_one(G, Mode, Seen, Node) :-
+    core_prove(G, Mode, Seen, Kids),
+    ( Kids = [Node] -> true ; Node = rule(G, '', Kids) ).
+
+core_prove_derived(G, Mode, Seen, Node) :-
+    % Bind through call_delays before naming the atom (possible mode must not use \+ \+,
+    % or oracle keys stay non-ground and miss core_answered/2).
+    (   Mode == t -> call_delays(G, true) ; call_delays(G, _) ),
+    core_lit_text(G, AtomText),
+    (   member(S, Seen), S =@= G -> Node = rule(AtomText, '', [])
+    ;   (   clause(G, Body),
+            (   Mode == t -> call_delays(Body, true) ; call_delays(Body, _) )
+        ->  (   Body == true -> Node = fact(AtomText)
+            ;   core_rule_text(G, Body, RuleText),
+                core_prove(Body, Mode, [G|Seen], Kids),
+                Node = rule(AtomText, RuleText, Kids)
+            )
+        ;   Node = fact(AtomText)
+        )
+    ).
+
+core_rule_text(G, _Body, Text) :-
+    (   clause(G, B), core_lit_text(G, H), core_lit_text(B, BT),
+        format(atom(Text), '~w :- ~w', [H, BT])
+    ->  true
+    ;   core_lit_text(G, Text)
+    ).
