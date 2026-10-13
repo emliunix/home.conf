@@ -1150,7 +1150,7 @@ heading(d, b, summary)
 depth(d, b, 4)
 --- neighbour ans
 {"w::o2(d,a)":"holds"}
-counterexample nondet-same (the same instance disagrees with itself): seed 1 program 301 size 19->19 (not shrunk) minimal=false (neighbours tried 1, skipped 0)
+counterexample nondet-same (same-instance history dependence): seed 1 program 301 size 19->19 (not shrunk) minimal=false (neighbours tried 1, skipped 0)
 --- module
 schema_version: 2
 kind: verification-module
@@ -1207,6 +1207,7 @@ selected(d, c)
 --- problems
 first run ["D2: answering w::k(d,a)=x outside Dem changes a status"]
 same instance again []
+sequence replayed on another instance []
 input {"w::o2(d,a)":"fails","w::o2(d,c)":"holds","w::o3(d,b)":"holds","w::k(d,b)":"x","w::k(d,a)":"x"}
 as call 20 of 28 in the check sequence on one instance: {"v":"BLOCKED","s":{},"d":{"full":[],"prefix":[]},"u":null,"x":"error(instantiation_error,_2646)"}
 as the first call on a new instance: {"v":"NO-GO","s":{"c1":[{"D":"d","S":"a","status":"satisfied"},{"D":"d","S":"b","status":"violated"},{"D":"d","S":"c","status":"undetermined"}],"c2":[{"D":"d","S":"a","status":"violated"},{"D":"d","S":"b","status":"satisfied"},{"D":"d","S":"c","status":"satisfied"}],"c3":[{"D":"d","S":"a","status":"
@@ -6211,12 +6212,12 @@ selected(d, a)
 selected(d, b)
 --- neighbour ans
 {"w::o2(d,a)":"holds","w::o2(d,b)":"fails","w::k(d,a)":"x"}
-arm C5-shrink subject S1: programs 1500, failing-program kinds {"sound":26,"verdict":15,"policy":5,"loop-wfs":16,"D2":5,"loop-shape":1}, invalidSkipped 0, capSkipped 0, d1Weak 115, exempt 126
+arm C5-shrink subject S1: programs 1500, failing-program kinds {"sound":26,"verdict":15,"policy":5,"loop-wfs":16,"D2":5,"loop-shape":1}, invalidSkipped 0, capSkipped 0, shrinkReplayMissed 0, d1Weak 115, exempt 126
 skips (reason: count): {}
 recorded distinct shrunk triples per kind|class: {"sound|count-bound":26,"verdict|count-bound":15,"policy|count-bound":5,"loop-wfs|count-bound":16,"D2|count-bound":5,"loop-shape|other":1}; non-minimal 68
-expected (pre-registered red): 67; refuting: 1
+expected (pre-registered red): 67; refuting: 2
 nondet: freshInstance=0 sameInstance=1
 coverage: {"choose":0.272,"count":0.723,"matches":0.618,"in":0.637,"cmp":0.637,"recursion":0.128,"negativeLoop":0.325,"unknown":0.392,"countBound":0.075,"countCorrelated":0.105,"unboundMatches":0.067,"loopReachable":0.273} triggers: {"choosePair":0.141,"countBoundary":0.538,"oddReachable":0.245} undeterminedShare 0.759
 weights: {"chooseOracle":0.3,"answerRate":0.4,"unknownOfAnswered":0.15,"negation":0.3,"in":0.1,"matches":0.1,"cmp":0.1,"count":0.1,"choose":0.3,"countUncorrelatedInGoals":0.5,"recursion":0.2,"negativeLoop":0.15,"loopReachable":0.5,"loopViaPredicate":0.5,"nonempty":0.25,"oracleForall":0.4,"unboundMatches":0.08,"countBound":0.1,"chooseTriggerFloor":0.45,"countBoundaryFloor":0.25,"oddLoopFloor":0.22}
-cost: wall 130526 ms, checking 111470 ms, shrinker 0 ms, minimality 6928 ms, evaluations S1 36124 S3 0, instances 1836
-complete: false (non-deterministic counterexamples)
+cost: wall 134487 ms, checking 112778 ms, shrinker 0 ms, minimality 7012 ms, evaluations S1 36168 S3 0, instances 1880
+complete: true

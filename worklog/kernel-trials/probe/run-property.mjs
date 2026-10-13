@@ -292,7 +292,11 @@ async function runArm(subject, armName, n, seeds) {
     for (const [k, floor] of Object.entries(TRIGGER_FLOORS)) if (trig[k] < floor) reasons.push(`trigger floor missed: ${k}=${trig[k]} < ${floor}`);
   }
   if (timedOut) reasons.push("timeout (10 min of checking)");
-  if (nondet.fresh.length || nondet.same.length) reasons.push("non-deterministic counterexamples");
+  // A non-deterministic counterexample is a finding (a refuting cell, exit 1), not an incompleteness:
+  // the plan's `complete` list is skips, timeouts, unrestored seeds, unprinted or unshrunk records,
+  // trigger floors and coverage (lead, 2026-10-13, after reviewer finding 4 of the first review).
+  const nondetCount = nondet.fresh.length + nondet.same.length;
+  if (nondetCount) refuting += nondetCount;
   // invalid programs are never evaluated (counted with their reason); a subject rejection is
   // covered only by the plan's out-of-scope list (present/3, matches over a count)
   const uncovered = Object.entries(skips).filter(([r]) => !r.startsWith("invalid") && !r.includes("(out of scope)"));

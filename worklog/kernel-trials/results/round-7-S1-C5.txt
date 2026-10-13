@@ -1484,9 +1484,9 @@ depth(d, b, 1)
 arm C5 subject S1: programs 1500, failing-program kinds {"sound":26,"verdict":15,"policy":5,"loop-wfs":16,"D2":5,"loop-shape":1}, invalidSkipped 0, capSkipped 0, shrinkReplayMissed 0, d1Weak 115, exempt 126
 skips (reason: count): {}
 recorded distinct shrunk triples per kind|class: {"sound|count-bound":10,"verdict|count-bound":5,"policy|count-bound":3,"loop-wfs|count-bound":9,"D2|count-bound":5,"loop-shape|other":1}; non-minimal 17
-expected (pre-registered red): 32; refuting: 1
+expected (pre-registered red): 32; refuting: 2
 nondet: freshInstance=0 sameInstance=1
 coverage: {"choose":0.272,"count":0.723,"matches":0.618,"in":0.637,"cmp":0.637,"recursion":0.128,"negativeLoop":0.325,"unknown":0.392,"countBound":0.075,"countCorrelated":0.105,"unboundMatches":0.067,"loopReachable":0.273} triggers: {"choosePair":0.141,"countBoundary":0.538,"oddReachable":0.245} undeterminedShare 0.759
 weights: {"chooseOracle":0.3,"answerRate":0.4,"unknownOfAnswered":0.15,"negation":0.3,"in":0.1,"matches":0.1,"cmp":0.1,"count":0.1,"choose":0.3,"countUncorrelatedInGoals":0.5,"recursion":0.2,"negativeLoop":0.15,"loopReachable":0.5,"loopViaPredicate":0.5,"nonempty":0.25,"oracleForall":0.4,"unboundMatches":0.08,"countBound":0.1,"chooseTriggerFloor":0.45,"countBoundaryFloor":0.25,"oddLoopFloor":0.22}
-cost: wall 452407 ms, checking 112182 ms, shrinker 325693 ms, minimality 2666 ms, evaluations S1 186956 S3 0, instances 7161
-complete: false (non-deterministic counterexamples)
+cost: wall 454138 ms, checking 112225 ms, shrinker 327346 ms, minimality 2680 ms, evaluations S1 186956 S3 0, instances 7161
+complete: true

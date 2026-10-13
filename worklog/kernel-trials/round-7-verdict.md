@@ -3,10 +3,10 @@
 ## Predicate
 
 ```sh
-node worklog/kernel-trials/probe/run-property.mjs --subject S1 --arm C5           --programs 500 --seeds 1,2,3   # exit 1: complete: false (one same-instance non-determinism); one refuting loop-shape cell
+node worklog/kernel-trials/probe/run-property.mjs --subject S1 --arm C5           --programs 500 --seeds 1,2,3   # exit 1: complete: true; two refuting cells (loop-shape; one same-instance non-determinism)
 node worklog/kernel-trials/probe/run-property.mjs --subject S3 --arm C5           --programs 500 --seeds 1,2,3   # exit 0: complete: true; S3 × D1 red as pre-registered (43 triples)
 node worklog/kernel-trials/probe/run-property.mjs --subject S1 --arm C5-features  --programs 500 --seeds 1,2,3   # exit 0: complete: true; 0 failures
-node worklog/kernel-trials/probe/run-property.mjs --subject S1 --arm C5-shrink    --programs 500 --seeds 1,2,3   # exit 1: the same flips as C5, unshrunk
+node worklog/kernel-trials/probe/run-property.mjs --subject S1 --arm C5-shrink    --programs 500 --seeds 1,2,3   # exit 1: complete: true; the same two refuting cells, records unshrunk
 node worklog/kernel-trials/probe/run-property.mjs --seeds-table --programs 500 --seeds 1,2,3                     # exit 1: complete: true; one refuting cell (K3')
 ```
 
@@ -17,7 +17,7 @@ S1-C5-shrink,S3-C5,seeds}.txt`; the lead's hand-made record of the first finding
 `results/round-7-sound-repeated-count.txt`. After the second review's two hardening items (the fresh-instance bucket means two new
 instances disagreeing on their first call, nothing else; a missed shrink replay is marked and
 counted), the builder re-ran S1 C5 and reproduced the same kinds, triples and the one
-non-determinism; that re-run is the committed `results/round-7-S1-C5.txt`. The build went through two seats (the Cursor
+non-determinism; that re-run is the committed `results/round-7-S1-C5.txt`. The first runs reported S1 C5 and C5−shrink `complete: false` for the non-determinism; that cleared a flag the plan's `complete` list does not include (skips, timeouts, unrestored seeds, unprinted or unshrunk records, trigger floors, coverage), so the runner was corrected on 2026-10-13 12:55 to count a non-deterministic counterexample as a refuting cell (exit 1) instead, and the two arms re-run (11:17–11:27 by the lead's clock): the same kinds, triples and the one non-determinism, `complete: true`, refuting 2. The build went through two seats (the Cursor
 `builder` until its provider failed mid-round, then an Opus subagent), two reviews by the
 `reviewer` seat (`/tmp`: 24 findings on the first build, 10 on the second; the second review
 closes blocking findings 1–8 at the cited lines and reproduces the count-bound finding
@@ -108,7 +108,7 @@ atoms; exact, D2, loop-stable and unbound-matches 0; wall 388 s.
 | minimality ≤ 8 atoms | met (3–5) |
 | C5−shrink same flips, 2–5× larger | met (3–5×) |
 | cost ≤ 40 min | met (31 min sequential by the lead; 40 min by the builder with the shrinker on) |
-| `complete` | S1 C5 and C5−shrink `false` for finding 3 alone; the other three `true` |
+| `complete` | `true` on every track (exit 1 where a refuting cell exists: findings 2 and 3 on the S1 arms, K3' on the seeds table) |
 
 ## Decisions recorded (`decisions.md`)
 
