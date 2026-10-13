@@ -140,6 +140,29 @@ function nondetPredicate(subject, kind) {
     } catch { return "skip"; }
   };
 }
+// Production evaluates every round on a fresh instance (doc-verify/src/engine/index.ts evalKernel),
+// so a counterexample counts only if it reproduces when EVERY evaluation of the check sequence gets
+// its own new instance. A kind that disappears under that replay is history-dependent (gate-ledger
+// item 9), reported, not refuting. Returns the problems of the fresh-per-call replay, or null when
+// it could not be run (the pool ran dry), in which case the caller keeps the counterexample.
+async function freshPerCallProblems(subject, g) {
+  const { module, facts } = render(g);
+  // Pass 1 on one instance: which answer sets does the check sequence evaluate?
+  const keys = new Set();
+  const counter = await makeSubject(subject, module, facts);
+  checkProgram(g, (ans) => { keys.add(JSON.stringify(ans)); return counter.evaluate(ans); }, { subject });
+  // Each answer set on its own new instance, one at a time (first call, no history).
+  const lone = new Map();
+  for (const k of keys) lone.set(k, (await makeSubject(subject, module, facts)).evaluate(JSON.parse(k)));
+  let dry = false;
+  const r = checkProgram(g, (ans) => {
+    const k = JSON.stringify(ans);
+    if (!lone.has(k)) { dry = true; return counter.evaluate(ans); }
+    return lone.get(k);
+  }, { subject });
+  return dry ? null : r.problems;
+}
+
 async function nondetDetail(subject, g, kind) {
   if (kind !== "same") return [];
   const d = await historyDivergence(subject, g);
@@ -275,7 +298,12 @@ async function runArm(subject, armName, n, seeds) {
         const rr = checkProgram(shrunk, sInst.evaluate, { subject });
         const hit = rr.problems.filter((p) => propertyOf(p) === kind);
         let verdict;
-        if (kind === "loop-shape") {
+        const freshProblems = await freshPerCallProblems(subject, shrunk);
+        const historyOnly = freshProblems !== null && !freshProblems.some((p) => propertyOf(p) === kind);
+        if (historyOnly) {
+          verdict = "report-not-failing (gone when every call gets a fresh instance: same-instance history, gate-ledger item 9)";
+          nondet.same.push({ g: shrunk, seed, index });
+        } else if (kind === "loop-shape") {
           // gate-ledger item 8: open precision; treat as expected (like former count-bound)
           verdict = "expected (loop-shape, gate-ledger item 8)";
           expectedRed += 1;
