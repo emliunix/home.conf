@@ -36,7 +36,28 @@ class Skill:
 
     @property
     def disposition(self) -> str:
-        """The name the accounting uses: `valid`, `broken`, or `filtered(<reason>)`."""
+        """The row's disposition in the accounting vocabulary.
+
+        ⚠ THE FORMS ARE DERIVED, NOT LISTED. Two earlier drafts of this docstring
+        each undercounted them (three, then six) — the same defect one level down.
+        What the property actually returns:
+
+            the raw status, for any row whose status is not BROKEN and whose
+            `reason` is None or "valid":
+                                valid | inactive | unmanaged | malformed
+            "broken",          for a BROKEN row or a row whose reason is "broken"
+            "filtered(<r>)",   for any other named reason
+
+        `filtered(...)` therefore has one form per reason in `SkillManager.REASONS`. The
+        union is 10 values today; enumerating `SkillStatus` against `REASONS` reproduces
+        it, and that is how the count should be checked rather than restated here.
+
+        Measured on the real farm — 4 of the 10 occur: `valid 67 · unmanaged 14 ·
+        inactive 6 · filtered(no-frontmatter) 1`.
+
+        No PRODUCT code reads this — only the test suite does. Kept because it is the
+        name acceptance 5 asks for (`filtered(no front matter)`).
+        """
         if self.status == SkillStatus.BROKEN or self.reason == "broken":
             return "broken"
         if self.status == SkillStatus.ACTIVE:
