@@ -9,7 +9,9 @@ spine from my instinct, a path or the key surround like the 'property'"; "say sp
 the target section, x being the list of headers and list index towards it"; "Before test, we can
 come up some good syntax design, mine was just one opinion"; a feasibility check against the
 kernel was asked for. Decided by the owner the same day: path steps carry heading **text**, not
-section ids; `doc#section` references are checked as part of this design.
+section ids; duplicate sibling headings get an occurrence index and are never refused;
+cross-document reach is a later, opt-in, one-hop phase; the subject is not re-addressed by path;
+`doc#section` references are checked as part of this design.
 
 ## Problem statement
 
@@ -23,20 +25,37 @@ Three gaps share one cause: nothing in doc-verify can name *where* a node sits.
    evidence cell without the claim it supports; the module-page questions judge a section without
    the page's title.
 2. A reference's `#fragment` is never checked. `resolvesTarget` (`doc-verify/src/engine/facts.ts`
-   line 546) strips it and tests only that the file exists, so `design/06-kernel-migration.md#no-such-section`
-   passes, and prose references in the `§Heading` form are not parsed as section references at all.
+   line 546) strips it and tests only that the file exists, so a link to
+   `design/06-kernel-migration.md#no-such-section` passes, and `§Heading` references are not
+   parsed as section references at all.
 3. A check sees only its own documents' facts: `core.ref` and `core.resolves` say a link exists,
    not what the target says.
 
 ## Scope - what we touch
 
-In scope: a core relation `core.path(D, N, Kinds, P)` in the kernel (`doc-verify/src/kernel/core.pl`)
-with its checker literal kind, translator case and sandbox primitive; two host facts it needs
-(column position on `core.header`, a row's key text); an oracle `context:` field naming which
-inputs the judge sees as "Where:" rather than as the subject; a checker rule refusing echo;
-section-fragment checking for `#slug` and `§Heading` references; list-item facts (phase 2);
-loading cited documents' section trees into a check (phase 3). Out of scope: replacing the seven
-evidence forms with path addressing (left undecided), the judge's request shape, the threshold.
+In scope:
+
+- **Neutral table facts** from the host: `core.header_pos(D, T, Col, N)` (a column's position) and
+  `core.cell_text(D, R, Col, Text)` (a cell's text). The host decides nothing about keys; a rule
+  names the key column.
+- **Two path relations** in the kernel (`doc-verify/src/kernel/core.pl`): `core.path(D, S, Kinds, P)`
+  for a section and `core.cell_path(D, R, Col, Kinds, P)` for a table cell. Each is a dedicated
+  literal kind, like `present` (`doc-verify/src/engine/checker.ts` line 351): a checker case, a
+  translator case (`doc-verify/src/kernel/translate.ts`), core.pl clauses including its
+  `core_lit_text_` and proof clauses, and an entry in the sandbox's safe primitives
+  (`doc-verify/src/kernel/kernel.ts`). Arguments stay flat because module arguments may be lists
+  but no other compound (`checker.ts` line 432).
+- **An oracle `context:` field** naming inputs shown as a "Where:" block, with its own renderer
+  (one indented line per step), scanned by the outbound policy like evidence, and hashed into both
+  cache keys.
+- **The echo rule**, static and run-time halves.
+- **Phase 0:** `#fragment` and document-qualified `§Heading` references checked, through a
+  `readTarget` host callback and a `core.dangling(D, S, Target, fragment)` fact.
+- Phase 2 (list-item facts) and phase 3 (one hop into a cited document), each only if phase 1's
+  verdict selects it.
+
+Out of scope: re-addressing the subject by its path (the relations work in reverse for lookups),
+the judge's request shape, thresholds.
 
 ## Rationale
 
@@ -44,52 +63,60 @@ Considered shapes, each with a worked oracle:
 
 - **A. a spine relation projected in the oracle** (`context: [core.spine(D, cell(R, C), [heading, column])]`):
   fits the current forms; the node is written twice.
-- **B. the subject addressed by its path, the spine shown from that address** (`evidence: core.at(D, [heading('Verification design'), row(R), column('Failure witness')])`):
+- **B. the subject addressed by its path, the spine shown from that address**
+  (`evidence: core.at(D, [heading('Verification design'), row(R), column('Failure witness')])`):
   no duplication, robust to renumbering; reworks all seven evidence forms.
-- **C. node terms and navigation rules, context built by ordinary module rules:** fully
-  programmable, but infeasible: rule and oracle heads must be plain variables
-  (`doc-verify/src/engine/checker.ts` lines 104 and 181) and only lists are allowed as compound
-  arguments (line 432), so a module rule cannot assemble a path.
+- **C. node terms and navigation rules, context built by ordinary module rules:** infeasible:
+  rule and oracle heads must be plain variables (`checker.ts` lines 104 and 181) and only lists
+  are allowed as compound arguments (line 432), so a module rule cannot assemble a path.
 - **D. a declarative YAML block** (`context: {path: [title, heading, column]}`): easiest to
   check, unusable by rules.
 
-Chosen: the path is a **built-in relation** like `core.present/3` (checker line 351, already a
-ground list), and context is an **oracle input** bound by it. The kernel already passes ground
-lists as oracle inputs and the host already renders inputs into the question
-(`renderQuestion`, `doc-verify/src/engine/oracles.ts` line 565), so identity by content
-(constitution invariant 6) holds with no new rule: the path is part of the atom key, and an edited
-heading changes the key and invalidates the cached answer. Demand, the `prefix` policy and the
-sandbox gate are unchanged; it is one more ground argument. B's benefit is kept by the relation
-working in reverse (a rule finds a node from steps and hands it to the existing evidence forms).
+Chosen: the path is a **built-in relation** (as `core.present/3` already returns a ground list)
+and context is an **oracle input** bound by it. The kernel already passes ground lists as oracle
+inputs; demand, the `prefix` policy and the sandbox gate need no change. Identity by content
+(constitution invariant 6) needs one explicit step: the persistent cache is keyed by model,
+question, labels, evidence hash and policy (`doc-verify/src/engine/oracles.ts` around line 160),
+not by atom key, so the rendered "Where:" text is hashed into that key too; an edited ancestor
+heading then re-asks. B's benefit is kept by using the relations in reverse (a rule finds the row
+under a heading by its key and hands it to the existing evidence forms).
 
 ## Model
 
-**The relation.** `core.path(D, N, Kinds, P)`: `N` is a node, `sec(S)`, `row(R)`, `cell(R, C)`
-(phase 2: `item(S, I)`); `Kinds` lists the step kinds to keep; `P` is the ground path from the
-document root, in order, keeping only those kinds:
+**Facts.** `core.header_pos(D, T, Col, N)` and `core.cell_text(D, R, Col, Text)` are emitted for
+every table, as the existing table facts are. Both are structure the parser already has; neither
+encodes a choice.
+
+**The relations.** Steps come from the document root down, keeping only the kinds listed:
+
+| Kind | Step | From |
+| --- | --- | --- |
+| `title` | `title(Text)` | the depth-1 heading |
+| `heading` | `heading(Depth, Text)`, or `heading(Depth, Text, I)` for the I-th same-text sibling | the section chain |
+| `table` | `table([Col1, …])` in `header_pos` order | the table's header |
+| `row_key(Col)` | `row(Text)`, the row's cell under the named column | `cell_text` |
+| `column` | `column(Col)` | the cell's column |
 
 ```
-core.path(d, cell(r7, 'Failure witness'), [title, heading, table, row, column], [
+core.cell_path(d, r7, 'Failure witness', [title, heading, row_key('Property'), column], [
   title('Modular verification language'),
   heading(2, 'Verification design'),
-  table(['Property', 'Failure witness', 'Command']),
   row('Binding by construction'),
   column('Failure witness')
 ]).
 ```
 
-Steps carry heading **text** (owner's decision). Section ids here are `github-slugger` slugs of
-the heading, so an id is no more stable than its text, and the text reads better to the judge.
-Two sibling headings with the same text are told apart by an occurrence index in document order
-(`heading(3, 'Notes', 2)`); a document with them is never refused. A row's key is its first
-column's text unless the document's companion names a key column.
+Steps carry heading **text**. Section ids here are `github-slugger` slugs of the heading, so an id
+is no more stable than its text, and the text reads better to the judge. `table` is never implied:
+it lists every header, so a header edit would re-ask every row, and it is kept only when asked
+for.
 
-**The oracle field.** `context:` lists oracle inputs shown to the judge as a "Where:" block above
-the subject, never as the subject:
+**The oracle field.** `context:` lists oracle inputs the judge sees as "Where:", above and apart
+from the subject:
 
 ```yaml
 rules:
-  witness_row(D, R, P): core.row(D, _, R), core.path(D, cell(R, 'Failure witness'), [heading, column], P)
+  witness_row(D, R, P): core.cell_path(D, R, 'Failure witness', [heading, column], P)
 oracles:
   witness_observable_in_row(D, R, P):
     ask: Is this an observable failure a check could print?
@@ -97,48 +124,63 @@ oracles:
     context: [P]
 ```
 
-**The echo rule.** The checker refuses a `choose` oracle whose context input is bound by a
-`core.path` literal keeping a step kind (`row`, `heading`, `column`) whose text can equal one of
-the oracle's labels; round 9's E1 becomes a module that does not load.
+The context bytes count toward the oracle's `max_bytes` and the outbound budget; the outbound
+policy scans them as it scans evidence.
 
-**Section references (phase 0).** A `#slug` fragment resolves when the target document has a
-section with that slug; a `§Heading` reference resolves when a section's heading text matches.
-A miss is a `core.section_dangling(D, S, Target, Fragment)` fact and a `paths-resolve`-style
-finding naming the closest headings as its repair. Only the target's headings are read, with the
-segmenter's own slug function, so `#slug` and `core.path` agree on what a section is called.
+**The echo rule.** Round 9's E1 put the Property cell *in the evidence*; with labels that are
+property names, a path step holding that name is the same echo by another route (unmeasured, and
+not worth measuring). Two halves:
 
-**Approved choices (owner, 2026-10-14):** duplicate sibling headings get an occurrence index and
-are never refused; cross-document reach is phase 3, opt-in and one hop; path addressing of the
-subject is not adopted, the relation's reverse use covers it.
+- *Static* (checker): a `choose` oracle whose `context:` input is bound by a path relation whose
+  kinds include `row_key` is refused unless the oracle sets `context_may_echo: true`.
+- *Run time* (host, at render): if any label, case- and punctuation-folded, equals a whole-token
+  run of any step's text, the atom is not asked; it is unknown with the finding
+  `echo: label <L> appears in context`.
 
-**Cross-document reach (phase 3).** Opt-in per path: a `via(ref)` step kind follows one link the
-document actually makes, one hop, and shows the cited section's own path plus an excerpt bounded
-by the oracle's `max_bytes`. It needs the host to load cited documents' section trees into the
-check, which phase 0 builds.
+**Section references (phase 0).**
+
+- `#fragment` on a link to a `.md` target resolves when a document-global `GithubSlugger` pass over
+  the target's headings yields that slug. GitHub numbers duplicates per document (`-1`, `-2`),
+  unlike the segmenter's per-parent ids (`doc-verify/src/segments.ts` lines 47–59). A fragment also
+  resolves when it equals a section id under `normalizeSectionId` (`doc-verify/src/normalize.ts`).
+  Line anchors (`#L12`, `#L10-L20`) and non-`.md` targets are skipped.
+- `§` references are checked only when a resolvable document (a link, a path, or `design/NN`)
+  precedes them in the same sentence. They match the longest heading prefix of the text after `§`,
+  case- and punctuation-folded. A bare `§N` or `§3` never fails.
+- The host reads targets through a `readTarget` callback: headings only, memoised per run by path
+  and modification time, restricted to the repository tree. A cited document outside the checked
+  set is read the same way, never checked itself.
+- A miss is the fact `core.dangling(D, S, Target, fragment)`, read by a `doc-verify:references`
+  constraint (as `paths-resolve` reads `core.dangling(D, S, T, path)`), so the finding stays a rule
+  (invariant 7). Its repair names the closest headings by string distance.
+
+**Cross-document reach (phase 3).** Opt-in per path: a `via` kind follows one link the document
+makes from the node's section, one hop, and adds the cited section's own path plus an excerpt
+bounded by the oracle's `max_bytes`; it uses phase 0's `readTarget`.
 
 ## Supersedes
 
 | Earlier text | Replaced by | At phase |
 | --- | --- | --- |
-| design/04 §Facts: a reference resolves when its file exists | a reference with a fragment resolves when the section exists | 0 |
-| design/05 §Oracle toolkit: evidence is the oracle's only input text | evidence is the subject; `context:` inputs are shown as its address | 1 |
+| design/04 §Facts: a reference resolves when its file exists | a link with a fragment, or a document-qualified `§` reference, resolves when the section exists | 0 |
+| design/05 §Oracle toolkit: evidence is the oracle's only input text | evidence is the subject; `context:` inputs are shown as its address and hashed into the cache key | 1 |
 
 ## Decision
 
 Four phases, each preregistered under `worklog/kernel-trials/` with an independent review before
-the run, each leaving `npm test` and `npm run test:kernel-slow` green.
+the run, each leaving `npm test` and `npm run test:kernel-slow` green. Bars are fixed here.
 
-| Phase | What lands | Decided by |
+| Phase | What lands | Gate (pre-registered bar) |
 | --- | --- | --- |
-| 0 | `#slug` and `§Heading` references checked against the target's headings | the corpus: every dangling fragment found is a real one (labelled before the run) |
-| 1 | `core.path` over title, headings and tables; column position and row-key facts; `context:`; the echo rule | a round, spine against no spine, on the round 4, 4c, 8 and 10 fixture sets |
-| 2 | list-item facts and the `item` step | phase 1 showing the spine helps where lists are the grain |
-| 3 | `via(ref)`: one hop into a cited document | phase 1 showing `evidence_reasons` gains from context |
+| 0 | `#fragment` and document-qualified `§` references checked | every `.md#` link and document-qualified `§` use in the repository labelled by the lead before the run: 0 false findings, every labelled dangling one found; a seeded fixture of 10 dangling and 10 good references read exactly |
+| 1 | header-position and cell-text facts, the path relations, `context:`, the echo rule | round: spine vs none, two repeats, cache off, on the round 4 and round 10 evidence cells, round 4c witness rows and round 8 module pages. Ships if 0 cells move from right to wrong on any oracle (both repeats), and `evidence_reasons` gains ≥ 2 right cells or ≥ +0.10 mean P(expected) on its near-threshold stratum; otherwise the relations ship for rules and `context:` does not |
+| 2 | list-item facts and an `item(I)` step | only if phase 1 ships `context:` and its census finds a shipped oracle whose evidence is list-grain |
+| 3 | `via`: one hop into a cited document | only if phase 1 ships `context:` with an `evidence_reasons` gain |
 
-Phase 1's predictions: the spine moves `evidence_reasons` most (the judge sees which claim a cell
-argues for), is neutral to slightly positive on module pages and neutral on witness rows; any
-already-correct label it flips counts against it. Item 11 (a witness on the wrong row) is not
-expected to move: with the property in the path it is round 9's R1, which failed.
+Phase 1 records, per oracle: right→wrong and wrong→right moves, mean P(expected) shifts with
+confidence intervals, the context bytes against `max_bytes` and the outbound budget, atom-key
+length growth, and the census of shipped oracles by evidence grain. Item 11 (a witness on the
+wrong row) is expected not to move, and is accepted as a gap (gate-ledger item 11).
 
 ## Verification design
 
@@ -146,21 +188,21 @@ Commands marked "(phase N)" do not exist until that phase adds them.
 
 | Property | Failure witness | Command |
 | --- | --- | --- |
-| Fragments checked | on a fixture that links `design/06-kernel-migration.md#no-such-section`, `check` prints `PASS` and exits 0 instead of a `section-dangling` finding naming `#no-such-section` | doc-verify check over a seeded fixture (phase 0) |
-| Prose section references checked | on a fixture citing `design/06-kernel-migration.md §Nonexistent`, `check` prints `PASS` instead of a finding naming `§Nonexistent` and the closest headings | the same fixture (phase 0) |
-| Path is right | `core.path` for a fixture cell prints a step list that differs from the hand-written expectation (heading order, duplicate index, row key) | npx vitest run doc-verify/tests/kernel/path.test.ts (phase 1) |
-| Path survives quoting | a heading with quotes, colons or backticks makes two atoms share an answer key, or one atom's answer routed to another | a randomized key round-trip test (phase 1) |
-| Echo refused | loading round 9's E1 module (a `choose` over property names with the row key in its context) returns a program instead of a `ModuleError` naming the echo rule | the checker test for the echo rule (phase 1) |
-| Context is not the subject | a fixture whose context alone would answer the question changes the label against the subject-only run | the phase 1 round's control fixtures |
-| Kernel gate holds | with `core_path/4` removed from the sandbox's safe primitives, a module using `core.path` still evaluates instead of the boundary test printing `rejected` | `npx vitest run doc-verify/tests/kernel/boundary.test.ts` |
-| Random programs | the slow suite prints a `counterexample … REFUTING` line whose module uses `core.path`, with its (module, facts, answers) triple | `npm run test:kernel-slow`, with path literals added to the generator (phase 1) |
+| Fragments checked | on a fixture linking `design/06-kernel-migration.md#no-such-section`, `check` prints `PASS` instead of a `references` finding naming `#no-such-section` with the closest headings | doc-verify check over the phase 0 fixture (phase 0) |
+| Document-qualified `§` checked | on a fixture citing `design/06-kernel-migration.md §Nonexistent`, `check` prints `PASS` instead of a finding naming `§Nonexistent` | the same fixture (phase 0) |
+| Bare `§N` never fails | `check --all` prints a `references` finding of kind `fragment` whose line holds a bare `§3`, `§9` or `§C1-receipt` with no document before it | doc-verify check --all, findings filtered to `fragment` (phase 0) |
+| Path is right | the path test prints a step list that differs from the hand-written expectation (heading order, a duplicate's index, the named row key) | npx vitest run doc-verify/tests/kernel/path.test.ts (phase 1) |
+| Keys round-trip | the key test prints a pair `kernel key ≠ host key` for a heading with Unicode, a tab, a backslash, a quote, a backtick, a no-break space or 500 characters, or an answered atom reported `unasked` | npx vitest run doc-verify/tests/kernel/keys-roundtrip.test.ts (phase 1) |
+| Cache follows the context | after an ancestor heading is edited, the next `check` prints `0 semantic call(s)` for the affected atoms instead of re-asking them | the cache test (phase 1) |
+| Duplicate siblings do not cross | after two same-text sibling sections swap places, the cache test shows one section's answer reported for the other | the cache test (phase 1) |
+| Echo refused | loading round 9's E1 module rewritten with the Property as a `row_key` step returns a program instead of a `ModuleError` naming the echo rule; or, with `context_may_echo: true`, the run asks an atom whose label is in its context instead of printing `echo: label … appears in context` | the checker and oracle tests (phase 1) |
+| Kernel gate holds | with `core_cell_path/5` absent from the safe primitives, a module using `core.cell_path` evaluates instead of the boundary test printing `rejected`; with it present, the same module prints `rejected` | npx vitest run doc-verify/tests/kernel/boundary.test.ts with a path seed (phase 1) |
+| Random programs | the slow suite prints a `counterexample … REFUTING` line whose module uses a path relation | `npm run test:kernel-slow`, with path literals in the generator (phase 1) |
 
 ## Left undecided
 
-- Addressing the subject by its path (shape B) in place of the evidence forms: not now; revisit
-  if authors keep writing path lookups by hand.
-- Whether the "Where:" block is on by default for every oracle once phase 1 measures it.
-- Fragment checks on external URLs (out of scope: no network at check time).
+- Whether "Where:" becomes a default for every oracle once phase 1 measures it.
+- Fragments on external URLs (no network at check time).
 
 ## Goal
 
@@ -168,9 +210,22 @@ goals/04-trusted-kernel.md
 
 ## Review
 
-Not yet reviewed: an independent seat (a model other than the author's) reads it before phase 0
-is preregistered.
+`worklog/kernel-trials/results/design-07-review.md` (verbatim; a Sonnet seat; "amend then
+proceed"). Taken:
+
+- B1: the context is hashed into the cache key, with a verification row.
+- B2: dedicated literal kinds with flat arguments; the touch points are in §Scope.
+- B3: neutral facts only; the rule names the key column.
+- S1: the two-part echo rule.
+- S2: the key round-trip row compares kernel and host keys and catches unrouted answers.
+- S3: a document-global slugger; line anchors and non-`.md` targets skipped; `normalizeSectionId`.
+- S4: `§` only after a resolvable document, longest heading prefix, never on bare `§N`; labelled
+  before the run.
+- S5: `readTarget`, and a `dangling` fact of kind `fragment` read by a rule.
+- S6: numeric bars, a per-oracle record and census; `table` never implied.
+- S7: the gate row, every row stated as printed output.
+- N1 to N3: the duplicate-swap row, the outbound scan, and the renderer.
 
 ## Status
 
-draft
+reviewed
