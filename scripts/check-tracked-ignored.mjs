@@ -34,6 +34,13 @@ import { fileURLToPath } from "node:url";
 const SELF = fileURLToPath(import.meta.url);
 const REPO_ROOT = dirname(dirname(SELF));
 
+// The isolation arms run the fixture in a child and compare the caller before and
+// after. "The caller was unchanged" is satisfied BOTH by a working strip and by a
+// child that never executed, so the child prints this oracle on its final line and
+// the arms require it. Without it the arms cannot distinguish isolation from
+// inertness, and an inert child reads as a pass.
+const FIXTURE_COMPLETED = "tracked-ignored: fixture complete";
+
 const FIXTURE_ENV = (() => {
   const env = {};
   for (const [key, value] of Object.entries(process.env)) {
@@ -87,6 +94,10 @@ function fixtureSelfTest() {
     process.stdout.write(
       `tracked-ignored: armed — seeded ${red.join(", ")} went RED then GREEN\n`,
     );
+    // The oracle the parent's isolation arms require. It is printed HERE, at the
+    // end of the fixture's real work, not in `main`: a print keyed on the exit
+    // code would also fire for a child that returned 0 without doing anything.
+    process.stdout.write(`${FIXTURE_COMPLETED}\n`);
     return 0;
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -129,17 +140,21 @@ function callerFacts(repo) {
 
 function runFixtureChild(cwd, inherited) {
   try {
-    execFileSync(process.execPath, [SELF, "--fixture-only"], {
+    const stdout = execFileSync(process.execPath, [SELF, "--fixture-only"], {
       cwd,
       encoding: "utf8",
       env: { ...process.env, ...inherited },
     });
-    return null;
+    return { failure: null, completed: stdout.includes(FIXTURE_COMPLETED) };
   } catch (error) {
     // A misdirected fixture usually dies on its first `git add` rather than
     // completing. The arm's verdict is the caller-state comparison, not the
     // child's exit code, so a crash is carried forward as evidence.
-    return error instanceof Error ? error.message.split("\n")[0] : String(error);
+    const stdout = typeof error?.stdout === "string" ? error.stdout : "";
+    return {
+      failure: error instanceof Error ? error.message.split("\n")[0] : String(error),
+      completed: stdout.includes(FIXTURE_COMPLETED),
+    };
   }
 }
 
@@ -174,17 +189,37 @@ function hostileEnvIsLive(callerRepo) {
 
 function isolationArm({ label, callerRepo, cwd, inherited }) {
   const before = callerFacts(callerRepo);
-  const childFailure = runFixtureChild(cwd, inherited);
+  const child = runFixtureChild(cwd, inherited);
   const after = callerFacts(callerRepo);
-  if (before === after) return 0;
-  process.stderr.write(
-    `tracked-ignored: NOT ARMED — ${label} mutated the caller repository\n` +
-      `  before ${before}\n  after  ${after}\n`,
-  );
-  if (childFailure !== null) {
-    process.stderr.write(`  (fixture child also failed: ${childFailure})\n`);
+
+  // Red: the fixture reached the caller. An unchanged caller is NOT enough for green.
+  if (before !== after) {
+    process.stderr.write(
+      `tracked-ignored: NOT ARMED — ${label} mutated the caller repository\n` +
+        `  before ${before}\n  after  ${after}\n`,
+    );
+    if (child.failure !== null) {
+      process.stderr.write(`  (fixture child also failed: ${child.failure})\n`);
+    }
+    return 2;
   }
-  return 2;
+
+  // The caller is clean, but this arm is only evidence if the fixture actually RAN.
+  // A child that exits before doing anything also leaves the caller unchanged, and
+  // that state would otherwise read as a pass: "the caller was unchanged" is
+  // satisfied both by a working strip and by a child that never ran. This is the
+  // oracle that separates "isolation worked" from "nothing happened".
+  if (!child.completed) {
+    process.stderr.write(
+      `tracked-ignored: NOT ARMED — ${label}: caller unchanged, but the fixture child ` +
+        `did not complete, so this arm cannot tell isolation from inertness\n`,
+    );
+    if (child.failure !== null) {
+      process.stderr.write(`  (fixture child failed: ${child.failure})\n`);
+    }
+    return 2;
+  }
+  return 0;
 }
 
 function callerIsolationSelfTest() {
@@ -336,7 +371,11 @@ function checkRepo() {
 
 function main() {
   const fixtureOnly = process.argv.includes("--fixture-only");
-  if (fixtureOnly) return fixtureSelfTest();
+  if (fixtureOnly) {
+    // The oracle is printed inside `fixtureSelfTest` itself, at the end of its
+    // real work, so it cannot fire for a child that exits without doing it.
+    return fixtureSelfTest();
+  }
   const selfTestOnly = process.argv.includes("--self-test");
   const skipSelfTest = process.argv.includes("--no-self-test");
   if (!skipSelfTest) {
