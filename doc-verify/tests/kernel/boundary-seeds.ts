@@ -55,7 +55,9 @@ export const CANDIDATES: Record<Candidate, { sandbox: boolean; budget: boolean }
 /** Recorded B from round-5-budget.txt (K=20 × corpus max 43847). */
 export const BUDGET = 876_940;
 export const ESCAPE = "/tmp/dv-escape";
-export const HANG_TIMEOUT_MS = 20_000;
+// A loop with no budget that has not returned in 4 s is classified `hang` (round 5 used 20 s; the
+// verdict does not depend on the length, and every bounded cell finishes in under 2.5 s).
+export const HANG_TIMEOUT_MS = 4_000;
 
 const MATCH_MODULE = `schema_version: 2
 kind: verification-module
