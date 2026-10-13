@@ -104,11 +104,13 @@ class SkillsManagerApp(App[None]):
             SkillStatus.ACTIVE: "green",
             SkillStatus.INACTIVE: "red",
             SkillStatus.UNMANAGED: "yellow",
+            SkillStatus.BROKEN: "magenta",
         }
         status_symbols = {
             SkillStatus.ACTIVE: "●",
             SkillStatus.INACTIVE: "○",
             SkillStatus.UNMANAGED: "⚠",
+            SkillStatus.BROKEN: "✖",
         }
 
         color = status_colors[status]
@@ -130,7 +132,7 @@ class SkillsManagerApp(App[None]):
             row_index = table.cursor_row
             if row_index is not None and 0 <= row_index < len(self.skills):
                 skill = self.skills[row_index]
-                if skill.status != SkillStatus.UNMANAGED:
+                if skill.status not in (SkillStatus.UNMANAGED, SkillStatus.BROKEN):
                     return None
         return True
 
@@ -142,6 +144,14 @@ class SkillsManagerApp(App[None]):
             return
 
         skill = self.skills[row_index]
+
+        if skill.status == SkillStatus.BROKEN:
+            self.notify(
+                f"'{skill.name}' is broken: its link target does not exist",
+                title="Cannot Toggle",
+                severity="error",
+            )
+            return
 
         if skill.status == SkillStatus.UNMANAGED:
             self.notify(
@@ -185,7 +195,23 @@ class SkillsManagerApp(App[None]):
 
         skill = self.skills[row_index]
 
-        if skill.status != SkillStatus.UNMANAGED:
+        if skill.status == SkillStatus.BROKEN:
+            # A broken link IS repairable when its source still exists -- that is the
+            # point
+            # of this action. Refuse only when there is nothing to restore, so the
+            # failure
+            # is named rather than arriving as a raw FileNotFoundError, and never a
+            # silent
+            # "success" that moves the dangling link into the versioned source tree.
+            if not (self.manager.source_dir / skill.name).exists():
+                self.notify(
+                    f"'{skill.name}' has no source to restore; "
+                    "remove the link manually",
+                    title="Cannot Manage",
+                    severity="error",
+                )
+                return
+        elif skill.status != SkillStatus.UNMANAGED:
             self.notify(
                 f"'{skill.name}' is already managed",
                 title="Already Managed",
