@@ -1,0 +1,53 @@
+id: interval-count
+gate: Interval count
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  constraints:
+    ge1: {forall: "core.meta(D, kind, _)", require: "count(S, (core.section(D, S, _), o(D, S)), N), N >= 1", severity: error}
+    ge2: {forall: "core.meta(D, kind, _)", require: "count(S, (core.section(D, S, _), o(D, S)), N), N >= 2", severity: error}
+    lt1: {forall: "core.meta(D, kind, _)", require: "count(S, (core.section(D, S, _), o(D, S)), N), N < 1", severity: error}
+    eq1: {forall: "core.meta(D, kind, _)", require: "count(S, (core.section(D, S, _), o(D, S)), N), N =:= 1", severity: error}
+    gt2: {forall: "core.meta(D, kind, _)", forbid: "count(S, (core.section(D, S, _), o(D, S)), N), N > 2", severity: error}
+facts:
+  - meta(d, kind, k)
+  - section(d, a, root)
+  - section(d, b, root)
+steps:
+  # One t tuple (a) and one u tuple (b): N = [1,2] (§3). >=1 holds for all values: t; >=2 for some: u;
+  # <1 for none: f (violated; the walk passes count, which binds N, and stops at the comparison, a
+  # builtin, written with the interval as 1..2); =:=1 for some: u; >2 for none: f, so the forbid is
+  # satisfied. Support of the u comparisons = leaves of the u tuple's derivation = {o(d,b)}.
+  - answers: {"w::o(d,a)": holds}
+    expect:
+      statuses:
+        ge1: [{D: d, status: satisfied}]
+        ge2: [{D: d, status: undetermined}]
+        lt1: [{D: d, status: violated}]
+        eq1: [{D: d, status: undetermined}]
+        gt2: [{D: d, status: satisfied}]
+      demand: {full: ["w::o(d,b)"], prefix: ["w::o(d,b)"]}
+      verdict: NO-GO
+      missing:
+        lt1: [{D: d, literal: "1..2<1"}]
+  # b answered holds: N = 2 exactly. ge2 t; eq1 f -> violated; lt1 still violated (M1).
+  - answers: {"w::o(d,a)": holds, "w::o(d,b)": holds}
+    expect:
+      statuses:
+        ge1: [{D: d, status: satisfied}]
+        ge2: [{D: d, status: satisfied}]
+        lt1: [{D: d, status: violated}]
+        eq1: [{D: d, status: violated}]
+        gt2: [{D: d, status: satisfied}]
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        lt1: [{D: d, literal: "2<1"}]
+        eq1: [{D: d, literal: "2=:=1"}]

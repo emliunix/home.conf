@@ -1,0 +1,42 @@
+id: m1-monotone
+gate: M1
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    r(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    ok(D, S): core.section(D, S, _), o(D, S), r(D, S)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "ok(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+  - section(d, b, root)
+steps:
+  # §3 Kleene: ok(d,a) = t∧f∧u = f -> B=t,G=f violated (§4); ok(d,b) = t∧t∧u = u -> undetermined,
+  # §6 support = the one u leaf r(d,b); §7 descent into ok/1 stops at o(d,a) (f label atom); §5 NO-GO.
+  - answers: {"w::o(d,a)": fails, "w::o(d,b)": holds}
+    expect:
+      statuses:
+        c1: [{D: d, S: a, status: violated}, {D: d, S: b, status: undetermined}]
+      demand: {full: ["w::r(d,b)"], prefix: ["w::r(d,b)"]}
+      verdict: NO-GO
+      missing:
+        c1: [{D: d, S: a, literal: "w::o(d,a)", path: ["w::ok(d,a)#1"]}]
+  # ans ⊆ ans': step 1's decided value (a violated) is unchanged (M1); b is decided t now.
+  - answers: {"w::o(d,a)": fails, "w::o(d,b)": holds, "w::r(d,a)": holds, "w::r(d,b)": holds}
+    expect:
+      statuses:
+        c1: [{D: d, S: a, status: violated}, {D: d, S: b, status: satisfied}]
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        c1: [{D: d, S: a, literal: "w::o(d,a)", path: ["w::ok(d,a)#1"]}]

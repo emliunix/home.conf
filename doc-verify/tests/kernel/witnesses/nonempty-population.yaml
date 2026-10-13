@@ -1,0 +1,55 @@
+id: nonempty-population
+gate: Status table
+# Population rows: an empty nonempty population is {population: empty, status: violated}; a
+# population whose every binding is u is {population: undetermined, status: undetermined} (§4).
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  constraints:
+    none-selected:
+      forall: "core.selected(D, S)"
+      require: "core.section(D, S, _)"
+      severity: warning
+      population: nonempty
+    judged:
+      forall: "core.section(D, S, _), o(D, S)"
+      require: "core.section(D, S, _)"
+      severity: error
+      population: nonempty
+facts:
+  - section(d, a, root)
+  - section(d, b, root)
+steps:
+  # none-selected: no forall instance at all -> violated (warning: does not move the verdict at
+  # threshold 0). judged: both bindings have Bθ = u and Gθ = t -> each binding satisfied (§4), but
+  # every binding is u -> the population is undetermined; it rests on the forall leaves {o(d,a), o(d,b)}.
+  - answers: {}
+    expect:
+      statuses:
+        none-selected: [{population: empty, status: violated}]
+        judged: [{D: d, S: a, status: satisfied}, {D: d, S: b, status: satisfied}, {population: undetermined, status: undetermined}]
+      demand: {full: ["w::o(d,a)", "w::o(d,b)"], prefix: ["w::o(d,a)", "w::o(d,b)"]}
+      verdict: NEEDS-REVIEW
+  # o(d,a) holds: one binding with Bθ = t -> the population is non-empty; nothing undetermined; PASS.
+  - answers: {"w::o(d,a)": holds}
+    expect:
+      statuses:
+        none-selected: [{population: empty, status: violated}]
+        judged: [{D: d, S: a, status: satisfied}, {D: d, S: b, status: satisfied}]
+      demand: {full: [], prefix: []}
+      verdict: PASS
+  # Both fail: no binding has Bθ != f -> judged's population is empty -> violated; NO-GO.
+  - answers: {"w::o(d,a)": fails, "w::o(d,b)": fails}
+    expect:
+      statuses:
+        none-selected: [{population: empty, status: violated}]
+        judged: [{population: empty, status: violated}]
+      demand: {full: [], prefix: []}
+      verdict: NO-GO

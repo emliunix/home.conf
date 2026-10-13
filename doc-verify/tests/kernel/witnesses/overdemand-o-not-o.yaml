@@ -1,0 +1,45 @@
+id: overdemand-o-not-o
+gate: D3
+# D3 relevance of o(d,a) here is 1, not 0: every labelling of o turns the binding from undetermined
+# to violated (steps 2 and 3). What the model's syntactic support over-approximates is p's
+# truth: o occurs in p's residual derivation although no answer can make p(d,a) true (§6).
+# Dem = {o} is the model's support; a kernel must report it, not avoid it.
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    p(D, S): core.section(D, S, _), o(D, S), not o(D, S)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "p(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # Kleene: u ∧ ¬u = u -> p(d,a) u -> undetermined; the residual derivation's leaves are o (twice) -> {o}.
+  - answers: {}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: undetermined}]}
+      demand: {full: ["w::o(d,a)"], prefix: ["w::o(d,a)"]}
+      verdict: NEEDS-REVIEW
+  # o holds: t ∧ f = f -> violated; descent p/1 passes o (t) and stops at the negation.
+  - answers: {"w::o(d,a)": holds}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: violated}]}
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        c1: [{D: d, S: a, literal: "not w::o(d,a)", path: ["w::p(d,a)#1"]}]
+  # o fails: f -> violated; descent stops at the label atom o(d,a).
+  - answers: {"w::o(d,a)": fails}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: violated}]}
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        c1: [{D: d, S: a, literal: "w::o(d,a)", path: ["w::p(d,a)#1"]}]

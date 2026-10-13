@@ -1,0 +1,2852 @@
+id: corpus-draft
+gate: corpus
+derived_by: reference
+note: "Draft profile (constraints without `profiles`), no answers. Facts: prolog/corpus-facts.pl, qualified core::. Per-document statuses per constraint binding."
+facts_file: prolog/corpus-facts.pl
+config: .doc-verify.yaml
+documents:
+  - design/01-goal-file-workstreams-phases.md
+  - design/02-programmatic-document-contract-verification.md
+  - design/03-companion-driven-document-verification.md
+  - design/04-modular-verification-language.md
+  - design/05-trusted-kernel-redesign.md
+  - docs/modules/language/contract.md
+  - docs/modules/language/model.md
+  - docs/modules/language/properties.md
+  - docs/modules/language/verification.md
+  - docs/modules/oracles/contract.md
+  - docs/modules/oracles/model.md
+  - docs/modules/oracles/properties.md
+  - docs/modules/oracles/verification.md
+  - docs/modules/report/contract.md
+  - docs/modules/report/model.md
+  - docs/modules/report/properties.md
+  - docs/modules/report/verification.md
+  - docs/modules/selection/contract.md
+  - docs/modules/selection/model.md
+  - docs/modules/selection/properties.md
+  - docs/modules/selection/verification.md
+  - goals/01-document-verification-and-skill-transfer.md
+  - goals/02-companion-driven-document-verification.md
+  - goals/03-modular-verification-language.md
+  - goals/04-trusted-kernel.md
+  - receipts/process/2026-10-08-receipts-and-task-card.md
+modules:
+  design/01-goal-file-workstreams-phases.md:
+    - doc-verify:artifact
+    - doc-verify/modules/design.yaml
+  design/02-programmatic-document-contract-verification.md:
+    - doc-verify:artifact
+    - doc-verify/modules/design.yaml
+  design/03-companion-driven-document-verification.md:
+    - doc-verify:artifact
+    - doc-verify/modules/design.yaml
+    - doc-verify/modules/design-03.yaml
+  design/04-modular-verification-language.md:
+    - doc-verify:artifact
+    - doc-verify/modules/design.yaml
+  design/05-trusted-kernel-redesign.md:
+    - doc-verify:artifact
+    - doc-verify/modules/design.yaml
+  docs/modules/language/contract.md:
+    - doc-verify:module-contract
+  docs/modules/language/model.md:
+    - doc-verify:module-model
+  docs/modules/language/properties.md:
+    - doc-verify:module-properties
+  docs/modules/language/verification.md:
+    - doc-verify:module-verification
+  docs/modules/oracles/contract.md:
+    - doc-verify:module-contract
+  docs/modules/oracles/model.md:
+    - doc-verify:module-model
+  docs/modules/oracles/properties.md:
+    - doc-verify:module-properties
+  docs/modules/oracles/verification.md:
+    - doc-verify:module-verification
+  docs/modules/report/contract.md:
+    - doc-verify:module-contract
+  docs/modules/report/model.md:
+    - doc-verify:module-model
+  docs/modules/report/properties.md:
+    - doc-verify:module-properties
+  docs/modules/report/verification.md:
+    - doc-verify:module-verification
+  docs/modules/selection/contract.md:
+    - doc-verify:module-contract
+  docs/modules/selection/model.md:
+    - doc-verify:module-model
+  docs/modules/selection/properties.md:
+    - doc-verify:module-properties
+  docs/modules/selection/verification.md:
+    - doc-verify:module-verification
+  goals/01-document-verification-and-skill-transfer.md:
+    - doc-verify:goal
+  goals/02-companion-driven-document-verification.md:
+    - doc-verify:goal
+  goals/03-modular-verification-language.md:
+    - doc-verify:goal
+  goals/04-trusted-kernel.md:
+    - doc-verify:goal
+  receipts/process/2026-10-08-receipts-and-task-card.md:
+    - doc-verify:receipt
+steps:
+  - answers: {}
+    profile: draft
+    expect:
+      documents:
+        design/01-goal-file-workstreams-phases.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: skills/goal-file/goal-authoring.md
+                status: satisfied
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: skills/goal-file/SKILL.md
+                status: satisfied
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: skills/goal-file/template-goal.md
+                status: satisfied
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: goals/2026-09-09-goal-file-funnel.md
+                status: satisfied
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+              - D: design/01-goal-file-workstreams-phases.md
+                S: scope--what-we-touch
+                T: worklog/01-goal-file-workstreams-phases.md
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: design/01-goal-file-workstreams-phases.md
+                W: draft
+                status: satisfied
+            artifact-has-goal:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            design-has-problem-statement:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            design-has-rationale:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            design-has-review:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            design-has-status-section:
+              - D: design/01-goal-file-workstreams-phases.md
+                status: satisfied
+            design-status-is-one-word:
+              - D: design/01-goal-file-workstreams-phases.md
+                S: status
+                status: satisfied
+            design-has-witness-table: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            home.design::top:
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','problem-statement')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: problem-statement
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','scope--what-we-touch')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: scope--what-we-touch
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md',rationale)":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: rationale
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','generative-edge-rule')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: generative-edge-rule
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','order-of-passes')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: order-of-passes
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','three-graph-layering')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: three-graph-layering
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','per-workstream-workflow-flowchart')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: per-workstream-workflow-flowchart
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','phase-states-owner-transitions')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: phase-states-owner-transitions
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','resource-analysis-and-parallelizability')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: resource-analysis-and-parallelizability
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','opt-out-and-proportionality')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: opt-out-and-proportionality
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','law-tier-vendoring')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: law-tier-vendoring
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','status-word-home')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: status-word-home
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md','ac-coverage-matrix')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: ac-coverage-matrix
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md',goal)":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: goal
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md',review)":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: review
+                val: 2
+              "'home.design::top'('design/01-goal-file-workstreams-phases.md',status)":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: status
+                val: 2
+            home.design::goal_section:
+              "'home.design::goal_section'('design/01-goal-file-workstreams-phases.md',goal)":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: goal
+                val: 2
+            home.design::has_status_word:
+              "'home.design::has_status_word'('design/01-goal-file-workstreams-phases.md')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                val: 2
+            home.design::problem_section:
+              "'home.design::problem_section'('design/01-goal-file-workstreams-phases.md','problem-statement')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: problem-statement
+                val: 2
+            home.design::rationale_section:
+              "'home.design::rationale_section'('design/01-goal-file-workstreams-phases.md',rationale)":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: rationale
+                val: 2
+            home.design::review_section:
+              "'home.design::review_section'('design/01-goal-file-workstreams-phases.md',review)":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: review
+                val: 2
+            home.design::status_section:
+              "'home.design::status_section'('design/01-goal-file-workstreams-phases.md',status)":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                  - kind: atom
+                    name: status
+                val: 2
+            home.design::verification_design_section: {}
+            home.design::witness_header: {}
+            home.design::has_witness_table: {}
+            home.design::one_word_status:
+              "'home.design::one_word_status'('design/01-goal-file-workstreams-phases.md')":
+                args:
+                  - kind: atom
+                    name: design/01-goal-file-workstreams-phases.md
+                val: 2
+        design/02-programmatic-document-contract-verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: doc-verify/
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: package.json
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: package-lock.json
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: doc-verify/src/
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: doc-verify/contracts/
+                status: violated
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: doc-verify/tests/
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: jev-prompts/jev.py
+                status: violated
+              - D: design/02-programmatic-document-contract-verification.md
+                S: implementation-ownership
+                T: .doc-verify.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-pipeline/rubric-library-and-reference-resolution
+                T: .doc-verify.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: snapshots-and-affected-closure
+                T: .doc-verify.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: shared-verification-practices
+                T: skills/verification/SKILL.md
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: .pre-commit-config.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: .pre-commit-hooks.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: doc-verify/
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: .doc-verify.yaml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: .github/workflows/ci.yml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: project-setup-and-consumers
+                T: .github/workflows/judge-advisory.yml
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-design
+                T: doc-verify/tests/expected/
+                status: violated
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-design
+                T: doc-verify/tests/language/present.mutations.md
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-design
+                T: doc-verify/tests/language/union-empty.mutations.md
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-design
+                T: doc-verify/tests/oracles/request-shape.mutations.md
+                status: satisfied
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-design
+                T: .github/workflows/judge-advisory.yml
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: design/02-programmatic-document-contract-verification.md
+                W: landed
+                status: satisfied
+            artifact-has-goal:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            design-has-problem-statement:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            design-has-rationale:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            design-has-review:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            design-has-status-section:
+              - D: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+            design-status-is-one-word:
+              - D: design/02-programmatic-document-contract-verification.md
+                S: status
+                status: satisfied
+            design-has-witness-table:
+              - D: design/02-programmatic-document-contract-verification.md
+                S: verification-design
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            home.design::top:
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','user-inputs')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: user-inputs
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','problem-statement')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: problem-statement
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','scope---what-we-touch')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: scope---what-we-touch
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md',rationale)":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: rationale
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','assumptions-and-evidence')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: assumptions-and-evidence
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','implementation-ownership')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: implementation-ownership
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','authority-model')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: authority-model
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','verification-pipeline')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: verification-pipeline
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','snapshots-and-affected-closure')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: snapshots-and-affected-closure
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','attestation-and-confidentiality')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: attestation-and-confidentiality
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','shared-verification-practices')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: shared-verification-practices
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','command-report-and-diagnostics')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: command-report-and-diagnostics
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','project-setup-and-consumers')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: project-setup-and-consumers
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md',goal)":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: goal
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md',review)":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: review
+                val: 2
+              "'home.design::top'('design/02-programmatic-document-contract-verification.md',status)":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: status
+                val: 2
+            home.design::goal_section:
+              "'home.design::goal_section'('design/02-programmatic-document-contract-verification.md',goal)":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: goal
+                val: 2
+            home.design::has_status_word:
+              "'home.design::has_status_word'('design/02-programmatic-document-contract-verification.md')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                val: 2
+            home.design::problem_section:
+              "'home.design::problem_section'('design/02-programmatic-document-contract-verification.md','problem-statement')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: problem-statement
+                val: 2
+            home.design::rationale_section:
+              "'home.design::rationale_section'('design/02-programmatic-document-contract-verification.md',rationale)":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: rationale
+                val: 2
+            home.design::review_section:
+              "'home.design::review_section'('design/02-programmatic-document-contract-verification.md',review)":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: review
+                val: 2
+            home.design::status_section:
+              "'home.design::status_section'('design/02-programmatic-document-contract-verification.md',status)":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: status
+                val: 2
+            home.design::verification_design_section:
+              "'home.design::verification_design_section'('design/02-programmatic-document-contract-verification.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+            home.design::witness_header:
+              "'home.design::witness_header'('design/02-programmatic-document-contract-verification.md','verification-design#table1','Observable failure witness')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: verification-design#table1
+                  - kind: atom
+                    name: Observable failure witness
+                val: 2
+            home.design::has_witness_table:
+              "'home.design::has_witness_table'('design/02-programmatic-document-contract-verification.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+            home.design::one_word_status:
+              "'home.design::one_word_status'('design/02-programmatic-document-contract-verification.md')":
+                args:
+                  - kind: atom
+                    name: design/02-programmatic-document-contract-verification.md
+                val: 2
+        design/03-companion-driven-document-verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: design/03-companion-driven-document-verification.md
+                S: companion-contract
+                T: .doc-verify.yaml
+                status: satisfied
+              - D: design/03-companion-driven-document-verification.md
+                S: local-credential
+                T: .doc-verify.yaml
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: design/03-companion-driven-document-verification.md
+                W: landed
+                status: satisfied
+            artifact-has-goal:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            design-has-problem-statement:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            design-has-rationale:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            design-has-review:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            design-has-status-section:
+              - D: design/03-companion-driven-document-verification.md
+                status: satisfied
+            design-status-is-one-word:
+              - D: design/03-companion-driven-document-verification.md
+                S: status
+                status: satisfied
+            design-has-witness-table:
+              - D: design/03-companion-driven-document-verification.md
+                S: verification-design
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            home.design-03::top:
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md','user-inputs')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: user-inputs
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md','problem-statement')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: problem-statement
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md','scope---what-we-touch')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: scope---what-we-touch
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md',rationale)":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: rationale
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md','trigger-and-snapshot-contract')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: trigger-and-snapshot-contract
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md','companion-contract')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: companion-contract
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md','local-credential')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: local-credential
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md','verification-execution')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: verification-execution
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md','report-contract')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: report-contract
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md',goal)":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: goal
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md',review)":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: review
+                val: 2
+              "'home.design-03::top'('design/03-companion-driven-document-verification.md',status)":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: status
+                val: 2
+            home.design-03::goal_section:
+              "'home.design-03::goal_section'('design/03-companion-driven-document-verification.md',goal)":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: goal
+                val: 2
+            home.design-03::has_status_word:
+              "'home.design-03::has_status_word'('design/03-companion-driven-document-verification.md')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                val: 2
+            home.design-03::problem_section:
+              "'home.design-03::problem_section'('design/03-companion-driven-document-verification.md','problem-statement')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: problem-statement
+                val: 2
+            home.design-03::rationale_section:
+              "'home.design-03::rationale_section'('design/03-companion-driven-document-verification.md',rationale)":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: rationale
+                val: 2
+            home.design-03::review_section:
+              "'home.design-03::review_section'('design/03-companion-driven-document-verification.md',review)":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: review
+                val: 2
+            home.design-03::status_section:
+              "'home.design-03::status_section'('design/03-companion-driven-document-verification.md',status)":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: status
+                val: 2
+            home.design-03::verification_design_section:
+              "'home.design-03::verification_design_section'('design/03-companion-driven-document-verification.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+            home.design-03::witness_header:
+              "'home.design-03::witness_header'('design/03-companion-driven-document-verification.md','verification-design#table1','Failure witness')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: verification-design#table1
+                  - kind: atom
+                    name: Failure witness
+                val: 2
+            home.design-03::has_witness_table:
+              "'home.design-03::has_witness_table'('design/03-companion-driven-document-verification.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+            home.design-03::one_word_status:
+              "'home.design-03::one_word_status'('design/03-companion-driven-document-verification.md')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                val: 2
+            home.design-03::scope_section:
+              "'home.design-03::scope_section'('design/03-companion-driven-document-verification.md','scope---what-we-touch')":
+                args:
+                  - kind: atom
+                    name: design/03-companion-driven-document-verification.md
+                  - kind: atom
+                    name: scope---what-we-touch
+                val: 2
+        design/04-modular-verification-language.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: design/04-modular-verification-language.md
+                S: scope---what-we-touch
+                T: selection.ts
+                status: satisfied
+              - D: design/04-modular-verification-language.md
+                S: verification-design
+                T: .github/workflows/judge-advisory.yml
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: design/04-modular-verification-language.md
+                W: reviewed
+                status: satisfied
+            artifact-has-goal:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            design-has-problem-statement:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            design-has-rationale:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            design-has-review:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            design-has-status-section:
+              - D: design/04-modular-verification-language.md
+                status: satisfied
+            design-status-is-one-word:
+              - D: design/04-modular-verification-language.md
+                S: status
+                status: satisfied
+            design-has-witness-table:
+              - D: design/04-modular-verification-language.md
+                S: verification-design
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            home.design::top:
+              "'home.design::top'('design/04-modular-verification-language.md','user-inputs')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: user-inputs
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md','problem-statement')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: problem-statement
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md','scope---what-we-touch')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: scope---what-we-touch
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md',rationale)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: rationale
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md','assumptions-and-evidence')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: assumptions-and-evidence
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md',language)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: language
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md',evaluation)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: evaluation
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md',diagnostics)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: diagnostics
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md',migration)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: migration
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md','relation-to-designs-02-and-03')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: relation-to-designs-02-and-03
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md',goal)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: goal
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md',review)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: review
+                val: 2
+              "'home.design::top'('design/04-modular-verification-language.md',status)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: status
+                val: 2
+            home.design::goal_section:
+              "'home.design::goal_section'('design/04-modular-verification-language.md',goal)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: goal
+                val: 2
+            home.design::has_status_word:
+              "'home.design::has_status_word'('design/04-modular-verification-language.md')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                val: 2
+            home.design::problem_section:
+              "'home.design::problem_section'('design/04-modular-verification-language.md','problem-statement')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: problem-statement
+                val: 2
+            home.design::rationale_section:
+              "'home.design::rationale_section'('design/04-modular-verification-language.md',rationale)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: rationale
+                val: 2
+            home.design::review_section:
+              "'home.design::review_section'('design/04-modular-verification-language.md',review)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: review
+                val: 2
+            home.design::status_section:
+              "'home.design::status_section'('design/04-modular-verification-language.md',status)":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: status
+                val: 2
+            home.design::verification_design_section:
+              "'home.design::verification_design_section'('design/04-modular-verification-language.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+            home.design::witness_header:
+              "'home.design::witness_header'('design/04-modular-verification-language.md','verification-design#table1','Failure witness')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: verification-design#table1
+                  - kind: atom
+                    name: Failure witness
+                val: 2
+            home.design::has_witness_table:
+              "'home.design::has_witness_table'('design/04-modular-verification-language.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+            home.design::one_word_status:
+              "'home.design::one_word_status'('design/04-modular-verification-language.md')":
+                args:
+                  - kind: atom
+                    name: design/04-modular-verification-language.md
+                val: 2
+        design/05-trusted-kernel-redesign.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: design/05-trusted-kernel-redesign.md
+                S: scope---what-we-touch
+                T: docs/doc-verify-constitution.md
+                status: satisfied
+              - D: design/05-trusted-kernel-redesign.md
+                S: scope---what-we-touch
+                T: docs/doc-verify-model.md
+                status: satisfied
+              - D: design/05-trusted-kernel-redesign.md
+                S: scope---what-we-touch
+                T: worklog/kernel-trials/round-2-verdict.md
+                status: satisfied
+              - D: design/05-trusted-kernel-redesign.md
+                S: scope---what-we-touch
+                T: AGENTS.md
+                status: satisfied
+              - D: design/05-trusted-kernel-redesign.md
+                S: rationale
+                T: worklog/kernel-trials/round-1-verdict.md
+                status: satisfied
+              - D: design/05-trusted-kernel-redesign.md
+                S: assumptions-and-evidence
+                T: docs/doc-verify-model.md
+                status: satisfied
+              - D: design/05-trusted-kernel-redesign.md
+                S: design/oracle-toolkit-the-split-the-owner-set
+                T: worklog/kernel-trials/probe/oracle-test.mjs
+                status: satisfied
+              - D: design/05-trusted-kernel-redesign.md
+                S: design/process
+                T: AGENTS.md
+                status: satisfied
+              - D: design/05-trusted-kernel-redesign.md
+                S: verification-design
+                T: docs/doc-verify-model.md
+                status: satisfied
+              - D: design/05-trusted-kernel-redesign.md
+                S: verification-design
+                T: docs/doc-verify-constitution.md
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: design/05-trusted-kernel-redesign.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: design/05-trusted-kernel-redesign.md
+                W: draft
+                status: satisfied
+            artifact-has-goal:
+              - D: design/05-trusted-kernel-redesign.md
+                status: satisfied
+            design-has-problem-statement:
+              - D: design/05-trusted-kernel-redesign.md
+                status: satisfied
+            design-has-rationale:
+              - D: design/05-trusted-kernel-redesign.md
+                status: satisfied
+            design-has-review:
+              - D: design/05-trusted-kernel-redesign.md
+                status: satisfied
+            design-has-status-section:
+              - D: design/05-trusted-kernel-redesign.md
+                status: satisfied
+            design-status-is-one-word:
+              - D: design/05-trusted-kernel-redesign.md
+                S: status
+                status: satisfied
+            design-has-witness-table:
+              - D: design/05-trusted-kernel-redesign.md
+                S: verification-design
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            home.design::top:
+              "'home.design::top'('design/05-trusted-kernel-redesign.md','user-inputs')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: user-inputs
+                val: 2
+              "'home.design::top'('design/05-trusted-kernel-redesign.md','problem-statement')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: problem-statement
+                val: 2
+              "'home.design::top'('design/05-trusted-kernel-redesign.md','scope---what-we-touch')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: scope---what-we-touch
+                val: 2
+              "'home.design::top'('design/05-trusted-kernel-redesign.md',rationale)":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: rationale
+                val: 2
+              "'home.design::top'('design/05-trusted-kernel-redesign.md','assumptions-and-evidence')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: assumptions-and-evidence
+                val: 2
+              "'home.design::top'('design/05-trusted-kernel-redesign.md','constitution-amendments')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: constitution-amendments
+                val: 2
+              "'home.design::top'('design/05-trusted-kernel-redesign.md',design)":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: design
+                val: 2
+              "'home.design::top'('design/05-trusted-kernel-redesign.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+              "'home.design::top'('design/05-trusted-kernel-redesign.md',goal)":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: goal
+                val: 2
+              "'home.design::top'('design/05-trusted-kernel-redesign.md',review)":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: review
+                val: 2
+              "'home.design::top'('design/05-trusted-kernel-redesign.md',status)":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: status
+                val: 2
+            home.design::goal_section:
+              "'home.design::goal_section'('design/05-trusted-kernel-redesign.md',goal)":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: goal
+                val: 2
+            home.design::has_status_word:
+              "'home.design::has_status_word'('design/05-trusted-kernel-redesign.md')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                val: 2
+            home.design::problem_section:
+              "'home.design::problem_section'('design/05-trusted-kernel-redesign.md','problem-statement')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: problem-statement
+                val: 2
+            home.design::rationale_section:
+              "'home.design::rationale_section'('design/05-trusted-kernel-redesign.md',rationale)":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: rationale
+                val: 2
+            home.design::review_section:
+              "'home.design::review_section'('design/05-trusted-kernel-redesign.md',review)":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: review
+                val: 2
+            home.design::status_section:
+              "'home.design::status_section'('design/05-trusted-kernel-redesign.md',status)":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: status
+                val: 2
+            home.design::verification_design_section:
+              "'home.design::verification_design_section'('design/05-trusted-kernel-redesign.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+            home.design::witness_header:
+              "'home.design::witness_header'('design/05-trusted-kernel-redesign.md','verification-design#table1','Failure witness')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: verification-design#table1
+                  - kind: atom
+                    name: Failure witness
+                val: 2
+            home.design::has_witness_table:
+              "'home.design::has_witness_table'('design/05-trusted-kernel-redesign.md','verification-design')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                  - kind: atom
+                    name: verification-design
+                val: 2
+            home.design::one_word_status:
+              "'home.design::one_word_status'('design/05-trusted-kernel-redesign.md')":
+                args:
+                  - kind: atom
+                    name: design/05-trusted-kernel-redesign.md
+                val: 2
+        docs/modules/language/contract.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-contract-has-surface:
+              - D: docs/modules/language/contract.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-contract::sections:
+              "'doc-verify.module-contract::sections'('docs/modules/language/contract.md','language--contract')":
+                args:
+                  - kind: atom
+                    name: docs/modules/language/contract.md
+                  - kind: atom
+                    name: language--contract
+                val: 2
+              "'doc-verify.module-contract::sections'('docs/modules/language/contract.md','public-surface')":
+                args:
+                  - kind: atom
+                    name: docs/modules/language/contract.md
+                  - kind: atom
+                    name: public-surface
+                val: 2
+            doc-verify.module-contract::heading:
+              "'doc-verify.module-contract::heading'('docs/modules/language/contract.md','language--contract','language — contract')":
+                args:
+                  - kind: atom
+                    name: docs/modules/language/contract.md
+                  - kind: atom
+                    name: language--contract
+                  - kind: atom
+                    name: language — contract
+                val: 2
+              "'doc-verify.module-contract::heading'('docs/modules/language/contract.md','public-surface','Public surface')":
+                args:
+                  - kind: atom
+                    name: docs/modules/language/contract.md
+                  - kind: atom
+                    name: public-surface
+                  - kind: atom
+                    name: Public surface
+                val: 2
+        docs/modules/language/model.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-model-has-content:
+              - D: docs/modules/language/model.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-model::sections:
+              "'doc-verify.module-model::sections'('docs/modules/language/model.md','language--model')":
+                args:
+                  - kind: atom
+                    name: docs/modules/language/model.md
+                  - kind: atom
+                    name: language--model
+                val: 2
+              "'doc-verify.module-model::sections'('docs/modules/language/model.md',concepts)":
+                args:
+                  - kind: atom
+                    name: docs/modules/language/model.md
+                  - kind: atom
+                    name: concepts
+                val: 2
+              "'doc-verify.module-model::sections'('docs/modules/language/model.md','two-bounds')":
+                args:
+                  - kind: atom
+                    name: docs/modules/language/model.md
+                  - kind: atom
+                    name: two-bounds
+                val: 2
+        docs/modules/language/properties.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-properties::sections:
+              "'doc-verify.module-properties::sections'('docs/modules/language/properties.md','language--properties')":
+                args:
+                  - kind: atom
+                    name: docs/modules/language/properties.md
+                  - kind: atom
+                    name: language--properties
+                val: 2
+        docs/modules/language/verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: docs/modules/language/verification.md
+                S: language--verification
+                T: doc-verify/tests/language/modules-check.test.ts
+                status: satisfied
+              - D: docs/modules/language/verification.md
+                S: language--verification
+                T: doc-verify/tests/language/language.test.ts
+                status: satisfied
+              - D: docs/modules/language/verification.md
+                S: language--verification
+                T: doc-verify/tests/language/evaluate.test.ts
+                status: satisfied
+              - D: docs/modules/language/verification.md
+                S: language--verification
+                T: doc-verify/tests/report/diagnostics.test.ts
+                status: satisfied
+              - D: docs/modules/language/verification.md
+                S: language--verification
+                T: doc-verify/tests/language/engine-golden.test.ts
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-verification::sections:
+              "'doc-verify.module-verification::sections'('docs/modules/language/verification.md','language--verification')":
+                args:
+                  - kind: atom
+                    name: docs/modules/language/verification.md
+                  - kind: atom
+                    name: language--verification
+                val: 2
+        docs/modules/oracles/contract.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-contract-has-surface:
+              - D: docs/modules/oracles/contract.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-contract::sections:
+              "'doc-verify.module-contract::sections'('docs/modules/oracles/contract.md','oracles--contract')":
+                args:
+                  - kind: atom
+                    name: docs/modules/oracles/contract.md
+                  - kind: atom
+                    name: oracles--contract
+                val: 2
+              "'doc-verify.module-contract::sections'('docs/modules/oracles/contract.md','public-surface')":
+                args:
+                  - kind: atom
+                    name: docs/modules/oracles/contract.md
+                  - kind: atom
+                    name: public-surface
+                val: 2
+            doc-verify.module-contract::heading:
+              "'doc-verify.module-contract::heading'('docs/modules/oracles/contract.md','oracles--contract','oracles — contract')":
+                args:
+                  - kind: atom
+                    name: docs/modules/oracles/contract.md
+                  - kind: atom
+                    name: oracles--contract
+                  - kind: atom
+                    name: oracles — contract
+                val: 2
+              "'doc-verify.module-contract::heading'('docs/modules/oracles/contract.md','public-surface','Public surface')":
+                args:
+                  - kind: atom
+                    name: docs/modules/oracles/contract.md
+                  - kind: atom
+                    name: public-surface
+                  - kind: atom
+                    name: Public surface
+                val: 2
+        docs/modules/oracles/model.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-model-has-content:
+              - D: docs/modules/oracles/model.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-model::sections:
+              "'doc-verify.module-model::sections'('docs/modules/oracles/model.md','oracles--model')":
+                args:
+                  - kind: atom
+                    name: docs/modules/oracles/model.md
+                  - kind: atom
+                    name: oracles--model
+                val: 2
+              "'doc-verify.module-model::sections'('docs/modules/oracles/model.md',concepts)":
+                args:
+                  - kind: atom
+                    name: docs/modules/oracles/model.md
+                  - kind: atom
+                    name: concepts
+                val: 2
+              "'doc-verify.module-model::sections'('docs/modules/oracles/model.md','evidence-and-spans')":
+                args:
+                  - kind: atom
+                    name: docs/modules/oracles/model.md
+                  - kind: atom
+                    name: evidence-and-spans
+                val: 2
+              "'doc-verify.module-model::sections'('docs/modules/oracles/model.md',cache)":
+                args:
+                  - kind: atom
+                    name: docs/modules/oracles/model.md
+                  - kind: atom
+                    name: cache
+                val: 2
+        docs/modules/oracles/properties.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-properties::sections:
+              "'doc-verify.module-properties::sections'('docs/modules/oracles/properties.md','oracles--properties')":
+                args:
+                  - kind: atom
+                    name: docs/modules/oracles/properties.md
+                  - kind: atom
+                    name: oracles--properties
+                val: 2
+        docs/modules/oracles/verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: docs/modules/oracles/verification.md
+                S: oracles--verification
+                T: doc-verify/tests/oracles/oracles.test.ts
+                status: satisfied
+              - D: docs/modules/oracles/verification.md
+                S: oracles--verification
+                T: doc-verify/tests/oracles/cache.test.ts
+                status: satisfied
+              - D: docs/modules/oracles/verification.md
+                S: oracles--verification
+                T: doc-verify/tests/oracles/span.test.ts
+                status: satisfied
+              - D: docs/modules/oracles/verification.md
+                S: oracles--verification
+                T: doc-verify/tests/oracles/confidentiality.test.ts
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-verification::sections:
+              "'doc-verify.module-verification::sections'('docs/modules/oracles/verification.md','oracles--verification')":
+                args:
+                  - kind: atom
+                    name: docs/modules/oracles/verification.md
+                  - kind: atom
+                    name: oracles--verification
+                val: 2
+        docs/modules/report/contract.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-contract-has-surface:
+              - D: docs/modules/report/contract.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-contract::sections:
+              "'doc-verify.module-contract::sections'('docs/modules/report/contract.md','report--contract')":
+                args:
+                  - kind: atom
+                    name: docs/modules/report/contract.md
+                  - kind: atom
+                    name: report--contract
+                val: 2
+              "'doc-verify.module-contract::sections'('docs/modules/report/contract.md','public-surface')":
+                args:
+                  - kind: atom
+                    name: docs/modules/report/contract.md
+                  - kind: atom
+                    name: public-surface
+                val: 2
+            doc-verify.module-contract::heading:
+              "'doc-verify.module-contract::heading'('docs/modules/report/contract.md','report--contract','report — contract')":
+                args:
+                  - kind: atom
+                    name: docs/modules/report/contract.md
+                  - kind: atom
+                    name: report--contract
+                  - kind: atom
+                    name: report — contract
+                val: 2
+              "'doc-verify.module-contract::heading'('docs/modules/report/contract.md','public-surface','Public surface')":
+                args:
+                  - kind: atom
+                    name: docs/modules/report/contract.md
+                  - kind: atom
+                    name: public-surface
+                  - kind: atom
+                    name: Public surface
+                val: 2
+        docs/modules/report/model.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-model-has-content:
+              - D: docs/modules/report/model.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-model::sections:
+              "'doc-verify.module-model::sections'('docs/modules/report/model.md','report--model')":
+                args:
+                  - kind: atom
+                    name: docs/modules/report/model.md
+                  - kind: atom
+                    name: report--model
+                val: 2
+              "'doc-verify.module-model::sections'('docs/modules/report/model.md',concepts)":
+                args:
+                  - kind: atom
+                    name: docs/modules/report/model.md
+                  - kind: atom
+                    name: concepts
+                val: 2
+              "'doc-verify.module-model::sections'('docs/modules/report/model.md',verdict)":
+                args:
+                  - kind: atom
+                    name: docs/modules/report/model.md
+                  - kind: atom
+                    name: verdict
+                val: 2
+        docs/modules/report/properties.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-properties::sections:
+              "'doc-verify.module-properties::sections'('docs/modules/report/properties.md','report--properties')":
+                args:
+                  - kind: atom
+                    name: docs/modules/report/properties.md
+                  - kind: atom
+                    name: report--properties
+                val: 2
+        docs/modules/report/verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: docs/modules/report/verification.md
+                S: report--verification
+                T: doc-verify/tests/report/diagnostics.test.ts
+                status: satisfied
+              - D: docs/modules/report/verification.md
+                S: report--verification
+                T: doc-verify/tests/report/report.test.ts
+                status: satisfied
+              - D: docs/modules/report/verification.md
+                S: report--verification
+                T: doc-verify/tests/report/keyless.test.ts
+                status: satisfied
+              - D: docs/modules/report/verification.md
+                S: report--verification
+                T: doc-verify/tests/report/segments.test.ts
+                status: satisfied
+              - D: docs/modules/report/verification.md
+                S: report--verification
+                T: doc-verify/tests/selection/task61-selector-gate.test.ts
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-verification::sections:
+              "'doc-verify.module-verification::sections'('docs/modules/report/verification.md','report--verification')":
+                args:
+                  - kind: atom
+                    name: docs/modules/report/verification.md
+                  - kind: atom
+                    name: report--verification
+                val: 2
+        docs/modules/selection/contract.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-contract-has-surface:
+              - D: docs/modules/selection/contract.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-contract::sections:
+              "'doc-verify.module-contract::sections'('docs/modules/selection/contract.md','selection--contract')":
+                args:
+                  - kind: atom
+                    name: docs/modules/selection/contract.md
+                  - kind: atom
+                    name: selection--contract
+                val: 2
+              "'doc-verify.module-contract::sections'('docs/modules/selection/contract.md','public-surface')":
+                args:
+                  - kind: atom
+                    name: docs/modules/selection/contract.md
+                  - kind: atom
+                    name: public-surface
+                val: 2
+            doc-verify.module-contract::heading:
+              "'doc-verify.module-contract::heading'('docs/modules/selection/contract.md','selection--contract','selection — contract')":
+                args:
+                  - kind: atom
+                    name: docs/modules/selection/contract.md
+                  - kind: atom
+                    name: selection--contract
+                  - kind: atom
+                    name: selection — contract
+                val: 2
+              "'doc-verify.module-contract::heading'('docs/modules/selection/contract.md','public-surface','Public surface')":
+                args:
+                  - kind: atom
+                    name: docs/modules/selection/contract.md
+                  - kind: atom
+                    name: public-surface
+                  - kind: atom
+                    name: Public surface
+                val: 2
+        docs/modules/selection/model.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+            module-model-has-content:
+              - D: docs/modules/selection/model.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-model::sections:
+              "'doc-verify.module-model::sections'('docs/modules/selection/model.md','selection--model')":
+                args:
+                  - kind: atom
+                    name: docs/modules/selection/model.md
+                  - kind: atom
+                    name: selection--model
+                val: 2
+              "'doc-verify.module-model::sections'('docs/modules/selection/model.md',concepts)":
+                args:
+                  - kind: atom
+                    name: docs/modules/selection/model.md
+                  - kind: atom
+                    name: concepts
+                val: 2
+              "'doc-verify.module-model::sections'('docs/modules/selection/model.md',selection)":
+                args:
+                  - kind: atom
+                    name: docs/modules/selection/model.md
+                  - kind: atom
+                    name: selection
+                val: 2
+        docs/modules/selection/properties.md:
+          statuses:
+            references-resolve: []
+            paths-resolve: []
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-properties::sections:
+              "'doc-verify.module-properties::sections'('docs/modules/selection/properties.md','selection--properties')":
+                args:
+                  - kind: atom
+                    name: docs/modules/selection/properties.md
+                  - kind: atom
+                    name: selection--properties
+                val: 2
+        docs/modules/selection/verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: docs/modules/selection/verification.md
+                S: selection--verification
+                T: doc-verify/tests/selection/task61-selector-gate.test.ts
+                status: satisfied
+              - D: docs/modules/selection/verification.md
+                S: selection--verification
+                T: doc-verify/tests/selection/companion.test.ts
+                status: satisfied
+              - D: docs/modules/selection/verification.md
+                S: selection--verification
+                T: doc-verify/tests/selection/snapshots.test.ts
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.module-verification::sections:
+              "'doc-verify.module-verification::sections'('docs/modules/selection/verification.md','selection--verification')":
+                args:
+                  - kind: atom
+                    name: docs/modules/selection/verification.md
+                  - kind: atom
+                    name: selection--verification
+                val: 2
+        goals/01-document-verification-and-skill-transfer.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: design-files
+                T: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: dependencies
+                T: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: workflows/design02-programmatic-document-contract-verificationmd---landed
+                T: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: rulings-in-force
+                T: design/02-programmatic-document-contract-verification.md
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: acceptance-evidence
+                T: worklog/02-programmatic-document-contract-verification.md
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: acceptance-evidence
+                T: skills/verification/SKILL.md
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: acceptance-evidence
+                T: skills/verification/references/practices.md
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: acceptance-evidence
+                T: doc-verify/tests/report/segments.test.ts
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: acceptance-evidence
+                T: doc-verify/tests/language/language.test.ts
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: acceptance-evidence
+                T: doc-verify/tests/selection/companion.test.ts
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: acceptance-evidence
+                T: doc-verify/tests/oracles/
+                status: satisfied
+              - D: goals/01-document-verification-and-skill-transfer.md
+                S: worklog
+                T: worklog/02-programmatic-document-contract-verification.md
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                W: closed-green
+                status: satisfied
+            artifact-has-goal:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            goal-has-anchored-root:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            goal-has-design-files:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            goal-has-workstreams:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            goal-has-coverage:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+            goal-has-worklog:
+              - D: goals/01-document-verification-and-skill-transfer.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.goal::top:
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md',goal)":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: goal
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md','user-requirements-frozen-root')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: user-requirements-frozen-root
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md','additions-to-the-root')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: additions-to-the-root
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md','design-files')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: design-files
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md',dependencies)":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: dependencies
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md',workstreams)":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: workstreams
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md',workflows)":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: workflows
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md','rulings-in-force')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: rulings-in-force
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md','review-outcome')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: review-outcome
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md','open-threads')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: open-threads
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md','acceptance-evidence')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: acceptance-evidence
+                val: 2
+              "'doc-verify.goal::top'('goals/01-document-verification-and-skill-transfer.md',worklog)":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: worklog
+                val: 2
+            doc-verify.goal::goal_section:
+              "'doc-verify.goal::goal_section'('goals/01-document-verification-and-skill-transfer.md',goal)":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: goal
+                val: 2
+            doc-verify.goal::has_status_word:
+              "'doc-verify.goal::has_status_word'('goals/01-document-verification-and-skill-transfer.md')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                val: 2
+            doc-verify.goal::root_section:
+              "'doc-verify.goal::root_section'('goals/01-document-verification-and-skill-transfer.md','user-requirements-frozen-root')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: user-requirements-frozen-root
+                val: 2
+            doc-verify.goal::design_files_section:
+              "'doc-verify.goal::design_files_section'('goals/01-document-verification-and-skill-transfer.md','design-files')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: design-files
+                val: 2
+            doc-verify.goal::workstreams_section:
+              "'doc-verify.goal::workstreams_section'('goals/01-document-verification-and-skill-transfer.md',workstreams)":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: workstreams
+                val: 2
+            doc-verify.goal::coverage_section:
+              "'doc-verify.goal::coverage_section'('goals/01-document-verification-and-skill-transfer.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+            doc-verify.goal::worklog_section:
+              "'doc-verify.goal::worklog_section'('goals/01-document-verification-and-skill-transfer.md',worklog)":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: worklog
+                val: 2
+            doc-verify.goal::evidence_section:
+              "'doc-verify.goal::evidence_section'('goals/01-document-verification-and-skill-transfer.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+              "'doc-verify.goal::evidence_section'('goals/01-document-verification-and-skill-transfer.md','acceptance-evidence')":
+                args:
+                  - kind: atom
+                    name: goals/01-document-verification-and-skill-transfer.md
+                  - kind: atom
+                    name: acceptance-evidence
+                val: 2
+        goals/02-companion-driven-document-verification.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: goals/02-companion-driven-document-verification.md
+                S: design-files
+                T: design/03-companion-driven-document-verification.md
+                status: satisfied
+              - D: goals/02-companion-driven-document-verification.md
+                S: workflows/design03-companion-driven-document-verificationmd---landed
+                T: goals/02-companion-driven-document-verification.md
+                status: satisfied
+              - D: goals/02-companion-driven-document-verification.md
+                S: worklog
+                T: worklog/03-companion-driven-document-verification.md
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: goals/02-companion-driven-document-verification.md
+                W: closed-green
+                status: satisfied
+            artifact-has-goal:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            goal-has-anchored-root:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            goal-has-design-files:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            goal-has-workstreams:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            goal-has-coverage:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+            goal-has-worklog:
+              - D: goals/02-companion-driven-document-verification.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.goal::top:
+              "'doc-verify.goal::top'('goals/02-companion-driven-document-verification.md',goal)":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: goal
+                val: 2
+              "'doc-verify.goal::top'('goals/02-companion-driven-document-verification.md','user-requirements---frozen-root')":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: user-requirements---frozen-root
+                val: 2
+              "'doc-verify.goal::top'('goals/02-companion-driven-document-verification.md','additions-to-the-root')":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: additions-to-the-root
+                val: 2
+              "'doc-verify.goal::top'('goals/02-companion-driven-document-verification.md','design-files')":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: design-files
+                val: 2
+              "'doc-verify.goal::top'('goals/02-companion-driven-document-verification.md',dependencies)":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: dependencies
+                val: 2
+              "'doc-verify.goal::top'('goals/02-companion-driven-document-verification.md',workstreams)":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: workstreams
+                val: 2
+              "'doc-verify.goal::top'('goals/02-companion-driven-document-verification.md',workflows)":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: workflows
+                val: 2
+              "'doc-verify.goal::top'('goals/02-companion-driven-document-verification.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+              "'doc-verify.goal::top'('goals/02-companion-driven-document-verification.md','rulings-in-force')":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: rulings-in-force
+                val: 2
+              "'doc-verify.goal::top'('goals/02-companion-driven-document-verification.md','open-threads')":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: open-threads
+                val: 2
+              "'doc-verify.goal::top'('goals/02-companion-driven-document-verification.md',worklog)":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: worklog
+                val: 2
+            doc-verify.goal::goal_section:
+              "'doc-verify.goal::goal_section'('goals/02-companion-driven-document-verification.md',goal)":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: goal
+                val: 2
+            doc-verify.goal::has_status_word:
+              "'doc-verify.goal::has_status_word'('goals/02-companion-driven-document-verification.md')":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                val: 2
+            doc-verify.goal::root_section:
+              "'doc-verify.goal::root_section'('goals/02-companion-driven-document-verification.md','user-requirements---frozen-root')":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: user-requirements---frozen-root
+                val: 2
+            doc-verify.goal::design_files_section:
+              "'doc-verify.goal::design_files_section'('goals/02-companion-driven-document-verification.md','design-files')":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: design-files
+                val: 2
+            doc-verify.goal::workstreams_section:
+              "'doc-verify.goal::workstreams_section'('goals/02-companion-driven-document-verification.md',workstreams)":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: workstreams
+                val: 2
+            doc-verify.goal::coverage_section:
+              "'doc-verify.goal::coverage_section'('goals/02-companion-driven-document-verification.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+            doc-verify.goal::worklog_section:
+              "'doc-verify.goal::worklog_section'('goals/02-companion-driven-document-verification.md',worklog)":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: worklog
+                val: 2
+            doc-verify.goal::evidence_section:
+              "'doc-verify.goal::evidence_section'('goals/02-companion-driven-document-verification.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/02-companion-driven-document-verification.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+        goals/03-modular-verification-language.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: goals/03-modular-verification-language.md
+                S: design-files
+                T: design/04-modular-verification-language.md
+                status: satisfied
+              - D: goals/03-modular-verification-language.md
+                S: workflows/design04-modular-verification-languagemd---draft
+                T: goals/03-modular-verification-language.md
+                status: satisfied
+              - D: goals/03-modular-verification-language.md
+                S: worklog
+                T: worklog/04-modular-verification-language.md
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: goals/03-modular-verification-language.md
+                W: open
+                status: satisfied
+            artifact-has-goal:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            goal-has-anchored-root:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            goal-has-design-files:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            goal-has-workstreams:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            goal-has-coverage:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+            goal-has-worklog:
+              - D: goals/03-modular-verification-language.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.goal::top:
+              "'doc-verify.goal::top'('goals/03-modular-verification-language.md',goal)":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: goal
+                val: 2
+              "'doc-verify.goal::top'('goals/03-modular-verification-language.md','user-requirements---frozen-root')":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: user-requirements---frozen-root
+                val: 2
+              "'doc-verify.goal::top'('goals/03-modular-verification-language.md','additions-to-the-root')":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: additions-to-the-root
+                val: 2
+              "'doc-verify.goal::top'('goals/03-modular-verification-language.md','design-files')":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: design-files
+                val: 2
+              "'doc-verify.goal::top'('goals/03-modular-verification-language.md',dependencies)":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: dependencies
+                val: 2
+              "'doc-verify.goal::top'('goals/03-modular-verification-language.md',workstreams)":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: workstreams
+                val: 2
+              "'doc-verify.goal::top'('goals/03-modular-verification-language.md',workflows)":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: workflows
+                val: 2
+              "'doc-verify.goal::top'('goals/03-modular-verification-language.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+              "'doc-verify.goal::top'('goals/03-modular-verification-language.md','rulings-in-force')":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: rulings-in-force
+                val: 2
+              "'doc-verify.goal::top'('goals/03-modular-verification-language.md','open-threads')":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: open-threads
+                val: 2
+              "'doc-verify.goal::top'('goals/03-modular-verification-language.md',worklog)":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: worklog
+                val: 2
+            doc-verify.goal::goal_section:
+              "'doc-verify.goal::goal_section'('goals/03-modular-verification-language.md',goal)":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: goal
+                val: 2
+            doc-verify.goal::has_status_word:
+              "'doc-verify.goal::has_status_word'('goals/03-modular-verification-language.md')":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                val: 2
+            doc-verify.goal::root_section:
+              "'doc-verify.goal::root_section'('goals/03-modular-verification-language.md','user-requirements---frozen-root')":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: user-requirements---frozen-root
+                val: 2
+            doc-verify.goal::design_files_section:
+              "'doc-verify.goal::design_files_section'('goals/03-modular-verification-language.md','design-files')":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: design-files
+                val: 2
+            doc-verify.goal::workstreams_section:
+              "'doc-verify.goal::workstreams_section'('goals/03-modular-verification-language.md',workstreams)":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: workstreams
+                val: 2
+            doc-verify.goal::coverage_section:
+              "'doc-verify.goal::coverage_section'('goals/03-modular-verification-language.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+            doc-verify.goal::worklog_section:
+              "'doc-verify.goal::worklog_section'('goals/03-modular-verification-language.md',worklog)":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: worklog
+                val: 2
+            doc-verify.goal::evidence_section:
+              "'doc-verify.goal::evidence_section'('goals/03-modular-verification-language.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/03-modular-verification-language.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+        goals/04-trusted-kernel.md:
+          statuses:
+            references-resolve: []
+            paths-resolve:
+              - D: goals/04-trusted-kernel.md
+                S: goal
+                T: docs/doc-verify-constitution.md
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: workstreams
+                T: worklog/kernel-trials/
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: docs/doc-verify-model.md
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: worklog/kernel-trials/round-1-verdict.md
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: worklog/kernel-trials/probe/run-probes.mjs
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: worklog/kernel-trials/round-2-verdict.md
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: docs/doc-verify-constitution.md
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: worklog/kernel-trials/gate-ledger.md
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: worklog/kernel-trials/preregistration.md
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: design/05-trusted-kernel-redesign.md
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: worklog/kernel-trials/round-3-verdict.md
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: worklog/kernel-trials/results/round-2-review.md
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: worklog/kernel-trials/results/round-3-review.md
+                status: satisfied
+              - D: goals/04-trusted-kernel.md
+                S: ac-coverage
+                T: worklog/kernel-trials/decisions.md
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+            artifact-has-status:
+              - D: goals/04-trusted-kernel.md
+                status: satisfied
+            artifact-status-in-vocabulary:
+              - D: goals/04-trusted-kernel.md
+                W: open
+                status: satisfied
+            artifact-has-goal:
+              - D: goals/04-trusted-kernel.md
+                status: satisfied
+            goal-has-anchored-root:
+              - D: goals/04-trusted-kernel.md
+                status: satisfied
+            goal-has-design-files:
+              - D: goals/04-trusted-kernel.md
+                status: satisfied
+            goal-has-workstreams:
+              - D: goals/04-trusted-kernel.md
+                status: satisfied
+            goal-has-coverage:
+              - D: goals/04-trusted-kernel.md
+                status: satisfied
+            goal-has-worklog:
+              - D: goals/04-trusted-kernel.md
+                status: satisfied
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.goal::top:
+              "'doc-verify.goal::top'('goals/04-trusted-kernel.md',goal)":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: goal
+                val: 2
+              "'doc-verify.goal::top'('goals/04-trusted-kernel.md','user-requirements---frozen-root')":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: user-requirements---frozen-root
+                val: 2
+              "'doc-verify.goal::top'('goals/04-trusted-kernel.md','design-files')":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: design-files
+                val: 2
+              "'doc-verify.goal::top'('goals/04-trusted-kernel.md',workstreams)":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: workstreams
+                val: 2
+              "'doc-verify.goal::top'('goals/04-trusted-kernel.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+              "'doc-verify.goal::top'('goals/04-trusted-kernel.md',worklog)":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: worklog
+                val: 2
+            doc-verify.goal::goal_section:
+              "'doc-verify.goal::goal_section'('goals/04-trusted-kernel.md',goal)":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: goal
+                val: 2
+            doc-verify.goal::has_status_word:
+              "'doc-verify.goal::has_status_word'('goals/04-trusted-kernel.md')":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                val: 2
+            doc-verify.goal::root_section:
+              "'doc-verify.goal::root_section'('goals/04-trusted-kernel.md','user-requirements---frozen-root')":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: user-requirements---frozen-root
+                val: 2
+            doc-verify.goal::design_files_section:
+              "'doc-verify.goal::design_files_section'('goals/04-trusted-kernel.md','design-files')":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: design-files
+                val: 2
+            doc-verify.goal::workstreams_section:
+              "'doc-verify.goal::workstreams_section'('goals/04-trusted-kernel.md',workstreams)":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: workstreams
+                val: 2
+            doc-verify.goal::coverage_section:
+              "'doc-verify.goal::coverage_section'('goals/04-trusted-kernel.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+            doc-verify.goal::worklog_section:
+              "'doc-verify.goal::worklog_section'('goals/04-trusted-kernel.md',worklog)":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: worklog
+                val: 2
+            doc-verify.goal::evidence_section:
+              "'doc-verify.goal::evidence_section'('goals/04-trusted-kernel.md','ac-coverage')":
+                args:
+                  - kind: atom
+                    name: goals/04-trusted-kernel.md
+                  - kind: atom
+                    name: ac-coverage
+                val: 2
+        receipts/process/2026-10-08-receipts-and-task-card.md:
+          statuses:
+            references-resolve:
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: logs/214-unit-tests.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: logs/214-receipt-verify.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: ../../.doc-verify.yaml
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: ../README.md
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: ../../skills/raft-group-chat/templates/task-card.md
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-build.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-typecheck.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-eslint-changed.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-unit-tests.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-flow-skills.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-capture-log-test.log
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: captured-checks
+                T: logs/214-receipt-verify.log
+                status: satisfied
+            paths-resolve:
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: receipts/process/2026-10-08-receipts-and-task-card.md
+                status: satisfied
+              - D: receipts/process/2026-10-08-receipts-and-task-card.md
+                S: review-handoff--receipts-and-task-card-template
+                T: doc-verify/lib/receipt.yaml
+                status: satisfied
+            specs-resolve: []
+            spec-paths-resolve: []
+          demand:
+            full: []
+            prefix: []
+          verdict: PASS
+          missing: {}
+          unresolvable: []
+          values:
+            doc-verify.receipt::outermost_selected:
+              "'doc-verify.receipt::outermost_selected'('receipts/process/2026-10-08-receipts-and-task-card.md','receipt--governed-receipts-and-task-card-template')":
+                args:
+                  - kind: atom
+                    name: receipts/process/2026-10-08-receipts-and-task-card.md
+                  - kind: atom
+                    name: receipt--governed-receipts-and-task-card-template
+                val: 2

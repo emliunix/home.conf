@@ -1,0 +1,51 @@
+id: prefix-unknown-fallthrough
+gate: Policy invariance
+# Model §6 re-amended 2026-10-12 after the kernel author's counterexample: an asked atom (answered
+# unknown) is, for scheduling, as good as decided; `prefix` takes the first DEMANDABLE leaf of each
+# residual derivation, so prefix is empty exactly when full is. Promoted from the kernel author's
+# scratch witness at the coordinator's request; expects derived by hand from the model.
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o1(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    o2(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    ok(D, S): core.section(D, S, _), o1(D, S), o2(D, S)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "ok(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # o1 = unknown: λ(o1) = u (§2), o2 unanswered = u; ok = t ∧ u ∧ u = u; B = t -> undetermined (§4).
+  # Residual leaves {o1, o2} minus asked {o1} = {o2} under full; prefix falls through the asked o1 to
+  # the first demandable leaf o2 (§6) -> {o2}. NEEDS-REVIEW (§5).
+  - answers: {"w::o1(d,a)": unknown}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: undetermined}]}
+      demand: {full: ["w::o2(d,a)"], prefix: ["w::o2(d,a)"]}
+      verdict: NEEDS-REVIEW
+  # o2 = fails: ok = t ∧ u ∧ f = f; B = t -> violated (§4); no undetermined binding -> Dem = ∅; NO-GO.
+  # Missing literal (§7): the walk passes o1 (u, noted) and stops at the label atom o2(d,a) inside ok's
+  # first clause.
+  - answers: {"w::o1(d,a)": unknown, "w::o2(d,a)": fails}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: violated}]}
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        c1: [{D: d, S: a, literal: "w::o2(d,a)", path: ["w::ok(d,a)#1"], passed_u: ["w::o1(d,a)"]}]
+  # Sibling of step 2, o2 = holds: ok = t ∧ u ∧ t = u -> undetermined. Its only residual leaf is o1,
+  # which is asked: support ∅ after subtracting asked(ans) -> unresolvable (§6): Dem = ∅, NEEDS-REVIEW.
+  - answers: {"w::o1(d,a)": unknown, "w::o2(d,a)": holds}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: undetermined}]}
+      demand: {full: [], prefix: []}
+      verdict: NEEDS-REVIEW

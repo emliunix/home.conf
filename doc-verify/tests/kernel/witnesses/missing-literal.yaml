@@ -1,0 +1,45 @@
+id: missing-literal
+gate: Missing literal
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    r(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    s(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    both(D, S): core.section(D, S, _), o(D, S)
+    both(D, T): core.section(D, T, _), s(D, T)
+  constraints:
+    second: {forall: "core.section(D, S, _)", require: "core.selected(D, S), o(D, S), r(D, S)", severity: error}
+    u-first: {forall: "core.section(D, S, _)", require: "r(D, S), o(D, S), core.selected(D, S)", severity: error}
+    derived: {forall: "core.section(D, S, _)", require: "core.selected(D, S), both(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+  - selected(d, a)
+steps:
+  # second: t ∧ f ∧ u = f -> violated; the walk passes selected (t) and stops at the 2nd literal o(d,a).
+  # u-first: u ∧ f ∧ t = f -> violated; r(d,a) is u, noted and passed as if it held; the answer is o(d,a).
+  # derived: both(d,a) is f (o fails, s fails); the walk descends into both's FIRST clause and stops at o.
+  # No binding is undetermined (r only occurs in f goals), so Dem = ∅; NO-GO.
+  - answers: {"w::o(d,a)": fails, "w::s(d,a)": fails}
+    expect:
+      statuses:
+        second: [{D: d, S: a, status: violated}]
+        u-first: [{D: d, S: a, status: violated}]
+        derived: [{D: d, S: a, status: violated}]
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        second: [{D: d, S: a, literal: "w::o(d,a)"}]
+        u-first: [{D: d, S: a, literal: "w::o(d,a)", passed_u: ["w::r(d,a)"]}]
+        derived: [{D: d, S: a, literal: "w::o(d,a)", path: ["w::both(d,a)#1"]}]

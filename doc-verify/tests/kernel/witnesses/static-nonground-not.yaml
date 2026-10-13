@@ -1,0 +1,18 @@
+id: static-nonground-not
+gate: Static checks
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  rules:
+    lonely(D, X): core.section(D, X, _), \+ core.child(D, X, Y)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "lonely(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # Y is unbound when the negation is reached: the negated goal is not ground (§8) -> rejected.
+  - answers: {}
+    expect: {rejected: true}

@@ -1,0 +1,16 @@
+id: static-matches-unbound
+gate: Static checks
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "matches(H, '^x')", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # H is bound by no earlier positive literal: a static error of the module (§3, §8), never u.
+  - answers: {}
+    expect: {rejected: true}

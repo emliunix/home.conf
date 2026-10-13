@@ -1,0 +1,60 @@
+id: matches-bound-interval
+gate: Status table
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    k(D, S, L):
+      ask: q
+      evidence: core.own(D, S)
+      choose: [xa, yb, yc]
+  constraints:
+    work: {forall: "core.heading(D, S, H)", require: "matches(H, '^Work - ')", severity: error}
+    kebab: {forall: "core.section(D, S, _)", forbid: "matches(S, '_')", severity: error}
+    label: {forall: "core.section(D, S, _)", require: "k(D, S, L), matches(L, '^y')", severity: error}
+    two: {forall: "core.meta(D, kind, _)", require: "count(S, (core.section(D, S, _), o(D, S)), N), matches(N, '^2$')", severity: error}
+facts:
+  - meta(d, kind, k)
+  - section(d, a, root)
+  - section(d, b, root)
+  - heading(d, a, 'Work - one')
+  - heading(d, b, 'Notes')
+steps:
+  # work: matches on a bound atom: a t, b f (violated; the builtin is the missing literal).
+  # kebab: no '_' in a or b -> forbid goal f -> satisfied.
+  # label: the label variable is bound per label atom (§1): L=yb,yc give u∧t = u -> undetermined, Dem k.
+  # two: N = [0,2] (two u tuples): matches on an interval is u (§3) -> undetermined; support = the
+  #   leaves of both u tuples {o(d,a), o(d,b)}; prefix descends into the interval's tuples too.
+  - answers: {}
+    expect:
+      statuses:
+        work: [{D: d, S: a, H: "Work - one", status: satisfied}, {D: d, S: b, H: Notes, status: violated}]
+        kebab: [{D: d, S: a, status: satisfied}, {D: d, S: b, status: satisfied}]
+        label: [{D: d, S: a, status: undetermined}, {D: d, S: b, status: undetermined}]
+        two: [{D: d, status: undetermined}]
+      demand:
+        full: ["w::k(d,a)", "w::k(d,b)", "w::o(d,a)", "w::o(d,b)"]
+        prefix: ["w::k(d,a)", "w::k(d,b)", "w::o(d,a)", "w::o(d,b)"]
+      verdict: NO-GO
+      missing:
+        work: [{D: d, S: b, H: Notes, literal: "matches('Notes','^Work - ')"}]
+  # k(d,a) = xa -> label a f (violated; walk takes L = xa, the first t solution, and stops at matches);
+  # k(d,b) = yb -> t. Both o hold -> N = 2 -> matches t.
+  - answers: {"w::k(d,a)": xa, "w::k(d,b)": yb, "w::o(d,a)": holds, "w::o(d,b)": holds}
+    expect:
+      statuses:
+        work: [{D: d, S: a, H: "Work - one", status: satisfied}, {D: d, S: b, H: Notes, status: violated}]
+        kebab: [{D: d, S: a, status: satisfied}, {D: d, S: b, status: satisfied}]
+        label: [{D: d, S: a, status: violated}, {D: d, S: b, status: satisfied}]
+        two: [{D: d, status: satisfied}]
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        work: [{D: d, S: b, H: Notes, literal: "matches('Notes','^Work - ')"}]
+        label: [{D: d, S: a, literal: "matches(xa,'^y')"}]

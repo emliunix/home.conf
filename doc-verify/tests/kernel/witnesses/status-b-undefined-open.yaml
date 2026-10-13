@@ -1,0 +1,45 @@
+id: status-b-undefined-open
+gate: status-table
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    g(D, S): core.section(D, S, _)
+  constraints:
+    req-u: {forall: "core.section(D, S, _), o(D, S)", require: "core.selected(D, S)", severity: error}
+    forb-u: {forall: "core.section(D, S, _), o(D, S)", forbid: "g(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # Bθ = u, goal decided the WRONG way: require with Gθ = f, forbid with Gθ = t. Never violated while
+  # Bθ = u (§4) -> undetermined; support = the forall instance's u leaf o(d,a) (§6); NEEDS-REVIEW.
+  - answers: {}
+    expect:
+      statuses:
+        req-u: [{D: d, S: a, status: undetermined}]
+        forb-u: [{D: d, S: a, status: undetermined}]
+      demand: {full: ["w::o(d,a)"], prefix: ["w::o(d,a)"]}
+      verdict: NEEDS-REVIEW
+  # o holds -> Bθ = t: both violated; the require's missing literal is the base fact core::selected(d,a).
+  - answers: {"w::o(d,a)": holds}
+    expect:
+      statuses:
+        req-u: [{D: d, S: a, status: violated}]
+        forb-u: [{D: d, S: a, status: violated}]
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        req-u: [{D: d, S: a, literal: "core::selected(d,a)"}]
+  # o fails -> Bθ = f: no binding at all; both constraints are satisfied with an empty population; PASS.
+  - answers: {"w::o(d,a)": fails}
+    expect:
+      statuses: {req-u: [], forb-u: []}
+      demand: {full: [], prefix: []}
+      verdict: PASS
