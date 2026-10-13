@@ -22,8 +22,9 @@ class SkillManager:
         """Every non-dot entry in either tree appears exactly once, with a named status.
 
         This is the accounting the card requires: the enumeration must not drop an
-        entry, so the rows are built from the CLASSIFICATION (which names every
-        than from the valid-only list.
+        entry, so the rows are built from the CLASSIFICATION (which names every entry
+        and its reason) rather than from the valid-only list. Each row also carries the
+        fine reason, so a visible entry says WHICH condition put it there.
         """
         skills: list[Skill] = []
         source_classified = self._classify(self.source_dir)
@@ -33,8 +34,7 @@ class SkillManager:
         target_skills = list(target_classified)
 
         # A source-side entry that is not valid is still real (a malformed skill dir,
-        # or a
-        # broken link in the source). Name it rather than filtering it.
+        # or a broken link in the source). Name it rather than filtering it.
         for skill_name, reason in source_classified.items():
             if reason == "valid":
                 continue
@@ -46,6 +46,7 @@ class SkillManager:
                     description="",
                     source_path=source_path,
                     target_path=self.target_dir / skill_name,
+                    reason=reason,
                 )
             )
 
@@ -61,6 +62,7 @@ class SkillManager:
                     description=description,
                     source_path=source_path,
                     target_path=target_path,
+                    reason=source_classified[skill_name],
                 )
             )
 
@@ -73,9 +75,8 @@ class SkillManager:
             named = self._REASON_STATUS[target_classified[skill_name]]
             if named is not None:
                 # A target-side condition that is decidable without the source: BROKEN
-                # or
-                # MALFORMED. This is what keeps a broken entry IN the model, and it is
-                # chosen by the LINK's state rather than by which side exists.
+                # or MALFORMED. This is what keeps a broken entry IN the model, and it
+                # is chosen by the LINK's state rather than by which side exists.
                 status = SkillStatus(named)
             else:
                 status = self.get_skill_status(skill_name, source_path, target_path)
@@ -87,17 +88,16 @@ class SkillManager:
                     description=description,
                     source_path=Path(),
                     target_path=target_path,
+                    reason=target_classified[skill_name],
                 )
             )
 
         return sorted(skills, key=lambda s: s.name.lower())
 
     # Every non-dot entry in a farm lands in exactly one of these reasons. Kept as a
-    # data
-    # table so the enumeration and its accounting cannot drift apart, and so a reader
-    # can
-    # see every exit route without reading the control flow (cf. the :87 fall-through,
-    # which has no `continue` and is invisible to a grep for one).
+    # data table so the enumeration and its accounting cannot drift apart, and so a
+    # reader can see every exit route without reading the control flow (cf. the
+    # fall-through, which has no `continue` and is invisible to a grep for one).
     REASONS = (
         "valid",
         "broken",
@@ -153,9 +153,8 @@ class SkillManager:
             has_description = bool(
                 re.search(r"^description:\s*\S+", yaml_content, re.MULTILINE)
             )
-            # NOTE: this was a bare `if has_name and has_description: append(...)` with
-            # no
-            # `continue` -- the one exit route a grep for `continue` cannot find.
+            # NOTE: this was a bare `if has_name and has_description: append(...)`
+            # with no `continue` -- the one exit route a grep for `continue` misses.
             classified[d.name] = (
                 "valid" if (has_name and has_description) else "malformed"
             )
@@ -168,8 +167,8 @@ class SkillManager:
         return [name for name, reason in classified.items() if reason == "valid"]
 
     # Reason -> displayed status. A malformed or absent-SKILL.md entry is present but
-    # not
-    # usable; that is a different condition from unmanaged, and naming it is the point.
+    # not usable; that is a different condition from unmanaged, and naming it is the
+    # point.
     _REASON_STATUS = {
         "valid": None,  # resolved by get_skill_status (depends on the source tree)
         "broken": "broken",
@@ -242,8 +241,7 @@ class SkillManager:
             raise FileNotFoundError(f"Skill not found in target: {skill_name}")
 
         # Refuse rather than "succeed": with no source there is nothing to move back,
-        # and
-        # the move would deposit the dangling link in the SOURCE tree -- a versioned
+        # and the move would deposit the dangling link in the SOURCE tree -- a versioned
         # path.
         if not source_path.exists():
             raise FileNotFoundError(
