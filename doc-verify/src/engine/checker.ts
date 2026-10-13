@@ -141,7 +141,16 @@ export function checkModule(parsed: ParsedModule): Program {
     const forall = resolveBody(constraint.forall, `${where}.forall`, resolve);
     const goal = resolveBody(constraint.goal, `${where}.${constraint.mode}`, resolve);
     const bound = checkSafety([], forall, `${where}.forall`, oracleInputs, issues);
-    checkSafety([], goal, `${where}.${constraint.mode}`, oracleInputs, issues, bound);
+    const binding = new Set(forallBindingVars(forall));
+    const derivedOnly = [...bound].filter((name) => !binding.has(name));
+    for (const lit of goal) {
+      for (const name of literalVarNames(lit)) {
+        if (derivedOnly.includes(name)) {
+          issues.push(`${where}.${constraint.mode}: ${name} is bound only by a count or comparison in the forall, so it is not a binding variable; count again in the goal`);
+        }
+      }
+    }
+    checkSafety([], goal, `${where}.${constraint.mode}`, oracleInputs, issues, new Set([...bound].filter((name) => binding.has(name))));
     return {
       id: constraint.id, forall, goal, mode: constraint.mode,
       severity: constraint.source.severity, weight: constraint.source.weight ?? 1,
@@ -469,6 +478,24 @@ export function literalVarNames(literal: Literal): string[] {
       break;
   }
   return [...s];
+}
+
+/**
+ * A constraint's binding variables: the named variables of its forall literals that bind (not a
+ * `count`, whose counted and goal-local variables stay inside it and whose result is a derived
+ * value, and not a comparison). One binding is one assignment of these; a count result that
+ * varied with the answers would change a binding's identity between rounds (property track,
+ * 2026-10-14: a count in a forall gave unbound and interval-valued binding values, empty demand
+ * and false `unfounded`). Shared by the checker (a goal may not use any other forall name) and
+ * the translator (the binding list).
+ */
+export function forallBindingVars(forall: Literal[]): string[] {
+  const names: string[] = [];
+  for (const lit of forall) {
+    if (lit.kind === "count" || lit.kind === "cmp") continue;
+    for (const n of literalVarNames(lit)) if (!names.includes(n)) names.push(n);
+  }
+  return names;
 }
 
 /**

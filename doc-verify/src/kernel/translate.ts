@@ -14,7 +14,7 @@
 
 import { compileModule } from "../engine/index.js";
 import { loadModule, type ConstraintSource, type OracleSource, type ParsedModule, type RequestShape } from "../engine/module.js";
-import { localNegationVars, restBodyVars, type Literal } from "../engine/checker.js";
+import { forallBindingVars, localNegationVars, restBodyVars, type Literal } from "../engine/checker.js";
 import { listItems, quoteAtom, readCanonical, variablesOf, writeTerm, type Term } from "../engine/terms.js";
 
 /** A fact term with a qualified functor (`core::section`, `w::n`, …). */
@@ -400,8 +400,7 @@ export function translateProgram(program: TranslateProgram, facts: FactTerm[]): 
   const constraintText: string[] = [];
   out.push(":- table core_forall/2, core_goal/2 as incremental.");
   for (const c of program.constraints) {
-    const names: string[] = [];
-    for (const l of c.forall) for (const n of literalVars(l)) if (!names.includes(n)) names.push(n);
+    const names = forallBindingVars(c.forall);
     const vars = names.map((n) => `_V_${n}`);
     const forall = bodyText(c.forall, []);
     const goal = bodyText(c.goal, names.map((n) => ({ kind: "var" as const, name: n })));

@@ -109,3 +109,37 @@ describe("round 7 count-bound (gate-ledger item 7)", () => {
     expect(result.verdict).toBe("NEEDS-REVIEW");
   }, 60_000);
 });
+
+describe("count in a forall (property track 2026-10-14, seed 1 program 141)", () => {
+  const COUNT_FORALL = {
+    module: `schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1"
+    require: "o1(D, S)"
+    severity: error
+`,
+    facts: ["section(d, b, root)", "heading(d, b, notes)", "depth(d, b, 1)"],
+  };
+
+  it("binds only D and S, demands o1(d,b) and reports nothing unfounded", async () => {
+    const tr = await translateWitness(COUNT_FORALL);
+    const kernel = await Kernel.create();
+    await kernel.load(tr.text);
+    kernel.setAnswers({});
+    const result = kernel.evaluate(tr.program);
+    expect(result.statuses.c1).toEqual([{ D: "d", S: "b", status: "undetermined" }]);
+    expect(result.demand?.prefix).toEqual(["w::o1(d,b)"]);
+    expect(result.unfounded ?? {}).toEqual({});
+  }, 60_000);
+});
+
