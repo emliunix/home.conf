@@ -137,6 +137,39 @@ The reflog is the evidence, and it is the reader's own record of what the remote
 git reflog show origin/main --date=iso   # what the remote served, and when
 ```
 
+⚠ **An empty reflog is silent, and `exit 0` does not mean "the remote never moved."**
+When the ref resolves but its reflog is empty, the command prints **nothing and exits 0** —
+whatever emptied it. Two states are indistinguishable from the output, and both are
+ordinary:
+
+| state | file `.git/logs/refs/remotes/origin/main` | `git reflog show origin/main` | what it means |
+| --- | --- | --- | --- |
+| expired | EXISTS, 0 bytes | `[]`, exit 0 | the evidence store was discarded |
+| `core.logAllRefUpdates=false` | ABSENT | `[]`, exit 0 | logging was never on |
+
+Group by **whether the ref resolves**, not by why the reflog is empty: a `bare` clone with
+no remote-tracking ref fails **loudly** (`fatal: ambiguous argument`, exit 128), and that is
+the different case. Do not read the two silent states as "no remote movement" — an empty
+reflog is not evidence of anything.
+
+**Do not use `git reflog exists` as the detector, in either form.** Measured on the two
+silent states:
+
+| state | `reflog exists origin/main` | `reflog exists refs/remotes/origin/main` |
+| --- | --- | --- |
+| expired (0-byte file) | exit 1 — **false negative** | exit 0 — **false positive** |
+| logging disabled (no file) | exit 1 | exit 1 |
+
+The short name discards good evidence and the qualified name accepts absent evidence; the
+qualified form's false positive is the dangerous one, because it would have the reader trust
+`[]` in exactly the expired case. The only check that separates the silent states from a
+populated reflog is **content/size on `.git/logs/<ref>`**: populated is non-empty, expired
+is 0 bytes, logging-off has no file.
+
+**When the reflog is unavailable, carry the moment some other way** — name the fetch time
+you measured, or record the measurement as having no moment — rather than reading the
+silence as "no remote movement."
+
 So **a claim about a remote state has three parts — predicate, tree, AND moment.**
 Re-fetch immediately before sending, or name the time the measurement was taken. Without
 the moment, a correct observation reads as a wrong one, and the diagnosis goes to the
