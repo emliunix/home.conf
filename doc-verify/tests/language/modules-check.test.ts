@@ -340,4 +340,22 @@ describe("the type library's worked examples", () => {
       expect(only(report).verdict).toBe("NO-GO");
     });
   }
+
+  // Former-state prose (kernel-trials round 8: the judge read these as current law, 11 of 12).
+  const FORMER = [
+    "Placement previously returned the ledger row; callers moved to the id after the double-count.",
+    "As of v2 the order is a map; it used to be a list.",
+    "Originally idempotent only within a session.",
+  ];
+  for (const sentence of FORMER) {
+    it(`refuses former-state prose with no judge answer: ${sentence.slice(0, 40)}`, async () => {
+      const text = `# Widget\n\n## Concepts\n\nAn order is a set of lines keyed by sku. ${sentence}\n`;
+      const root = await repository({ "docs/a.md": text },
+        `  - pattern: docs/*.md
+    artifact_kind: module-model
+    modules: [doc-verify:module-model]`);
+      const report = await checkDocuments({ root, mode: { kind: "paths", paths: ["docs/a.md"] }, profile: "draft", backend: holds.backend });
+      expect(only(report).findings.map((entry) => entry.ruleId), JSON.stringify(only(report).findings)).toContain("structure.dated-prose");
+    });
+  }
 });

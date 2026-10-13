@@ -546,7 +546,15 @@ function finding(pathValue: RepoPath, section: Section | undefined, ruleId: stri
 }
 
 /** Dated or progress prose a current-law module page must not carry (a deterministic pre-check). */
-const DATED_PROSE = [/\b20\d\d-\d\d-\d\d\b/, /\bround\s+\d+\b/i, /\bwe tried\b/i, /\bthen changed\b/i];
+// Dated and progress prose, then former-state prose (kernel-trials round 8's subtle history: the
+// judge read it as current law). The former-state set is narrow on purpose: on 61 skill and docs
+// pages of current law, `no longer`, `previously` and `was removed/changed` matched present-tense
+// statements, so they are not here (gate-ledger item 10, 2026-10-14).
+const DATED_PROSE = [
+  /\b20\d\d-\d\d-\d\d\b/, /\bround\s+\d+\b/i, /\bwe tried\b/i, /\bthen changed\b/i,
+  /\boriginally\b/i, /\bformerly\b/i, /\bused to be\b/i, /\b(?:it|they|this|that|which|was|were)\s+used to\b/i,
+  /\bas of v\d/i, /\bmoved to\b[^.]{0,60}\bafter\b/i,
+];
 
 function warning(pathValue: RepoPath, ruleId: string, message: string): WarningDiagnostic {
   return {

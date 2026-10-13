@@ -84,6 +84,10 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
     per-sentence or per-paragraph ask, or an explicit former-value clause) with
     `probe/oracle-fixtures/module_*_pages/` as its fixtures; until then the module-page history
     check is the regex plus a judge that misses the subtle form.
+    **Closed 2026-10-14 by the regex, not a question round (owner: keep the history check):** the
+    structural pre-check gains narrow former-state patterns: 12/12 subtle pages refused, 0 hits on the
+    16 real module pages and on 61 held-out current-law pages (`results/item-10-regex.txt`). The judge
+    question stays as the second line.
 11. **Witness relevance: neither a question nor a one-shot extraction decides it** (round 9,
     five candidates): a relevance-only question reads any plausible failure as this row's
     (0.5–0.93); a `choose` over the table's properties with the row's own Property cell in the

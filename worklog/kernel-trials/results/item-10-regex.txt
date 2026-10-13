@@ -1,0 +1,14 @@
+Gate-ledger item 10 by the regex (task F9, 2026-10-14; owner: keep the history check, prefer the
+deterministic path over a judge question round)
+
+Candidate former-state patterns, measured on prose with code spans and fenced blocks removed:
+  round 8 subtle pages (12):                      12 caught (fitted: the patterns were written reading them)
+  real module pages docs/modules/*/*.md (16):      0 hits
+  round 8 good / good-near pages (8):              0 hits
+  held-out current-law prose (skills/*/SKILL.md + docs/*.md, 61 files): 8 hits, all present-tense
+    (`no longer` 6, `previously` 1, `was removed` 1) -> those three patterns dropped
+Shipped set: originally, formerly, used to be, (it|they|this|that|which|was|were) used to, as of v<N>,
+  moved to ... after (within 60 chars). Held-out hits with the shipped set: 0. Still 12/12 on the
+  subtle pages. Recall on phrasings outside this set is unmeasured.
+Tests: doc-verify/tests/language/modules-check.test.ts "refuses former-state prose" (3 cases; red
+  without the change). `check --all --profile draft`: PASS, no dated-prose finding.
