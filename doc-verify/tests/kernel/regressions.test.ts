@@ -1,6 +1,6 @@
 /**
  * Round 7 finding 1 (count-bound): a bound count result loses undefinedness
- * (gate-ledger item 7). Marked it.fails until design/06 step 3 lands the fix.
+ * (gate-ledger item 7), fixed in core.pl's core_count/3 (design/06 step 3).
  * Finding 3 (fresh instance per check) is not a test here.
  */
 
@@ -52,8 +52,7 @@ constraints:
 };
 
 describe("round 7 count-bound (gate-ledger item 7)", () => {
-  // Expected failure: today's kernel reports violated/satisfied; step 3 must make these pass.
-  it.fails("minimal require (two counts sharing N0, ans {}) is undetermined not violated", async () => {
+  it("minimal require (two counts sharing N0, ans {}) is undetermined not violated", async () => {
     const tr = await translateWitness(MINIMAL_REQUIRE);
     const kernel = await Kernel.create();
     await kernel.load(tr.text);
@@ -64,7 +63,7 @@ describe("round 7 count-bound (gate-ledger item 7)", () => {
     expect(result.verdict).toBe("NEEDS-REVIEW");
   }, 60_000);
 
-  it.fails("hand-made forbid (repeated count under N) is undetermined not satisfied", async () => {
+  it("hand-made forbid (repeated count under N) is undetermined not satisfied", async () => {
     const tr = await translateWitness(HANDMADE_FORBID);
     const kernel = await Kernel.create();
     await kernel.load(tr.text);

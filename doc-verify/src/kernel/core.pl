@@ -122,9 +122,12 @@ core_count(V, G, N) :-
     findall(V, member(V-true, Pairs), C0), sort(C0, Cs),
     findall(V, member(V-_, Pairs), P0), sort(P0, Ps),
     length(Cs, C), length(Ps, P),
-    (   C =:= P -> N = C
-    ;   subtract(Ps, Cs, Us), findall(G, member(V, Us), UGoals), N = core_iv(C, P, UGoals)
-    ).
+    (   C =:= P -> M = C
+    ;   subtract(Ps, Cs, Us), findall(G, member(V, Us), UGoals), M = core_iv(C, P, UGoals)
+    ),
+    % A result already bound (a constant, or a variable an earlier count bound) is compared, not
+    % unified: an interval would fail unification where the comparison is u (gate-ledger item 7).
+    (   var(N) -> N = M ; core_cmp(=:=, N, M) ).
 
 core_bounds(N, N, N, []) :- integer(N), !.
 core_bounds(core_iv(L, H, Us), L, H, Us).
