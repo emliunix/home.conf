@@ -1,0 +1,170 @@
+{
+  "cap": 300,
+  "live": {
+    "questions": 16,
+    "followups": 0,
+    "requests": 12,
+    "runs": [
+      {
+        "run": "fixtures:module_verification_pages_pairs/good@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 546,
+        "at": "2026-10-13T01:47:16.472Z"
+      },
+      {
+        "run": "fixtures:module_verification_pages_pairs/good@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 546,
+        "at": "2026-10-13T01:47:21.670Z"
+      },
+      {
+        "run": "fixtures:module_verification_pages_pairs/good@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 546,
+        "at": "2026-10-13T01:47:26.561Z"
+      },
+      {
+        "run": "fixtures:module_verification_pages_pairs/good@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 546,
+        "at": "2026-10-13T01:47:31.103Z"
+      },
+      {
+        "run": "fixtures:module_verification_pages_pairs/seeded-unpaired@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 712,
+        "at": "2026-10-13T01:47:39.818Z"
+      },
+      {
+        "run": "fixtures:module_verification_pages_pairs/seeded-unpaired@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 712,
+        "at": "2026-10-13T01:47:44.980Z"
+      },
+      {
+        "run": "fixtures:module_verification_pages_pairs/seeded-unpaired@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 712,
+        "at": "2026-10-13T01:47:49.610Z"
+      },
+      {
+        "run": "fixtures:module_verification_pages_pairs/seeded-unpaired@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 712,
+        "at": "2026-10-13T01:47:53.909Z"
+      },
+      {
+        "run": "fixtures:module_verification_pages_pairs/gross@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:48:01.339Z"
+      },
+      {
+        "run": "fixtures:module_verification_pages_pairs/gross@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:48:05.065Z"
+      },
+      {
+        "run": "fixtures:module_verification_pages_pairs/gross@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:48:08.832Z"
+      },
+      {
+        "run": "fixtures:module_verification_pages_pairs/gross@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:48:12.782Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {
+      "fixtures:module_verification_pages_pairs/good@batched": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:module_verification_pages_pairs/good@per-atom": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_verification_pages_pairs/seeded-unpaired@batched": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:module_verification_pages_pairs/seeded-unpaired@per-atom": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_verification_pages_pairs/gross@batched": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      },
+      "fixtures:module_verification_pages_pairs/gross@per-atom": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      }
+    }
+  }
+}

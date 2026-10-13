@@ -1,0 +1,290 @@
+{
+  "cap": 300,
+  "live": {
+    "questions": 16,
+    "followups": 0,
+    "requests": 12,
+    "runs": [
+      {
+        "run": "fixtures:module_properties_pages_claims/good@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:48:27.059Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/good@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:48:31.409Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/good@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:48:35.584Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/good@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:48:39.724Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/seeded-unfalsifiable@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:48:47.626Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/seeded-unfalsifiable@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:48:51.787Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/seeded-unfalsifiable@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:48:56.095Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/seeded-unfalsifiable@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:49:00.269Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/gross@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:49:07.680Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/gross@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:49:11.547Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/gross@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:49:15.328Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/gross@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:49:19.085Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/good@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 554,
+        "at": "2026-10-13T02:57:33.926Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/good@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 554,
+        "at": "2026-10-13T02:57:38.664Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/good@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 554,
+        "at": "2026-10-13T02:57:43.226Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/good@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 554,
+        "at": "2026-10-13T02:57:47.483Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/seeded-unfalsifiable@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 724,
+        "at": "2026-10-13T02:57:55.955Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/seeded-unfalsifiable@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 724,
+        "at": "2026-10-13T02:58:00.530Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/seeded-unfalsifiable@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 724,
+        "at": "2026-10-13T02:58:05.039Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/seeded-unfalsifiable@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 724,
+        "at": "2026-10-13T02:58:09.234Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/gross@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T02:58:17.198Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/gross@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T02:58:21.156Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/gross@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T02:58:25.081Z"
+      },
+      {
+        "run": "fixtures:module_properties_pages_claims/gross@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T02:58:28.999Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {
+      "fixtures:module_properties_pages_claims/good@batched": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:module_properties_pages_claims/good@per-atom": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_properties_pages_claims/seeded-unfalsifiable@batched": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:module_properties_pages_claims/seeded-unfalsifiable@per-atom": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_properties_pages_claims/gross@batched": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      },
+      "fixtures:module_properties_pages_claims/gross@per-atom": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,326 @@
+{
+  "cap": 300,
+  "live": {
+    "questions": 40,
+    "followups": 0,
+    "requests": 30,
+    "runs": [
+      {
+        "run": "fixtures:module_model_pages/good@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 455,
+        "at": "2026-10-13T01:40:39.211Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 455,
+        "at": "2026-10-13T01:40:43.986Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 455,
+        "at": "2026-10-13T01:40:48.472Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 455,
+        "at": "2026-10-13T01:40:53.257Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good-near@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 689,
+        "at": "2026-10-13T01:41:01.677Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good-near@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 689,
+        "at": "2026-10-13T01:41:06.700Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good-near@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 689,
+        "at": "2026-10-13T01:41:11.558Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good-near@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 689,
+        "at": "2026-10-13T01:41:15.864Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-1@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 550,
+        "at": "2026-10-13T01:41:24.085Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-1@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 550,
+        "at": "2026-10-13T01:41:28.557Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-1@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 550,
+        "at": "2026-10-13T01:41:33.038Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-1@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 550,
+        "at": "2026-10-13T01:41:37.213Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-2@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 557,
+        "at": "2026-10-13T01:41:45.384Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-2@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 557,
+        "at": "2026-10-13T01:41:49.966Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-2@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 557,
+        "at": "2026-10-13T01:41:54.501Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-2@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 557,
+        "at": "2026-10-13T01:41:58.759Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-3@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 545,
+        "at": "2026-10-13T01:42:06.995Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-3@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 545,
+        "at": "2026-10-13T01:42:11.701Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-3@per-atom",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 545,
+        "at": "2026-10-13T01:42:16.275Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-3@batched",
+        "main": 2,
+        "followups": 0,
+        "requests": 1,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 545,
+        "at": "2026-10-13T01:42:20.587Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/gross@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:42:28.623Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/gross@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:42:32.992Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/gross@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:42:36.761Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/gross@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:42:40.743Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {
+      "fixtures:module_model_pages/good@batched": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:module_model_pages/good@per-atom": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_model_pages/good-near@batched": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:module_model_pages/good-near@per-atom": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_model_pages/subtle-1@batched": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:module_model_pages/subtle-1@per-atom": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_model_pages/subtle-2@batched": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:module_model_pages/subtle-2@per-atom": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_model_pages/subtle-3@batched": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 1
+      },
+      "fixtures:module_model_pages/subtle-3@per-atom": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_model_pages/gross@batched": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      },
+      "fixtures:module_model_pages/gross@per-atom": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      }
+    }
+  }
+}

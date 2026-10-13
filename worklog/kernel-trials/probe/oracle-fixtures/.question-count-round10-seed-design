@@ -1,0 +1,133 @@
+{
+  "cap": 260,
+  "live": {
+    "questions": 168,
+    "followups": 0,
+    "requests": 168,
+    "runs": [
+      {
+        "run": "fixtures:witness_observable_in_row/good@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-13T00:29:01.601Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/good@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-13T00:29:10.833Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-gross@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1213,
+        "at": "2026-10-13T00:29:24.368Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-gross@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1213,
+        "at": "2026-10-13T00:29:33.142Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2688,
+        "at": "2026-10-13T00:29:45.806Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2688,
+        "at": "2026-10-13T00:29:54.967Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle3@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2428,
+        "at": "2026-10-13T00:30:07.562Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-subtle3@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2428,
+        "at": "2026-10-13T00:30:16.151Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/controls@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1775,
+        "at": "2026-10-13T00:30:28.961Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/controls@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1775,
+        "at": "2026-10-13T00:30:37.937Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-swapped@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-13T00:30:50.798Z"
+      },
+      {
+        "run": "fixtures:witness_observable_in_row/defective-swapped@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-13T00:30:59.901Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {}
+  }
+}

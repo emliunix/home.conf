@@ -1,0 +1,106 @@
+{
+  "cap": 300,
+  "live": {
+    "questions": 148,
+    "followups": 0,
+    "requests": 106,
+    "runs": [
+      {
+        "run": "real-cells:module-pages.yaml@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:49:31.882Z"
+      },
+      {
+        "run": "real-cells:module-pages.yaml@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:49:42.644Z"
+      },
+      {
+        "run": "real-cells:module-pages.yaml@per-atom",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:49:54.315Z"
+      },
+      {
+        "run": "real-cells:module-pages.yaml@batched",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T01:50:05.318Z"
+      },
+      {
+        "run": "real-cells:module-pages.yaml@batched",
+        "main": 37,
+        "followups": 0,
+        "requests": 16,
+        "asked": 37,
+        "worst": 37,
+        "bytes": 26624,
+        "at": "2026-10-13T02:58:41.143Z"
+      },
+      {
+        "run": "real-cells:module-pages.yaml@per-atom",
+        "main": 37,
+        "followups": 0,
+        "requests": 37,
+        "asked": 37,
+        "worst": 37,
+        "bytes": 26624,
+        "at": "2026-10-13T02:58:58.372Z"
+      },
+      {
+        "run": "real-cells:module-pages.yaml@per-atom",
+        "main": 37,
+        "followups": 0,
+        "requests": 37,
+        "asked": 37,
+        "worst": 37,
+        "bytes": 26624,
+        "at": "2026-10-13T02:59:16.559Z"
+      },
+      {
+        "run": "real-cells:module-pages.yaml@batched",
+        "main": 37,
+        "followups": 0,
+        "requests": 16,
+        "asked": 37,
+        "worst": 37,
+        "bytes": 26624,
+        "at": "2026-10-13T02:59:26.197Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {
+      "real-cells:module-pages.yaml@batched": {
+        "main": 37,
+        "asked": 37,
+        "worst": 37,
+        "requests": 16
+      },
+      "real-cells:module-pages.yaml@per-atom": {
+        "main": 37,
+        "asked": 37,
+        "worst": 37,
+        "requests": 37
+      }
+    }
+  }
+}

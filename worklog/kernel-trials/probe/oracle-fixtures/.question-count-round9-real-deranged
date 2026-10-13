@@ -1,0 +1,33 @@
+{
+  "cap": 57,
+  "live": {
+    "questions": 38,
+    "followups": 0,
+    "requests": 38,
+    "runs": [
+      {
+        "run": "real-cells:relevance-deranged.yaml@per-atom",
+        "main": 19,
+        "followups": 0,
+        "requests": 19,
+        "asked": 19,
+        "worst": 19,
+        "bytes": 3509,
+        "at": "2026-10-13T03:09:11.496Z"
+      },
+      {
+        "run": "real-cells:relevance-deranged.yaml@per-atom",
+        "main": 19,
+        "followups": 0,
+        "requests": 19,
+        "asked": 19,
+        "worst": 19,
+        "bytes": 3509,
+        "at": "2026-10-13T03:09:22.120Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {}
+  }
+}

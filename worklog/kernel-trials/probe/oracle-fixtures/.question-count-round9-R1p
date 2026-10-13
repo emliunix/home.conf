@@ -1,0 +1,33 @@
+{
+  "cap": 42,
+  "live": {
+    "questions": 28,
+    "followups": 0,
+    "requests": 28,
+    "runs": [
+      {
+        "run": "fixtures:witness_relevant_paraphrase/defective-swapped@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2756,
+        "at": "2026-10-13T03:08:13.753Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_paraphrase/relevance-controls@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2178,
+        "at": "2026-10-13T03:08:25.891Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {}
+  }
+}

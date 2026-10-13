@@ -1,0 +1,173 @@
+{
+  "cap": 336,
+  "live": {
+    "questions": 224,
+    "followups": 0,
+    "requests": 224,
+    "runs": [
+      {
+        "run": "fixtures:witness_relevant_in_table/good@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8006,
+        "at": "2026-10-13T03:05:21.936Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/good@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8006,
+        "at": "2026-10-13T03:05:32.510Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/defective-swapped@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8006,
+        "at": "2026-10-13T03:05:45.209Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/defective-swapped@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8006,
+        "at": "2026-10-13T03:05:54.335Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/derangement-s1@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8149,
+        "at": "2026-10-13T03:06:06.794Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/derangement-s1@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8149,
+        "at": "2026-10-13T03:06:15.183Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/derangement-s2@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8149,
+        "at": "2026-10-13T03:06:27.374Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/derangement-s2@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8149,
+        "at": "2026-10-13T03:06:36.470Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/adjacent-swap@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8149,
+        "at": "2026-10-13T03:06:48.413Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/adjacent-swap@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8149,
+        "at": "2026-10-13T03:06:57.292Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/near-miss-2-3@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8144,
+        "at": "2026-10-13T03:07:09.991Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/near-miss-2-3@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8144,
+        "at": "2026-10-13T03:07:18.892Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/shared-1-11@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8149,
+        "at": "2026-10-13T03:07:30.955Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/shared-1-11@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 8149,
+        "at": "2026-10-13T03:07:39.599Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/relevance-controls@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 7428,
+        "at": "2026-10-13T03:07:51.538Z"
+      },
+      {
+        "run": "fixtures:witness_relevant_in_table/relevance-controls@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 7428,
+        "at": "2026-10-13T03:07:59.794Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {}
+  }
+}
