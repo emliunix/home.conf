@@ -1,0 +1,41 @@
+name: kernel-slow
+
+# The kernel's slow suite (design/06 step 5): the round 7 property track, the seeds table and the
+# clingo differential against doc-verify/src/kernel. ~24 min locally, so nightly and on demand,
+# plus pull requests that touch the kernel or its translator. A refuting counterexample or an
+# incomplete run fails the job (run-kernel-slow.mjs exits 1).
+on:
+  schedule:
+    - cron: "43 3 * * *"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "doc-verify/src/kernel/**"
+      - "doc-verify/src/engine/checker.ts"
+      - "doc-verify/tests/kernel-slow/**"
+      - ".github/workflows/kernel-slow.yml"
+
+concurrency:
+  group: kernel-slow-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  kernel-slow:
+    name: kernel-slow
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: npm ci
+        run: npm ci || { echo "npm ci retry after failure"; sleep 15; npm ci; }
+      - run: npm run test:kernel-slow
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kernel-slow-records
+          path: doc-verify/tests/kernel-slow/.results/
+          if-no-files-found: ignore
