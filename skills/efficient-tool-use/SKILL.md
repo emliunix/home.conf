@@ -26,7 +26,8 @@ the topic files are the durable rulebook, not this routing surface.
   rate separate from correctness, and split by command before blaming syntax.
 - **`efficient-tool-use/call-composition`** -
   [call-composition.md](references/call-composition.md): keep payloads out of
-  command strings and block on a condition instead of polling.
+  command strings, block on a condition instead of polling, and bound a command
+  that spawns children by killing its process group rather than its parent.
 - **`efficient-tool-use/reuse-and-protection`** -
   [reuse-and-protection.md](references/reuse-and-protection.md): save repeated
   operations, measure a guard's reach and activation, require identity rather
