@@ -141,7 +141,7 @@ class SkillsManagerApp(App[None]):
         reason
         to be visible: four distinct conditions collapse into `MALFORMED`, so a bare
         `MALFORMED` cannot tell a reader whether the entry lacks front matter, lacks
-        SKILL.md, is unreadable, or is not a directory. `disposition` names it.
+        SKILL.md, is unreadable, or is not a directory. The ROW's `reason` names it.
         """
         status = skill.status
         color = self._STATUS_COLORS[status]
