@@ -47,7 +47,7 @@ documents:
   # worklog whose companion names `type: record` additionally runs the evidence-not-law module.
   - pattern: worklog/**/*.md
     artifact_kind: worklog
-    modules: [doc-verify:references]
+    modules: ['doc-verify:references']
     types:
       record: {modules: [doc-verify/modules/worklog.yaml]}
     required_sections: []

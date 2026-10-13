@@ -50,9 +50,18 @@ followed thread), never with a prefix.
 | Something that only the owner can decide | the owner's thread, stated as a decision, not a status |
 | Work on a card | that card's thread |
 | A request for an independent read | the tracker thread, naming the artifact and the commit |
+| The seat's own lane work | a card on the board, so the team sees what the seat is doing without asking |
 
 Reply where the conversation is. A correction does not get its own announcement in a second
 venue; the thread that carries the claim carries the correction.
+
+**Card the seat's own work.** A seat that only posts prose is invisible between passes: the
+team cannot see what it is doing, whether it is busy, or what it will report next. Put the
+seat's own recurring lane work on the board as a card, with a title that names the work
+rather than the activity ("Refine team skills from X, gated by Y", not "Observer pass"). An
+observer or reviewer lane rarely collides with a builder's scope, so the card does not need
+to be claimed-and-delegated to reserve it — create it, keep its status current, and let the
+status be the answer to "what is the seat doing?". (Owner direction, 2026-10-12.)
 
 ## Message discipline
 
