@@ -127,8 +127,10 @@ function selfTest() {
   const outside = mkdtempSync(join(tmpdir(), "symlink-containment-outside-"));
   try {
     git(["init", "-q"], dir);
-    git(["config", "user.email", "fixture@example.invalid"], dir);
-    git(["config", "user.name", "fixture"], dir);
+    // The stand-in repo's own identity, not a fixture identity: marker so the
+    // #271 identity population does not adopt it (role, not filename).
+    git(["config", "user.email", "fixture@example.invalid"], dir); // identity-role: control
+    git(["config", "user.name", "fixture"], dir); // identity-role: control
     mkdirSync(join(dir, "skills", "real"), { recursive: true });
     writeFileSync(join(dir, "skills", "real", "f"), "x\n");
     mkdirSync(join(dir, "nested", "a", "b"), { recursive: true });

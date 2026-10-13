@@ -114,8 +114,8 @@ function fixtureSelfTest() {
 function initCallerRepo() {
   const repo = mkdtempSync(join(tmpdir(), "tracked-ignored-caller-"));
   git(repo, ["init", "-q"]);
-  git(repo, ["config", "user.email", "caller@example.invalid"]);
-  git(repo, ["config", "user.name", "caller"]);
+  git(repo, ["config", "user.email", "caller@example.invalid"]); // identity-role: control
+  git(repo, ["config", "user.name", "caller"]); // identity-role: control
   writeFileSync(join(repo, "seed.txt"), "caller seed\n");
   git(repo, ["add", "seed.txt"]);
   git(repo, ["commit", "-qm", "caller seed"]);
@@ -169,7 +169,7 @@ function hostileEnvIsLive(callerRepo) {
     // The fixture's own first identity write, with the environment INHERITED
     // instead of stripped. `cwd` is a throwaway directory: if the write lands in
     // the caller anyway, the hostile variable is live and the arms can go red.
-    execFileSync("git", ["config", "user.email", "leaked@example.invalid"], {
+    execFileSync("git", ["config", "user.email", "leaked@example.invalid"], { // identity-role: control
       cwd: scratch,
       encoding: "utf8",
       env: {
@@ -183,7 +183,7 @@ function hostileEnvIsLive(callerRepo) {
     rmSync(scratch, { recursive: true, force: true });
   }
   const after = callerFacts(callerRepo);
-  git(callerRepo, ["config", "user.email", "caller@example.invalid"]);
+  git(callerRepo, ["config", "user.email", "caller@example.invalid"]); // identity-role: control
   return before !== after;
 }
 
@@ -307,7 +307,17 @@ function callerIsolationSelfTest() {
 // Every identity this repository's own scripts declare for a fixture. Discovered
 // by reading the declaring call sites, so adding a declaration on a new line
 // extends the population with no edit here and no fixed count.
-const IDENTITY_DECLARATION = /["']user\.(?:email|name)["']\s*,\s*["']([^"']+)["']/g;
+//
+// ⚠ EXCLUSION IS BY ROLE, NOT BY FILE. A script may legitimately declare the
+// identity of a STAND-IN CALLER repository (this file's caller, and #270's
+// fixture repo) rather than a fixture identity. Excluding by filename happened to
+// work while only one script had such a control, and silently failed to cover the
+// second: #270's own `fixture@example.invalid` entered the population as if it
+// were a fixture identity. A declaration that is a control carries the marker
+// `identity-role: control` on its own line; the marker travels with the
+// declaration, so any file can hold one.
+const IDENTITY_DECLARATION = /["']user\.(?:email|name)["']\s*,\s*["']([^"']+)["']/;
+const CONTROL_IDENTITY_MARKER = "identity-role: control";
 const FIXTURE_SOURCE_ROOTS = ["scripts", "skills"];
 const FIXTURE_SOURCE_FILE = /\.(?:mjs|cjs|js|py|sh)$/;
 
@@ -341,13 +351,11 @@ function declaredFixtureIdentities() {
       continue;
     }
     for (const file of sourceFiles(root)) {
-      // This file declares its own control-caller identity, which is the
-      // legitimate identity of the stand-in repository rather than a fixture
-      // identity. Scanning it would make the check flag its own control.
-      if (file === SELF) continue;
       const text = readFileSync(file, "utf8");
-      for (const match of text.matchAll(IDENTITY_DECLARATION)) {
-        if (match[1].includes("@")) identities.add(match[1]);
+      for (const line of text.split("\n")) {
+        if (line.includes(CONTROL_IDENTITY_MARKER)) continue;
+        const match = IDENTITY_DECLARATION.exec(line);
+        if (match && match[1].includes("@")) identities.add(match[1]);
       }
     }
   }
@@ -379,7 +387,19 @@ function main() {
   const selfTestOnly = process.argv.includes("--self-test");
   const skipSelfTest = process.argv.includes("--no-self-test");
   if (!skipSelfTest) {
-    const armed = fixtureSelfTest();
+    // A fixture that throws is "the instrument could not run", not a finding and
+    // not a clean pass: exit 2 with a typed line rather than a raw stack trace.
+    let armed;
+    try {
+      armed = fixtureSelfTest();
+    } catch (error) {
+      process.stderr.write(
+        `tracked-ignored: NOT A GATE — the fixture threw: ${
+          error instanceof Error ? error.message : String(error)
+        }\n`,
+      );
+      return 2;
+    }
     if (armed !== 0) return armed;
     const isolated = callerIsolationSelfTest();
     if (isolated !== 0) return isolated;
