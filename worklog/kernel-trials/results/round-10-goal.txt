@@ -1,0 +1,42 @@
+oracle-test --real-cells --labels labels-r10.yaml (LIVE; shapes per-atom; repeat 2; spans skipped)
+clone at f991877 (f991877895a7da9958773a403ae43c34bc23fabc)
+
+run 1 per shape; agreement with the lead's blind labels (labels-r10.yaml, pages at f991877)
+  shape     document                                              row                       lead   judge  VERDICT  p     agreement
+  --------  ----------------------------------------------------  ------------------------  -----  -----  -------  ----  ---------
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row1  holds  holds  PASS     0.98  agree    
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row2  holds  holds  PASS     0.96  agree    
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row3  holds  holds  PASS     0.84  agree    
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row4  holds  holds  PASS     0.98  agree    
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row5  holds  holds  PASS     0.99  agree    
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row6  holds  holds  PASS     0.98  agree    
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row7  holds  holds  PASS     0.84  agree    
+  per-atom  goals/01-document-verification-and-skill-transfer.md  acceptance-evidence#row8  holds  holds  PASS     0.66  agree    
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row1          fails  fails  NO-GO    1.00  agree    
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row2          fails  fails  NO-GO    0.99  agree    
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row3          fails  fails  NO-GO    0.93  agree    
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row4          fails  fails  NO-GO    0.88  agree    
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row5          fails  fails  NO-GO    0.99  agree    
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row6          fails  fails  NO-GO    0.70  agree    
+  per-atom  goals/02-companion-driven-document-verification.md    ac-coverage#row7          fails  fails  NO-GO    0.87  agree    
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row1          fails  fails  NO-GO    0.74  agree    
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row2          fails  fails  NO-GO    0.71  agree    
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row3          fails  fails  NO-GO    0.63  agree    
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row4          fails  fails  NO-GO    0.97  agree    
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row5          fails  fails  NO-GO    0.92  agree    
+  per-atom  goals/03-modular-verification-language.md             ac-coverage#row6          fails  fails  NO-GO    0.91  agree    
+  per-atom  goals/04-trusted-kernel.md                            ac-coverage#row1          holds  holds  PASS     0.98  agree    
+  per-atom  goals/04-trusted-kernel.md                            ac-coverage#row2          holds  holds  PASS     0.97  agree    
+  per-atom  goals/04-trusted-kernel.md                            ac-coverage#row3          holds  holds  PASS     0.94  agree    
+  per-atom  goals/04-trusted-kernel.md                            ac-coverage#row4          holds  holds  PASS     0.98  agree    
+  per-atom  goals/04-trusted-kernel.md                            ac-coverage#row5          holds  holds  PASS     0.98  agree    
+per-atom: 26/26 labelled atoms found over 4 documents
+per-atom: agreement (informational) 26/26; per run: main 30, follow-ups 0, requests 30, worst 30
+
+ledger round10-goal: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  per-atom  normal  2     60        60      0              [30]                     57700       20.20    0           30             2        60              60             
+projection (live, this invocation): main 60, worst 60; cap at 1.5x worst = 90; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round10-goal.json
+ledger: live spent 60 / cap 90
+complete: true

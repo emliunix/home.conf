@@ -1,0 +1,88 @@
+oracle-test --fixtures (LIVE; shapes per-atom; repeat 2; spans skipped)
+
+fixture leaves, repeat 1 per shape (LIVE)
+  oracle            fixture                shape     row   expect  got    answered  p     thr  leaf     VERDICT  draft-only         bytes  q  worst-q  sep@0.6  edit  paths-warn  stable×2
+  ----------------  ---------------------  --------  ----  ------  -----  --------  ----  ---  -------  -------  -----------------  -----  -  -------  -------  ----  ----------  --------
+  evidence_reasons  good                   per-atom  row1  holds   holds  holds     0.98  0.5  decides  PASS     PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  good                   per-atom  row2  holds   holds  holds     0.97  0.5  decides  PASS     PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  good                   per-atom  row3  holds   holds  holds     0.93  0.5  decides  PASS     PASS               562    6  6        yes      ok    0           same    
+  evidence_reasons  good                   per-atom  row4  holds   holds  holds     0.98  0.5  decides  PASS     PASS               704    6  6        yes      ok    0           same    
+  evidence_reasons  good                   per-atom  row5  holds   holds  holds     0.98  0.5  decides  PASS     PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath            per-atom  row1  holds   holds  holds     0.96  0.5  decides  PASS     PASS               649    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath            per-atom  row2  holds   holds  holds     0.95  0.5  decides  PASS     PASS               544    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath            per-atom  row3  holds   holds  holds     0.67  0.5  decides  PASS     PASS               531    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath            per-atom  row4  holds   holds  holds     0.95  0.5  decides  PASS     PASS               640    6  6        yes      ok    0           same    
+  evidence_reasons  good-nopath            per-atom  row5  holds   holds  holds     0.94  0.5  decides  PASS     PASS               468    6  6        yes      ok    0           same    
+  evidence_reasons  good-dangling          per-atom  row1  holds   holds  holds     0.99  0.5  decides  PASS     PASS               731    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling          per-atom  row2  holds   holds  holds     0.96  0.5  decides  PASS     PASS               580    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling          per-atom  row3  holds   holds  holds     0.94  0.5  decides  PASS     PASS               562    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling          per-atom  row4  holds   holds  holds     0.98  0.5  decides  PASS     PASS               704    6  6        yes      ok    1           same    
+  evidence_reasons  good-dangling          per-atom  row5  holds   holds  holds     0.98  0.5  decides  PASS     PASS               667    6  6        yes      ok    1           same    
+  evidence_reasons  terse                  per-atom  row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  115    6  6        yes      ok    0           same    
+  evidence_reasons  terse                  per-atom  row2  fails   fails  fails     0.73  0.5  decides  NO-GO    PASS (not caught)  121    6  6        yes      ok    0           same    
+  evidence_reasons  terse                  per-atom  row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  99     6  6        yes      ok    0           same    
+  evidence_reasons  terse                  per-atom  row4  fails   fails  fails     0.96  0.5  decides  NO-GO    PASS (not caught)  151    6  6        yes      ok    0           same    
+  evidence_reasons  terse                  per-atom  row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  164    6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare         per-atom  row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  11     6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare         per-atom  row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  8      6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare         per-atom  row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  7      6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare         per-atom  row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  13     6  6        yes      ok    0           same    
+  evidence_reasons  defective-bare         per-atom  row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  2      6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers     per-atom  row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  56     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers     per-atom  row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  35     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers     per-atom  row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  73     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers     per-atom  row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  16     6  6        yes      ok    0           same    
+  evidence_reasons  defective-pointers     per-atom  row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  52     6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement  per-atom  row1  fails   fails  fails     0.92  0.5  decides  NO-GO    PASS (not caught)  158    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement  per-atom  row2  fails   fails  fails     0.91  0.5  decides  NO-GO    PASS (not caught)  141    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement  per-atom  row3  fails   fails  fails     0.67  0.5  decides  NO-GO    PASS (not caught)  175    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement  per-atom  row4  fails   fails  fails     0.91  0.5  decides  NO-GO    PASS (not caught)  156    6  6        yes      ok    0           same    
+  evidence_reasons  defective-restatement  per-atom  row5  fails   fails  fails     0.97  0.5  decides  NO-GO    PASS (not caught)  175    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded       per-atom  row1  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  494    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded       per-atom  row2  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  503    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded       per-atom  row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  469    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded       per-atom  row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  465    6  6        yes      ok    0           same    
+  evidence_reasons  defective-padded       per-atom  row5  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  480    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow     per-atom  row1  holds   holds  holds     0.96  0.5  decides  PASS     PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow     per-atom  row2  holds   holds  holds     0.95  0.5  decides  PASS     PASS               562    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow     per-atom  row3  holds   holds  holds     0.98  0.5  decides  PASS     PASS               704    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow     per-atom  row4  holds   holds  holds     0.98  0.5  decides  PASS     PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  defective-wrongrow     per-atom  row5  holds   holds  holds     0.98  0.5  decides  PASS     PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare         per-atom  row1  holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare         per-atom  row2  holds   holds  holds     0.97  0.5  decides  NO-GO    PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare         per-atom  row3  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  11     6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare         per-atom  row4  holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               704    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-bare         per-atom  row5  holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               667    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer      per-atom  row1  holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               731    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer      per-atom  row2  holds   holds  holds     0.97  0.5  decides  NO-GO    PASS               578    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer      per-atom  row3  holds   holds  holds     0.94  0.5  decides  NO-GO    PASS               562    6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer      per-atom  row4  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  16     6  6        yes      ok    0           same    
+  evidence_reasons  mixed-one-pointer      per-atom  row5  holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               667    6  6        yes      ok    0           same    
+
+per fixture and shape (per-row oracles): cells on their expected side at p >= 0.6
+  oracle/fixture@shape                             expected side(s)  k/n  separates  VERDICT
+  -----------------------------------------------  ----------------  ---  ---------  -------
+  evidence_reasons/good@per-atom                   holds             5/5  yes        PASS   
+  evidence_reasons/good-nopath@per-atom            holds             5/5  yes        PASS   
+  evidence_reasons/good-dangling@per-atom          holds             5/5  yes        PASS   
+  evidence_reasons/terse@per-atom                  fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-bare@per-atom         fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-pointers@per-atom     fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-restatement@per-atom  fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-padded@per-atom       fails             5/5  yes        NO-GO  
+  evidence_reasons/defective-wrongrow@per-atom     holds             5/5  yes        PASS   
+  evidence_reasons/mixed-one-bare@per-atom         holds+fails       5/5  yes        NO-GO  
+  evidence_reasons/mixed-one-pointer@per-atom      holds+fails       5/5  yes        NO-GO  
+
+false pass (defective fixtures whose document VERDICT is PASS)
+  none
+
+questions: main 132, follow-ups 0, requests 132; worst case live 132 (spans skipped: main only)
+
+ledger round10-seed-goal: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  per-atom  normal  22    132       132     0              [6]                      141874      44.72    0           66             2        132             132            
+projection (live, this invocation): main 132, worst 132; cap at 1.5x worst = 198; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round10-seed-goal.json
+ledger: live spent 132 / cap 198
+complete: true

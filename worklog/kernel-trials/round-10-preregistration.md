@@ -51,8 +51,9 @@ Real cells, the lead's labels in **new** files written before the run (the 4c fi
 | design witnesses | `real-cells/witness-labels-r10.yaml` | designs 02 (9), 03 (8), 05 (13) as in 4c; design 04 (14 rows; the 4c `good` fixture, labelled as a real document here); design 06 (8 rows, frozen at f991877, **held out**: its author is the lead, so its labels are the author's and are reported as a separate line) | 44 counted + 8 held out | 02, 03, 05 landed; 04 landed; 06 draft, frozen |
 
 The labels are **pre-registered, judge-exposed, not blind**: the lead saw the judge's p on these
-cells in rounds 4, 4c and 6, and five cells (design/02 ×2, design/05 ×2, goals/01 R5) were
-rewritten after the judge flagged them. Each label carries `since: round-N` (unchanged since it
+cells in rounds 4, 4c and 6, and thirteen cells were rewritten after the judge flagged them (goals/01's rows 1–6 in
+round 4 and R5 again in round 6; design/02 rows 10–11, design/03 row 9, design/04 row 7, design/05
+rows 1, 2, 7 in rounds 4c and 6). Each label carries `since: round-N` (unchanged since it
 was first labelled) or `rewritten: round-N` (rewritten after judge exposure; reported as its own
 line). Goal 04's and design 06's labels are the only never-exposed ones and are reported as such.
 
@@ -107,14 +108,14 @@ per-atom p per seeded cell.
 DOC_VERIFY_MOCK_JUDGE=1 node worklog/kernel-trials/probe/oracle-test.mjs --real-cells --labels labels-r10.yaml --request-shape per-atom --repeat 2 --no-spans --ledger round10-goal
 node worklog/kernel-trials/probe/oracle-test.mjs --real-cells --labels labels-r10.yaml         --request-shape per-atom --repeat 2 --no-spans --ledger round10-goal        --cap 90
 node worklog/kernel-trials/probe/oracle-test.mjs --real-cells --labels witness-labels-r10.yaml --request-shape per-atom --repeat 2 --no-spans --ledger round10-design      --cap 160
-node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --oracle evidence_reasons          --request-shape per-atom --repeat 2 --invariant-base c632a91 --no-spans --ledger round10-seed-goal   --cap 170
+node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --oracle evidence_reasons          --request-shape per-atom --repeat 2 --invariant-base c632a91 --no-spans --ledger round10-seed-goal   --cap 198
 node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --oracle witness_observable_in_row --request-shape per-atom --repeat 2 --no-spans --ledger round10-seed-design --cap 260
-node worklog/kernel-trials/probe/threshold-sweep.mjs --self-test && node worklog/kernel-trials/probe/threshold-sweep.mjs round10-goal round10-design round10-seed-goal round10-seed-design
+node worklog/kernel-trials/probe/threshold-sweep.mjs --self-test && node worklog/kernel-trials/probe/threshold-sweep.mjs round10-goal round10-design round10-seed-goal round10-seed-design --batched-ledger round6-B --batched-ledger round6-C2
 ```
 
 Projection (per-atom, `--no-spans`, two repeats, the mock runs of 2026-10-13 06:17 on the two
 label files): goal real 30 × 2 = 60 (26 labelled cells plus the library's other atoms); design
-real 52 × 2 = 104; evidence seeded ≈ 55 × 2 = 110; witness seeded 84 × 2 = 168; about 442 questions, no
+real 52 × 2 = 104; evidence seeded 66 × 2 = 132 (the mock run; the cap is 198); witness seeded 84 × 2 = 168; about 464 questions, no
 follow-ups. The mock run first proves the cell counts per labels file against the tables. A cap
 trip is `complete: false`, never a verdict. `--invariant-base c632a91` is on the evidence set
 only because that set's tables are checked unchanged against the commit that authored them
@@ -140,6 +141,18 @@ A threshold between the candidates (a finer grid is the next pass if 0.6 wins by
 variance beyond two repeats; a second judge. Whether the lead's labels are the right ground
 truth (one reader's, judge-exposed on most cells). Seeded cells in [0.5, 0.6) are the real test
 of a threshold and there are almost none.
+
+**Pre-run amendment, 2026-10-13 08:20 (lead, after the builder's mock run):** the evidence seeded
+cap is 198 (132 projected); the rewritten cells are 13 (goals/01 rows 1–6; design/02 rows 10–11, 03 row 9, 04 row 7,
+05 rows 1, 2, 7), reported as their own line beside `counted` and `counted+rewritten` (the plan's
+n is `counted+rewritten`, which the 30% rule, the sorted p, the band share and the bar use); the
+batched column comes from round 6's live sidecars (`--batched-ledger round6-B`, `round6-C2`)
+because rounds 4 and 4c left none; the sweep's decisions, recorded as decision rows at the
+verdict: a repeat disagreement takes the side of the minimum-peak repeat and is classed `flip` at
+any t where the sides differ; `p ≥ t` with 1e-9 slack; a judge `unknown` or an empty distribution
+is unknown at every t; the oracle-local document verdict per t is NO-GO if a cell is decided
+`fails`, else NEEDS-REVIEW if a cell is unknown, else PASS; `defective-wrongrow` is the known miss,
+printed apart; a right-side defective cell dropping to unknown counts as a loss too.
 
 ## Review
 

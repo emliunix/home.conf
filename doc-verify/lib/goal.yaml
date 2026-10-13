@@ -45,6 +45,9 @@ oracles:
       nothing said about what it shows), or a restatement of the requirement fails. A path is not
       required and its presence alone does not make the cell hold.
     evidence: core.cell(D, R, C)
+    # Calibration (kernel-trials round 10, 2026-10-13, per-atom, two repeats): real cells of goals
+    # 01 and 04 sit at 0.63-0.99 on the lead's side (0 of 13 wrong), seeded genuine cells at
+    # >= 0.67; raising the threshold only demotes right-side cells, so 0.5 stays.
     threshold: 0.5
     max_bytes: 4000
 rules:

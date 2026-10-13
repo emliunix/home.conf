@@ -38,7 +38,11 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
    14/14), which the extraction form or a relevance question would cover.
 4. **Evidence-cell threshold from real cells** (round 4 §Left unmeasured): goals/01's middling
    cells land at 0.55–0.66; a fixture set drawn from real goals, not seeded, is what sets the
-   threshold. The wrong-row gap (the judge never sees the requirement text) is open with it.
+   threshold. **Threshold half closed by round 10** (2026-10-13): on the rewritten corpus under
+   per-atom, 0/13 evidence cells and 0/44 witness rows sit on the wrong side at 0.5, and every
+   higher t only demotes right-side cells; 0.5 stays on both oracles (`round-10-verdict.md`;
+   seeded defect: the sweep's eight self-test mutations each turn their case red). The wrong-row
+   gap (the judge never sees the requirement text) stays open and is round 9's.
 5. **S3's demand is D1-incomplete** (round 4b): a single-flip demand misses an atom that decides
    a binding only jointly with another (program #231 of seed 1). A syntactic cone (S1's) is the
    only D1-safe demand known; if S3 is ever more than a reference, its demand must be the cone.

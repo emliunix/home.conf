@@ -1,0 +1,391 @@
+threshold-sweep (no judge calls); t in {0.5, 0.6, 0.7}, decided iff p >= t; sidecars in /Users/emliunix/Documents/home.conf/worklog/kernel-trials/probe/oracle-fixtures
+
+== ledger round10-goal
+   REPEATS EXPECTED 2 (the plan's default; never inferred from the sidecar)
+   mode real-cells; shape per-atom; tag LIVE; models jev-1.13.0
+   labels labels-r10.yaml (oracle evidence_reasons, commit f991877)
+   cells (p = min of the repeats' peaks; side = the min-peak repeat's answer; h/f/u)
+  population  document  row                       status             conf    expect  rep1   rep2   p(min)  @0.5   @0.6   @0.7     move@0.6  move@0.7  label-flip
+  ----------  --------  ------------------------  -----------------  ------  ------  -----  -----  ------  -----  -----  -------  --------  --------  ----------
+  rewritten   goals/01  acceptance-evidence#row1  rewritten round-4  high    holds   0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  rewritten   goals/01  acceptance-evidence#row2  rewritten round-4  high    holds   0.96h  0.97h  0.96h   holds  holds  holds    -         -         -
+  rewritten   goals/01  acceptance-evidence#row3  rewritten round-4  high    holds   0.84h  0.86h  0.84h   holds  holds  holds    -         -         -
+  rewritten   goals/01  acceptance-evidence#row4  rewritten round-4  high    holds   0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  rewritten   goals/01  acceptance-evidence#row5  rewritten round-6  medium  holds   0.99h  0.99h  0.99h   holds  holds  holds    -         -         -
+  rewritten   goals/01  acceptance-evidence#row6  rewritten round-4  medium  holds   0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  counted     goals/01  acceptance-evidence#row7  since round-10     medium  holds   0.84h  0.86h  0.84h   holds  holds  holds    -         -         -
+  counted     goals/01  acceptance-evidence#row8  since round-10     low     holds   0.66h  0.63h  0.63h   holds  holds  unknown  -         LOSS      -
+  control     goals/02  ac-coverage#row1          since round-4      medium  fails   1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  control     goals/02  ac-coverage#row2          since round-4      medium  fails   0.99f  0.98f  0.98f   fails  fails  fails    -         -         -
+  control     goals/02  ac-coverage#row3          since round-4      medium  fails   0.93f  0.93f  0.93f   fails  fails  fails    -         -         -
+  control     goals/02  ac-coverage#row4          since round-4      medium  fails   0.88f  0.90f  0.88f   fails  fails  fails    -         -         -
+  control     goals/02  ac-coverage#row5          since round-4      medium  fails   0.99f  0.99f  0.99f   fails  fails  fails    -         -         -
+  control     goals/02  ac-coverage#row6          since round-4      medium  fails   0.70f  0.68f  0.68f   fails  fails  unknown  -         flip      -
+  control     goals/02  ac-coverage#row7          since round-4      medium  fails   0.87f  0.91f  0.87f   fails  fails  fails    -         -         -
+  control     goals/03  ac-coverage#row1          since round-4      medium  fails   0.74f  0.76f  0.74f   fails  fails  fails    -         -         -
+  control     goals/03  ac-coverage#row2          since round-4      medium  fails   0.71f  0.65f  0.65f   fails  fails  unknown  -         flip      -
+  control     goals/03  ac-coverage#row3          since round-4      medium  fails   0.63f  0.64f  0.63f   fails  fails  unknown  -         LOSS      -
+  control     goals/03  ac-coverage#row4          since round-4      medium  fails   0.97f  0.98f  0.97f   fails  fails  fails    -         -         -
+  control     goals/03  ac-coverage#row5          since round-4      medium  fails   0.92f  0.93f  0.92f   fails  fails  fails    -         -         -
+  control     goals/03  ac-coverage#row6          since round-4      medium  fails   0.91f  0.91f  0.91f   fails  fails  fails    -         -         -
+  counted     goals/04  ac-coverage#row1          since round-10     high    holds   0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  counted     goals/04  ac-coverage#row2          since round-10     high    holds   0.97h  0.95h  0.95h   holds  holds  holds    -         -         -
+  counted     goals/04  ac-coverage#row3          since round-10     medium  holds   0.94h  0.94h  0.94h   holds  holds  holds    -         -         -
+  counted     goals/04  ac-coverage#row4          since round-10     high    holds   0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  counted     goals/04  ac-coverage#row5          since round-10     high    holds   0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+
+   per t (populations apart; 'counted+rewritten' is the plan's n)
+  population         n   t    wrong-side decided  right-side decided  unknown  gain  loss  flip
+  -----------------  --  ---  ------------------  ------------------  -------  ----  ----  ----
+  counted            7   0.5  0                   7                   0        -     -     -
+  counted            7   0.6  0                   7                   0        0     0     0
+  counted            7   0.7  0                   6                   1        0     1     0
+  rewritten          6   0.5  0                   6                   0        -     -     -
+  rewritten          6   0.6  0                   6                   0        0     0     0
+  rewritten          6   0.7  0                   6                   0        0     0     0
+  counted+rewritten  13  0.5  0                   13                  0        -     -     -
+  counted+rewritten  13  0.6  0                   13                  0        0     0     0
+  counted+rewritten  13  0.7  0                   12                  1        0     1     0
+  control            13  0.5  0                   13                  0        -     -     -
+  control            13  0.6  0                   13                  0        0     0     0
+  control            13  0.7  0                   10                  3        0     1     2
+  held-out           0   0.5  0                   0                   0        -     -     -
+  held-out           0   0.6  0                   0                   0        0     0     0
+  held-out           0   0.7  0                   0                   0        0     0     0
+
+   documents, oracle-local verdict per t (NO-GO if a cell is decided fails, else NEEDS-REVIEW if one is unknown, else PASS); run verdict at 0.5 from rep 1
+  population         document                                              run@0.5  @0.5   @0.6   @0.7          unknown rows at 0.7
+  -----------------  ----------------------------------------------------  -------  -----  -----  ------------  -------------------
+  rewritten+counted  goals/01-document-verification-and-skill-transfer.md  PASS     PASS   PASS   NEEDS-REVIEW  row8
+  control            goals/02-companion-driven-document-verification.md    NO-GO    NO-GO  NO-GO  NO-GO         row6
+  control            goals/03-modular-verification-language.md             NO-GO    NO-GO  NO-GO  NO-GO         row2,row3
+  counted            goals/04-trusted-kernel.md                            PASS     PASS   PASS   PASS          -
+   NEEDS-REVIEW at 0.5: none
+   NEEDS-REVIEW at 0.6: none
+   NEEDS-REVIEW at 0.7: goals/01-document-verification-and-skill-transfer.md
+
+   sorted p, counted+rewritten (n=13): 0.63h 0.84h 0.84h 0.94h 0.95h 0.96h 0.98h 0.98h 0.98h 0.98h 0.98h 0.98h 0.99h
+   share in [0.5, 0.7): 1/13 (8%)
+   sorted p, counted (apart, n=7): 0.63h 0.84h 0.94h 0.95h 0.98h 0.98h 0.98h
+   sorted p, rewritten (apart, n=6): 0.84h 0.96h 0.98h 0.98h 0.98h 0.99h
+   sorted p, control (apart, n=13): 0.63f 0.65f 0.68f 0.74f 0.87f 0.88f 0.91f 0.92f 0.93f 0.97f 0.98f 0.99f 1.00f
+   30% rule: wrong-side decided at 0.5 = 0/13 (0%) -> not above 30%
+   repeat flips (counted+rewritten): label flips 0
+     sides differ between repeats at 0.5: 0
+     sides differ between repeats at 0.6: 0
+     sides differ between repeats at 0.7: 0
+   round10-goal complete: true
+
+== ledger round10-design
+   REPEATS EXPECTED 2 (the plan's default; never inferred from the sidecar)
+   mode real-cells; shape per-atom; tag LIVE; models jev-1.13.0
+   labels witness-labels-r10.yaml (oracle witness_observable_in_row, commit f991877)
+   cells (p = min of the repeats' peaks; side = the min-peak repeat's answer; h/f/u)
+  population  document   row                        status              conf    expect  rep1   rep2   p(min)  @0.5     @0.6     @0.7     move@0.6  move@0.7  label-flip
+  ----------  ---------  -------------------------  ------------------  ------  ------  -----  -----  ------  -------  -------  -------  --------  --------  ----------
+  counted     design/02  verification-design#row1   since round-4c      high    holds   0.95h  0.94h  0.94h   holds    holds    holds    -         -         -
+  counted     design/02  verification-design#row2   since round-4c      high    holds   0.83h  0.80h  0.80h   holds    holds    holds    -         -         -
+  counted     design/02  verification-design#row3   since round-4c      high    holds   0.98h  0.98h  0.98h   holds    holds    holds    -         -         -
+  counted     design/02  verification-design#row4   since round-4c      high    holds   0.99h  0.99h  0.99h   holds    holds    holds    -         -         -
+  counted     design/02  verification-design#row5   since round-4c      medium  holds   0.94h  0.95h  0.94h   holds    holds    holds    -         -         -
+  counted     design/02  verification-design#row6   since round-4c      medium  holds   0.90h  0.87h  0.87h   holds    holds    holds    -         -         -
+  counted     design/02  verification-design#row7   since round-4c      high    holds   0.98h  0.97h  0.97h   holds    holds    holds    -         -         -
+  counted     design/02  verification-design#row8   since round-4c      medium  holds   0.91h  0.90h  0.90h   holds    holds    holds    -         -         -
+  counted     design/02  verification-design#row9   since round-4c      high    holds   0.87h  0.91h  0.87h   holds    holds    holds    -         -         -
+  rewritten   design/02  verification-design#row10  rewritten round-6   high    holds   0.96h  0.98h  0.96h   holds    holds    holds    -         -         -
+  rewritten   design/02  verification-design#row11  rewritten round-6   medium  holds   0.87h  0.88h  0.87h   holds    holds    holds    -         -         -
+  counted     design/03  verification-design#row1   since round-4c      high    holds   0.71h  0.70h  0.70h   holds    holds    holds    -         -         -
+  counted     design/03  verification-design#row2   since round-4c      low     holds   0.48h  0.58h  0.48h   unknown  unknown  unknown  -         -         -
+  counted     design/03  verification-design#row3   since round-4c      medium  holds   0.86h  0.86h  0.86h   holds    holds    holds    -         -         -
+  counted     design/03  verification-design#row4   since round-4c      high    holds   0.96h  0.96h  0.96h   holds    holds    holds    -         -         -
+  counted     design/03  verification-design#row5   since round-4c      high    holds   0.91h  0.91h  0.91h   holds    holds    holds    -         -         -
+  counted     design/03  verification-design#row6   since round-4c      high    holds   0.99h  0.99h  0.99h   holds    holds    holds    -         -         -
+  counted     design/03  verification-design#row7   since round-4c      high    holds   0.87h  0.86h  0.86h   holds    holds    holds    -         -         -
+  counted     design/03  verification-design#row8   since round-4c      high    holds   0.91h  0.92h  0.91h   holds    holds    holds    -         -         -
+  rewritten   design/03  verification-design#row9   rewritten round-4c  medium  holds   0.87h  0.86h  0.86h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row1   since round-4c      high    holds   0.92h  0.93h  0.92h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row2   since round-4c      high    holds   0.91h  0.89h  0.89h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row3   since round-4c      high    holds   0.59h  0.57h  0.57h   holds    unknown  unknown  LOSS      LOSS      -
+  counted     design/04  verification-design#row4   since round-4c      high    holds   0.82h  0.81h  0.81h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row5   since round-4c      medium  holds   0.79h  0.84h  0.79h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row6   since round-4c      high    holds   0.97h  0.98h  0.97h   holds    holds    holds    -         -         -
+  rewritten   design/04  verification-design#row7   rewritten round-6   medium  holds   0.93h  0.93h  0.93h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row8   since round-4c      medium  holds   0.85h  0.83h  0.83h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row9   since round-4c      high    holds   0.93h  0.93h  0.93h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row10  since round-4c      high    holds   0.86h  0.86h  0.86h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row11  since round-4c      medium  holds   0.96h  0.96h  0.96h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row12  since round-4c      high    holds   0.90h  0.93h  0.90h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row13  since round-4c      high    holds   0.93h  0.94h  0.93h   holds    holds    holds    -         -         -
+  counted     design/04  verification-design#row14  since round-4c      medium  holds   0.87h  0.87h  0.87h   holds    holds    holds    -         -         -
+  rewritten   design/05  verification-design#row1   rewritten round-4c  high    holds   0.97h  0.97h  0.97h   holds    holds    holds    -         -         -
+  rewritten   design/05  verification-design#row2   rewritten round-6   high    holds   0.94h  0.94h  0.94h   holds    holds    holds    -         -         -
+  counted     design/05  verification-design#row3   since round-4c      medium  holds   0.81h  0.79h  0.79h   holds    holds    holds    -         -         -
+  counted     design/05  verification-design#row4   since round-4c      high    holds   0.85h  0.79h  0.79h   holds    holds    holds    -         -         -
+  counted     design/05  verification-design#row5   since round-4c      high    holds   0.68h  0.73h  0.68h   holds    holds    unknown  -         flip      -
+  counted     design/05  verification-design#row6   since round-4c      high    holds   0.93h  0.92h  0.92h   holds    holds    holds    -         -         -
+  rewritten   design/05  verification-design#row7   rewritten round-6   high    holds   0.78h  0.76h  0.76h   holds    holds    holds    -         -         -
+  counted     design/05  verification-design#row8   since round-4c      medium  holds   0.97h  0.97h  0.97h   holds    holds    holds    -         -         -
+  counted     design/05  verification-design#row9   since round-4c      high    holds   0.91h  0.94h  0.91h   holds    holds    holds    -         -         -
+  counted     design/05  verification-design#row10  since round-4c      high    holds   0.88h  0.89h  0.88h   holds    holds    holds    -         -         -
+  held-out    design/06  verification-design#row1   since round-10      high    holds   0.98h  0.98h  0.98h   holds    holds    holds    -         -         -
+  held-out    design/06  verification-design#row2   since round-10      high    holds   0.98h  0.99h  0.98h   holds    holds    holds    -         -         -
+  held-out    design/06  verification-design#row3   since round-10      high    holds   0.87h  0.79h  0.79h   holds    holds    holds    -         -         -
+  held-out    design/06  verification-design#row4   since round-10      medium  holds   0.71h  0.75h  0.71h   holds    holds    holds    -         -         -
+  held-out    design/06  verification-design#row5   since round-10      high    holds   0.92h  0.92h  0.92h   holds    holds    holds    -         -         -
+  held-out    design/06  verification-design#row6   since round-10      high    holds   0.87h  0.85h  0.85h   holds    holds    holds    -         -         -
+  held-out    design/06  verification-design#row7   since round-10      high    holds   0.60h  0.64h  0.60h   holds    holds    unknown  -         LOSS      -
+  held-out    design/06  verification-design#row8   since round-10      medium  holds   0.86h  0.90h  0.86h   holds    holds    holds    -         -         -
+
+   per t (populations apart; 'counted+rewritten' is the plan's n)
+  population         n   t    wrong-side decided  right-side decided  unknown  gain  loss  flip
+  -----------------  --  ---  ------------------  ------------------  -------  ----  ----  ----
+  counted            37  0.5  0                   36                  1        -     -     -
+  counted            37  0.6  0                   35                  2        0     1     0
+  counted            37  0.7  0                   34                  3        0     1     1
+  rewritten          7   0.5  0                   7                   0        -     -     -
+  rewritten          7   0.6  0                   7                   0        0     0     0
+  rewritten          7   0.7  0                   7                   0        0     0     0
+  counted+rewritten  44  0.5  0                   43                  1        -     -     -
+  counted+rewritten  44  0.6  0                   42                  2        0     1     0
+  counted+rewritten  44  0.7  0                   41                  3        0     1     1
+  control            0   0.5  0                   0                   0        -     -     -
+  control            0   0.6  0                   0                   0        0     0     0
+  control            0   0.7  0                   0                   0        0     0     0
+  held-out           8   0.5  0                   8                   0        -     -     -
+  held-out           8   0.6  0                   8                   0        0     0     0
+  held-out           8   0.7  0                   7                   1        0     1     0
+
+   documents, oracle-local verdict per t (NO-GO if a cell is decided fails, else NEEDS-REVIEW if one is unknown, else PASS); run verdict at 0.5 from rep 1
+  population         document                                                  run@0.5       @0.5          @0.6          @0.7          unknown rows at 0.7
+  -----------------  --------------------------------------------------------  ------------  ------------  ------------  ------------  -------------------
+  counted+rewritten  design/02-programmatic-document-contract-verification.md  PASS          PASS          PASS          PASS          -
+  counted+rewritten  design/03-companion-driven-document-verification.md       NEEDS-REVIEW  NEEDS-REVIEW  NEEDS-REVIEW  NEEDS-REVIEW  row2
+  counted+rewritten  design/04-modular-verification-language.md                PASS          PASS          NEEDS-REVIEW  NEEDS-REVIEW  row3
+  rewritten+counted  design/05-trusted-kernel-redesign.md                      PASS          PASS          PASS          NEEDS-REVIEW  row5
+  held-out           design/06-kernel-migration.md                             PASS          PASS          PASS          NEEDS-REVIEW  row7
+   NEEDS-REVIEW at 0.5: design/03-companion-driven-document-verification.md
+   NEEDS-REVIEW at 0.6: design/03-companion-driven-document-verification.md, design/04-modular-verification-language.md
+   NEEDS-REVIEW at 0.7: design/03-companion-driven-document-verification.md, design/04-modular-verification-language.md, design/05-trusted-kernel-redesign.md, design/06-kernel-migration.md
+
+   sorted p, counted+rewritten (n=44): 0.48h 0.57h 0.68h 0.70h 0.76h 0.79h 0.79h 0.79h 0.80h 0.81h 0.83h 0.86h 0.86h 0.86h 0.86h 0.87h 0.87h 0.87h 0.87h 0.88h 0.89h 0.90h 0.90h 0.91h 0.91h 0.91h 0.92h 0.92h 0.93h 0.93h 0.93h 0.94h 0.94h 0.94h 0.96h 0.96h 0.96h 0.97h 0.97h 0.97h 0.97h 0.98h 0.99h 0.99h
+   share in [0.5, 0.7): 2/44 (5%)
+   sorted p, counted (apart, n=37): 0.48h 0.57h 0.68h 0.70h 0.79h 0.79h 0.79h 0.80h 0.81h 0.83h 0.86h 0.86h 0.86h 0.87h 0.87h 0.87h 0.88h 0.89h 0.90h 0.90h 0.91h 0.91h 0.91h 0.92h 0.92h 0.93h 0.93h 0.94h 0.94h 0.96h 0.96h 0.97h 0.97h 0.97h 0.98h 0.99h 0.99h
+   sorted p, rewritten (apart, n=7): 0.76h 0.86h 0.87h 0.93h 0.94h 0.96h 0.97h
+   sorted p, held-out (apart, n=8): 0.60h 0.71h 0.79h 0.85h 0.86h 0.92h 0.98h 0.98h
+   30% rule: wrong-side decided at 0.5 = 0/44 (0%) -> not above 30%
+   repeat flips (counted+rewritten): label flips 0
+     sides differ between repeats at 0.5: 1 [design/03-companion-driven-document-verification.md verification-design#row2 unknown/holds]
+     sides differ between repeats at 0.6: 0
+     sides differ between repeats at 0.7: 1 [design/05-trusted-kernel-redesign.md verification-design#row5 unknown/holds]
+   round10-design complete: true
+
+== ledger round10-seed-goal
+   REPEATS EXPECTED 2 (the plan's default; never inferred from the sidecar)
+   mode fixtures; shape per-atom; tag LIVE; models jev-1.13.0
+   old batched p from: .leaves-round6-B.json, .leaves-round6-C2.json
+   seeded cells (p = min of the repeats' peaks; batched = the old batched p of rounds 4/4c, blank if absent)
+  population  fixture                row   batched  expect       rep1   rep2   p(min)  @0.5   @0.6   @0.7     move@0.6  move@0.7  label-flip
+  ----------  ---------------------  ----  -------  -----------  -----  -----  ------  -----  -----  -------  --------  --------  ----------
+  genuine     good                   row1  1.00h    holds        0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  genuine     good                   row2  1.00h    holds        0.97h  0.97h  0.97h   holds  holds  holds    -         -         -
+  genuine     good                   row3  0.99h    holds        0.93h  0.93h  0.93h   holds  holds  holds    -         -         -
+  genuine     good                   row4  1.00h    holds        0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  genuine     good                   row5  0.99h    holds        0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  genuine     good-nopath            row1  1.00h    holds        0.96h  0.97h  0.96h   holds  holds  holds    -         -         -
+  genuine     good-nopath            row2  1.00h    holds        0.95h  0.95h  0.95h   holds  holds  holds    -         -         -
+  genuine     good-nopath            row3  0.97h    holds        0.67h  0.69h  0.67h   holds  holds  unknown  -         LOSS      -
+  genuine     good-nopath            row4  0.99h    holds        0.95h  0.95h  0.95h   holds  holds  holds    -         -         -
+  genuine     good-nopath            row5  0.98h    holds        0.94h  0.94h  0.94h   holds  holds  holds    -         -         -
+  genuine     good-dangling          row1  1.00h    holds        0.99h  0.98h  0.98h   holds  holds  holds    -         -         -
+  genuine     good-dangling          row2  1.00h    holds        0.96h  0.98h  0.96h   holds  holds  holds    -         -         -
+  genuine     good-dangling          row3  0.99h    holds        0.94h  0.95h  0.94h   holds  holds  holds    -         -         -
+  genuine     good-dangling          row4  1.00h    holds        0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  genuine     good-dangling          row5  0.99h    holds        0.98h  0.99h  0.98h   holds  holds  holds    -         -         -
+  defective   terse                  row1  0.98f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   terse                  row2  0.56f    fails        0.73f  0.81f  0.73f   fails  fails  fails    -         -         -
+  defective   terse                  row3  0.95f    fails        1.00f  0.98f  0.98f   fails  fails  fails    -         -         -
+  defective   terse                  row4  0.70f    fails        0.96f  0.96f  0.96f   fails  fails  fails    -         -         -
+  defective   terse                  row5  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-bare         row1  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-bare         row2  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-bare         row3  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-bare         row4  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-bare         row5  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-pointers     row1  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-pointers     row2  0.99f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-pointers     row3  0.94f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-pointers     row4  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-pointers     row5  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-restatement  row1  1.00f    fails        0.92f  0.93f  0.92f   fails  fails  fails    -         -         -
+  defective   defective-restatement  row2  1.00f    fails        0.91f  0.91f  0.91f   fails  fails  fails    -         -         -
+  defective   defective-restatement  row3  0.99f    fails        0.67f  0.62f  0.62f   fails  fails  unknown  -         LOSS      -
+  defective   defective-restatement  row4  1.00f    fails        0.91f  0.89f  0.89f   fails  fails  fails    -         -         -
+  defective   defective-restatement  row5  1.00f    fails        0.97f  0.96f  0.96f   fails  fails  fails    -         -         -
+  defective   defective-padded       row1  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-padded       row2  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-padded       row3  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-padded       row4  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  defective   defective-padded       row5  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  known-miss  defective-wrongrow     row1  0.98h    miss(holds)  0.96h  0.96h  0.96h   holds  holds  holds    -         -         -
+  known-miss  defective-wrongrow     row2  0.98h    miss(holds)  0.95h  0.93h  0.93h   holds  holds  holds    -         -         -
+  known-miss  defective-wrongrow     row3  1.00h    miss(holds)  0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  known-miss  defective-wrongrow     row4  0.99h    miss(holds)  0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  known-miss  defective-wrongrow     row5  0.99h    miss(holds)  0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  genuine     mixed-one-bare         row1  1.00h    holds        0.98h  0.99h  0.98h   holds  holds  holds    -         -         -
+  genuine     mixed-one-bare         row2  1.00h    holds        0.97h  0.98h  0.97h   holds  holds  holds    -         -         -
+  defective   mixed-one-bare         row3  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  genuine     mixed-one-bare         row4  1.00h    holds        0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  genuine     mixed-one-bare         row5  1.00h    holds        0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  genuine     mixed-one-pointer      row1  1.00h    holds        0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+  genuine     mixed-one-pointer      row2  1.00h    holds        0.97h  0.97h  0.97h   holds  holds  holds    -         -         -
+  genuine     mixed-one-pointer      row3  0.99h    holds        0.94h  0.94h  0.94h   holds  holds  holds    -         -         -
+  defective   mixed-one-pointer      row4  1.00f    fails        1.00f  1.00f  1.00f   fails  fails  fails    -         -         -
+  genuine     mixed-one-pointer      row5  1.00h    holds        0.98h  0.98h  0.98h   holds  holds  holds    -         -         -
+
+   per t (a genuine cell to unknown is a loss; a defective wrong holds to unknown a gain; a one-repeat move a flip)
+  population                  n   t    wrong-side decided  right-side decided  unknown  gain  loss  flip
+  --------------------------  --  ---  ------------------  ------------------  -------  ----  ----  ----
+  genuine                     23  0.5  0                   23                  0        -     -     -
+  genuine                     23  0.6  0                   23                  0        0     0     0
+  genuine                     23  0.7  0                   22                  1        0     1     0
+  defective                   27  0.5  0                   27                  0        -     -     -
+  defective                   27  0.6  0                   27                  0        0     0     0
+  defective                   27  0.7  0                   26                  1        0     1     0
+  seeded (genuine+defective)  50  0.5  0                   50                  0        -     -     -
+  seeded (genuine+defective)  50  0.6  0                   50                  0        0     0     0
+  seeded (genuine+defective)  50  0.7  0                   48                  2        0     2     0
+  known-miss (apart)          5   0.5  0                   5                   0        -     -     -
+  known-miss (apart)          5   0.6  0                   5                   0        0     0     0
+  known-miss (apart)          5   0.7  0                   5                   0        0     0     0
+   genuine cells to unknown at 0.6: 0
+   genuine cells to unknown at 0.7: 1 [evidence_reasons/good-nopath row3]
+   repeat flips (seeded): label flips 0
+     sides differ between repeats at 0.5: 0
+     sides differ between repeats at 0.6: 0
+     sides differ between repeats at 0.7: 0
+   round10-seed-goal complete: true
+
+== ledger round10-seed-design
+   REPEATS EXPECTED 2 (the plan's default; never inferred from the sidecar)
+   mode fixtures; shape per-atom; tag LIVE; models jev-1.13.0
+   old batched p from: .leaves-round6-B.json, .leaves-round6-C2.json
+   seeded cells (p = min of the repeats' peaks; batched = the old batched p of rounds 4/4c, blank if absent)
+  population  fixture            row    batched  expect  rep1   rep2   p(min)  @0.5   @0.6     @0.7     move@0.6  move@0.7  label-flip
+  ----------  -----------------  -----  -------  ------  -----  -----  ------  -----  -------  -------  --------  --------  ----------
+  genuine     good               row1   0.98h    holds   0.93h  0.91h  0.91h   holds  holds    holds    -         -         -
+  genuine     good               row2   0.97h    holds   0.93h  0.90h  0.90h   holds  holds    holds    -         -         -
+  genuine     good               row3   0.98h    holds   0.55h  0.63h  0.55h   holds  unknown  unknown  flip      LOSS      -
+  genuine     good               row4   0.98h    holds   0.82h  0.81h  0.81h   holds  holds    holds    -         -         -
+  genuine     good               row5   0.98h    holds   0.82h  0.79h  0.79h   holds  holds    holds    -         -         -
+  genuine     good               row6   0.99h    holds   0.98h  0.97h  0.97h   holds  holds    holds    -         -         -
+  genuine     good               row7   0.99h    holds   0.86h  0.89h  0.86h   holds  holds    holds    -         -         -
+  genuine     good               row8   0.96h    holds   0.85h  0.82h  0.82h   holds  holds    holds    -         -         -
+  genuine     good               row9   0.99h    holds   0.94h  0.94h  0.94h   holds  holds    holds    -         -         -
+  genuine     good               row10  0.95h    holds   0.86h  0.82h  0.82h   holds  holds    holds    -         -         -
+  genuine     good               row11  0.95h    holds   0.96h  0.96h  0.96h   holds  holds    holds    -         -         -
+  genuine     good               row12  0.98h    holds   0.92h  0.94h  0.92h   holds  holds    holds    -         -         -
+  genuine     good               row13  0.98h    holds   0.94h  0.92h  0.92h   holds  holds    holds    -         -         -
+  genuine     good               row14  0.96h    holds   0.88h  0.81h  0.81h   holds  holds    holds    -         -         -
+  defective   defective-gross    row1   0.71f    fails   0.94f  0.93f  0.93f   fails  fails    fails    -         -         -
+  defective   defective-gross    row2   0.72f    fails   0.92f  0.91f  0.91f   fails  fails    fails    -         -         -
+  defective   defective-gross    row3   0.95f    fails   0.99f  0.99f  0.99f   fails  fails    fails    -         -         -
+  defective   defective-gross    row4   0.98f    fails   1.00f  1.00f  1.00f   fails  fails    fails    -         -         -
+  defective   defective-gross    row5   0.95f    fails   0.99f  0.99f  0.99f   fails  fails    fails    -         -         -
+  defective   defective-gross    row6   0.84f    fails   0.98f  0.98f  0.98f   fails  fails    fails    -         -         -
+  defective   defective-gross    row7   0.77f    fails   0.99f  0.98f  0.98f   fails  fails    fails    -         -         -
+  defective   defective-gross    row8   0.96f    fails   0.98f  0.99f  0.98f   fails  fails    fails    -         -         -
+  defective   defective-gross    row9   0.87f    fails   1.00f  1.00f  1.00f   fails  fails    fails    -         -         -
+  defective   defective-gross    row10  0.87f    fails   0.97f  0.98f  0.97f   fails  fails    fails    -         -         -
+  defective   defective-gross    row11  0.86f    fails   0.99f  1.00f  0.99f   fails  fails    fails    -         -         -
+  defective   defective-gross    row12  0.92f    fails   0.99f  0.98f  0.98f   fails  fails    fails    -         -         -
+  defective   defective-gross    row13  0.51h    fails   0.92f  0.96f  0.92f   fails  fails    fails    -         -         -
+  defective   defective-gross    row14  0.96f    fails   0.93f  0.93f  0.93f   fails  fails    fails    -         -         -
+  defective   defective-subtle   row1   0.66f    fails   0.92f  0.93f  0.92f   fails  fails    fails    -         -         -
+  genuine     defective-subtle   row2   0.97h    holds   0.90h  0.89h  0.89h   holds  holds    holds    -         -         -
+  genuine     defective-subtle   row3   0.97h    holds   0.57h  0.57h  0.57h   holds  unknown  unknown  LOSS      LOSS      -
+  genuine     defective-subtle   row4   0.98h    holds   0.84h  0.81h  0.81h   holds  holds    holds    -         -         -
+  genuine     defective-subtle   row5   0.99h    holds   0.81h  0.82h  0.81h   holds  holds    holds    -         -         -
+  genuine     defective-subtle   row6   0.99h    holds   0.98h  0.98h  0.98h   holds  holds    holds    -         -         -
+  genuine     defective-subtle   row7   0.99h    holds   0.87h  0.87h  0.87h   holds  holds    holds    -         -         -
+  genuine     defective-subtle   row8   0.96h    holds   0.84h  0.82h  0.82h   holds  holds    holds    -         -         -
+  genuine     defective-subtle   row9   0.99h    holds   0.94h  0.94h  0.94h   holds  holds    holds    -         -         -
+  genuine     defective-subtle   row10  0.94h    holds   0.84h  0.87h  0.84h   holds  holds    holds    -         -         -
+  genuine     defective-subtle   row11  0.98h    holds   0.96h  0.96h  0.96h   holds  holds    holds    -         -         -
+  genuine     defective-subtle   row12  0.98h    holds   0.90h  0.92h  0.90h   holds  holds    holds    -         -         -
+  genuine     defective-subtle   row13  0.98h    holds   0.95h  0.92h  0.92h   holds  holds    holds    -         -         -
+  genuine     defective-subtle   row14  0.97h    holds   0.87h  0.83h  0.83h   holds  holds    holds    -         -         -
+  defective   defective-subtle3  row1   0.68f    fails   0.92f  0.93f  0.92f   fails  fails    fails    -         -         -
+  genuine     defective-subtle3  row2   0.97h    holds   0.89h  0.89h  0.89h   holds  holds    holds    -         -         -
+  genuine     defective-subtle3  row3   0.98h    holds   0.59h  0.58h  0.58h   holds  unknown  unknown  LOSS      LOSS      -
+  genuine     defective-subtle3  row4   0.99h    holds   0.85h  0.80h  0.80h   holds  holds    holds    -         -         -
+  genuine     defective-subtle3  row5   0.98h    holds   0.83h  0.83h  0.83h   holds  holds    holds    -         -         -
+  genuine     defective-subtle3  row6   0.99h    holds   0.98h  0.98h  0.98h   holds  holds    holds    -         -         -
+  genuine     defective-subtle3  row7   0.99h    holds   0.89h  0.84h  0.84h   holds  holds    holds    -         -         -
+  defective   defective-subtle3  row8   0.98f    fails   0.98f  0.99f  0.98f   fails  fails    fails    -         -         -
+  genuine     defective-subtle3  row9   0.99h    holds   0.93h  0.94h  0.93h   holds  holds    holds    -         -         -
+  genuine     defective-subtle3  row10  0.94h    holds   0.87h  0.83h  0.83h   holds  holds    holds    -         -         -
+  genuine     defective-subtle3  row11  0.99h    holds   0.96h  0.95h  0.95h   holds  holds    holds    -         -         -
+  defective   defective-subtle3  row12  0.85f    fails   0.53f  0.58f  0.53f   fails  unknown  unknown  LOSS      LOSS      -
+  genuine     defective-subtle3  row13  0.98h    holds   0.92h  0.93h  0.92h   holds  holds    holds    -         -         -
+  genuine     defective-subtle3  row14  0.99h    holds   0.84h  0.88h  0.84h   holds  holds    holds    -         -         -
+  defective   controls           row1   0.80h    fails   0.79h  0.75h  0.75h   holds  holds    holds    -         -         -
+  genuine     controls           row2   0.82h    holds   0.86h  0.86h  0.86h   holds  holds    holds    -         -         -
+  defective   controls           row3   0.99f    fails   1.00f  1.00f  1.00f   fails  fails    fails    -         -         -
+  defective   controls           row4   0.95f    fails   0.99f  0.99f  0.99f   fails  fails    fails    -         -         -
+  genuine     controls           row5   0.96h    holds   0.84h  0.86h  0.84h   holds  holds    holds    -         -         -
+  defective   controls           row6   0.92f    fails   0.98f  0.97f  0.97f   fails  fails    fails    -         -         -
+  defective   controls           row7   0.94f    fails   0.92f  0.94f  0.92f   fails  fails    fails    -         -         -
+  genuine     controls           row8   0.76h    holds   0.84h  0.76h  0.76h   holds  holds    holds    -         -         -
+  defective   controls           row9   0.90f    fails   0.85f  0.81f  0.81f   fails  fails    fails    -         -         -
+  genuine     controls           row10  0.96h    holds   0.95h  0.94h  0.94h   holds  holds    holds    -         -         -
+  defective   controls           row11  0.98f    fails   1.00f  1.00f  1.00f   fails  fails    fails    -         -         -
+  defective   controls           row12  0.94f    fails   0.99f  0.99f  0.99f   fails  fails    fails    -         -         -
+  genuine     controls           row13  0.93h    holds   0.83f  0.83f  0.83f   fails  fails    fails    -         -         -
+  defective   controls           row14  0.98f    fails   0.98f  0.98f  0.98f   fails  fails    fails    -         -         -
+  defective   defective-swapped  row1   0.93h    fails   0.86h  0.87h  0.86h   holds  holds    holds    -         -         -
+  defective   defective-swapped  row2   0.72h    fails   0.88h  0.84h  0.84h   holds  holds    holds    -         -         -
+  defective   defective-swapped  row3   0.97h    fails   0.81h  0.78h  0.78h   holds  holds    holds    -         -         -
+  defective   defective-swapped  row4   0.96h    fails   0.52f  0.58f  0.52f   fails  unknown  unknown  LOSS      LOSS      -
+  defective   defective-swapped  row5   0.96h    fails   0.77h  0.77h  0.77h   holds  holds    holds    -         -         -
+  defective   defective-swapped  row6   0.92h    fails   0.57h  0.65h  0.57h   holds  unknown  unknown  flip      gain      -
+  defective   defective-swapped  row7   0.99h    fails   0.97h  0.97h  0.97h   holds  holds    holds    -         -         -
+  defective   defective-swapped  row8   0.95h    fails   0.81h  0.79h  0.79h   holds  holds    holds    -         -         -
+  defective   defective-swapped  row9   0.96h    fails   0.80h  0.78h  0.78h   holds  holds    holds    -         -         -
+  defective   defective-swapped  row10  0.97h    fails   0.92h  0.90h  0.90h   holds  holds    holds    -         -         -
+  defective   defective-swapped  row11  0.97h    fails   0.87h  0.87h  0.87h   holds  holds    holds    -         -         -
+  defective   defective-swapped  row12  0.97h    fails   0.93h  0.95h  0.93h   holds  holds    holds    -         -         -
+  defective   defective-swapped  row13  0.97h    fails   0.91h  0.87h  0.87h   holds  holds    holds    -         -         -
+  defective   defective-swapped  row14  0.98h    fails   0.91h  0.91h  0.91h   holds  holds    holds    -         -         -
+
+   per t (a genuine cell to unknown is a loss; a defective wrong holds to unknown a gain; a one-repeat move a flip)
+  population                  n   t    wrong-side decided  right-side decided  unknown  gain  loss  flip
+  --------------------------  --  ---  ------------------  ------------------  -------  ----  ----  ----
+  genuine                     43  0.5  1                   42                  0        -     -     -
+  genuine                     43  0.6  1                   39                  3        0     2     1
+  genuine                     43  0.7  1                   39                  3        0     3     0
+  defective                   41  0.5  14                  27                  0        -     -     -
+  defective                   41  0.6  13                  25                  3        0     2     1
+  defective                   41  0.7  13                  25                  3        1     2     0
+  seeded (genuine+defective)  84  0.5  15                  69                  0        -     -     -
+  seeded (genuine+defective)  84  0.6  14                  64                  6        0     4     2
+  seeded (genuine+defective)  84  0.7  14                  64                  6        1     5     0
+  known-miss (apart)          0   0.5  0                   0                   0        -     -     -
+  known-miss (apart)          0   0.6  0                   0                   0        0     0     0
+  known-miss (apart)          0   0.7  0                   0                   0        0     0     0
+   genuine cells to unknown at 0.6: 2 [witness_observable_in_row/defective-subtle row3; witness_observable_in_row/defective-subtle3 row3]
+   genuine cells to unknown at 0.7: 3 [witness_observable_in_row/good row3; witness_observable_in_row/defective-subtle row3; witness_observable_in_row/defective-subtle3 row3]
+   repeat flips (seeded): label flips 0
+     sides differ between repeats at 0.5: 0
+     sides differ between repeats at 0.6: 2 [witness_observable_in_row/good row3 unknown/holds; witness_observable_in_row/defective-swapped row6 unknown/holds]
+     sides differ between repeats at 0.7: 0
+   round10-seed-design complete: true
+
+== the plan's bar per oracle (informational; the verdict decides): wrong-side falls by >= 2, right-side by <= 1 on counted+rewritten, no genuine seeded cell to unknown
+  oracle                     t    n   wrong-side fall  right-side fall  genuine seeded to unknown  meets
+  -------------------------  ---  --  ---------------  ---------------  -------------------------  -----
+  evidence_reasons           0.6  13  0                0                0                          no
+  evidence_reasons           0.7  13  0                1                1                          no
+  witness_observable_in_row  0.6  44  0                1                2                          no
+  witness_observable_in_row  0.7  44  0                2                3                          no
+
+complete: true

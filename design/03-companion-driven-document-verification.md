@@ -251,7 +251,7 @@ retaining the same machine-readable JSON report and verdict exits.
 | Property | Failure witness | Command |
 | --- | --- | --- |
 | Missing companion is advisory | A Markdown file without `X.yaml` exits nonzero or lacks a stable warning | `npm test -- companion` |
-| Invalid companion is not ignored | Malformed strategy YAML silently falls back | `npm test -- companion` |
+| Invalid companion is not ignored | A malformed strategy YAML file loads without a warning naming it, and the run reports the default strategy's result as if the file were absent | `npm test -- companion` |
 | Precedence and safety | CLI overrides, profile values, companion rubric blocks, reference bases, and defaults resolve in the wrong order | `npm test -- strategy` |
 | Shared rubric changes select consumers | A changed inherited rubric omits a referencing document or evaluates unrelated documents | `npm test -- snapshots` |
 | Prek is only a coarse trigger | An unrelated file invokes the hook, or a Markdown/YAML policy change bypasses it | `npm run test:remote-hook` |

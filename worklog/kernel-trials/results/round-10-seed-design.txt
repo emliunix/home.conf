@@ -1,0 +1,112 @@
+oracle-test --fixtures (LIVE; shapes per-atom; repeat 2; spans skipped)
+
+fixture leaves, repeat 1 per shape (LIVE)
+  oracle                     fixture            shape     row    expect  got    answered  p     thr  leaf     VERDICT  draft-only         bytes  q   worst-q  sep@0.6  edit  paths-warn  stable×2
+  -------------------------  -----------------  --------  -----  ------  -----  --------  ----  ---  -------  -------  -----------------  -----  --  -------  -------  ----  ----------  --------
+  witness_observable_in_row  good               per-atom  row1   holds   holds  holds     0.93  0.5  decides  PASS     PASS               169    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row2   holds   holds  holds     0.93  0.5  decides  PASS     PASS               140    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row3   holds   holds  holds     0.55  0.5  decides  PASS     PASS               145    14  14       no       ok    0           same    
+  witness_observable_in_row  good               per-atom  row4   holds   holds  holds     0.82  0.5  decides  PASS     PASS               215    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row5   holds   holds  holds     0.82  0.5  decides  PASS     PASS               236    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row6   holds   holds  holds     0.98  0.5  decides  PASS     PASS               205    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row7   holds   holds  holds     0.86  0.5  decides  PASS     PASS               244    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row8   holds   holds  holds     0.85  0.5  decides  PASS     PASS               229    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row9   holds   holds  holds     0.94  0.5  decides  PASS     PASS               160    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row10  holds   holds  holds     0.86  0.5  decides  PASS     PASS               217    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row11  holds   holds  holds     0.96  0.5  decides  PASS     PASS               192    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row12  holds   holds  holds     0.92  0.5  decides  PASS     PASS               184    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row13  holds   holds  holds     0.94  0.5  decides  PASS     PASS               201    14  14       yes      ok    0           same    
+  witness_observable_in_row  good               per-atom  row14  holds   holds  holds     0.88  0.5  decides  PASS     PASS               219    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row1   fails   fails  fails     0.94  0.5  decides  NO-GO    PASS (not caught)  101    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row2   fails   fails  fails     0.92  0.5  decides  NO-GO    PASS (not caught)  101    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row3   fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  95     14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row4   fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  71     14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row5   fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  69     14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row6   fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  86     14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row7   fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  98     14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row8   fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  67     14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row9   fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  73     14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row10  fails   fails  fails     0.97  0.5  decides  NO-GO    PASS (not caught)  79     14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row11  fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  101    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row12  fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  82     14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row13  fails   fails  fails     0.92  0.5  decides  NO-GO    PASS (not caught)  117    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-gross    per-atom  row14  fails   fails  fails     0.93  0.5  decides  NO-GO    PASS (not caught)  73     14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row1   fails   fails  fails     0.92  0.5  decides  NO-GO    PASS (not caught)  101    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row2   holds   holds  holds     0.90  0.5  decides  NO-GO    PASS               140    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row3   holds   holds  holds     0.57  0.5  decides  NO-GO    PASS               145    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row4   holds   holds  holds     0.84  0.5  decides  NO-GO    PASS               215    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row5   holds   holds  holds     0.81  0.5  decides  NO-GO    PASS               236    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row6   holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               205    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row7   holds   holds  holds     0.87  0.5  decides  NO-GO    PASS               244    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row8   holds   holds  holds     0.84  0.5  decides  NO-GO    PASS               229    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row9   holds   holds  holds     0.94  0.5  decides  NO-GO    PASS               160    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row10  holds   holds  holds     0.84  0.5  decides  NO-GO    PASS               217    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row11  holds   holds  holds     0.96  0.5  decides  NO-GO    PASS               192    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row12  holds   holds  holds     0.90  0.5  decides  NO-GO    PASS               184    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row13  holds   holds  holds     0.95  0.5  decides  NO-GO    PASS               201    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle   per-atom  row14  holds   holds  holds     0.87  0.5  decides  NO-GO    PASS               219    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row1   fails   fails  fails     0.92  0.5  decides  NO-GO    PASS (not caught)  101    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row2   holds   holds  holds     0.89  0.5  decides  NO-GO    PASS               140    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row3   holds   holds  holds     0.59  0.5  decides  NO-GO    PASS               145    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row4   holds   holds  holds     0.85  0.5  decides  NO-GO    PASS               215    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row5   holds   holds  holds     0.83  0.5  decides  NO-GO    PASS               236    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row6   holds   holds  holds     0.98  0.5  decides  NO-GO    PASS               205    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row7   holds   holds  holds     0.89  0.5  decides  NO-GO    PASS               244    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row8   fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  67     14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row9   holds   holds  holds     0.93  0.5  decides  NO-GO    PASS               160    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row10  holds   holds  holds     0.87  0.5  decides  NO-GO    PASS               217    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row11  holds   holds  holds     0.96  0.5  decides  NO-GO    PASS               192    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row12  fails   fails  fails     0.53  0.5  decides  NO-GO    PASS (not caught)  86     14  14       no       ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row13  holds   holds  holds     0.92  0.5  decides  NO-GO    PASS               201    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-subtle3  per-atom  row14  holds   holds  holds     0.84  0.5  decides  NO-GO    PASS               219    14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row1   fails   holds  holds     0.79  0.5  decides  NO-GO    PASS (not caught)  106    14  14       no       ok    0           same    
+  witness_observable_in_row  controls           per-atom  row2   holds   holds  holds     0.86  0.5  decides  NO-GO    PASS               100    14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row3   fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  100    14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row4   fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  75     14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row5   holds   holds  holds     0.84  0.5  decides  NO-GO    PASS               84     14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row6   fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  326    14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row7   fails   fails  fails     0.92  0.5  decides  NO-GO    PASS (not caught)  89     14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row8   holds   holds  holds     0.84  0.5  decides  NO-GO    PASS               106    14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row9   fails   fails  fails     0.85  0.5  decides  NO-GO    PASS (not caught)  75     14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row10  holds   holds  holds     0.95  0.5  decides  NO-GO    PASS               98     14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row11  fails   fails  fails     1.00  0.5  decides  NO-GO    PASS (not caught)  75     14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row12  fails   fails  fails     0.99  0.5  decides  NO-GO    PASS (not caught)  321    14  14       yes      ok    0           same    
+  witness_observable_in_row  controls           per-atom  row13  holds   fails  fails     0.83  0.5  decides  NO-GO    PASS               86     14  14       no       ok    0           same    
+  witness_observable_in_row  controls           per-atom  row14  fails   fails  fails     0.98  0.5  decides  NO-GO    PASS (not caught)  134    14  14       yes      ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row1   fails   holds  holds     0.86  0.5  decides  NO-GO    PASS (not caught)  222    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row2   fails   holds  holds     0.88  0.5  decides  NO-GO    PASS (not caught)  168    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row3   fails   holds  holds     0.81  0.5  decides  NO-GO    PASS (not caught)  140    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row4   fails   fails  fails     0.52  0.5  decides  NO-GO    PASS (not caught)  136    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row5   fails   holds  holds     0.77  0.5  decides  NO-GO    PASS (not caught)  217    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row6   fails   holds  holds     0.57  0.5  decides  NO-GO    PASS (not caught)  235    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row7   fails   holds  holds     0.97  0.5  decides  NO-GO    PASS (not caught)  218    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row8   fails   holds  holds     0.81  0.5  decides  NO-GO    PASS (not caught)  228    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row9   fails   holds  holds     0.80  0.5  decides  NO-GO    PASS (not caught)  238    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row10  fails   holds  holds     0.92  0.5  decides  NO-GO    PASS (not caught)  156    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row11  fails   holds  holds     0.87  0.5  decides  NO-GO    PASS (not caught)  233    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row12  fails   holds  holds     0.93  0.5  decides  NO-GO    PASS (not caught)  176    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row13  fails   holds  holds     0.91  0.5  decides  NO-GO    PASS (not caught)  198    14  14       no       ok    0           same    
+  witness_observable_in_row  defective-swapped  per-atom  row14  fails   holds  holds     0.91  0.5  decides  NO-GO    PASS (not caught)  191    14  14       no       ok    0           same    
+
+per fixture and shape (per-row oracles): cells on their expected side at p >= 0.6
+  oracle/fixture@shape                                  expected side(s)  k/n    separates  VERDICT
+  ----------------------------------------------------  ----------------  -----  ---------  -------
+  witness_observable_in_row/good@per-atom               holds             13/14  no         PASS   
+  witness_observable_in_row/defective-gross@per-atom    fails             14/14  yes        NO-GO  
+  witness_observable_in_row/defective-subtle@per-atom   fails+holds       13/14  no         NO-GO  
+  witness_observable_in_row/defective-subtle3@per-atom  fails+holds       12/14  no         NO-GO  
+  witness_observable_in_row/controls@per-atom           fails+holds       12/14  no         NO-GO  
+  witness_observable_in_row/defective-swapped@per-atom  fails             0/14   no         NO-GO  
+
+false pass (defective fixtures whose document VERDICT is PASS)
+  none
+
+questions: main 168, follow-ups 0, requests 168; worst case live 168 (spans skipped: main only)
+
+ledger round10-seed-design: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  per-atom  normal  12    168       168     0              [14]                     58984       56.80    0           84             2        168             168            
+projection (live, this invocation): main 168, worst 168; cap at 1.5x worst = 252; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round10-seed-design.json
+ledger: live spent 168 / cap 260
+complete: true

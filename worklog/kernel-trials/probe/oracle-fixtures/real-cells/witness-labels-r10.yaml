@@ -3,8 +3,8 @@
 # before any live call, against the C2 question (the cell names an observable condition for THIS
 # property; a restatement, a negation in other words, a verified-assertion, a bare "check X
 # fails" pointer, or a witness for another property fails). Judge-exposed, not blind: the lead
-# saw the judge's p on designs 02, 03, 05 in rounds 4c and 6, and five cells were rewritten after
-# the judge flagged them (`rewritten: round-N`); the rest carry `since: round-4c`. design/04 was
+# saw the judge's p on designs 02, 03, 05 in rounds 4c and 6, and seven cells were rewritten after
+# the judge flagged them (`rewritten: round-N`: design/02 rows 10–11, 03 row 9, 04 row 7, 05 rows 1, 2, 7); the rest carry `since: round-4c`. design/04 was
 # the 4c `good` fixture (14 rows, every one `holds` there) and is labelled here as a real
 # document (`since: round-4c`, row 7 amended in round 6). design/06 is the lead's own design,
 # frozen at f991877 and held out (`held_out: true`): its labels are the author's and are reported
@@ -89,5 +89,5 @@ documents:
       verification-design#row8: { label: holds, confidence: medium, since: round-10, why: "a wall time above a stated floor; the cell is long and defers the exact bar to round 11" }
 expected_agreement:
   counted: "at least 40 of 44 agree (designs 02, 03, 04, 05); the disagreements fall on design/03 row 2, design/04 rows 7, 11, 14 and design/05 row 3, the medium and low cells, and sit in [0.5, 0.7)"
-  rewritten: "all 5 rewritten cells agree (holds) at p >= 0.7; if one sits below 0.6 the rewrite did not reach the judge's bar and the verdict names it"
+  rewritten: "all 7 rewritten cells agree (holds) at p >= 0.7; if one sits below 0.6 the rewrite did not reach the judge's bar and the verdict names it"
   design/06: "held out; 7 or 8 of 8 holds; row 4 is the likely demotion"

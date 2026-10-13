@@ -1,0 +1,68 @@
+oracle-test --real-cells --labels witness-labels-r10.yaml (LIVE; shapes per-atom; repeat 2; spans skipped)
+clone at f991877 (f991877895a7da9958773a403ae43c34bc23fabc)
+
+run 1 per shape; agreement with the lead's blind labels (witness-labels-r10.yaml, pages at f991877)
+  shape     document                                                  row                        lead   judge    VERDICT       p     agreement     
+  --------  --------------------------------------------------------  -------------------------  -----  -------  ------------  ----  --------------
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row1   holds  holds    PASS          0.95  agree         
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row2   holds  holds    PASS          0.83  agree         
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row3   holds  holds    PASS          0.98  agree         
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row4   holds  holds    PASS          0.99  agree         
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row5   holds  holds    PASS          0.94  agree         
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row6   holds  holds    PASS          0.90  agree         
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row7   holds  holds    PASS          0.98  agree         
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row8   holds  holds    PASS          0.91  agree         
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row9   holds  holds    PASS          0.87  agree         
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row10  holds  holds    PASS          0.96  agree         
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row11  holds  holds    PASS          0.87  agree         
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row1   holds  holds    NEEDS-REVIEW  0.71  agree         
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row2   holds  unknown  NEEDS-REVIEW  0.48  DISAGREE (low)
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row3   holds  holds    NEEDS-REVIEW  0.86  agree         
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row4   holds  holds    NEEDS-REVIEW  0.96  agree         
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row5   holds  holds    NEEDS-REVIEW  0.91  agree         
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row6   holds  holds    NEEDS-REVIEW  0.99  agree         
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row7   holds  holds    NEEDS-REVIEW  0.87  agree         
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row8   holds  holds    NEEDS-REVIEW  0.91  agree         
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row9   holds  holds    NEEDS-REVIEW  0.87  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row1   holds  holds    PASS          0.92  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row2   holds  holds    PASS          0.91  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row3   holds  holds    PASS          0.59  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row4   holds  holds    PASS          0.82  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row5   holds  holds    PASS          0.79  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row6   holds  holds    PASS          0.97  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row7   holds  holds    PASS          0.93  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row8   holds  holds    PASS          0.85  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row9   holds  holds    PASS          0.93  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row10  holds  holds    PASS          0.86  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row11  holds  holds    PASS          0.96  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row12  holds  holds    PASS          0.90  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row13  holds  holds    PASS          0.93  agree         
+  per-atom  design/04-modular-verification-language.md                verification-design#row14  holds  holds    PASS          0.87  agree         
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row1   holds  holds    PASS          0.97  agree         
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row2   holds  holds    PASS          0.94  agree         
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row3   holds  holds    PASS          0.81  agree         
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row4   holds  holds    PASS          0.85  agree         
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row5   holds  holds    PASS          0.68  agree         
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row6   holds  holds    PASS          0.93  agree         
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row7   holds  holds    PASS          0.78  agree         
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row8   holds  holds    PASS          0.97  agree         
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row9   holds  holds    PASS          0.91  agree         
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row10  holds  holds    PASS          0.88  agree         
+  per-atom  design/06-kernel-migration.md                             verification-design#row1   holds  holds    PASS          0.98  agree         
+  per-atom  design/06-kernel-migration.md                             verification-design#row2   holds  holds    PASS          0.98  agree         
+  per-atom  design/06-kernel-migration.md                             verification-design#row3   holds  holds    PASS          0.87  agree         
+  per-atom  design/06-kernel-migration.md                             verification-design#row4   holds  holds    PASS          0.71  agree         
+  per-atom  design/06-kernel-migration.md                             verification-design#row5   holds  holds    PASS          0.92  agree         
+  per-atom  design/06-kernel-migration.md                             verification-design#row6   holds  holds    PASS          0.87  agree         
+  per-atom  design/06-kernel-migration.md                             verification-design#row7   holds  holds    PASS          0.60  agree         
+  per-atom  design/06-kernel-migration.md                             verification-design#row8   holds  holds    PASS          0.86  agree         
+per-atom: 52/52 labelled atoms found over 5 documents
+per-atom: agreement (informational) 51/52; per run: main 52, follow-ups 0, requests 52, worst 52
+
+ledger round10-design: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  per-atom  normal  2     104       104     0              [52]                     40552       33.47    0           52             2        104             104            
+projection (live, this invocation): main 104, worst 104; cap at 1.5x worst = 156; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round10-design.json
+ledger: live spent 104 / cap 160
+complete: true

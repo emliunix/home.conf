@@ -41,6 +41,10 @@ oracles:
       document, a round or an item by name; that alone neither helps nor hurts. The witness must
       be a failure of this row's property; an observable failure of some other property fails.
     evidence: core.cells(D, R, L)
+    # Calibration (kernel-trials round 10, 2026-10-13, per-atom, two repeats): real witness rows of
+    # designs 02-06 sit at 0.57-0.99 on the lead's side (0 of 44 wrong; one undecided at 0.48);
+    # raising the threshold only demotes right-side cells, so 0.5 stays. The relevance gap (a
+    # genuine witness on the wrong row reads holds) is not a threshold matter; round 9 measures it.
     threshold: 0.5
     max_bytes: 4000
 rules:
