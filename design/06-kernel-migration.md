@@ -154,6 +154,10 @@ the rewrite keeps findings 2, 7 and 11 (named constitution lines, printed-output
 
 ## Status
 
-reviewed
+landed
 
-Note: approved by the owner 2026-10-13; implementation in progress on `dv/trusted-kernel-trials`.
+Note: landed 2026-10-14 on `dv/trusted-kernel-trials` (not merged to `main`). `npm test` 362+
+green; `npm run test:kernel-slow` complete, 0 refuting (property 1500 programs, seeds table,
+clingo 500), 23.5 min. Draft check time 7.8 s before, 8.2 s after on two documents. Review: an
+independent Sonnet seat over three passes (a budget overrun read as PASS, proofs lost under
+negation, two negation-translation regressions; each fixed with a test).
