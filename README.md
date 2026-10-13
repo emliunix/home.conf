@@ -46,6 +46,12 @@ with or without a key; otherwise a document that needed the judge is `BLOCKED` (
 that did not is decided outright. A keyless pre-commit run therefore still refuses a document
 with a missing required heading.
 
+The same file may carry `HTTPS_PROXY` (or `HTTP_PROXY`) for a host whose egress to the judge is
+routed, and `loadDocVerifyEnv` applies it with Node's own `setGlobalProxyFromEnv`. A value already
+in the process environment wins over the file, as the key does. Two names are read and `ALL_PROXY`
+is not one of them: Node's resolver ignores it, so accepting it would promise a route that does not
+exist. Configuring nothing changes nothing.
+
 Judge answers are cached per oracle atom in `.doc-verify-cache/atoms/<key>.json` at the repository
 root (files mode 0600), keyed by model, question, labels, evidence hash and policy version, so an
 unchanged section is never asked twice. Add `.doc-verify-cache/` to the consuming repository's
