@@ -9,9 +9,18 @@ contracts, in order. Each step says what failure looks like when it is skipped.
   repository root. Make it a symlink to the protected local credential file,
   not a copy. Check that `git check-ignore -v .env.doc-verify` matches.
 - An exported, non-empty `TYPESAFE_API_KEY` takes precedence over the file.
-- Symptom when missing: `semantic.prerequisite BLOCKED ... is unavailable` on
-  every document that reaches the judge. A clean clone without the file cannot
-  run the promotion profile, whatever the config says.
+- The key's own symptom when missing: `semantic.prerequisite BLOCKED ... is
+  unavailable` on every document that reaches the judge. A clean clone without
+  the file cannot run the promotion profile, whatever the config says.
+- On a host whose egress to the judge is geo-refused (`HTTP 451`, "Typesafe is
+  not available in your region"), the same file may carry `HTTPS_PROXY` to a
+  forward proxy; the loader applies it with Node's own
+  `setGlobalProxyFromEnv`. Routing through the proxy turns the region refusal
+  into an auth refusal, i.e. the call arrives. Two names are read and
+  `ALL_PROXY` is not one of them, because Node's resolver ignores it. Setting
+  the variables without that call changes nothing, and an exported value wins
+  over the file, as the key does. The resolver needs Node 24; on an older
+  runtime the loader refuses with that reason rather than dialing directly.
 - The pinned hook revision must include the `.env.doc-verify` loader. Older
   revisions read only the exported variable.
 

@@ -1,11 +1,15 @@
 ---
 name: project-skeleton
-description: Bootstrap a new project with the verified document spine — constitution, design/goal/worklog, typed docs canon, doc-verify modules and hook, layering and canon-pairing gates, and the rule-quality harness. Use when starting a new repository that should follow the document-contract method (a constitution, design/goal/worklog canon, and a pinned verifier), or when asked to "skeleton a project", "set up the spine", or install the doc gates on a fresh repo.
+description: "Initialize a repository or subproject with the document spine: constitution, design/goal/worklog, typed docs canon, doc-verify modules, and optional Git hook. Use when asked to skeleton a project, set up the spine, or install doc gates in a new or existing repository."
 ---
 
 # Project skeleton
 
-The template directory beside this file is the reference instance; `bootstrap.sh TARGET_DIR NAME` copies it into a new git repo.
+`init/` is the reference document spine. `scripts/init.sh TARGET_DIR NAME` copies it
+without Git setup, so the target can be a subproject in an existing repository.
+`git/` holds optional Git files; `scripts/git.sh TARGET_DIR` installs those files
+and initializes Git only when the target is not already a repository. It refuses
+to initialize a nested repository. Neither script commits or installs hooks.
 
 ## What the skeleton installs
 
@@ -17,26 +21,39 @@ The template directory beside this file is the reference instance; `bootstrap.sh
 | Typed canon | `docs/modules/<pkg>/{contract,model,properties,verification}.md` + `canon.yaml` | shape rules + current-not-history oracle |
 | Untyped docs | `docs/**` remainder + `doc-verify/modules/docs.yaml` | current-not-history oracle + link/path resolution |
 | Worklog | `worklog/` + `doc-verify:references` (`worklog.yaml` for `type: record` companions) | links resolve; record-typed entries run evidence-not-law |
-| Docs gate | `.doc-verify.yaml` + `.pre-commit-config.yaml` (pinned `de99d33`) | `doc-verify check --all` |
+| Docs gate | `.doc-verify.yaml` + optional Git hook config (pinned `de99d33`) | `doc-verify check --all` |
 | Layering gate | `tests/test_layering.py` | import direction between packages |
 | Pairing gate | `tests/test_canon_docs.py` | every P-`<pkg>`-NN has a runnable check row |
 | Rule quality | `tools/rule_quality/` | seeded mutations prove the doc rules bite |
 
-## Setup steps (in the bootstrapped project)
+## Setup
 
-1. `./bootstrap.sh ../my-project my-project`, then `cd ../my-project`.
+1. Run `scripts/init.sh ../my-project my-project`. This only copies the spine.
+   To create a standalone Git repository, also run `scripts/git.sh ../my-project`.
+   For a subproject, keep its parent's Git repository. Doc-verify resolves the
+   Git root, not the current directory: move the copied `.doc-verify.yaml` to
+   that root, prefix its patterns and module paths with the subproject path,
+   and prefix companion `document.path` and `depends_on` values too. If the
+   parent already has a doc-verify config, merge the subproject's rules into it
+   instead. Put the protected `.env.doc-verify` link at the Git root. Merge
+   `git/.pre-commit-config.yaml` into the parent's hook config with a file
+   filter for the subproject. Copy `git/.gitignore` into the subproject if the
+   parent does not already ignore its local verifier cache and test environment.
+   Do not create a nested Git repository or hook.
 2. Fill the constitution's `>` placeholders and the `docs/modules/core/` example with
    real content (the placeholders pass the gates; they are not honest law).
 3. Edit `tests/test_layering.py`'s `PACKAGES`/`LAYER_OF` for the project's layout the
    first time a package splits out.
-4. Judge key: `ln -s ~/.config/doc-verify/credentials.env .env.doc-verify`, then
-   optionally `uv tool install prek && prek install`.
-5. Verify: `uv run --group test python -m pytest -q` and
-   `npm exec --yes --package=github:emliunix/home.conf#de99d33dd334c8602a9ccfa8dab7111f1942c8ea -- doc-verify check --all`.
+4. Point a gitignored `.env.doc-verify` symlink at the protected judge-key file.
+   Install the Git hook only when the key exists and the owner opts in:
+   `uv tool install prek && prek install` at the Git repository root.
+5. Run `uv run --group test python -m pytest -q` from the initialized project.
+   Run `npm exec --yes --package=github:emliunix/home.conf#de99d33dd334c8602a9ccfa8dab7111f1942c8ea -- doc-verify check --all`
+   from the Git root, which is the same directory for a standalone project.
 
 ## Validation protocol (how this skill was proven, and how to re-prove it)
 
-Bootstrap a scratch project and require, out of the box:
+Initialize a scratch standalone project with both scripts, then require:
 
 1. `doc-verify check --all` → PASS (structural + semantic, with the key).
 2. `pytest -q` → green (layering + canon pairing + the placeholder witness).
@@ -49,6 +66,10 @@ Bootstrap a scratch project and require, out of the box:
      first) → `test_layering` red, while an allowed-direction import stays green;
    - a seeded doc mutation → `tools/rule_quality` reports the flip.
 
+Also initialize a child directory in an existing scratch Git repository with
+`scripts/init.sh`: it must copy the spine without creating `.git`; running
+`scripts/git.sh` on the child must refuse the nested Git setup.
+
 ## Limits
 
 - The template's placeholder content passes the gates but is not real law; the first
@@ -58,11 +79,17 @@ Bootstrap a scratch project and require, out of the box:
   own documents of each kind — in a fresh skeleton those are the 00- guides, whose
   shapes cover most anchors; rows that find nothing to mutate report
   `mutation not applicable` or a miss instead of passing.
+- The Git step is optional. A subproject uses its parent's hook configuration;
+  a nested `.pre-commit-config.yaml` does not install a working parent hook.
+- The copied `.doc-verify.yaml` is rooted for a standalone repository. In a
+  subproject it requires the prefix and parent-config integration above before
+  doc-verify can read it. Do not report the gate as PASS on an unwired copy.
 - The prek hook stays uninstalled until the key exists (an unkeyed hook refuses every
   document commit).
 
 ## Owning records
 
-- Reference instance: the `template/` directory beside this file.
+- Reference instance: the `init/` directory beside this file. Optional Git
+  files are in `git/`.
 - Engine: home.conf `doc-verify-v2` at `de99d33`; bump deliberately and rerun the
   baseline (`cfdf457` showed an engine change can silently shift verdicts).

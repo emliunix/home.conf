@@ -21,6 +21,7 @@ Quality checks, not flow procedure. Lifecycle lives in `flow-grill-review` / `fl
 - **Positive-only boot:** live code and live data stand on current architecture. No compat shim, legacy arm, special-case, or carried old-era data at boot.
 - **Suite discipline:** the project's named suites (typecheck + tests) green per slice, every time. A red tree wedges the workstream.
 - **Finalize evidence:** a close is not quality-green without grep/diff/read evidence of epoch-vocabulary-zero (when P0 applies), positive-only boot, era-reachability struct classes, and green suites. Gate receipts are prerequisites, never that evidence. Report-acceptance does not discharge.
+- **A type-correct remedy is not a correct remedy.** A change can satisfy the type checker while changing what the value MEANS, so a green `tsc` is not evidence the value is still valid. The measured case: `arr.filter(x => x !== null)` on an argv array produces a `string[]` and compiles, yet it removes one half of a **pair** (a flag and the value it labels), leaving the payload as a bare positional that shifts every later argument. Typechecking measures the type, not the meaning. Before accepting a green typecheck as a fix, ask what the expression now means; guard the pair, not the member. (Eval 2026-10-12, #261: full arm 11/11 against control 2/5, Fisher exact p=0.018; the general statement alone scored 9/11, so the applicability of the specific example is unpriced at that n.)
 
 ## Local-type
 

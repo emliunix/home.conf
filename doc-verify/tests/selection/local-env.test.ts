@@ -1,10 +1,14 @@
-import { execFileSync } from "node:child_process";
+import { execFile, execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from "node:fs";
 import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
+import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
+
+const execFileAsync = promisify(execFile);
 
 import { checkDocuments } from "../../src/checker.js";
 import { loadDocVerifyEnv } from "../../src/local-env.js";
@@ -70,6 +74,98 @@ describe("local credential file", () => {
     }
   });
 
+  it("routes through a proxy the file names, and leaves routing alone when it names none", async () => {
+    // In a child process, and that is not tidiness: the resolver installs a PROCESS-WIDE
+    // dispatcher and offers no way to uninstall it through this API, so an in-process test would
+    // leave every later request in the suite pointed at a proxy that is about to be closed. The
+    // child confines the mutation and dies with it.
+    let hits = 0;
+    const proxy = createServer((_request, response) => {
+      hits += 1;
+      response.writeHead(200);
+      response.end("proxied");
+    });
+    await new Promise<void>((resolve) => proxy.listen(0, "127.0.0.1", resolve));
+    const address = proxy.address();
+    if (address === null || typeof address === "string") {
+      throw new Error("proxy did not bind a TCP port");
+    }
+    const configured = mkdtempSync(path.join(tmpdir(), "doc-verify-env-"));
+    const unconfigured = mkdtempSync(path.join(tmpdir(), "doc-verify-env-"));
+    writeFileSync(
+      path.join(configured, ".env.doc-verify"),
+      `API_KEY=key\nHTTPS_PROXY=http://127.0.0.1:${address.port}\n`,
+    );
+    writeFileSync(path.join(unconfigured, ".env.doc-verify"), "API_KEY=key\n");
+    const script = [
+      'const { loadDocVerifyEnv } = await import(process.env.ENTRY);',
+      'const [unconfigured, configured] = [process.env.UNCONFIGURED, process.env.CONFIGURED];',
+      'const target = "http://proxy-target.invalid/";',
+      'const reach = async () => { try { return await (await fetch(target)).text(); } catch { return null; } };',
+      'loadDocVerifyEnv(unconfigured);',
+      'process.stdout.write(`before=${await reach()}|`);',
+      'loadDocVerifyEnv(configured);',
+      'process.stdout.write(`proxy=${process.env.HTTPS_PROXY}|after=${await reach()}`);',
+    ].join("\n");
+    const output = await execFileAsync(process.execPath, ["--input-type=module", "-e", script], {
+      encoding: "utf8",
+      env: {
+        PATH: process.env.PATH ?? "",
+        ENTRY: path.resolve("doc-verify/dist/local-env.js"),
+        UNCONFIGURED: unconfigured,
+        CONFIGURED: configured,
+      },
+    });
+    try {
+      // The negative arm comes first inside the child: with no configured proxy the request cannot
+      // route, so the later hit is attributable to the loader and not to the environment.
+      expect(output.stdout).toBe(`before=null|proxy=http://127.0.0.1:${address.port}|after=proxied`);
+      expect(hits).toBe(1);
+    } finally {
+      await new Promise<void>((resolve) => proxy.close(() => resolve()));
+    }
+  });
+
+  it("keeps an unreadable file fatal for the key but not for a run that already has one", () => {
+    const root = mkdtempSync(path.join(tmpdir(), "doc-verify-env-"));
+    mkdirSync(path.join(root, ".env.doc-verify"));
+    const previous = environment(["TYPESAFE_API_KEY", "HTTPS_PROXY", "HTTP_PROXY"]);
+    try {
+      // The file is required for the key, so a run without one still fails loudly on it.
+      expect(() => loadDocVerifyEnv(root)).toThrow(BlockedError);
+      // A run that already has its key does not depend on the file: it must not be reddened by a
+      // broken credential symlink -- and the proxy step still runs, which is the point of the change.
+      process.env.TYPESAFE_API_KEY = "already-set";
+      expect(() => loadDocVerifyEnv(root)).not.toThrow();
+    } finally {
+      restoreEnvironment(previous);
+    }
+  });
+
+  it("prefers a proxy from the process environment over the file", () => {
+    // The loader installs a PROCESS-WIDE dispatcher and this API cannot uninstall it, so this test
+    // asserts precedence through a child process for the same reason the routing test does: run
+    // in-process, a proxy pointing at a host that does not resolve stays installed and every later
+    // test in the suite inherits it. That is not hypothetical -- it made the suite intermittent.
+    const root = mkdtempSync(path.join(tmpdir(), "doc-verify-env-"));
+    writeFileSync(path.join(root, ".env.doc-verify"), "HTTPS_PROXY=http://from-file.invalid:1\n");
+    const script = [
+      'process.env.HTTPS_PROXY = "http://from-process.invalid:2";',
+      'const { loadDocVerifyEnv } = await import(process.env.ENTRY);',
+      'loadDocVerifyEnv(process.env.ROOT);',
+      'process.stdout.write(`proxy=${process.env.HTTPS_PROXY}`);',
+    ].join("\n");
+    const output = execFileSync(process.execPath, ["--input-type=module", "-e", script], {
+      encoding: "utf8",
+      env: {
+        PATH: process.env.PATH ?? "",
+        ENTRY: path.resolve("doc-verify/dist/local-env.js"),
+        ROOT: root,
+      },
+    });
+    expect(output).toBe("proxy=http://from-process.invalid:2");
+  });
+
   it("applies the file during a check and keeps the key out of the report", async () => {
     const root = await fixtureRepository();
     const canary = "local-env-canary-key";
@@ -90,6 +186,26 @@ describe("local credential file", () => {
     }
   });
 });
+
+/** Every named variable's value, so a test can put the process back exactly as it found it. */
+function environment(names: readonly string[]): Map<string, string | undefined> {
+  const saved = new Map<string, string | undefined>();
+  for (const name of names) {
+    saved.set(name, process.env[name]);
+    delete process.env[name];
+  }
+  return saved;
+}
+
+function restoreEnvironment(saved: Map<string, string | undefined>): void {
+  for (const [name, value] of saved) {
+    if (value === undefined) {
+      delete process.env[name];
+    } else {
+      process.env[name] = value;
+    }
+  }
+}
 
 function restore(name: "TYPESAFE_API_KEY" | "OTHER_SECRET" | "API_KEY", value: string | undefined): void {
   if (value !== undefined) {

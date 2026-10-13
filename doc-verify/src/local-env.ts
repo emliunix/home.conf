@@ -1,31 +1,113 @@
 import { readFileSync } from "node:fs";
+import * as http from "node:http";
 import path from "node:path";
 
 import { BlockedError } from "./types.js";
 
 const fileName = ".env.doc-verify";
 
+/**
+ * The proxy names the file may carry, in the order they are tried. `ALL_PROXY` is deliberately
+ * absent: it is the conventional name elsewhere in this repo, but Node's own resolver does not
+ * honor it, so accepting it here would promise a route that does not exist.
+ */
+const proxyNames = ["HTTPS_PROXY", "HTTP_PROXY"] as const;
+
+/** Node's proxy resolver, which the shipped types do not declare yet. */
+type ProxyFromEnv = (env?: NodeJS.ProcessEnv) => (() => void) | undefined;
+
 /** Read the gitignored repo dotenv file. An existing TYPESAFE_API_KEY wins. */
 export function loadDocVerifyEnv(root: string): void {
-  if ((process.env.TYPESAFE_API_KEY ?? "").trim().length > 0) {
+  const keyMissing = (process.env.TYPESAFE_API_KEY ?? "").trim().length === 0;
+  const proxyMissing = processProxy() === undefined;
+  if (keyMissing || proxyMissing) {
+    let text: string | undefined;
+    try {
+      text = credentialText(root);
+    } catch (error) {
+      // The key is required to run; the proxy is not. An unreadable file stays fatal for the
+      // key, as it always was, and must not fail a run that already has one -- otherwise a
+      // broken credential symlink would redden a commit that the key alone was sufficient for.
+      if (keyMissing) {
+        throw error;
+      }
+      text = undefined;
+    }
+    if (text !== undefined) {
+      if (keyMissing) {
+        const apiKey = dotenvValue(text, "API_KEY")?.trim();
+        if (apiKey !== undefined && apiKey.length > 0) {
+          process.env.TYPESAFE_API_KEY = apiKey;
+        }
+      }
+      if (proxyMissing) {
+        const fromFile = fileProxy(text);
+        if (fromFile !== undefined) {
+          process.env.HTTPS_PROXY = fromFile;
+          process.env.HTTP_PROXY = fromFile;
+        }
+      }
+    }
+  }
+  // Routing is the CALL, not the variables: Node resolves these names only when this runs, and
+  // resolving them at process start is not available to us because the values may come from the
+  // file above. It is a no-op when no proxy is configured, so an unconfigured host is unchanged.
+  const resolveProxy = proxyFromEnv();
+  if (resolveProxy === undefined) {
+    // A configured route that cannot be applied must not look like no route at all: the judge
+    // would then fail with the same bare error a host without a proxy fails with, and nothing
+    // would name the reason. The resolver needs Node 24; `engines` here allows older runtimes.
+    if (processProxy() !== undefined) {
+      throw new BlockedError(
+        "HTTPS_PROXY is configured but this Node runtime has no proxy resolver "
+          + "(setGlobalProxyFromEnv), so the judge would be dialed directly",
+      );
+    }
     return;
   }
-  const filePath = path.join(root, fileName);
-  let text: string;
+  resolveProxy(process.env);
+}
+
+/** Node's shipped proxy resolver, or `undefined` on a runtime that predates it. */
+function proxyFromEnv(): ProxyFromEnv | undefined {
+  const candidate = (http as typeof http & { setGlobalProxyFromEnv?: ProxyFromEnv })
+    .setGlobalProxyFromEnv;
+  return typeof candidate === "function" ? candidate : undefined;
+}
+
+/** The proxy already set in the process environment, if any. */
+function processProxy(): string | undefined {
+  for (const name of proxyNames) {
+    const value = (process.env[name] ?? "").trim();
+    if (value.length > 0) {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+/** The proxy named by the credential file, if any. */
+function fileProxy(text: string): string | undefined {
+  for (const name of proxyNames) {
+    const value = dotenvValue(text, name)?.trim();
+    if (value !== undefined && value.length > 0) {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+/** The credential file's text, or `undefined` when it is simply absent. */
+function credentialText(root: string): string | undefined {
   try {
-    text = readFileSync(filePath, "utf8");
+    return readFileSync(path.join(root, fileName), "utf8");
   } catch (error) {
     if (errorCode(error) === "ENOENT") {
-      return;
+      return undefined;
     }
     const code = errorCode(error);
     throw new BlockedError(`cannot read ${fileName}${code === undefined ? "" : ` (${code})`}`);
   }
-  const apiKey = dotenvValue(text, "API_KEY")?.trim();
-  if (apiKey === undefined || apiKey.length === 0) {
-    return;
-  }
-  process.env.TYPESAFE_API_KEY = apiKey;
 }
 
 function dotenvValue(text: string, key: string): string | undefined {
