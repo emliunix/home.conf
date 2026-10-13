@@ -14,7 +14,10 @@ Run by the lead 09:40–10:11 (sequentially, 31 min); the takeover builder's run
 code (09:16–09:24) gives the same failing-kind counts, the same seeds table and the same single
 non-determinism, and is archived beside the lead's. Outputs: `results/round-7-{S1-C5,S1-C5-features,
 S1-C5-shrink,S3-C5,seeds}.txt`; the lead's hand-made record of the first finding,
-`results/round-7-sound-repeated-count.txt`. The build went through two seats (the Cursor
+`results/round-7-sound-repeated-count.txt`. After the second review's two hardening items (the fresh-instance bucket means two new
+instances disagreeing on their first call, nothing else; a missed shrink replay is marked and
+counted), the builder re-ran S1 C5 and reproduced the same kinds, triples and the one
+non-determinism; that re-run is the committed `results/round-7-S1-C5.txt`. The build went through two seats (the Cursor
 `builder` until its provider failed mid-round, then an Opus subagent), two reviews by the
 `reviewer` seat (`/tmp`: 24 findings on the first build, 10 on the second; the second review
 closes blocking findings 1–8 at the cited lines and reproduces the count-bound finding
