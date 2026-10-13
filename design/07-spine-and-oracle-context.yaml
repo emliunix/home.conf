@@ -1,0 +1,11 @@
+schema_version: 1
+kind: document-contract
+document:
+  path: design/07-spine-and-oracle-context.md
+  kind: design
+  depends_on:
+    - goals/04-trusted-kernel.md
+    - design/04-modular-verification-language.md
+    - design/05-trusted-kernel-redesign.md
+    - design/06-kernel-migration.md
+    - docs/doc-verify-constitution.md
