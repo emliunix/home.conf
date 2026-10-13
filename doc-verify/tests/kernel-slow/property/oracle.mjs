@@ -67,7 +67,17 @@ export function twoValued(g, comp, loopSet = null) {
     if (name === "loop" || name === "loop2") return loopSet.has(`${name}/${s}`);
     return val.get(`${name}/${s}`) === true;
   };
-  const countOf = (l) => g.sections.filter((s2) => (l.over === "pred" ? atomVal(l.target, s2) : leaf(l.target, s2))).length;
+  const countOf = (l, s) => {
+    if (l.siblingVar) {
+      const k = g.depths[s];
+      return g.sections.filter((s2) => {
+        if (g.depths[s2] !== k) return false;
+        if (!l.negInside) return true;
+        return !leaf(l.negTarget ?? l.target, s2);
+      }).length;
+    }
+    return g.sections.filter((s2) => (l.over === "pred" ? atomVal(l.target, s2) : leaf(l.target, s2))).length;
+  };
   const lit = (l, s) => {
     switch (l.kind) {
       case "atom": { const v = atomVal(l.name, s); return l.neg ? !v : v; }
@@ -75,7 +85,8 @@ export function twoValued(g, comp, loopSet = null) {
       case "in": return g.headings[s] === l.word;
       case "matches": return jsMatch(g.headings[s], l.pattern);
       case "cmp": return cmpDepth(l, g.depths[s]);
-      case "count": { const n = countOf(l); return l.bind === "const" ? n === l.K : holdsOp(l.op, n, l.K); }
+      case "depthBind": return true; // every section has a depth; binds Ksib = g.depths[s]
+      case "count": { const n = countOf(l, s); return l.bind === "const" ? n === l.K : holdsOp(l.op, n, l.K); }
       default: throw new Error(`twoValued: literal ${l.kind}`);
     }
   };
@@ -210,9 +221,22 @@ function static3(g, ans, l, s) {
     case "in": return g.headings[s] === l.word ? "t" : "f";
     case "matches": return jsMatch(g.headings[s], l.pattern) ? "t" : "f";
     case "cmp": return cmpDepth(l, g.depths[s]) ? "t" : "f";
+    case "depthBind": return "t";
     case "count": {
       let c = 0, p = 0;
-      for (const s2 of g.sections) { const v = leaf3(g, ans, l.target, s2); if (v === "t") c++; if (v !== "f") p++; }
+      if (l.siblingVar) {
+        const k = g.depths[s];
+        for (const s2 of g.sections) {
+          if (g.depths[s2] !== k) continue;
+          if (!l.negInside) { c++; p++; continue; }
+          const v = leaf3(g, ans, l.negTarget ?? l.target, s2);
+          // not o: t when leaf f, f when leaf t, u when leaf u
+          if (v === "f") c++;
+          if (v !== "t") p++;
+        }
+      } else {
+        for (const s2 of g.sections) { const v = leaf3(g, ans, l.target, s2); if (v === "t") c++; if (v !== "f") p++; }
+      }
       return interval3(l, c, p);
     }
     default: return null;

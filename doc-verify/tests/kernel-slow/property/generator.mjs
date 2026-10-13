@@ -7,7 +7,7 @@
 // encoded so that 0 means "off / absent / unanswered", and every pool element (section, oracle,
 // rule, body literal, constraint, goal literal) carries a keep-mask that is generated "kept" with
 // probability 1 - 1e-5 (so the generation distribution is the plan's) and shrinks to "dropped".
-import fc from "../../../../node_modules/fast-check/lib/fast-check.js";
+import fc from "fast-check";
 
 export const HEADING_VOCAB = ["notes", "intro", "body", "summary", "appendix", "refs"];
 export const SECTION_POOL = ["a", "b", "c", "e"];
@@ -26,6 +26,10 @@ export const WEIGHTS = {
   oracleForall: 0.40,
   unboundMatches: 0.08,    // per constraint whose forall is section-only (expected: rejected)
   countBound: 0.10,        // of programs with a count (07:42 amendment)
+  // count goals that share a variable bound by a sibling literal of the enclosing body
+  // (and often a negation inside the count); catches aux capture that omits non-head body vars
+  countSiblingVar: 0.18,
+  countSiblingNeg: 0.55,   // of countSiblingVar programs: also negate inside the count goal
   // trigger floors (plan: >= 20 of 500): reserved slots that force the trigger's site
   chooseTriggerFloor: 0.45,
   countBoundaryFloor: 0.25,
@@ -81,6 +85,8 @@ export function programArbitrary({ featuresOn = true } = {}) {
     forceOddLoop: fc.integer({ min: 0, max: 99 }),
     countBound: fc.integer({ min: 0, max: 99 }),
     countBoundKind: fc.integer({ min: 0, max: 1 }),
+    countSiblingVar: fc.integer({ min: 0, max: 99 }),
+    countSiblingNeg: fc.integer({ min: 0, max: 99 }),
     answerBits: ints(16, 0, 99),
     totalMask: fc.integer({ min: 0, max: 0xffff }),
     midMask: fc.integer({ min: 0, max: 0xffff }),
@@ -225,6 +231,36 @@ function materialize(raw) {
     }
   }
 
+  // countSiblingVar: depth-bind sibling then count(... depth(_,_,Ksib) ...); often with not inside.
+  // Closes the a4985be gap where captured = inner ∩ head-only omitted sibling-bound vars.
+  if (featuresOn && on(raw.countSiblingVar, WEIGHTS.countSiblingVar)) {
+    const groups = [...constraints.map((c) => c.goal), ...rules.filter((r) => !r.special).map((r) => r.body)];
+    const negInside = on(raw.countSiblingNeg, WEIGHTS.countSiblingNeg);
+    const negTarget = oracles.length > 1 ? oracles[1] : oracles[0];
+    let placed = false;
+    for (const grp of groups) {
+      const idx = grp.findIndex((l) => l.kind === "count" && l.over === "oracle" && !l.siblingVar);
+      if (idx < 0) continue;
+      const base = grp[idx];
+      grp.splice(idx, 1,
+        { kind: "depthBind", varName: "Ksib" },
+        { ...base, siblingVar: "Ksib", ...(negInside ? { negInside: true, negTarget } : {}) },
+      );
+      placed = true;
+      break;
+    }
+    if (!placed && constraints.length) {
+      constraints[0].goal = [
+        { kind: "depthBind", varName: "Ksib" },
+        {
+          kind: "count", over: "oracle", target: oracles[0], op: "=:=", K: Math.max(1, Math.min(raw.nSec, 2)),
+          siblingVar: "Ksib",
+          ...(negInside ? { negInside: true, negTarget } : {}),
+        },
+      ];
+    }
+  }
+
   // atoms + answers; cap free <= 10
   const atoms = [];
   for (const o of oracles) for (const s of sections) atoms.push(`w::${o}(d,${s})`);
@@ -322,6 +358,7 @@ export function normalize(g0) {
       const labs = g.choose.labels;
       return { ...l, name: g.choose.name, label: labs.includes(l.label) ? l.label : labs[Math.abs(hash(l.label)) % labs.length] };
     }
+    if (l.kind === "depthBind") return l;
     if (l.kind === "count") {
       if (l.over === "pred") {
         // correlated counts appear in constraint goals only
@@ -330,7 +367,14 @@ export function normalize(g0) {
         const { bind, ...rest } = l;
         return { ...rest, over: "oracle", target: ora[0] };
       }
-      return ora.includes(l.target) ? l : { ...l, target: ora[(Number(String(l.target).slice(1)) - 1 || 0) % ora.length] };
+      const target = ora.includes(l.target) ? l.target : ora[(Number(String(l.target).slice(1)) - 1 || 0) % ora.length];
+      const negTarget = l.negTarget && ora.includes(l.negTarget) ? l.negTarget
+        : l.negInside ? (ora.length > 1 ? ora[1] : ora[0]) : undefined;
+      return {
+        ...l,
+        target,
+        ...(l.negInside ? { negInside: true, negTarget } : {}),
+      };
     }
     return l;
   };
@@ -462,6 +506,7 @@ export function featureFlags(g) {
     // printed, not in the plan's named-feature list
     countBound: lits.some((l) => l.kind === "count" && !!l.bind),
     countCorrelated: lits.some((l) => l.kind === "count" && l.over === "pred"),
+    countSiblingVar: lits.some((l) => l.kind === "count" && !!l.siblingVar),
     unboundMatches: lits.some((l) => l.kind === "matches" && l.unbound),
     loopReachable: !!g.loopReachable,
   };
@@ -508,7 +553,13 @@ function renderRaw(g) {
     const c = `C${seq}`, n = `N${seq}`;
     seq += 1;
     const atom = l.over === "pred" ? `${l.target}(D, ${c})` : `${l.target}(D, ${c})`;
-    const goal = `(core.section(D, ${c}, _), ${atom})`;
+    let goal;
+    if (l.siblingVar) {
+      const neg = l.negInside ? `, not ${l.negTarget ?? l.target}(D, ${c})` : "";
+      goal = `(core.section(D, ${c}, _), core.depth(D, ${c}, ${l.siblingVar})${neg})`;
+    } else {
+      goal = `(core.section(D, ${c}, _), ${atom})`;
+    }
     if (l.bind === "const") return `count(${c}, ${goal}, ${l.K})`;
     const res = l.bind === "shared" ? anchors.get(l.target) : n;
     if (!l.bind && l.over === "oracle") anchors.set(l.target, n);
@@ -524,6 +575,7 @@ function renderRaw(g) {
         return l.unbound ? `matches(${h}, '${l.pattern}')` : `core.heading(D, ${v}, ${h}), matches(${h}, '${l.pattern}')`;
       }
       case "cmp": { const d = `Dep${seq++}`; return `core.depth(D, ${v}, ${d}), ${d} ${l.op} ${l.K}`; }
+      case "depthBind": return `core.depth(D, ${v}, ${l.varName})`;
       case "count": return countText(l, v, anchors);
       default: throw new Error(`unknown literal kind ${l.kind}`);
     }

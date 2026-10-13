@@ -207,7 +207,7 @@ async function runArm(subject, armName, n, seeds) {
         checkMs += performance.now() - tc;
         continue;
       }
-      const r1 = checkProgram(g, inst.evaluate, { subject });
+      let r1 = checkProgram(g, inst.evaluate, { subject });
       d1Weak += r1.d1Weak; exemptN += r1.exemptN;
       try { if (Object.values(inst.evaluate(g.ans).statuses ?? {}).flat().some((x) => x.status === "undetermined")) undetermined += 1; } catch { /* rejected */ }
       checkMs += performance.now() - tc;
@@ -240,7 +240,12 @@ async function runArm(subject, armName, n, seeds) {
           ? "REFUTING (fresh-instance nondet)"
           : "report-not-failing (same-instance history, gate-ledger item 9)";
         logRecord(`counterexample nondet-${ndKind} ${ndTag}: seed ${seed} program ${index} size ${atomSize(g)}->${atomSize(shrunk)}${missedNd ? " (shrink: replay-missed, recorded unshrunk)" : shrink ? ` (fast-check shrinks ${sh.shrinks}${sh.interrupted ? ", interrupted at the limit" : ""})` : " (not shrunk)"} minimal=${min.minimal} (neighbours tried ${min.tried}, skipped ${min.skipped})`, shrunk, ndKind === "fresh" ? [`first call, new instance A: ${evalKey(fa).slice(0, 300)}`, `first call, new instance B: ${evalKey(fb).slice(0, 300)}`] : [`first run ${sig(r1)}`, `same instance again ${sig(same)}`, `sequence replayed on another instance ${sig(replay)}`, ...detail], min);
-        continue;
+        // Item 9 (same-instance): report-not-failing, but still run the program's other property checks
+        // on a fresh instance (r1 may include history-dependent ghosts). Fresh-instance nondet skips.
+        if (ndKind === "fresh") continue;
+        const clean = await makeSubject(subject, module, facts);
+        r1 = checkProgram(g, clean.evaluate, { subject });
+        if (!r1.problems.length) continue;
       }
 
       for (const kind of [...new Set(r1.problems.map(propertyOf))]) {
@@ -289,7 +294,7 @@ async function runArm(subject, armName, n, seeds) {
 
   const ms = performance.now() - t0;
   const share = (v) => (programsRun ? +(v / programsRun).toFixed(3) : 0);
-  const cov = Object.fromEntries([...NAMED_FEATURES, "countBound", "countCorrelated", "unboundMatches", "loopReachable"].map((k) => [k, share(featureHits[k] ?? 0)]));
+  const cov = Object.fromEntries([...NAMED_FEATURES, "countBound", "countCorrelated", "countSiblingVar", "unboundMatches", "loopReachable"].map((k) => [k, share(featureHits[k] ?? 0)]));
   const trig = Object.fromEntries(Object.entries(triggerHits).map(([k, v]) => [k, share(v)]));
   if (featuresOn) {
     for (const k of NAMED_FEATURES) if (cov[k] < 0.05) reasons.push(`coverage narrowed: ${k}=${cov[k]}`);
@@ -397,6 +402,7 @@ async function runSeedsTable(n, seeds) {
             const pred = async (gg) => {
               const v = isValid(gg);
               if (!v.ok) return "skip";
+              if (!seedTriggered(seed.id, v.g)) return false;
               let redAny = false;
               for (const k of seedKinds(seed.property)) {
                 const r = await failsKind(subj, v.g, k, opts);
@@ -412,8 +418,13 @@ async function runSeedsTable(n, seeds) {
               return true;
             };
             const sh = await fcShrink(arb, fcSeed, index, pred);
-            const sg = sh.g ?? g;
-            const min = await checkMinimal(sg, pred);
+            let sg = sh.g ?? g;
+            let min = await checkMinimal(sg, pred);
+            // Walk to a minimal neighbour when the shrinker left a deletable literal/oracle/answer.
+            for (let guard = 0; !min.minimal && min.neighbour && guard < 32; guard++) {
+              sg = min.neighbour;
+              min = await checkMinimal(sg, pred);
+            }
             witness = { before: atomSize(g), after: atomSize(sg), min, g: sg, shrinks: sh.shrinks, interrupted: sh.interrupted };
           }
         }

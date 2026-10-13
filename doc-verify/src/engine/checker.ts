@@ -472,6 +472,20 @@ export function literalVarNames(literal: Literal): string[] {
 }
 
 /**
+ * Head/params/forall-bound names plus every named variable of every other literal in `body`
+ * (skipping `skip`). One source of truth for "the rest of the body": the translator uses it for
+ * count capture; `localNegationVars` uses it for negation locality.
+ */
+export function restBodyVars(skip: Literal, body: Literal[], outer: Iterable<string>): Set<string> {
+  const s = new Set<string>(outer);
+  for (const lit of body) {
+    if (lit === skip) continue;
+    for (const n of literalVarNames(lit)) s.add(n);
+  }
+  return s;
+}
+
+/**
  * Named variables local to a negated literal: they occur in `neg` and in no other literal of
  * `body`, and not in `outer` (head / params / count result / forall-bound names). The translator
  * lifts exactly these (plus anonymous `_`); the checker allows them unbound.
@@ -481,11 +495,7 @@ export function localNegationVars(
   body: Literal[],
   outer: Iterable<string>,
 ): Set<string> {
-  const forbidden = new Set<string>(outer);
-  for (const lit of body) {
-    if (lit === neg) continue;
-    for (const n of literalVarNames(lit)) forbidden.add(n);
-  }
+  const forbidden = restBodyVars(neg, body, outer);
   const local = new Set<string>();
   for (const arg of neg.args) {
     for (const n of variablesOf(arg)) {

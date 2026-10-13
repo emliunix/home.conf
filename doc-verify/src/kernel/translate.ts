@@ -14,7 +14,7 @@
 
 import { compileModule } from "../engine/index.js";
 import { loadModule, type ConstraintSource, type OracleSource, type ParsedModule, type RequestShape } from "../engine/module.js";
-import { localNegationVars, type Literal } from "../engine/checker.js";
+import { localNegationVars, restBodyVars, type Literal } from "../engine/checker.js";
 import { listItems, quoteAtom, readCanonical, variablesOf, writeTerm, type Term } from "../engine/terms.js";
 
 /** A fact term with a qualified functor (`core::section`, `w::n`, …). */
@@ -347,7 +347,10 @@ export function translateProgram(program: TranslateProgram, facts: FactTerm[]): 
         const v = lit.variable.kind === "var" ? lit.variable.name : (() => { throw new Error("count variable"); })();
         const inner = new Set<string>();
         for (const g of lit.goal) for (const n of literalVars(g)) inner.add(n);
-        const captured = [...inner].filter((n) => n !== v && outer.has(n)).sort();
+        // Capture = inner ∩ (head/params ∪ vars of every other body literal). Sibling-bound
+        // variables (not in the head) must be parameters of the aux, not free inside it.
+        const scope = restBodyVars(lit, body, outer);
+        const captured = [...inner].filter((n) => n !== v && scope.has(n)).sort();
         const params = [...captured, v];
         const countOuter = new Set(params);
         if (lit.result.kind === "var") countOuter.add(lit.result.name);
