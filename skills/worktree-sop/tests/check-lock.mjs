@@ -988,6 +988,86 @@ async function checkReleaseDoesNotDeleteSuccessor() {
   }
 }
 
+// ------------------------------------------- release restores a successor it moved aside
+
+/**
+ * Release reads its token from an fd on its own inode, then renames the PATH aside. A successor
+ * that replaces the path between that open and that rename is what gets moved aside, and only
+ * the identity check on the moved inode (`sameIdentity(moved, fstatSync(fd))`) tells release to
+ * restore it rather than unlink it. The case installs exactly that successor, at the
+ * `after-shared-open` boundary, and asserts the successor's claim is back at the path afterwards.
+ * Before this case existed (2026-10-13) nothing drove the window, so the identity check's
+ * seeded removal stayed green: the earlier case injects at `before-shared-unlink`, a boundary the
+ * corrected release never reaches.
+ */
+async function checkReleaseRestoresSuccessorInstalledAfterOpen() {
+  const dir = freshDir();
+  const path = join(dir, "gate.lock");
+  const successorToken = "successor-token";
+  const successorBody = JSON.stringify({ token: successorToken, pid: process.pid });
+  writeFileSync(
+    path,
+    `${JSON.stringify({ token: "holder-token", pid: process.pid })}\n`,
+  );
+  const result = await new Promise((resolveRun) => {
+    const driver = `
+      import { release } from ${JSON.stringify(SCRIPT)};
+      release(${JSON.stringify(path)}, "holder-token");
+    `;
+    const child = spawn(
+      process.execPath,
+      ["--require", SWAP_PRELOAD, "--input-type=module", "-e", driver],
+      {
+        stdio: ["ignore", "pipe", "pipe"],
+        env: {
+          ...process.env,
+          GATE_LOG: join(dir, "boundary.log"),
+          GATE_LOCK_PATH: path,
+          GATE_BOUNDARY: "after-shared-open",
+          GATE_SUCCESSOR: `${successorBody}\n`,
+        },
+      },
+    );
+    let stderr = "";
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk;
+    });
+    child.on("close", (code) => resolveRun({ code, stderr }));
+  });
+  if (result.code !== 0) {
+    fail(
+      `release driver failed (after-shared-open): ${result.stderr.trim() || `exit ${result.code}`}`,
+    );
+    return;
+  }
+  let events;
+  try {
+    events = readFileSync(join(dir, "boundary.log"), "utf8")
+      .trim()
+      .split("\n")
+      .filter(Boolean);
+  } catch {
+    events = [];
+  }
+  if (!events.some((line) => line.startsWith("INJECTED"))) {
+    fail(
+      `no successor was installed after release's open; log: ${events.join(" | ") || "(empty)"}`,
+    );
+    return;
+  }
+  let token;
+  try {
+    token = JSON.parse(readFileSync(path, "utf8"))?.token;
+  } catch {
+    token = undefined;
+  }
+  if (token !== successorToken) {
+    fail(
+      `the successor's claim was deleted from the path by release (identity check skipped); path now holds ${token === undefined ? "nothing parseable" : JSON.stringify(token)}`,
+    );
+  }
+}
+
 // ------------------------------------------- quarantine restore cannot clobber a successor (F2)
 
 /**
@@ -1124,6 +1204,7 @@ checkReleaseOwnership();
 await checkMissingLockAcquires();
 await checkSerialization();
 await checkReleaseDoesNotDeleteSuccessor();
+await checkReleaseRestoresSuccessorInstalledAfterOpen();
 await checkQuarantineRestoreDoesNotClobberSuccessor();
 await checkSchemaInvalidLocksWait();
 await checkStaleRecoveryIsSerialized();

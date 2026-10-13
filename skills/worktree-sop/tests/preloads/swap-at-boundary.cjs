@@ -13,6 +13,10 @@
 //   "after-claim-rename"   — just after `renameSync(<lockPath>, elsewhere)` succeeds. This is
 //     quarantine's restore window: the lock is aside, a third successor wins the free path, and
 //     a restore-by-rename would overwrite that successor.
+//   "after-shared-open"    — just after `openSync(<lockPath>, "r")` returns. This is release's
+//     open-then-rename window: the token was read from the fd on OUR inode, the path is then
+//     replaced, and `renameSync(path, aside)` moves the SUCCESSOR aside. Only the identity check
+//     on the moved inode tells release to restore it instead of unlinking it.
 //
 // Every mutation of the shared path is appended to GATE_LOG as `<op> <basename>`, so assertions
 // read a record of what happened instead of inferring it from the surviving bytes. An assertion
@@ -103,6 +107,11 @@ if (lockPath && log) {
   const realOpen = fs.openSync;
   fs.openSync = function (file, flags) {
     if (asTarget(file) === target && flags === "wx") note("EXCL-CREATE", file);
-    return Reflect.apply(realOpen, this, arguments);
+    const result = Reflect.apply(realOpen, this, arguments);
+    if (!injecting && asTarget(file) === target && flags === "r") {
+      note("OPEN-SHARED", file);
+      if (!injected && boundary === "after-shared-open") injectSuccessor();
+    }
+    return result;
   };
 }
