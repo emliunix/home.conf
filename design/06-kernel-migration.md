@@ -89,7 +89,7 @@ One change, in this order, each step leaving `npm test` green:
 | 1 | The observed errors as tests (§Verification design rows 1–5), run against the probe kernel through a small adapter; the count-bound cases marked expected-to-fail | `npm test` green with the expected failures listed |
 | 2 | Kernel, loader and translator under `doc-verify/src/kernel/`; `swipl-wasm` a dependency; the tests pointed at the new path | the same suite green |
 | 3 | The count fix, proof trees, populations | the count-bound cases pass; the expected-failure list is empty |
-| 4 | `runProgram` through the kernel; `evaluate.ts` deleted; existing tests that asserted the evaluator's behaviour where the model differs are rewritten to the model, each citing its round-2 witness | `npm test` green; `git grep -l evaluate doc-verify/src` empty; `npm run check` and `doc-verify check --all` with the mock judge run |
+| 4 | `runProgram` through the kernel; `evaluate.ts` deleted; existing tests that asserted the evaluator's behaviour where the model differs are rewritten to the model, each citing its round-2 witness | `npm test` green; `git grep -l evaluate doc-verify/src` empty; `npm run check` and `doc-verify check --all` run |
 | 5 | The property track and the clingo differential as `npm run test:kernel-slow`; design/05 and the constitution amended; this design's Status `landed` | the slow suite green; the seeds table reddens it |
 
 A step that turns the suite red is fixed before the next step lands; nothing is merged to `main`
@@ -110,7 +110,7 @@ by this design.
 
 ## Language breaks
 
-Measured at step 4 (`check --all` with the mock judge before and after: 27 documents, no verdict
+Measured at step 4 (`check --all` before and after, judge answers from the shared cache; the `DOC_VERIFY_MOCK_JUDGE` variable used then does not exist in doc-verify: 27 documents, no verdict
 or finding differs; no module named by a `.doc-verify.yaml` rule is refused). Against design 04's
 checker the language changes in two places, each a refusal at module load with its repair:
 

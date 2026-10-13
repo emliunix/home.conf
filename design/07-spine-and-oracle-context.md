@@ -107,6 +107,10 @@ A miss is a `core.section_dangling(D, S, Target, Fragment)` fact and a `paths-re
 finding naming the closest headings as its repair. Only the target's headings are read, with the
 segmenter's own slug function, so `#slug` and `core.path` agree on what a section is called.
 
+**Approved choices (owner, 2026-10-14):** duplicate sibling headings get an occurrence index and
+are never refused; cross-document reach is phase 3, opt-in and one hop; path addressing of the
+subject is not adopted, the relation's reverse use covers it.
+
 **Cross-document reach (phase 3).** Opt-in per path: a `via(ref)` step kind follows one link the
 document actually makes, one hop, and shows the cited section's own path plus an excerpt bounded
 by the oracle's `max_bytes`. It needs the host to load cited documents' section trees into the
@@ -142,14 +146,14 @@ Commands marked "(phase N)" do not exist until that phase adds them.
 
 | Property | Failure witness | Command |
 | --- | --- | --- |
-| Fragments checked | a document linking `design/06-kernel-migration.md#no-such-section` passes `check` | doc-verify check over a seeded fixture (phase 0) |
-| Prose section references checked | a `§Nonexistent` reference to an existing design passes | the same fixture (phase 0) |
+| Fragments checked | on a fixture that links `design/06-kernel-migration.md#no-such-section`, `check` prints `PASS` and exits 0 instead of a `section-dangling` finding naming `#no-such-section` | doc-verify check over a seeded fixture (phase 0) |
+| Prose section references checked | on a fixture citing `design/06-kernel-migration.md §Nonexistent`, `check` prints `PASS` instead of a finding naming `§Nonexistent` and the closest headings | the same fixture (phase 0) |
 | Path is right | `core.path` for a fixture cell prints a step list that differs from the hand-written expectation (heading order, duplicate index, row key) | npx vitest run doc-verify/tests/kernel/path.test.ts (phase 1) |
 | Path survives quoting | a heading with quotes, colons or backticks makes two atoms share an answer key, or one atom's answer routed to another | a randomized key round-trip test (phase 1) |
-| Echo refused | round 9's E1 module (a `choose` over property names with the row key in its context) loads | the checker test for the echo rule (phase 1) |
+| Echo refused | loading round 9's E1 module (a `choose` over property names with the row key in its context) returns a program instead of a `ModuleError` naming the echo rule | the checker test for the echo rule (phase 1) |
 | Context is not the subject | a fixture whose context alone would answer the question changes the label against the subject-only run | the phase 1 round's control fixtures |
-| Kernel gate holds | a new core predicate missing from the sandbox's safe primitives loads, or loads unchecked | `npx vitest run doc-verify/tests/kernel/boundary.test.ts` |
-| Random programs | the property track finds a counterexample involving `core.path` | `npm run test:kernel-slow`, with path literals added to the generator (phase 1) |
+| Kernel gate holds | with `core_path/4` removed from the sandbox's safe primitives, a module using `core.path` still evaluates instead of the boundary test printing `rejected` | `npx vitest run doc-verify/tests/kernel/boundary.test.ts` |
+| Random programs | the slow suite prints a `counterexample … REFUTING` line whose module uses `core.path`, with its (module, facts, answers) triple | `npm run test:kernel-slow`, with path literals added to the generator (phase 1) |
 
 ## Left undecided
 
