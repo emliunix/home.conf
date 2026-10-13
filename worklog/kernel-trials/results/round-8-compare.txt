@@ -1,0 +1,246 @@
+(.leaves-round8-pages-contract.json, .leaves-round8-pages-model.json, .leaves-round8-pages-properties.json, .leaves-round8-pages-verification.json; tags LIVE; models jev-1.13.0)
+== round8-pages: 40 cells, 40 normal-arm pairs, 38 units after collapsing duplicate texts, 0 reversed-arm cells
+confident flips (cells; p >= 0.6 on both sides, different labels, any repeat pair): 1
+  FLIP normal|module_model_pages/subtle-1|current_not_history|acme-widget--model [repeat pairs b1/a1,b1/a2]: batched fails 0.61 | fails 0.59; per-atom holds 0.68 | holds 0.75
+
+signed shift d = per-atom P(expected) - batched P(expected), units (duplicates once)
+  stratum                                                      n   mean d  90% CI            Wilcoxon p  mean |d|  max |d|
+  -----------------------------------------------------------  --  ------  ----------------  ----------  --------  -------
+  all                                                          38  -0.068  [-0.102, -0.035]  0.014       0.098     0.355  
+  with expected label                                          28  -0.067  [-0.110, -0.026]  0.103       0.103     0.355  
+  near threshold (batched repeat 1 P(expected) in [0.4, 0.8])  5   -0.209  [-0.339, 0.000]   0.125       0.301     0.355  
+  mixed-oracle batch                                           20  -0.044  [-0.088, 0.000]   0.192       0.093     0.280  
+  single-oracle batch                                          18  -0.094  [-0.147, -0.046]  0.116       0.103     0.355  
+  noise: batched rep2 - rep1                                   38  0.006   [-0.003, 0.014]   0.265       0.023     0.070  
+  noise: per-atom rep2 - rep1                                  38  -0.009  [-0.020, 0.001]   0.322       0.022     0.160  
+
+correctness vs expected labels (fixture units): both right 11, batched right/per-atom wrong 1, batched wrong/per-atom right 1, both wrong 15; exact McNemar p 1.000
+  DISCORDANT normal|module_model_pages/subtle-1|current_not_history|acme-widget--model: expected fails; batched fails P(exp) 0.60; per-atom holds P(exp) 0.26 -> batched right
+  DISCORDANT normal|module_properties_pages/good-near|current_not_history|acme-widget--properties: expected holds; batched unknown P(exp) 0.50; per-atom holds P(exp) 0.73 -> per-atom right
+seeded cells per-atom catches and batched misses: none
+seeded cells batched catches and per-atom misses: none
+genuine cells per-atom fails where batched holds (stricter): none
+leaf shapes: batched {"decides":79,"judge-unknown":1}; per-atom {"decides":80}; transitions (rep 1) {"decides -> decides":39,"judge-unknown -> decides":1}
+repeat flips: batched 2 [normal|module_contract_pages/subtle-1|current_not_history|public-surface, normal|module_properties_pages/good-near|current_not_history|acme-widget--properties]; per-atom 0 []
+total variation per unit: mean 0.104, max 0.355; top normal|module_model_pages/subtle-2|current_not_history|state 0.355; normal|module_model_pages/subtle-1|current_not_history|acme-widget--model 0.345; normal|module_model_pages/subtle-3|current_not_history|state 0.320; normal|module_verification_pages/subtle-2|pairs_every_property|acme-widget--verification 0.300; normal|module_properties_pages/subtle-3|current_not_history|acme-widget--properties 0.280
+position buckets (normal arm, batched relative position; size-1 batches count as first)
+  third   n   mean |d|  disagreement
+  ------  --  --------  ------------
+  first   0   -         -           
+  middle  0   -         -           
+  last    20  0.091     0.000       
+position slope: not identified (no reversed arm in these sidecars)
+cost per shape
+  shape     runs  main requests  questions  follow-ups  stateBytes  wall s  judge s  mixed-oracle requests
+  --------  ----  -------------  ---------  ----------  ----------  ------  -------  ---------------------
+  batched   48    40             80         0           36104       202.76  16.28    20                   
+  per-atom  48    80             80         0           39774       216.36  29.13    0                    
+per cell (normal arm)
+  cell                                                                                       expect  batched labels           per-atom labels        b P(exp)  a P(exp)  d       TV     b pos  agree
+  -----------------------------------------------------------------------------------------  ------  -----------------------  ---------------------  --------  --------  ------  -----  -----  -----
+  normal|module_contract_pages/good|current_not_history|acme-widget--contract                holds   holds:0.97 holds:0.97    holds:0.99 holds:0.97  0.97      0.98      0.010   0.010  0/2    yes  
+  normal|module_contract_pages/good|current_not_history|public-surface                       holds   holds:0.98 holds:0.97    holds:0.97 holds:0.97  0.97      0.97      -0.005  0.010  1/2    yes  
+  normal|module_contract_pages/good-near|current_not_history|acme-widget--contract           holds   holds:0.97 holds:0.97    holds:0.98 holds:0.98  0.97      0.98      0.010   0.010  0/2    yes  
+  normal|module_contract_pages/good-near|current_not_history|public-surface                  holds   holds:0.97 holds:0.96    holds:0.98 holds:0.97  0.96      0.97      0.010   0.010  1/2    yes  
+  normal|module_contract_pages/subtle-1|current_not_history|acme-widget--contract            fails   holds:0.63 holds:0.63    holds:0.71 holds:0.81  0.36      0.23      -0.135  0.132  0/2    yes  
+  normal|module_contract_pages/subtle-1|current_not_history|public-surface                   fails   holds:0.53 fails:0.53    holds:0.78 holds:0.72  0.49      0.24      -0.255  0.255  1/2    yes  
+  normal|module_contract_pages/subtle-2|current_not_history|acme-widget--contract            fails   holds:0.68 holds:0.71    holds:0.74 holds:0.81  0.30      0.21      -0.080  0.080  0/2    yes  
+  normal|module_contract_pages/subtle-2|current_not_history|public-surface                   holds   holds:0.93 holds:0.96    holds:0.97 holds:0.97  0.95      0.97      0.025   0.035  1/2    yes  
+  normal|module_contract_pages/subtle-3|current_not_history|acme-widget--contract            fails   holds:0.87 holds:0.81    holds:0.83 holds:0.84  0.15      0.15      0.005   0.005  0/2    yes  
+  normal|module_contract_pages/subtle-3|current_not_history|public-surface                   fails   holds:0.78 holds:0.74    holds:0.79 holds:0.72  0.23      0.23      -0.005  0.010  1/2    yes  
+  normal|module_model_pages/good|current_not_history|acme-widget--model                      holds   holds:0.96 holds:0.96    holds:0.98 holds:0.98  0.96      0.98      0.020   0.020  0/2    yes  
+  normal|module_model_pages/good|current_not_history|state                                   holds   holds:0.97 holds:0.97    holds:0.98 holds:0.98  0.97      0.98      0.010   0.010  1/2    yes  
+  normal|module_model_pages/good-near|current_not_history|acme-widget--model                 holds   holds:0.96 holds:0.96    holds:0.98 holds:0.98  0.96      0.98      0.020   0.020  0/2    yes  
+  normal|module_model_pages/good-near|current_not_history|state                              holds   holds:0.97 holds:0.97    holds:0.96 holds:0.97  0.97      0.96      -0.005  0.005  1/2    yes  
+  normal|module_model_pages/subtle-1|current_not_history|acme-widget--model                  fails   fails:0.61 fails:0.59    holds:0.68 holds:0.75  0.60      0.26      -0.345  0.345  0/2    NO   
+  normal|module_model_pages/subtle-1|current_not_history|state                               holds   holds:0.98 holds:0.99    holds:0.98 holds:0.98  0.98      0.98      -0.005  0.005  1/2    yes  
+  normal|module_model_pages/subtle-2|current_not_history|acme-widget--model                  fails   holds:0.70 holds:0.73    holds:0.85 holds:0.85  0.28      0.14      -0.135  0.135  0/2    yes  
+  normal|module_model_pages/subtle-2|current_not_history|state                               fails   holds:0.50 holds:0.57    holds:0.89 holds:0.89  0.45      0.10      -0.355  0.355  1/2    yes  
+  normal|module_model_pages/subtle-3|current_not_history|acme-widget--model                  fails   holds:0.74 holds:0.72    holds:0.87 holds:0.87  0.25      0.11      -0.140  0.140  0/2    yes  
+  normal|module_model_pages/subtle-3|current_not_history|state                               fails   holds:0.54 holds:0.60    holds:0.88 holds:0.88  0.41      0.09      -0.320  0.320  1/2    yes  
+  normal|module_properties_pages/good|current_not_history|acme-widget--properties            holds   holds:0.95 holds:0.96    holds:0.94 holds:0.93  0.95      0.94      -0.020  0.017  0/2    yes  
+  normal|module_properties_pages/good|properties_are_claims|acme-widget--properties          holds   holds:1.00 holds:1.00    holds:1.00 holds:1.00  1.00      1.00      0.000   0.000  1/2    yes  
+  normal|module_properties_pages/good-near|current_not_history|acme-widget--properties       holds   unknown:0.52 holds:0.53  holds:0.74 holds:0.72  0.50      0.73      0.230   0.240  0/2    NO   
+  normal|module_properties_pages/good-near|properties_are_claims|acme-widget--properties     holds   holds:0.99 holds:0.99    holds:1.00 holds:1.00  0.99      1.00      0.010   0.010  1/2    yes  
+  normal|module_properties_pages/subtle-1|current_not_history|acme-widget--properties        fails   holds:0.81 holds:0.80    holds:0.91 holds:0.91  0.18      0.06      -0.125  0.125  0/2    yes  
+  normal|module_properties_pages/subtle-1|properties_are_claims|acme-widget--properties      holds   holds:0.98 holds:0.98    holds:0.97 holds:0.97  0.98      0.97      -0.010  0.010  1/2    yes  
+  normal|module_properties_pages/subtle-2|current_not_history|acme-widget--properties        fails   holds:0.78 holds:0.72    holds:0.91 holds:0.90  0.24      0.08      -0.165  0.165  0/2    yes  
+  normal|module_properties_pages/subtle-2|properties_are_claims|acme-widget--properties      holds   holds:0.99 holds:0.99    holds:0.96 holds:0.95  0.99      0.95      -0.035  0.035  1/2    yes  
+  normal|module_properties_pages/subtle-3|current_not_history|acme-widget--properties        fails   holds:0.63 holds:0.60    holds:0.89 holds:0.90  0.34      0.08      -0.270  0.280  0/2    yes  
+  normal|module_properties_pages/subtle-3|properties_are_claims|acme-widget--properties      holds   holds:0.88 holds:0.92    holds:0.95 holds:0.97  0.90      0.96      0.060   0.060  1/2    yes  
+  normal|module_verification_pages/good|current_not_history|acme-widget--verification        holds   holds:0.86 holds:0.87    holds:0.84 holds:0.84  0.86      0.84      -0.025  0.025  0/2    yes  
+  normal|module_verification_pages/good|pairs_every_property|acme-widget--verification       holds   holds:0.85 holds:0.88    holds:0.84 holds:0.82  0.86      0.83      -0.035  0.035  1/2    yes  
+  normal|module_verification_pages/good-near|current_not_history|acme-widget--verification   holds   holds:0.87 holds:0.85    holds:0.90 holds:0.92  0.86      0.91      0.050   0.055  0/2    yes  
+  normal|module_verification_pages/good-near|pairs_every_property|acme-widget--verification  holds   holds:0.92 holds:0.87    holds:0.82 holds:0.84  0.90      0.83      -0.065  0.065  1/2    yes  
+  normal|module_verification_pages/subtle-1|current_not_history|acme-widget--verification    fails   holds:0.92 holds:0.91    holds:0.84 holds:0.85  0.04      0.08      0.040   0.070  0/2    yes  
+  normal|module_verification_pages/subtle-1|pairs_every_property|acme-widget--verification   holds   holds:0.86 holds:0.90    holds:0.75 holds:0.78  0.88      0.77      -0.115  0.120  1/2    yes  
+  normal|module_verification_pages/subtle-2|current_not_history|acme-widget--verification    fails   holds:0.93 holds:0.94    holds:0.84 holds:0.85  0.04      0.10      0.065   0.093  0/2    yes  
+  normal|module_verification_pages/subtle-2|pairs_every_property|acme-widget--verification   holds   holds:0.88 holds:0.91    holds:0.65 holds:0.58  0.90      0.61      -0.280  0.300  1/2    yes  
+  normal|module_verification_pages/subtle-3|current_not_history|acme-widget--verification    fails   holds:0.88 holds:0.88    holds:0.77 holds:0.76  0.06      0.08      0.030   0.115  0/2    yes  
+  normal|module_verification_pages/subtle-3|pairs_every_property|acme-widget--verification   holds   holds:0.85 holds:0.82    holds:0.69 holds:0.53  0.83      0.61      -0.225  0.255  1/2    yes  
+complete: true
+
+(.leaves-round8-pairs-verification.json; tags LIVE; models jev-1.13.0)
+== round8-pairs: 4 cells, 4 normal-arm pairs, 4 units after collapsing duplicate texts, 0 reversed-arm cells
+confident flips (cells; p >= 0.6 on both sides, different labels, any repeat pair): 0
+
+signed shift d = per-atom P(expected) - batched P(expected), units (duplicates once)
+  stratum                                                      n  mean d  90% CI            Wilcoxon p  mean |d|  max |d|
+  -----------------------------------------------------------  -  ------  ----------------  ----------  --------  -------
+  all                                                          4  -0.050  [-0.073, -0.028]  0.125       0.050     0.085  
+  with expected label                                          2  -0.033  [-0.060, -0.005]  0.500       0.033     0.060  
+  near threshold (batched repeat 1 P(expected) in [0.4, 0.8])  2  -0.045  [-0.085, -0.005]  0.500       0.045     0.085  
+  mixed-oracle batch                                           4  -0.050  [-0.073, -0.028]  0.125       0.050     0.085  
+  single-oracle batch                                          0  -       [-, -]            1.000       -         -      
+  noise: batched rep2 - rep1                                   4  -0.015  [-0.035, 0.003]   0.750       0.020     0.060  
+  noise: per-atom rep2 - rep1                                  4  -0.010  [-0.010, -0.010]  0.125       0.010     0.010  
+
+correctness vs expected labels (fixture units): both right 2, batched right/per-atom wrong 0, batched wrong/per-atom right 0, both wrong 0; exact McNemar p 1.000
+seeded cells per-atom catches and batched misses: none
+seeded cells batched catches and per-atom misses: none
+genuine cells per-atom fails where batched holds (stricter): none
+leaf shapes: batched {"decides":8}; per-atom {"decides":8}; transitions (rep 1) {"decides -> decides":4}
+repeat flips: batched 0 []; per-atom 0 []
+total variation per unit: mean 0.050, max 0.085; top normal|module_verification_pages_pairs/seeded-unpaired|current_not_history|acme-widget--verification 0.085; normal|module_verification_pages_pairs/good|pairs_every_property|acme-widget--verification 0.060; normal|module_verification_pages_pairs/good|current_not_history|acme-widget--verification 0.050; normal|module_verification_pages_pairs/seeded-unpaired|pairs_every_property|acme-widget--verification 0.005
+position buckets (normal arm, batched relative position; size-1 batches count as first)
+  third   n  mean |d|  disagreement
+  ------  -  --------  ------------
+  first   0  -         -           
+  middle  0  -         -           
+  last    2  0.033     0.000       
+position slope: not identified (no reversed arm in these sidecars)
+cost per shape
+  shape     runs  main requests  questions  follow-ups  stateBytes  wall s  judge s  mixed-oracle requests
+  --------  ----  -------------  ---------  ----------  ----------  ------  -------  ---------------------
+  batched   6     4              8          0           3660        25.72   2.39     4                    
+  per-atom  6     8              8          0           4040        27.14   4.00     0                    
+per cell (normal arm)
+  cell                                                                                                   expect  batched labels         per-atom labels        b P(exp)  a P(exp)  d       TV     b pos  agree
+  -----------------------------------------------------------------------------------------------------  ------  ---------------------  ---------------------  --------  --------  ------  -----  -----  -----
+  normal|module_verification_pages_pairs/good|current_not_history|acme-widget--verification              holds   holds:0.87 holds:0.88  holds:0.83 holds:0.82  0.88      0.82      -0.050  0.050  0/2    yes  
+  normal|module_verification_pages_pairs/good|pairs_every_property|acme-widget--verification             holds   holds:0.88 holds:0.87  holds:0.82 holds:0.81  0.88      0.81      -0.060  0.060  1/2    yes  
+  normal|module_verification_pages_pairs/seeded-unpaired|current_not_history|acme-widget--verification   holds   holds:0.77 holds:0.77  holds:0.69 holds:0.68  0.77      0.69      -0.085  0.085  0/2    yes  
+  normal|module_verification_pages_pairs/seeded-unpaired|pairs_every_property|acme-widget--verification  fails   fails:0.57 fails:0.51  fails:0.54 fails:0.53  0.54      0.54      -0.005  0.005  1/2    yes  
+complete: true
+
+(.leaves-round8-claims-properties.json; tags LIVE; models jev-1.13.0)
+== round8-claims: 4 cells, 4 normal-arm pairs, 4 units after collapsing duplicate texts, 0 reversed-arm cells
+confident flips (cells; p >= 0.6 on both sides, different labels, any repeat pair): 0
+
+signed shift d = per-atom P(expected) - batched P(expected), units (duplicates once)
+  stratum                                                      n  mean d  90% CI           Wilcoxon p  mean |d|  max |d|
+  -----------------------------------------------------------  -  ------  ---------------  ----------  --------  -------
+  all                                                          4  0.051   [-0.047, 0.150]  1.000       0.099     0.300  
+  with expected label                                          2  0.150   [0.000, 0.300]   1.000       0.150     0.300  
+  near threshold (batched repeat 1 P(expected) in [0.4, 0.8])  1  0.300   [0.300, 0.300]   1.000       0.300     0.300  
+  mixed-oracle batch                                           4  0.051   [-0.047, 0.150]  1.000       0.099     0.300  
+  single-oracle batch                                          0  -       [-, -]           1.000       -         -      
+  noise: batched rep2 - rep1                                   4  0.000   [0.000, 0.000]   1.000       0.000     0.000  
+  noise: per-atom rep2 - rep1                                  4  0.007   [-0.010, 0.025]  0.750       0.017     0.040  
+
+correctness vs expected labels (fixture units): both right 2, batched right/per-atom wrong 0, batched wrong/per-atom right 0, both wrong 0; exact McNemar p 1.000
+seeded cells per-atom catches and batched misses: normal|module_properties_pages_claims/seeded-unfalsifiable|properties_are_claims|acme-widget--properties
+seeded cells batched catches and per-atom misses: none
+genuine cells per-atom fails where batched holds (stricter): none
+leaf shapes: batched {"decides":8}; per-atom {"decides":8}; transitions (rep 1) {"decides -> decides":4}
+repeat flips: batched 0 []; per-atom 0 []
+total variation per unit: mean 0.099, max 0.300; top normal|module_properties_pages_claims/seeded-unfalsifiable|properties_are_claims|acme-widget--properties 0.300; normal|module_properties_pages_claims/seeded-unfalsifiable|current_not_history|acme-widget--properties 0.083; normal|module_properties_pages_claims/good|current_not_history|acme-widget--properties 0.015; normal|module_properties_pages_claims/good|properties_are_claims|acme-widget--properties 0.000
+position buckets (normal arm, batched relative position; size-1 batches count as first)
+  third   n  mean |d|  disagreement
+  ------  -  --------  ------------
+  first   0  -         -           
+  middle  0  -         -           
+  last    2  0.150     0.000       
+position slope: not identified (no reversed arm in these sidecars)
+cost per shape
+  shape     runs  main requests  questions  follow-ups  stateBytes  wall s  judge s  mixed-oracle requests
+  --------  ----  -------------  ---------  ----------  ----------  ------  -------  ---------------------
+  batched   6     4              8          0           3676        25.12   1.71     4                    
+  per-atom  6     8              8          0           4048        26.07   2.74     0                    
+per cell (normal arm)
+  cell                                                                                                      expect  batched labels         per-atom labels        b P(exp)  a P(exp)  d       TV     b pos  agree
+  --------------------------------------------------------------------------------------------------------  ------  ---------------------  ---------------------  --------  --------  ------  -----  -----  -----
+  normal|module_properties_pages_claims/good|current_not_history|acme-widget--properties                    holds   holds:0.95 holds:0.95  holds:0.93 holds:0.94  0.95      0.94      -0.015  0.015  0/2    yes  
+  normal|module_properties_pages_claims/good|properties_are_claims|acme-widget--properties                  holds   holds:1.00 holds:1.00  holds:1.00 holds:1.00  1.00      1.00      0.000   0.000  1/2    yes  
+  normal|module_properties_pages_claims/seeded-unfalsifiable|current_not_history|acme-widget--properties    holds   holds:0.93 holds:0.93  holds:0.83 holds:0.87  0.93      0.85      -0.080  0.083  0/2    yes  
+  normal|module_properties_pages_claims/seeded-unfalsifiable|properties_are_claims|acme-widget--properties  fails   fails:0.53 fails:0.53  fails:0.84 fails:0.82  0.53      0.83      0.300   0.300  1/2    yes  
+complete: true
+
+(.leaves-round8-real.json; tags LIVE; models jev-1.13.0)
+== round8-real: 37 cells, 37 normal-arm pairs, 37 units after collapsing duplicate texts, 0 reversed-arm cells
+confident flips (cells; p >= 0.6 on both sides, different labels, any repeat pair): 0
+
+signed shift d = per-atom P(expected) - batched P(expected), units (duplicates once)
+  stratum                                                      n   mean d  90% CI            Wilcoxon p  mean |d|  max |d|
+  -----------------------------------------------------------  --  ------  ----------------  ----------  --------  -------
+  all                                                          37  -0.016  [-0.037, 0.002]   0.121       0.039     0.290  
+  with expected label                                          0   -       [-, -]            1.000       -         -      
+  near threshold (batched repeat 1 P(expected) in [0.4, 0.8])  4   -0.080  [-0.256, 0.079]   0.625       0.188     0.290  
+  mixed-oracle batch                                           16  -0.017  [-0.026, -0.010]  0.001       0.020     0.070  
+  single-oracle batch                                          21  -0.015  [-0.050, 0.017]   0.970       0.054     0.290  
+  noise: batched rep2 - rep1                                   37  0.001   [-0.004, 0.006]   0.804       0.012     0.040  
+  noise: per-atom rep2 - rep1                                  37  0.001   [-0.004, 0.006]   0.582       0.015     0.070  
+
+correctness vs expected labels (fixture units): both right 0, batched right/per-atom wrong 0, batched wrong/per-atom right 0, both wrong 0; exact McNemar p 1.000
+seeded cells per-atom catches and batched misses: none
+seeded cells batched catches and per-atom misses: none
+genuine cells per-atom fails where batched holds (stricter): none
+leaf shapes: batched {"decides":74}; per-atom {"decides":73,"judge-unknown":1}; transitions (rep 1) {"decides -> decides":37}
+repeat flips: batched 0 []; per-atom 1 [normal|module-pages.yaml:docs/modules/oracles/model.md|current_not_history|concepts]
+total variation per unit: mean 0.041, max 0.290; top normal|module-pages.yaml:docs/modules/oracles/model.md|current_not_history|concepts 0.290; normal|module-pages.yaml:docs/modules/oracles/model.md|current_not_history|oracles--model 0.245; normal|module-pages.yaml:docs/modules/oracles/model.md|current_not_history|evidence-and-spans 0.165; normal|module-pages.yaml:docs/modules/language/verification.md|pairs_every_property|language--verification 0.070; normal|module-pages.yaml:docs/modules/report/model.md|current_not_history|concepts 0.070
+position buckets (normal arm, batched relative position; size-1 batches count as first)
+  third   n   mean |d|  disagreement
+  ------  --  --------  ------------
+  first   1   0.245     0.000       
+  middle  4   0.057     0.000       
+  last    16  0.038     0.000       
+position slope: not identified (no reversed arm in these sidecars)
+cost per shape
+  shape     runs  main requests  questions  follow-ups  stateBytes  wall s  judge s  mixed-oracle requests
+  --------  ----  -------------  ---------  ----------  ----------  ------  -------  ---------------------
+  batched   2     32             74         0           62840       20.68   11.77    16                   
+  per-atom  2     74             74         0           66592       35.35   26.67    0                    
+real cells module-pages.yaml (INFORMATIONAL, not a decision input): lead agreement batched 37/37, per-atom 37/37; shapes disagree on 0/37
+per cell (normal arm)
+  cell                                                                                                          expect  batched labels         per-atom labels          b P(exp)  a P(exp)  d       TV     b pos  agree
+  ------------------------------------------------------------------------------------------------------------  ------  ---------------------  -----------------------  --------  --------  ------  -----  -----  -----
+  normal|module-pages.yaml:docs/modules/language/contract.md|current_not_history|language--contract             holds   holds:0.97 holds:0.97  holds:0.97 holds:0.97    0.97      0.97      0.000   0.000  0/2    yes  
+  normal|module-pages.yaml:docs/modules/language/contract.md|current_not_history|public-surface                 holds   holds:0.96 holds:0.97  holds:0.97 holds:0.96    0.96      0.96      0.000   0.005  1/2    yes  
+  normal|module-pages.yaml:docs/modules/language/model.md|current_not_history|concepts                          holds   holds:0.89 holds:0.85  holds:0.88 holds:0.87    0.87      0.88      0.005   0.010  2/3    yes  
+  normal|module-pages.yaml:docs/modules/language/model.md|current_not_history|language--model                   holds   holds:0.85 holds:0.83  holds:0.83 holds:0.86    0.84      0.84      0.005   0.005  0/3    yes  
+  normal|module-pages.yaml:docs/modules/language/model.md|current_not_history|two-bounds                        holds   holds:0.83 holds:0.87  holds:0.77 holds:0.81    0.85      0.79      -0.060  0.060  1/3    yes  
+  normal|module-pages.yaml:docs/modules/language/properties.md|current_not_history|language--properties         holds   holds:0.95 holds:0.95  holds:0.93 holds:0.95    0.95      0.94      -0.010  0.010  0/2    yes  
+  normal|module-pages.yaml:docs/modules/language/properties.md|properties_are_claims|language--properties       holds   holds:0.96 holds:0.95  holds:0.94 holds:0.95    0.95      0.94      -0.010  0.010  1/2    yes  
+  normal|module-pages.yaml:docs/modules/language/verification.md|current_not_history|language--verification     holds   holds:0.93 holds:0.92  holds:0.92 holds:0.90    0.93      0.91      -0.015  0.015  0/2    yes  
+  normal|module-pages.yaml:docs/modules/language/verification.md|pairs_every_property|language--verification    holds   holds:0.97 holds:0.96  holds:0.89 holds:0.90    0.96      0.90      -0.070  0.070  1/2    yes  
+  normal|module-pages.yaml:docs/modules/oracles/contract.md|current_not_history|oracles--contract               holds   holds:0.95 holds:0.95  holds:0.94 holds:0.96    0.95      0.95      0.000   0.005  0/2    yes  
+  normal|module-pages.yaml:docs/modules/oracles/contract.md|current_not_history|public-surface                  holds   holds:0.93 holds:0.94  holds:0.94 holds:0.93    0.94      0.93      -0.000  0.010  1/2    yes  
+  normal|module-pages.yaml:docs/modules/oracles/model.md|current_not_history|cache                              holds   holds:0.77 holds:0.79  holds:0.82 holds:0.84    0.78      0.83      0.050   0.060  2/4    yes  
+  normal|module-pages.yaml:docs/modules/oracles/model.md|current_not_history|concepts                           holds   holds:0.75 holds:0.78  holds:0.51 unknown:0.52  0.77      0.47      -0.290  0.290  3/4    yes  
+  normal|module-pages.yaml:docs/modules/oracles/model.md|current_not_history|evidence-and-spans                 holds   holds:0.68 holds:0.72  holds:0.86 holds:0.87    0.70      0.86      0.165   0.165  0/4    yes  
+  normal|module-pages.yaml:docs/modules/oracles/model.md|current_not_history|oracles--model                     holds   holds:0.76 holds:0.78  holds:0.53 holds:0.52    0.77      0.53      -0.245  0.245  1/4    yes  
+  normal|module-pages.yaml:docs/modules/oracles/properties.md|current_not_history|oracles--properties           holds   holds:0.95 holds:0.96  holds:0.95 holds:0.94    0.95      0.94      -0.010  0.010  0/2    yes  
+  normal|module-pages.yaml:docs/modules/oracles/properties.md|properties_are_claims|oracles--properties         holds   holds:0.96 holds:0.94  holds:0.96 holds:0.96    0.95      0.96      0.010   0.010  1/2    yes  
+  normal|module-pages.yaml:docs/modules/oracles/verification.md|current_not_history|oracles--verification       holds   holds:0.91 holds:0.91  holds:0.87 holds:0.90    0.91      0.89      -0.025  0.025  0/2    yes  
+  normal|module-pages.yaml:docs/modules/oracles/verification.md|pairs_every_property|oracles--verification      holds   holds:0.96 holds:0.94  holds:0.92 holds:0.92    0.95      0.92      -0.030  0.030  1/2    yes  
+  normal|module-pages.yaml:docs/modules/report/contract.md|current_not_history|public-surface                   holds   holds:0.94 holds:0.93  holds:0.96 holds:0.96    0.94      0.96      0.025   0.025  0/2    yes  
+  normal|module-pages.yaml:docs/modules/report/contract.md|current_not_history|report--contract                 holds   holds:0.95 holds:0.94  holds:0.96 holds:0.96    0.94      0.96      0.015   0.015  1/2    yes  
+  normal|module-pages.yaml:docs/modules/report/model.md|current_not_history|concepts                            holds   holds:0.85 holds:0.85  holds:0.91 holds:0.93    0.85      0.92      0.070   0.070  1/3    yes  
+  normal|module-pages.yaml:docs/modules/report/model.md|current_not_history|report--model                       holds   holds:0.95 holds:0.95  holds:0.94 holds:0.95    0.95      0.94      -0.005  0.010  0/3    yes  
+  normal|module-pages.yaml:docs/modules/report/model.md|current_not_history|verdict                             holds   holds:0.93 holds:0.93  holds:0.88 holds:0.87    0.93      0.88      -0.055  0.055  2/3    yes  
+  normal|module-pages.yaml:docs/modules/report/properties.md|current_not_history|report--properties             holds   holds:0.93 holds:0.94  holds:0.93 holds:0.94    0.94      0.94      0.000   0.003  0/2    yes  
+  normal|module-pages.yaml:docs/modules/report/properties.md|properties_are_claims|report--properties           holds   holds:0.92 holds:0.93  holds:0.93 holds:0.94    0.93      0.94      0.010   0.010  1/2    yes  
+  normal|module-pages.yaml:docs/modules/report/verification.md|current_not_history|report--verification         holds   holds:0.91 holds:0.92  holds:0.89 holds:0.87    0.92      0.88      -0.035  0.035  0/2    yes  
+  normal|module-pages.yaml:docs/modules/report/verification.md|pairs_every_property|report--verification        holds   holds:0.98 holds:0.96  holds:0.95 holds:0.94    0.97      0.94      -0.025  0.025  1/2    yes  
+  normal|module-pages.yaml:docs/modules/selection/contract.md|current_not_history|public-surface                holds   holds:0.94 holds:0.94  holds:0.97 holds:0.96    0.94      0.96      0.025   0.025  0/2    yes  
+  normal|module-pages.yaml:docs/modules/selection/contract.md|current_not_history|selection--contract           holds   holds:0.96 holds:0.97  holds:0.97 holds:0.96    0.96      0.96      0.000   0.005  1/2    yes  
+  normal|module-pages.yaml:docs/modules/selection/model.md|current_not_history|concepts                         holds   holds:0.86 holds:0.89  holds:0.93 holds:0.92    0.88      0.93      0.050   0.065  1/3    yes  
+  normal|module-pages.yaml:docs/modules/selection/model.md|current_not_history|selection--model                 holds   holds:0.97 holds:0.96  holds:0.97 holds:0.95    0.96      0.96      -0.005  0.005  0/3    yes  
+  normal|module-pages.yaml:docs/modules/selection/model.md|current_not_history|selection                        holds   holds:0.97 holds:0.97  holds:0.91 holds:0.91    0.97      0.91      -0.060  0.060  2/3    yes  
+  normal|module-pages.yaml:docs/modules/selection/properties.md|current_not_history|selection--properties       holds   holds:0.96 holds:0.96  holds:0.95 holds:0.94    0.96      0.94      -0.015  0.015  0/2    yes  
+  normal|module-pages.yaml:docs/modules/selection/properties.md|properties_are_claims|selection--properties     holds   holds:0.98 holds:0.98  holds:0.97 holds:0.98    0.98      0.97      -0.005  0.005  1/2    yes  
+  normal|module-pages.yaml:docs/modules/selection/verification.md|current_not_history|selection--verification   holds   holds:0.93 holds:0.93  holds:0.88 holds:0.92    0.93      0.90      -0.030  0.032  0/2    yes  
+  normal|module-pages.yaml:docs/modules/selection/verification.md|pairs_every_property|selection--verification  holds   holds:0.96 holds:0.93  holds:0.93 holds:0.92    0.95      0.93      -0.020  0.023  1/2    yes  
+complete: true
+
+complete (all prefixes): true

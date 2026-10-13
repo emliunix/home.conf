@@ -1,0 +1,122 @@
+# Round 8: module-verification page fixtures for current_not_history (kernel-trials round-8-preregistration.md §Fixtures).
+# good.md = doc-verify/lib/examples/module-verification.md at HEAD; gross.md = module-verification-bad.md at HEAD (checked by
+# the runner through `sources`). Every other fixture is good.md with its one `edit` applied (checked: `edit ok`).
+# Expected label rule (pre-registered): a section is `fails` iff its body (heading plus subtree, core.body)
+# contains the edit, else `holds`; the title section's body is the whole page. The runner recomputes this rule
+# from the edit and the engine's sections and refuses a mismatch (`expect-rule`). Section ids are the engine
+# slugger's (an em dash leaves two hyphens: "acme-widget — verification" is `acme-widget--verification`; a subsection id is its own slug).
+# Draft status pre-registered per fixture: PASS except gross (NO-GO, the dated-prose regex).
+# `seeded: false` (good-near): its edit is the margin sentence, not a defect, so every section holds.
+# `judged: false` (gross): a structural NO-GO returns before the judge (checker.ts), so the control has no
+# leaf at promotion either; its sections are listed under the rule for the record and are never asked.
+set: module_verification_pages
+oracle: current_not_history
+ledger_suffix: verification
+declared_in: doc-verify/lib/module-verification.yaml
+threshold: 0.5
+constraint: module-verification-is-current
+rule:
+  pattern: docs/modules/_fixtures/*.md
+  artifact_kind: module-verification
+  modules:
+    - doc-verify:module-verification
+document: docs/modules/_fixtures/verification.md
+sources:
+  good.md: doc-verify/lib/examples/module-verification.md
+  gross.md: doc-verify/lib/examples/module-verification-bad.md
+atom:
+  inputs: current_not_history(D, S)
+  evidence: core.body(D, S)
+  per_section: true
+fixtures:
+  - name: good
+    file: good.md
+    draft: PASS
+    expect_sections:
+      acme-widget--verification: holds
+    why:
+      acme-widget--verification: "no edit: good.md is the library's example page at HEAD"
+    note: doc-verify/lib/examples/module-verification.md at HEAD, unedited; regex-clean.
+  - name: good-near
+    file: good-near.md
+    draft: PASS
+    seeded: false
+    expect_sections:
+      acme-widget--verification: holds
+    why:
+      acme-widget--verification: the added sentence narrates a current rule in a Concepts-like voice with no history word; nothing here is history
+    edit:
+      cut: one current-rule sentence added in the title section, a paragraph after the table
+      from: |
+        names the sku |
+      to: |
+        names the sku |
+
+        A property is witnessed when its check runs against the in-process ledger and passes; the limit names what that check does not reach.
+    note: "the margin case: regex-clean, reads like a narration but states current law."
+  - name: subtle-1
+    file: subtle-1.md
+    draft: PASS
+    expect_sections:
+      acme-widget--verification: fails
+    why:
+      acme-widget--verification: the title's body is the whole page, so it contains the edit (a paragraph between the H1 and the table)
+    edit:
+      cut: the regex-clean history sentence "Placement previously returned the ledger row; callers moved to the id after the double-count." placed in a paragraph between the H1 and the table
+      from: |
+        # acme-widget — verification
+      to: |
+        # acme-widget — verification
+
+        Placement previously returned the ledger row; callers moved to the id after the double-count.
+    note: subtle history the dated-prose regex does not catch; expected fails iff the section's body contains the edit.
+  - name: subtle-2
+    file: subtle-2.md
+    draft: PASS
+    expect_sections:
+      acme-widget--verification: fails
+    why:
+      acme-widget--verification: the title's body is the whole page, so it contains the edit (a paragraph after the table)
+    edit:
+      cut: the regex-clean history sentence "As of v2 the order is a map; it used to be a list." placed in a paragraph after the table
+      from: |
+        names the sku |
+      to: |
+        names the sku |
+
+        As of v2 the order is a map; it used to be a list.
+    note: subtle history the dated-prose regex does not catch; expected fails iff the section's body contains the edit.
+  - name: subtle-3
+    file: subtle-3.md
+    draft: PASS
+    expect_sections:
+      acme-widget--verification: fails
+    why:
+      acme-widget--verification: the title's body is the whole page, so it contains the edit (inside P-widget-01's Limit cell)
+    edit:
+      cut: the regex-clean history sentence "Originally idempotent only within a session." placed in inside P-widget-01's Limit cell
+      from: in-process ledger, no database |
+      to: in-process ledger, no database. Originally idempotent only within a session. |
+    note: subtle history the dated-prose regex does not catch; expected fails iff the section's body contains the edit.
+  - name: gross
+    file: gross.md
+    draft: NO-GO
+    judged: false
+    expect_sections:
+      acme-widget--verification: fails
+      note-2026-10-01: fails
+    why:
+      acme-widget--verification: the title's body is the whole page, so it contains the edit (the shipped -bad page's dated 'Round 5 / we tried / then changed' prose)
+      note-2026-10-01: the edit is in this section's body (the shipped -bad page's dated 'Round 5 / we tried / then changed' prose)
+    edit:
+      cut: "doc-verify/lib/examples/module-verification-bad.md: its dated history edit (trips the dated-prose regex)"
+      from: |-
+        | P-widget-01 | `tests/test_widget.py::test_place_is_idempotent` | in-process ledger, no database |
+        | P-widget-02 | `tests/test_widget.py::test_unknown_sku_is_refused` | in-process, names the sku |
+      to: |-
+        | P-widget-01 | `tests/test_widget.py::test_place_is_idempotent` | in-process ledger |
+
+        ### Note (2026-10-01)
+
+        Round 5: we tried a database test, then changed to the in-process ledger.
+    note: a control that the structural pre-check still catches it (draft NO-GO), not a judge measurement.

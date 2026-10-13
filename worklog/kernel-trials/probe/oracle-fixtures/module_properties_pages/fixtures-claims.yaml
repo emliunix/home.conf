@@ -1,0 +1,80 @@
+# Round 8: module-properties page fixtures for properties_are_claims (kernel-trials round-8-preregistration.md §Fixtures).
+# good.md = doc-verify/lib/examples/module-properties.md at HEAD; gross.md = module-properties-bad.md at HEAD (checked by
+# the runner through `sources`). Every other fixture is good.md with its one `edit` applied (checked: `edit ok`).
+# Expected label rule (pre-registered): a section is `fails` iff its body (heading plus subtree, core.body)
+# contains the edit, else `holds`; the title section's body is the whole page. The runner recomputes this rule
+# from the edit and the engine's sections and refuses a mismatch (`expect-rule`). Section ids are the engine
+# slugger's (an em dash leaves two hyphens: "acme-widget — properties" is `acme-widget--properties`; a subsection id is its own slug).
+# Draft status pre-registered per fixture: PASS except gross (NO-GO, the dated-prose regex).
+# `seeded: false` (good-near): its edit is the margin sentence, not a defect, so every section holds.
+# `judged: false` (gross): a structural NO-GO returns before the judge (checker.ts), so the control has no
+# leaf at promotion either; its sections are listed under the rule for the record and are never asked.
+# Smoke-tested, not measured (the plan's §The oracles): good, one seeded page for the oracle's unseeded clause,
+# and the gross control. The expected-label rule is the same; `fails` on the seeded page is the clause's defect.
+# The subtle history fixtures are not in this set (DECISION: whether "previously returned" fails this oracle's
+# history clause is not pre-registered by the plan).
+set: module_properties_pages_claims
+oracle: properties_are_claims
+ledger_suffix: properties
+declared_in: doc-verify/lib/module-properties.yaml
+threshold: 0.5
+constraint: module-properties-are-claims
+rule:
+  pattern: docs/modules/_fixtures/*.md
+  artifact_kind: module-properties
+  modules:
+    - doc-verify:module-properties
+document: docs/modules/_fixtures/properties.md
+sources:
+  good.md: doc-verify/lib/examples/module-properties.md
+  gross.md: doc-verify/lib/examples/module-properties-bad.md
+atom:
+  inputs: properties_are_claims(D, S)
+  evidence: core.body(D, S)
+  per_section: true
+fixtures:
+  - name: good
+    file: good.md
+    draft: PASS
+    expect_sections:
+      acme-widget--properties: holds
+    why:
+      acme-widget--properties: "no edit: good.md is the library's example page at HEAD"
+    note: doc-verify/lib/examples/module-properties.md at HEAD, unedited; regex-clean.
+  - name: seeded-unfalsifiable
+    file: seeded-unfalsifiable.md
+    draft: PASS
+    expect_sections:
+      acme-widget--properties: fails
+    why:
+      acme-widget--properties: "the page's one section contains the seeded defect: an unfalsifiable property row (the oracle's unseeded clause: a statement no check could falsify); no history"
+    edit:
+      cut: "an unfalsifiable property row (the oracle's unseeded clause: a statement no check could falsify); no history"
+      from: |
+        naming the sku |
+      to: |
+        naming the sku |
+        | P-widget-03 | sound placement | placement behaves well and is robust in practice |
+    note: smoke test of the clause the shipped -bad page does not seed.
+  - name: gross
+    file: gross.md
+    draft: NO-GO
+    judged: false
+    expect_sections:
+      acme-widget--properties: fails
+      note-2026-10-01: fails
+    why:
+      acme-widget--properties: the title's body is the whole page, so it contains the edit (the shipped -bad page's dated 'Round 5 / we tried / then changed' prose)
+      note-2026-10-01: the edit is in this section's body (the shipped -bad page's dated 'Round 5 / we tried / then changed' prose)
+    edit:
+      cut: "doc-verify/lib/examples/module-properties-bad.md: its dated history edit (trips the dated-prose regex)"
+      from: |-
+        | P-widget-01 | idempotent place | placing one order id twice returns one id and one ledger row |
+        | P-widget-02 | unknown sku refused | a line with an sku not in the catalog is refused, naming the sku |
+      to: |-
+        | P-widget-01 | idempotent place | placing one order id twice returns one id |
+
+        ### Note (2026-10-01)
+
+        Round 5: we tried counting rows, then changed to trusting the idempotency key.
+    note: a control that the structural pre-check still catches it (draft NO-GO), not a judge measurement.

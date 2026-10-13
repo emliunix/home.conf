@@ -1,0 +1,126 @@
+# Round 8: module-contract page fixtures for current_not_history (kernel-trials round-8-preregistration.md §Fixtures).
+# good.md = doc-verify/lib/examples/module-contract.md at HEAD; gross.md = module-contract-bad.md at HEAD (checked by
+# the runner through `sources`). Every other fixture is good.md with its one `edit` applied (checked: `edit ok`).
+# Expected label rule (pre-registered): a section is `fails` iff its body (heading plus subtree, core.body)
+# contains the edit, else `holds`; the title section's body is the whole page. The runner recomputes this rule
+# from the edit and the engine's sections and refuses a mismatch (`expect-rule`). Section ids are the engine
+# slugger's (an em dash leaves two hyphens: "acme-widget — contract" is `acme-widget--contract`; a subsection id is its own slug).
+# Draft status pre-registered per fixture: PASS except gross (NO-GO, the dated-prose regex).
+# `seeded: false` (good-near): its edit is the margin sentence, not a defect, so every section holds.
+# `judged: false` (gross): a structural NO-GO returns before the judge (checker.ts), so the control has no
+# leaf at promotion either; its sections are listed under the rule for the record and are never asked.
+set: module_contract_pages
+oracle: current_not_history
+ledger_suffix: contract
+declared_in: doc-verify/lib/module-contract.yaml
+threshold: 0.5
+constraint: module-contract-is-current
+rule:
+  pattern: docs/modules/_fixtures/*.md
+  artifact_kind: module-contract
+  modules:
+    - doc-verify:module-contract
+document: docs/modules/_fixtures/contract.md
+sources:
+  good.md: doc-verify/lib/examples/module-contract.md
+  gross.md: doc-verify/lib/examples/module-contract-bad.md
+atom:
+  inputs: current_not_history(D, S)
+  evidence: core.body(D, S)
+  per_section: true
+fixtures:
+  - name: good
+    file: good.md
+    draft: PASS
+    expect_sections:
+      acme-widget--contract: holds
+      public-surface: holds
+    why:
+      acme-widget--contract: "no edit: good.md is the library's example page at HEAD"
+      public-surface: "no edit: good.md is the library's example page at HEAD"
+    note: doc-verify/lib/examples/module-contract.md at HEAD, unedited; regex-clean.
+  - name: good-near
+    file: good-near.md
+    draft: PASS
+    seeded: false
+    expect_sections:
+      acme-widget--contract: holds
+      public-surface: holds
+    why:
+      acme-widget--contract: the added sentence narrates a current rule in a Concepts-like voice with no history word; nothing here is history
+      public-surface: the added sentence narrates a current rule in a Concepts-like voice with no history word; nothing here is history
+    edit:
+      cut: one current-rule sentence added in public-surface (new last paragraph)
+      from: |
+        read the ledger directly.
+      to: |
+        read the ledger directly.
+
+        A placement is **accepted** when the ledger records its id; a placement whose id the ledger already holds returns that id and records nothing.
+    note: "the margin case: regex-clean, reads like a narration but states current law."
+  - name: subtle-1
+    file: subtle-1.md
+    draft: PASS
+    expect_sections:
+      acme-widget--contract: fails
+      public-surface: fails
+    why:
+      acme-widget--contract: the title's body is the whole page, so it contains the edit (public-surface (end of its paragraph))
+      public-surface: the edit is in this section's body (public-surface (end of its paragraph))
+    edit:
+      cut: the regex-clean history sentence "Placement previously returned the ledger row; callers moved to the id after the double-count." placed in public-surface (end of its paragraph)
+      from: read the ledger directly.
+      to: read the ledger directly. Placement previously returned the ledger row; callers moved to the id after the double-count.
+    note: subtle history the dated-prose regex does not catch; expected fails iff the section's body contains the edit.
+  - name: subtle-2
+    file: subtle-2.md
+    draft: PASS
+    expect_sections:
+      acme-widget--contract: fails
+      public-surface: holds
+    why:
+      acme-widget--contract: the title's body is the whole page, so it contains the edit (the title section's own text (a paragraph between the H1 and the H2))
+      public-surface: the edit is outside this section's body (the title section's own text (a paragraph between the H1 and the H2))
+    edit:
+      cut: the regex-clean history sentence "As of v2 the order is a map; it used to be a list." placed in the title section's own text (a paragraph between the H1 and the H2)
+      from: |
+        # acme-widget — contract
+      to: |
+        # acme-widget — contract
+
+        As of v2 the order is a map; it used to be a list.
+    note: subtle history the dated-prose regex does not catch; expected fails iff the section's body contains the edit.
+  - name: subtle-3
+    file: subtle-3.md
+    draft: PASS
+    expect_sections:
+      acme-widget--contract: fails
+      public-surface: fails
+    why:
+      acme-widget--contract: the title's body is the whole page, so it contains the edit (public-surface (mid-paragraph, after the first sentence))
+      public-surface: the edit is in this section's body (public-surface (mid-paragraph, after the first sentence))
+    edit:
+      cut: the regex-clean history sentence "Originally idempotent only within a session." placed in public-surface (mid-paragraph, after the first sentence)
+      from: returns its id. It is idempotent
+      to: returns its id. Originally idempotent only within a session. It is idempotent
+    note: subtle history the dated-prose regex does not catch; expected fails iff the section's body contains the edit.
+  - name: gross
+    file: gross.md
+    draft: NO-GO
+    judged: false
+    expect_sections:
+      acme-widget--contract: fails
+      public-surface: fails
+    why:
+      acme-widget--contract: the title's body is the whole page, so it contains the edit (the shipped -bad page's dated 'Round 5 / we tried / then changed' prose)
+      public-surface: the edit is in this section's body (the shipped -bad page's dated 'Round 5 / we tried / then changed' prose)
+    edit:
+      cut: "doc-verify/lib/examples/module-contract-bad.md: its dated history edit (trips the dated-prose regex)"
+      from: |-
+        `widget.place(order)` accepts an order and returns its id. It is idempotent by id: placing
+        the same order twice returns one id and creates one order. Callers rely on that; they do not
+        read the ledger directly.
+      to: |-
+        `widget.place(order)` returns an id. Round 5 (2026-10-01): we tried returning the ledger row,
+        then changed to the id; the ledger read double-counted.
+    note: a control that the structural pre-check still catches it (draft NO-GO), not a judge measurement.

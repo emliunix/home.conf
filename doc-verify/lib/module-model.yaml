@@ -9,6 +9,9 @@ module: doc-verify.module-model
 # request_shape: these oracles were calibrated batched (kernel-trials round 3, the corpus) and
 # per-atom is unmeasured for them (round 6 measured goal and design oracles only; under
 # per-atom one module page drops below its threshold), so the shape is pinned until measured.
+# Round 8 (2026-10-13) measured this pin: labels equal under both shapes on the real pages and
+# the seeded ones, per-atom lowers P(expected) by 0.07 (0.21 near threshold) on the seeded pages,
+# and subtle history passes under both; the pin stays (round-8-verdict.md).
 request_shape: batched
 extends: [doc-verify:references]
 oracles:

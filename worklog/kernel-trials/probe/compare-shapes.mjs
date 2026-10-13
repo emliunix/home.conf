@@ -26,6 +26,9 @@
 // reversed arm (the same cell at a different position; the per-atom side is the cell's normal-arm
 // value); a trend is reported when the 90% CI of the slope excludes 0 and |slope| >= 0.05.
 // The real cells' agreement with the lead's labels is printed as informational only.
+// Round 8: a section-keyed atom (`current_not_history(D, S)`; the runner records `section`, the
+// atom's last argument) is keyed by its section id, so a cell pairs batched with per-atom by
+// (source, oracle, section) and not by the atom's text; a row atom keeps its original row id.
 // `complete: false` when a cell lacks a shape or a repeat, or any batched run split.
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
@@ -163,7 +166,7 @@ function buildCells(runs) {
   for (const run of runs) {
     for (const leaf of run.leaves) {
       if (leaf.key === "-") continue;
-      const cellId = leaf.origRowId || leaf.atom;
+      const cellId = leaf.origRowId || leaf.section || leaf.atom;
       // A real-cells run checks several documents under one source (the labels file): the document is part of the cell.
       const source = run.mode === "real-cells" ? `${leaf.source}:${leaf.document}` : leaf.source;
       const id = `${leaf.arm}|${source}|${leaf.oracle}|${cellId}`;
@@ -236,6 +239,8 @@ export function analyse(runs) {
   const units = [...unitsMap.values()].map((members) => ({
     members, id: members[0].cell.id, dup: members.length,
     d: mean(members.map((m) => m.d)), bP: mean(members.map((m) => m.b.pExp)), tv: mean(members.map((m) => m.tv)),
+    // The stratum's defining value (round 8 plan): the FIRST batched repeat's P(expected), not the repeats' mean.
+    bP1: mean(members.map((m) => m.b.pExpByRepeat[0])), bRep1: members[0].b.leaves[0].repeat,
     hasExpect: members[0].b.hasExpect, mode: members[0].cell.mode,
     noiseB: members[0].b.pExpByRepeat.length >= 2 ? mean(members.map((m) => m.b.pExpByRepeat[1] - m.b.pExpByRepeat[0])) : undefined,
     noiseA: members[0].a.pExpByRepeat.length >= 2 ? mean(members.map((m) => m.a.pExpByRepeat[1] - m.a.pExpByRepeat[0])) : undefined,
@@ -248,7 +253,7 @@ export function analyse(runs) {
   const primary = {
     all: shift(units),
     expected: shift(units.filter((u) => u.hasExpect)),
-    near: shift(units.filter((u) => u.bP >= 0.4 && u.bP <= 0.8)),
+    near: shift(units.filter((u) => u.bP1 >= 0.4 && u.bP1 <= 0.8)),
     mixed: shift(units.filter((u) => u.mixed)),
     pure: shift(units.filter((u) => !u.mixed)),
     noiseB: shift(units, "noiseB"),
@@ -333,7 +338,9 @@ export function analyse(runs) {
     if (p.b.label !== p.a.label) real[k].shapeDisagree += 1;
   }
 
+  const nearRepeats = [...new Set(units.map((u) => u.bRep1))];
   return {
+    nearDefinedBy: `batched repeat ${nearRepeats.join(",") || "-"} P(expected) in [0.4, 0.8]`,
     complete, problems, cells: cells.length, pairs, units, flips, primary, twoByTwo, discordant, mcnemarP, missedByBatched, missedByAtom, stricter,
     leafShapes: { [BATCHED]: shapesOf("b"), [ATOM]: shapesOf("a") }, transitions,
     repeatFlips: { [BATCHED]: repeatFlips("b"), [ATOM]: repeatFlips("a") }, buckets, position, cost, real, reversedCells: reversed.length,
@@ -358,7 +365,7 @@ function report(name, r, { cellsTable = true } = {}) {
   console.log("");
   console.log("signed shift d = per-atom P(expected) - batched P(expected), units (duplicates once)");
   table(["stratum", "n", "mean d", "90% CI", "Wilcoxon p", "mean |d|", "max |d|"],
-    [["all", r.primary.all], ["with expected label", r.primary.expected], ["near threshold [0.4,0.8]", r.primary.near], ["mixed-oracle batch", r.primary.mixed], ["single-oracle batch", r.primary.pure],
+    [["all", r.primary.all], ["with expected label", r.primary.expected], [`near threshold (${r.nearDefinedBy})`, r.primary.near], ["mixed-oracle batch", r.primary.mixed], ["single-oracle batch", r.primary.pure],
       ["noise: batched rep2 - rep1", r.primary.noiseB], ["noise: per-atom rep2 - rep1", r.primary.noiseA]]
       .map(([k, s]) => [k, s.n, f(s.mean), `[${f(s.ci[0])}, ${f(s.ci[1])}]`, f(s.p), f(s.meanAbs), f(s.maxAbs)]));
   console.log("");
@@ -392,6 +399,20 @@ function report(name, r, { cellsTable = true } = {}) {
   console.log(`complete: ${r.complete}`);
 }
 
+/**
+ * Round 8 (review): a measurement never mixes judges. Sidecars whose runs carry both LIVE and MOCK
+ * tags are refused (a dead mid-way live run would otherwise leave mock cells in it), and MOCK runs
+ * are compared only under an explicit --mock. Returns the problem, or undefined.
+ */
+export function tagProblem(runs, allowMock) {
+  const tags = [...new Set(runs.map((r) => r.tag ?? "untagged"))];
+  if (tags.includes("MOCK") && tags.some((t) => t !== "MOCK")) {
+    const mock = runs.filter((r) => r.tag === "MOCK").map((r) => `${r.run}@${r.shape} rep ${r.repeat}`);
+    return `mixed-tags: sidecars mix ${tags.join("+")} runs (MOCK: ${mock.slice(0, 5).join("; ")}${mock.length > 5 ? `; +${mock.length - 5} more` : ""}); re-run the MOCK entries live or remove them`;
+  }
+  if (tags.includes("MOCK") && !allowMock) return "mock-without-flag: every run is MOCK; pass --mock to compare mock sidecars (wiring only, not a measurement)";
+  return undefined;
+}
 function loadPrefix(prefix) {
   const files = readdirSync(FIXTURES).filter((n) => n.startsWith(`.leaves-${prefix}`) && n.endsWith(".json")).sort();
   return { files, runs: files.flatMap((n) => JSON.parse(readFileSync(path.join(FIXTURES, n), "utf8")).runs) };
@@ -437,9 +458,54 @@ function synthetic(planted) {
   }
   return runs;
 }
+/**
+ * Round 8: section-keyed synthetic runs: one page of n sections under `current_not_history`, two
+ * shapes x two repeats. The two shapes write the atom text differently (a different module prefix)
+ * so pairing can only succeed through the section key. Planted: section s2 (expected holds) is
+ * `holds` 0.9 batched and `fails` 0.9 per-atom on both repeats, a confident flip, batched right.
+ */
+function syntheticSections(planted) {
+  const n = 5;
+  const options = ["holds", "fails", "unknown"];
+  const runs = [];
+  for (const shape of [BATCHED, ATOM]) {
+    for (const repeat of [1, 2]) {
+      const leaves = [];
+      for (let i = 1; i <= n; i += 1) {
+        const section = i === 1 ? "pkg--model" : `s${i}`;
+        const exp = i === 4 ? "fails" : "holds";
+        const jitter = ((i * 31 + repeat * 17 + (shape === ATOM ? 5 : 0)) % 11 - 5) / 1000;
+        let label = exp, p = 0.9 + jitter;
+        if (planted && i === 2 && shape === ATOM) { label = "fails"; p = 0.9; }
+        const prefix = shape === ATOM ? "copy.module-model" : "doc-verify.module-model";
+        leaves.push({ arm: "normal", source: "syn/page", shape, repeat, oracle: "current_not_history", atom: `${prefix}.current_not_history(docs/x.md, ${section})`,
+          rowId: "", origRowId: "", section, key: `k${i}`, label, answered: label, options, distribution: options.map((o) => (o === label ? p : (1 - p) / 2)), p,
+          threshold: 0.5, leafShape: "decides", request: shape === ATOM ? i - 1 : 0, position: shape === ATOM ? 0 : i - 1, requestSize: shape === ATOM ? 1 : n,
+          textHash: `t${i}`, questionHash: "q", expect: exp, lead: null });
+      }
+      const requests = shape === ATOM
+        ? leaves.map((_, i) => ({ index: i, kind: "main", questions: 1, stateBytes: 50, ms: 1, oracles: ["current_not_history"], mixed: false }))
+        : [{ index: 0, kind: "main", questions: n, stateBytes: 200, ms: 1, oracles: ["current_not_history"], mixed: false }];
+      runs.push({ run: `syn-sections@${shape}`, mode: "fixtures", repeat, shape, arm: "normal", split: false, wall_ms: 1, labelsFile: null, requests, leaves });
+    }
+  }
+  return runs;
+}
 function selfTest() {
   const clean = analyse(synthetic(false));
   const planted = analyse(synthetic(true));
+  const sectionsClean = analyse(syntheticSections(false));
+  const sectionsPlanted = analyse(syntheticSections(true));
+  const tagOf = (tags, allow) => tagProblem(tags.map((tag, i) => ({ run: `t${i}`, shape: BATCHED, repeat: i + 1, tag })), allow);
+  // One section whose batched P(expected) is 0.7 on repeat 1 and 0.95 on repeat 2 (mean 0.825,
+  // outside [0.4, 0.8]): it is in the stratum only when repeat 1 defines it.
+  const nearRuns = syntheticSections(false);
+  for (const run of nearRuns) for (const leaf of run.leaves) {
+    if (leaf.section !== "s3" || run.shape !== BATCHED) continue;
+    const p = run.repeat === 1 ? 0.7 : 0.95;
+    leaf.p = p; leaf.distribution = leaf.options.map((o) => (o === "holds" ? p : (1 - p) / 2));
+  }
+  const nearRep1 = analyse(nearRuns);
   const checks = [
     ["planted: one confident flip", planted.flips.some((x) => x.id.endsWith("s#row3"))],
     ["planted: McNemar-discordant cell (row5, per-atom right)", planted.discordant.some((x) => x.id.endsWith("s#row5") && x.who === "per-atom right")],
@@ -448,10 +514,20 @@ function selfTest() {
     ["clean: no discordant cell", clean.discordant.length === 0],
     ["clean: no position trend", clean.position.trend === false],
     ["clean: complete", clean.complete === true],
+    ["sections: every cell paired by section across differing atom texts (5 pairs, complete)", sectionsClean.pairs.length === 5 && sectionsClean.complete === true && sectionsPlanted.pairs.length === 5],
+    ["sections planted: one confident flip, on section s2", sectionsPlanted.flips.length === 1 && sectionsPlanted.flips[0].id === "normal|syn/page|current_not_history|s2"],
+    ["sections planted: s2 discordant, batched right", sectionsPlanted.discordant.length === 1 && sectionsPlanted.discordant[0].id.endsWith("|s2") && sectionsPlanted.discordant[0].who === "batched right"],
+    ["sections clean: no confident flip, no discordant cell", sectionsClean.flips.length === 0 && sectionsClean.discordant.length === 0],
+    ["tags: LIVE+MOCK sidecars refused (even with --mock)", tagOf(["LIVE", "MOCK"], true)?.startsWith("mixed-tags") === true && tagOf(["LIVE", "MOCK"], false)?.startsWith("mixed-tags") === true],
+    ["tags: all-MOCK refused without --mock, accepted with it", tagOf(["MOCK", "MOCK"], false)?.startsWith("mock-without-flag") === true && tagOf(["MOCK", "MOCK"], true) === undefined],
+    ["tags: all-LIVE accepted", tagOf(["LIVE", "LIVE"], false) === undefined],
+    ["near stratum from batched repeat 1, not the mean (unit in [0.4,0.8] on rep 1 only)", nearRep1.primary.near.n === 1 && nearRep1.nearDefinedBy === "batched repeat 1 P(expected) in [0.4, 0.8]"],
   ];
   report("self-test planted", planted, { cellsTable: false });
   console.log("");
   report("self-test clean", clean, { cellsTable: false });
+  console.log("");
+  report("self-test section-keyed planted", sectionsPlanted);
   console.log("");
   for (const [name, ok] of checks) console.log(`${ok ? "PASS" : "FAIL"}  ${name}`);
   const ok = checks.every(([, x]) => x);
@@ -461,11 +537,13 @@ function selfTest() {
 
 // ---------------------------------------------------------------- main
 
-const argv = process.argv.slice(2);
+const rawArgv = process.argv.slice(2);
+const ALLOW_MOCK = rawArgv.includes("--mock");
+const argv = rawArgv.filter((a) => a !== "--mock");
 if (argv.includes("--self-test")) {
   process.exitCode = selfTest() ? 0 : 1;
 } else if (argv.length === 0) {
-  console.log("usage: compare-shapes.mjs <ledger-prefix>... | --self-test");
+  console.log("usage: compare-shapes.mjs [--mock] <ledger-prefix>... | --self-test");
   process.exitCode = 2;
 } else {
   let all = true;
@@ -473,6 +551,8 @@ if (argv.includes("--self-test")) {
     const { files, runs } = loadPrefix(prefix);
     if (runs.length === 0) { console.log(`== ${prefix}: no sidecar .leaves-${prefix}*.json`); console.log("complete: false"); all = false; continue; }
     console.log(`(${files.join(", ")}; tags ${[...new Set(runs.map((r) => r.tag))].join(",")}; models ${[...new Set(runs.map((r) => r.model))].join(",")})`);
+    const refused = tagProblem(runs, ALLOW_MOCK);
+    if (refused !== undefined) { console.log(`== ${prefix}: refused`); console.log(`problem: ${refused}`); console.log("complete: false"); all = false; console.log(""); continue; }
     const r = analyse(runs);
     report(prefix, r);
     all &&= r.complete;

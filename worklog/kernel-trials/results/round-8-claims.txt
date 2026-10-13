@@ -1,0 +1,38 @@
+oracle-test --fixtures (LIVE; shapes batched,per-atom; repeat 2; spans skipped)
+
+fixture leaves, repeat 1 per shape (LIVE)
+  oracle                          fixture               shape     row                      expect  got    answered  p     thr  leaf     VERDICT  draft-only         bytes  q  worst-q  sep@0.6  edit  paths-warn  stable×2
+  ------------------------------  --------------------  --------  -----------------------  ------  -----  --------  ----  ---  -------  -------  -----------------  -----  -  -------  -------  ----  ----------  --------
+  module_properties_pages_claims  good                  batched   acme-widget--properties  holds   holds  holds     1.00  0.5  decides  PASS     PASS               277    2  2        yes      base  0           same    
+  module_properties_pages_claims  good                  per-atom  acme-widget--properties  holds   holds  holds     1.00  0.5  decides  PASS     PASS               277    2  2        yes      base  0           same    
+  module_properties_pages_claims  seeded-unfalsifiable  batched   acme-widget--properties  fails   fails  fails     0.53  0.5  decides  NO-GO    PASS (not caught)  362    2  2        no       ok    0           same    
+  module_properties_pages_claims  seeded-unfalsifiable  per-atom  acme-widget--properties  fails   fails  fails     0.84  0.5  decides  NO-GO    PASS (not caught)  362    2  2        yes      ok    0           same    
+
+per fixture and shape (per-row oracles): cells on their expected side at p >= 0.6
+  oracle/fixture@shape                                          expected side(s)  k/n  separates  VERDICT
+  ------------------------------------------------------------  ----------------  ---  ---------  -------
+  module_properties_pages_claims/good@batched                   holds             1/1  yes        PASS   
+  module_properties_pages_claims/good@per-atom                  holds             1/1  yes        PASS   
+  module_properties_pages_claims/seeded-unfalsifiable@batched   fails             0/1  no         NO-GO  
+  module_properties_pages_claims/seeded-unfalsifiable@per-atom  fails             1/1  yes        NO-GO  
+
+false pass (defective fixtures whose document VERDICT is PASS)
+  none
+
+per-section sets, per page: leaves of the set's oracle / the page's sections (engine slugger), per shape (repeat 1); edit and expect-rule integrity; draft as pre-registered
+  set                             ledger                    fixture               sections                                 leaves@batched          leaves@per-atom         edit  expect-rule  draft  draft pre-reg  draft ok
+  ------------------------------  ------------------------  --------------------  ---------------------------------------  ----------------------  ----------------------  ----  -----------  -----  -------------  --------
+  module_properties_pages_claims  round8-claims-properties  good                  acme-widget--properties                  1/1                     1/1                     base  ok           PASS   PASS           ok      
+  module_properties_pages_claims  round8-claims-properties  seeded-unfalsifiable  acme-widget--properties                  1/1                     1/1                     ok    ok           PASS   PASS           ok      
+  module_properties_pages_claims  round8-claims-properties  gross                 acme-widget--properties note-2026-10-01  0/2 (structure, NO-GO)  0/2 (structure, NO-GO)  ok    ok           NO-GO  NO-GO          ok      
+
+questions: main 16, follow-ups 0, requests 12; worst case live 16 (spans skipped: main only)
+
+ledger round8-claims-properties: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  batched   normal  6     4         8       0              [1,0]                    3676        1.71     0           4              2        8               8              
+  per-atom  normal  6     8         8       0              [2,0]                    4048        2.74     0           4              2        8               8              
+projection (live, ledger round8-claims-properties): main 16, worst 16; cap at 1.5x worst = 24; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round8-claims-properties.json
+ledger: live spent 16 / cap 24
+complete: true

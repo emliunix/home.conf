@@ -1,0 +1,77 @@
+oracle-test --real-cells --labels module-pages.yaml (LIVE; shapes batched,per-atom; repeat 2; spans skipped)
+clone at 128f048 (128f0481283241f32c07e0aad2e709feafa99231)
+
+run 1 per shape; agreement with the lead's blind labels (module-pages.yaml, pages at 128f048)
+  shape     document                                row                      lead   judge  VERDICT  p     agreement
+  --------  --------------------------------------  -----------------------  -----  -----  -------  ----  ---------
+  batched   docs/modules/language/contract.md       language--contract       holds  holds  PASS     0.97  agree    
+  batched   docs/modules/language/contract.md       public-surface           holds  holds  PASS     0.96  agree    
+  batched   docs/modules/language/model.md          language--model          holds  holds  PASS     0.85  agree    
+  batched   docs/modules/language/model.md          concepts                 holds  holds  PASS     0.89  agree    
+  batched   docs/modules/language/model.md          two-bounds               holds  holds  PASS     0.83  agree    
+  batched   docs/modules/language/properties.md     language--properties     holds  holds  PASS     0.95  agree    
+  batched   docs/modules/language/verification.md   language--verification   holds  holds  PASS     0.93  agree    
+  batched   docs/modules/oracles/contract.md        oracles--contract        holds  holds  PASS     0.95  agree    
+  batched   docs/modules/oracles/contract.md        public-surface           holds  holds  PASS     0.93  agree    
+  batched   docs/modules/oracles/model.md           oracles--model           holds  holds  PASS     0.76  agree    
+  batched   docs/modules/oracles/model.md           concepts                 holds  holds  PASS     0.75  agree    
+  batched   docs/modules/oracles/model.md           evidence-and-spans       holds  holds  PASS     0.68  agree    
+  batched   docs/modules/oracles/model.md           cache                    holds  holds  PASS     0.77  agree    
+  batched   docs/modules/oracles/properties.md      oracles--properties      holds  holds  PASS     0.95  agree    
+  batched   docs/modules/oracles/verification.md    oracles--verification    holds  holds  PASS     0.91  agree    
+  batched   docs/modules/report/contract.md         report--contract         holds  holds  PASS     0.95  agree    
+  batched   docs/modules/report/contract.md         public-surface           holds  holds  PASS     0.94  agree    
+  batched   docs/modules/report/model.md            report--model            holds  holds  PASS     0.95  agree    
+  batched   docs/modules/report/model.md            concepts                 holds  holds  PASS     0.85  agree    
+  batched   docs/modules/report/model.md            verdict                  holds  holds  PASS     0.93  agree    
+  batched   docs/modules/report/properties.md       report--properties       holds  holds  PASS     0.93  agree    
+  batched   docs/modules/report/verification.md     report--verification     holds  holds  PASS     0.91  agree    
+  batched   docs/modules/selection/contract.md      selection--contract      holds  holds  PASS     0.96  agree    
+  batched   docs/modules/selection/contract.md      public-surface           holds  holds  PASS     0.94  agree    
+  batched   docs/modules/selection/model.md         selection--model         holds  holds  PASS     0.97  agree    
+  batched   docs/modules/selection/model.md         concepts                 holds  holds  PASS     0.86  agree    
+  batched   docs/modules/selection/model.md         selection                holds  holds  PASS     0.97  agree    
+  batched   docs/modules/selection/properties.md    selection--properties    holds  holds  PASS     0.96  agree    
+  batched   docs/modules/selection/verification.md  selection--verification  holds  holds  PASS     0.93  agree    
+  per-atom  docs/modules/language/contract.md       language--contract       holds  holds  PASS     0.97  agree    
+  per-atom  docs/modules/language/contract.md       public-surface           holds  holds  PASS     0.97  agree    
+  per-atom  docs/modules/language/model.md          language--model          holds  holds  PASS     0.83  agree    
+  per-atom  docs/modules/language/model.md          concepts                 holds  holds  PASS     0.88  agree    
+  per-atom  docs/modules/language/model.md          two-bounds               holds  holds  PASS     0.77  agree    
+  per-atom  docs/modules/language/properties.md     language--properties     holds  holds  PASS     0.93  agree    
+  per-atom  docs/modules/language/verification.md   language--verification   holds  holds  PASS     0.92  agree    
+  per-atom  docs/modules/oracles/contract.md        oracles--contract        holds  holds  PASS     0.94  agree    
+  per-atom  docs/modules/oracles/contract.md        public-surface           holds  holds  PASS     0.94  agree    
+  per-atom  docs/modules/oracles/model.md           oracles--model           holds  holds  PASS     0.53  agree    
+  per-atom  docs/modules/oracles/model.md           concepts                 holds  holds  PASS     0.51  agree    
+  per-atom  docs/modules/oracles/model.md           evidence-and-spans       holds  holds  PASS     0.86  agree    
+  per-atom  docs/modules/oracles/model.md           cache                    holds  holds  PASS     0.82  agree    
+  per-atom  docs/modules/oracles/properties.md      oracles--properties      holds  holds  PASS     0.95  agree    
+  per-atom  docs/modules/oracles/verification.md    oracles--verification    holds  holds  PASS     0.87  agree    
+  per-atom  docs/modules/report/contract.md         report--contract         holds  holds  PASS     0.96  agree    
+  per-atom  docs/modules/report/contract.md         public-surface           holds  holds  PASS     0.96  agree    
+  per-atom  docs/modules/report/model.md            report--model            holds  holds  PASS     0.94  agree    
+  per-atom  docs/modules/report/model.md            concepts                 holds  holds  PASS     0.91  agree    
+  per-atom  docs/modules/report/model.md            verdict                  holds  holds  PASS     0.88  agree    
+  per-atom  docs/modules/report/properties.md       report--properties       holds  holds  PASS     0.93  agree    
+  per-atom  docs/modules/report/verification.md     report--verification     holds  holds  PASS     0.89  agree    
+  per-atom  docs/modules/selection/contract.md      selection--contract      holds  holds  PASS     0.97  agree    
+  per-atom  docs/modules/selection/contract.md      public-surface           holds  holds  PASS     0.97  agree    
+  per-atom  docs/modules/selection/model.md         selection--model         holds  holds  PASS     0.97  agree    
+  per-atom  docs/modules/selection/model.md         concepts                 holds  holds  PASS     0.93  agree    
+  per-atom  docs/modules/selection/model.md         selection                holds  holds  PASS     0.91  agree    
+  per-atom  docs/modules/selection/properties.md    selection--properties    holds  holds  PASS     0.95  agree    
+  per-atom  docs/modules/selection/verification.md  selection--verification  holds  holds  PASS     0.88  agree    
+batched: 29/29 labelled atoms found over 16 documents
+batched: agreement (informational) 29/29; per run: main 37, follow-ups 0, requests 16, worst 37
+per-atom: 29/29 labelled atoms found over 16 documents
+per-atom: agreement (informational) 29/29; per run: main 37, follow-ups 0, requests 37, worst 37
+
+ledger round8-real: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  batched   normal  2     32        74      0              [16]                     62840       11.77    0           37             2        74              74             
+  per-atom  normal  2     74        74      0              [37]                     66592       26.67    0           37             2        74              74             
+projection (live, ledger round8-real): main 148, worst 148; cap at 1.5x worst = 222; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round8-real.json
+ledger: live spent 148 / cap 222
+complete: true
