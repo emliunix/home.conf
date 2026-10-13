@@ -92,30 +92,64 @@ class SkillsManagerApp(App[None]):
         table.add_columns("Skill", "Status")
 
         for skill in self.skills:
-            status_text = self._get_status_text(skill.status)
+            status_text = self._get_status_text(skill)
             table.add_row(skill.name, status_text)
 
         skill_count = len(self.skills)
         self._update_header(skill_count)
         self.query_one("#description", Static).update(f"{skill_count} skills found")
 
-    def _get_status_text(self, status: SkillStatus) -> Text:
-        status_colors = {
-            SkillStatus.ACTIVE: "green",
-            SkillStatus.INACTIVE: "red",
-            SkillStatus.UNMANAGED: "yellow",
-            SkillStatus.BROKEN: "magenta",
-        }
-        status_symbols = {
-            SkillStatus.ACTIVE: "●",
-            SkillStatus.INACTIVE: "○",
-            SkillStatus.UNMANAGED: "⚠",
-            SkillStatus.BROKEN: "✖",
-        }
+    # The presentation for every member of `SkillStatus`, as TWO tables keyed by the
+    # enum itself. Direct indexing (not `.get`) is deliberate: a member with no entry is
+    # a crash on the row that carries it, which is exactly the population this module
+    # exists to report -- so a missing entry must be loud. `test_design268_status_text`
+    # pins the exhaustiveness so adding a member forces this table to be updated.
+    _STATUS_COLORS = {
+        SkillStatus.ACTIVE: "green",
+        SkillStatus.INACTIVE: "red",
+        SkillStatus.UNMANAGED: "yellow",
+        SkillStatus.BROKEN: "magenta",
+        SkillStatus.MALFORMED: "bright_red",
+    }
 
-        color = status_colors[status]
-        symbol = status_symbols[status]
-        return Text(f"{symbol} {status.upper()}", style=f"bold {color}")
+    _STATUS_SYMBOLS = {
+        SkillStatus.ACTIVE: "●",
+        SkillStatus.INACTIVE: "○",
+        SkillStatus.UNMANAGED: "⚠",
+        SkillStatus.BROKEN: "✖",
+        SkillStatus.MALFORMED: "▨",
+    }
+
+    @classmethod
+    def missing_status_presentations(cls) -> list[str]:
+        """Members of `SkillStatus` with no colour or symbol entry.
+
+        Empty means every member can be RENDERED. The TUI indexes these tables directly,
+        so a gap is a KeyError on the row that carries it, not a cosmetic default.
+        """
+        members = set(SkillStatus)
+        return sorted(
+            s.name
+            for s in members
+            if s not in cls._STATUS_COLORS or s not in cls._STATUS_SYMBOLS
+        )
+
+    def _get_status_text(self, skill: Skill) -> Text:
+        """The row's status cell.
+
+        Takes the ROW, not just its status, because acceptance 5 requires the fine
+        reason
+        to be visible: four distinct conditions collapse into `MALFORMED`, so a bare
+        `MALFORMED` cannot tell a reader whether the entry lacks front matter, lacks
+        SKILL.md, is unreadable, or is not a directory. `disposition` names it.
+        """
+        status = skill.status
+        color = self._STATUS_COLORS[status]
+        symbol = self._STATUS_SYMBOLS[status]
+        label = status.upper()
+        if status == SkillStatus.MALFORMED and skill.reason:
+            label = f"{label} ({skill.reason})"
+        return Text(f"{symbol} {label}", style=f"bold {color}")
 
     def on_data_table_row_highlighted(self) -> None:
         table = self.query_one("#skills-table", DataTable)
@@ -197,12 +231,9 @@ class SkillsManagerApp(App[None]):
 
         if skill.status == SkillStatus.BROKEN:
             # A broken link IS repairable when its source still exists -- that is the
-            # point
-            # of this action. Refuse only when there is nothing to restore, so the
-            # failure
-            # is named rather than arriving as a raw FileNotFoundError, and never a
-            # silent
-            # "success" that moves the dangling link into the versioned source tree.
+            # point of this action. Refuse only when there is nothing to restore, so the
+            # failure is named rather than arriving as a raw FileNotFoundError, and
+            # a silent "success" that moves the dangling link into the versioned tree.
             if not (self.manager.source_dir / skill.name).exists():
                 self.notify(
                     f"'{skill.name}' has no source to restore; "

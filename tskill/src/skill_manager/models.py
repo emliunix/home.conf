@@ -27,3 +27,20 @@ class Skill:
     description: str
     source_path: Path
     target_path: Path | None = None
+    # The FINE reason the enumeration assigned, as `_classify` names it
+    # (`no-frontmatter`, `no-skill-md`, `unreadable`, `not-a-dir`, `broken`, `valid`).
+    # `status` collapses four of those into MALFORMED, so without this a reader cannot
+    # tell WHICH condition put a row in the list -- and acceptance 5 asks for exactly
+    # that distinction (`filtered(no front matter)` rather than a bare `malformed`).
+    reason: str | None = None
+
+    @property
+    def disposition(self) -> str:
+        """The name the accounting uses: `valid`, `broken`, or `filtered(<reason>)`."""
+        if self.status == SkillStatus.BROKEN or self.reason == "broken":
+            return "broken"
+        if self.status == SkillStatus.ACTIVE:
+            return "valid"
+        if self.reason in (None, "valid"):
+            return str(self.status.value)
+        return f"filtered({self.reason})"
