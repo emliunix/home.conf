@@ -1,0 +1,46 @@
+oracle-test --real-cells --labels relevance-labels.yaml (LIVE; shapes per-atom; repeat 2; spans skipped)
+clone at fe6f007 (fe6f007640d08b343bb1cf877e9e3360c21af596)
+
+run 1 per shape; agreement with the lead's blind labels (relevance-labels.yaml, pages at fe6f007)
+  shape     document                                                  row                        lead   judge    VERDICT       p     agreement      
+  --------  --------------------------------------------------------  -------------------------  -----  -------  ------------  ----  ---------------
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row1   holds  holds    PASS          0.86  agree          
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row2   holds  holds    PASS          0.66  agree          
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row3   holds  holds    PASS          0.93  agree          
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row4   holds  holds    PASS          0.97  agree          
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row5   holds  holds    PASS          0.85  agree          
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row6   holds  holds    PASS          0.87  agree          
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row7   holds  holds    PASS          0.96  agree          
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row8   holds  holds    PASS          0.62  agree          
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row9   holds  holds    PASS          0.72  agree          
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row10  holds  holds    PASS          0.85  agree          
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row11  holds  holds    PASS          0.96  agree          
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row1   holds  unknown  NEEDS-REVIEW  0.47  DISAGREE (high)
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row2   holds  holds    NEEDS-REVIEW  0.67  agree          
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row3   holds  holds    NEEDS-REVIEW  0.95  agree          
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row4   holds  holds    NEEDS-REVIEW  0.96  agree          
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row5   holds  holds    NEEDS-REVIEW  0.86  agree          
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row6   holds  holds    NEEDS-REVIEW  0.96  agree          
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row7   holds  holds    NEEDS-REVIEW  0.85  agree          
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row8   holds  holds    NEEDS-REVIEW  0.71  agree          
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row9   holds  holds    NEEDS-REVIEW  0.91  agree          
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row1   holds  holds    PASS          0.85  agree          
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row2   holds  holds    PASS          0.91  agree          
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row3   holds  holds    PASS          0.69  agree          
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row4   holds  holds    PASS          0.70  agree          
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row5   holds  holds    PASS          0.82  agree          
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row6   holds  holds    PASS          0.97  agree          
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row7   holds  holds    PASS          0.60  agree          
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row8   holds  holds    PASS          0.85  agree          
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row9   holds  holds    PASS          0.91  agree          
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row10  holds  holds    PASS          0.82  agree          
+per-atom: 30/30 labelled atoms found over 3 documents
+per-atom: agreement (informational) 29/30; per run: main 30, follow-ups 0, requests 30, worst 30
+
+ledger round9-real: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  per-atom  normal  2     60        60      0              [30]                     22756       23.67    0           30             2        60              60             
+projection (live, ledger round9-real): main 60, worst 60; cap at 1.5x worst = 90; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round9-real.json
+ledger: live spent 60 / cap 90
+complete: true

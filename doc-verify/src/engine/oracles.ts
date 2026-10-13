@@ -14,7 +14,7 @@ import { PolicyViolationError } from "../judge.js";
 import { BlockedError } from "../types.js";
 import type { Oracle } from "./checker.js";
 import { UNKNOWN, type Demand, type OracleView } from "./evaluate.js";
-import { bodyEvidence, cellEvidence, cellsEvidence, columnEvidence, ownEvidence, unionEvidence, type DocumentFacts, type EvidenceText } from "./facts.js";
+import { bodyEvidence, cellEvidence, cellsEvidence, columnEvidence, ownEvidence, rowWithColumnEvidence, unionEvidence, type DocumentFacts, type EvidenceText } from "./facts.js";
 import type { RequestShape } from "./module.js";
 import { listItems, termText, type Term } from "./terms.js";
 
@@ -548,6 +548,9 @@ function resolveEvidence(oracle: Oracle, args: Term[], document: DocumentFacts):
   if (shape.form === "cells") {
     const items = listItems(args[shape.columns] as Term);
     return items === undefined ? undefined : cellsEvidence(document, termText(args[shape.row] as Term), items.map(termText));
+  }
+  if (shape.form === "row_with_column") {
+    return rowWithColumnEvidence(document, termText(args[shape.row] as Term), termText(args[shape.column] as Term));
   }
   if (shape.form === "cell" || shape.form === "column") {
     const subject = termText(args[shape.row] as Term);

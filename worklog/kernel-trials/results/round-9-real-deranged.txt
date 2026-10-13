@@ -1,0 +1,37 @@
+oracle-test --real-cells --labels relevance-deranged.yaml (LIVE; shapes per-atom; repeat 2; spans skipped)
+clone at fe6f007 (fe6f007640d08b343bb1cf877e9e3360c21af596)
+column-permutation worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md: ok ('Failure witness' against fe6f007:design/03-companion-driven-document-verification.md, from [4, 5, 6, 7, 8, 9, 1, 2, 3], rotation 3)
+column-permutation worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md: ok ('Failure witness' against fe6f007:design/05-trusted-kernel-redesign.md, from [4, 5, 6, 7, 8, 9, 10, 1, 2, 3], rotation 3)
+
+run 1 per shape; agreement with the lead's blind labels (relevance-deranged.yaml, pages at fe6f007)
+  shape     document                                                                                                      row                        lead       judge    VERDICT       p     agreement           
+  --------  ------------------------------------------------------------------------------------------------------------  -------------------------  ---------  -------  ------------  ----  --------------------
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row1   fails      holds    NEEDS-REVIEW  0.77  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row2   fails      holds    NEEDS-REVIEW  0.66  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row3   fails      holds    NEEDS-REVIEW  0.54  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row4   fails      holds    NEEDS-REVIEW  0.78  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row5   fails      holds    NEEDS-REVIEW  0.78  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row6   ambiguous  holds    NEEDS-REVIEW  0.86  DISAGREE (undefined)
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row7   fails      unknown  NEEDS-REVIEW  0.39  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row8   ambiguous  holds    NEEDS-REVIEW  0.50  DISAGREE (undefined)
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row9   fails      holds    NEEDS-REVIEW  0.76  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row1   fails      holds    NO-GO         0.63  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row2   ambiguous  holds    NO-GO         0.56  DISAGREE (undefined)
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row3   ambiguous  holds    NO-GO         0.90  DISAGREE (undefined)
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row4   fails      fails    NO-GO         0.62  agree               
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row5   fails      fails    NO-GO         0.70  agree               
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row6   fails      holds    NO-GO         0.92  DISAGREE (medium)   
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row7   fails      holds    NO-GO         0.64  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row8   fails      holds    NO-GO         0.80  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row9   fails      holds    NO-GO         0.76  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row10  fails      holds    NO-GO         0.59  DISAGREE (high)     
+per-atom: 19/19 labelled atoms found over 2 documents
+per-atom: agreement (informational) 2/19; per run: main 19, follow-ups 0, requests 19, worst 19
+
+ledger round9-real-deranged: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  per-atom  normal  2     38        38      0              [19]                     16066       15.31    0           19             2        38              38             
+projection (live, ledger round9-real-deranged): main 38, worst 38; cap at 1.5x worst = 57; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round9-real-deranged.json
+ledger: live spent 38 / cap 57
+complete: true

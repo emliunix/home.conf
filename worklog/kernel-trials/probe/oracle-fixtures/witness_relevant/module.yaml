@@ -1,0 +1,31 @@
+# Round 9 candidate R1 (relevance only, the row). Fixture-local; the selected one ships into
+# doc-verify/modules/design.yaml. Question verbatim from round-9-preregistration.md.
+schema_version: 2
+kind: verification-module
+module: round9.witness_relevant
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [draft, reviewed, pending-retro, landed]
+oracles:
+  witness_relevant(D, R, L):
+    ask: >-
+      This is one row of a design's verification table: a property and the cell that is supposed to
+      describe how that property's failure would show. Judge one thing only: is the condition the
+      cell describes a failure of this row's property, as opposed to a failure of some other
+      property? Hold if the condition, when it occurred, would mean this property is broken. Fail
+      if the condition is about a different property. Do not judge whether the cell is observable,
+      specific or well written; that is judged elsewhere.
+    evidence: core.cells(D, R, L)
+    threshold: 0.5
+    max_bytes: 4000
+rules:
+  verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
+  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+constraints:
+  round9-witness-relevant:
+    forall: verification_design_section(D, S), core.table(D, S, T), witness_header(D, T, C), core.row(D, T, R)
+    require: core.cell(D, R, C), witness_relevant(D, R, ['Property', C])
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the failure witness describes a failure of a different property"

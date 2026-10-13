@@ -1,0 +1,35 @@
+# Round 9 candidate R2 (relevance only, the row plus the table's property list and the sentence
+# that tells the judge to use it). Fixture-local. Question verbatim from
+# round-9-preregistration.md: R1's text with R2's sentence after its first sentence. The evidence
+# form core.row_with_column(D, R, C) is an engine form (doc-verify/src/engine/facts.ts
+# rowWithColumnEvidence); it loads only once the checker and the oracle dispatcher accept it.
+schema_version: 2
+kind: verification-module
+module: round9.witness_relevant_in_table
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [draft, reviewed, pending-retro, landed]
+oracles:
+  witness_relevant_in_table(D, R, C):
+    ask: >-
+      This is one row of a design's verification table: a property and the cell that is supposed to
+      describe how that property's failure would show. The properties of the same table are listed
+      after the row; the cell must fail this property and not another listed one. Judge one thing
+      only: is the condition the cell describes a failure of this row's property, as opposed to a
+      failure of some other property? Hold if the condition, when it occurred, would mean this
+      property is broken. Fail if the condition is about a different property. Do not judge whether
+      the cell is observable, specific or well written; that is judged elsewhere.
+    evidence: core.row_with_column(D, R, C)
+    threshold: 0.5
+    max_bytes: 6000
+rules:
+  verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
+  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+constraints:
+  round9-witness-relevant-in-table:
+    forall: verification_design_section(D, S), core.table(D, S, T), witness_header(D, T, C), core.row(D, T, R)
+    require: core.cell(D, R, C), witness_relevant_in_table(D, R, C)
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the failure witness describes a failure of a different property"

@@ -1,0 +1,116 @@
+# Round 9 candidate set R1' (R1's paraphrase; defective-swapped and relevance-controls only). Fixture-local module (extra_files); files from
+# ../verification_falsifies (design/04's verification table: row1 = 'Binding by construction' ...
+# row14 = 'Trust boundary holds'). Per-row expected labels are the lead's
+# (verification_falsifies/relevance-row-labels.yaml, label_by: lead), copied with `others`
+# expanded into `expect_cells` (the key the runner reads); `ambiguous` and `neutral` rows are
+# reported, not counted (`counts:` per fixture, the labels file's). Permutation fixtures carry the lead's fixed
+# `from` (row i carries base row from[i]'s witness; base HEAD, or the fixture's `base:` file) under the
+# column-permutation invariant; the
+# others are evidence-column-only against HEAD.
+oracle: witness_relevant_paraphrase
+declared_in: worklog/kernel-trials/probe/oracle-fixtures/witness_relevant_paraphrase/module.yaml (fixture-local)
+threshold: 0.5
+separation: 0.6
+label_by: lead
+labels_file: ../verification_falsifies/relevance-row-labels.yaml
+constraint: round9-witness-relevant-paraphrase
+files_from: ../verification_falsifies
+extra_files:
+  worklog/kernel-trials/probe/oracle-fixtures/witness_relevant_paraphrase/module.yaml: module.yaml
+rule:
+  pattern: design/{0[1-9],[1-9][0-9]}-*.md
+  artifact_kind: design
+  modules:
+    - doc-verify:artifact
+    - worklog/kernel-trials/probe/oracle-fixtures/witness_relevant_paraphrase/module.yaml
+document: design/04-modular-verification-language.md
+companion:
+  path: design/04-modular-verification-language.yaml
+  file: companion.yaml
+invariant: evidence-column-only
+atom:
+  inputs: "witness_relevant_paraphrase(D, R, [Property, Failure witness])"
+  evidence: "core.cells(D, R, L)"
+  sections:
+    - verification-design
+  column: Failure witness
+  per_row: true
+  rows: 14
+fixtures:
+  - name: defective-swapped
+    file: defective-swapped.md
+    expect: fails
+    invariant: column-permutation
+    base: good.md
+    from: [14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    expect_cells:
+      row1: fails
+      row2: fails
+      row3: ambiguous
+      row4: fails
+      row5: fails
+      row6: fails
+      row7: ambiguous
+      row8: fails
+      row9: fails
+      row10: fails
+      row11: ambiguous
+      row12: fails
+      row13: ambiguous
+      row14: fails
+    counts: { counted: 10, ambiguous: 4, bar: 8 }  # the labels file's counts entry, verbatim
+    reported: [row3, row7, row11, row13]
+    note: >-
+      round 4c's shift-by-one file, unchanged: row i carries row i-1's witness; relabelled by the lead for that direction; permutation base the set's good.md (the 4c base), not HEAD
+    labels:  # the lead's rows block from verification_falsifies/relevance-row-labels.yaml, copied unchanged
+        row1: { label: fails, confidence: medium, why: "trust boundary's five breaches on binding; 'a split atom's evidence' is request vocabulary, not binding" }
+        row2: { label: fails, confidence: high, why: "binding on threshold" }
+        row3: { label: ambiguous, why: "threshold witness on three-valued soundness: a wrong label from a demotion reads as a soundness failure" }
+        row4: { label: fails, confidence: high, why: "three-valued soundness on static checks" }
+        row5: { label: fails, confidence: medium, why: "static checks (an unsafe construct accepted) on modules compose" }
+        row6: { label: fails, confidence: high, why: "composition failures on rounds bounded" }
+        row7: { label: ambiguous, why: "rounds bounded on request shape: a depth-1 batched program's one round is both" }
+        row8: { label: fails, confidence: high, why: "request shape on extends law" }
+        row9: { label: fails, confidence: high, why: "extends law on diagnostics" }
+        row10: { label: fails, confidence: high, why: "diagnostics on nesting baseline" }
+        row11: { label: ambiguous, why: "nesting baseline's populations on nested classification: shared 'nested' vocabulary" }
+        row12: { label: fails, confidence: high, why: "nested classification on migration parity" }
+        row13: { label: ambiguous, why: "migration parity on migrated-constraint separation: both are migration rows" }
+        row14: { label: fails, confidence: high, why: "separation on trust boundary" }
+  - name: relevance-controls
+    file: relevance-controls.md
+    expect: fails
+    expect_cells:
+      row1: holds
+      row2: neutral
+      row3: fails
+      row4: fails
+      row5: holds
+      row6: neutral
+      row7: fails
+      row8: fails
+      row9: holds
+      row10: neutral
+      row11: fails
+      row12: neutral
+      row13: holds
+      row14: neutral
+    counts: { genuine: 4, decoy: 5, neutral_reported: 5 }  # the labels file's counts entry, verbatim
+    reported: [row2, row6, row10, row12, row14]
+    note: >-
+      genuine rows 1, 5, 9, 13; relevance-neutral rows 2, 6, 10, 12, 14 (reported, not counted); decoy-wrong-failure rows 3, 4, 7, 8, 11
+    labels:  # the lead's rows block from verification_falsifies/relevance-row-labels.yaml, copied unchanged
+        row1: { label: holds, class: genuine, confidence: high }
+        row2: { label: neutral, class: relevance-neutral, text: "the check fails", why: "reported, not counted" }
+        row3: { label: fails, class: decoy-wrong-failure, confidence: high, text_prefix: "With three-valued evaluation unchanged, ", from: 12 }
+        row4: { label: fails, class: decoy-wrong-failure, confidence: high, text_prefix: "With the static checks unchanged, ", from: 10 }
+        row5: { label: holds, class: genuine, confidence: high }
+        row6: { label: neutral, class: relevance-neutral, text: "a test is red" }
+        row7: { label: fails, class: decoy-wrong-failure, confidence: medium, text_prefix: "Under the declared request shape, ", from: 2 }
+        row8: { label: fails, class: decoy-wrong-failure, confidence: high, text_prefix: "Under the extends law, ", from: 9 }
+        row9: { label: holds, class: genuine, confidence: high }
+        row10: { label: neutral, class: relevance-neutral, text: "the output is wrong" }
+        row11: { label: fails, class: decoy-wrong-failure, confidence: medium, text_prefix: "With nested classification unchanged, ", from: 13 }
+        row12: { label: neutral, class: relevance-neutral, text: "behaviour differs from the specification" }
+        row13: { label: holds, class: genuine, confidence: high }
+        row14: { label: neutral, class: relevance-neutral, text: "a regression appears" }

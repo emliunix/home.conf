@@ -23,6 +23,7 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
 | Reference self-check | the naive reference matches hand derivations and brute force | `node worklog/kernel-trials/probe/reference/run-reference.mjs worklog/kernel-trials/probe/witnesses/*.yaml` and `node worklog/kernel-trials/probe/reference/random-brute.mjs 500 1` | reference mutated: demand without goal leaves (15/200), `not u` read as `t` (76/200) | yes |
 | Round 7 property track | S1 matches the model on random programs over the whole language (loop-free by enumeration, loops by an alternating-fixpoint WFS), S3 matches stable models; every axis seed is visible only with the full grammar; counterexamples shrink to minimal programs | `node worklog/kernel-trials/probe/run-property.mjs --subject S1 --arm C5 --programs 500 --seeds 1,2,3` (and `--arm C5-features`, `--arm C5-shrink`, `--subject S3`, `--seeds-table`) | eight in-memory seeds: K1 170, K2 478, S3a 258 flips (controls, both arms); K4-low 121, K4-high 17, S3b 373, S3c 42 (axis, C5 only); K3' 73 under M2 | S1 C5 `false` (one same-instance non-determinism, round 7 finding 3); the other arms `true`; exit 1 on the refuting cells |
 | Round 8 module-page shape | the four `module-*` libraries' `current_not_history` separates seeded history from current law equally under `batched` and `per-atom`, and agrees with the lead's labels on the real pages | `node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --oracle current_not_history --request-shape both --repeat 2 --no-spans --ledger round8-pages --cap 240` and the real-cells, pairs, claims and comparer commands of `round-8-verdict.md` | the gross pages (structural NO-GO under both shapes); the comparer's planted section-keyed flip | `true` on every track (the first claims/real attempt returned BLOCKED with no question sent and was re-run) |
+| Round 9 relevance candidates | a relevance-only question per row labels a genuine witness on the wrong row `fails` (the bar: ≥ 8 of 10 swapped, ≥ 11 of 12/13 deranged, ≥ 4 of 5 decoys, ≥ 11 of 15 real deranged) while genuine rows hold | the five commands of `round-9-verdict.md` | the derangement, swap and decoy fixtures (every candidate reads them `holds`, so the gate is red by construction until the extraction form) | `true` on every track; the hypothesis refuted, nothing shipped |
 
 ## Open items
 
@@ -73,4 +74,11 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
     per-sentence or per-paragraph ask, or an explicit former-value clause) with
     `probe/oracle-fixtures/module_*_pages/` as its fixtures; until then the module-page history
     check is the regex plus a judge that misses the subtle form.
+11. **Witness relevance needs extraction, not a question** (round 9): asked only whether a cell is
+    a failure of this row's property, the judge answers `holds` for nearly any plausible failure
+    description (0.5–0.93), the table's property list beside the row moves at most two rows, and
+    a paraphrase changes nothing; the real derangement of designs 03 and 05 is caught 1 of 15.
+    Open: the extraction form (name the property the cell is a failure of, compare the name to
+    the row's structurally) against round 9's bar, with its sets and labels as the fixtures;
+    `core.row_with_column` is in the engine for it. Supersedes item 4's wrong-row half.
 

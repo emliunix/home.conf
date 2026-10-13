@@ -1,0 +1,147 @@
+oracle-test --fixtures (LIVE; shapes per-atom; repeat 2; spans skipped)
+column-permutation fixtures:witness_relevant/defective-swapped: ok ('Failure witness' against verification_falsifies/good.md, from [14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+column-permutation fixtures:witness_relevant/derangement-s1: ok ('Failure witness' against HEAD:design/04-modular-verification-language.md, from [5, 8, 9, 11, 10, 12, 3, 7, 13, 1, 14, 2, 4, 6], seed 1)
+column-permutation fixtures:witness_relevant/derangement-s2: ok ('Failure witness' against HEAD:design/04-modular-verification-language.md, from [2, 7, 10, 8, 1, 13, 3, 12, 14, 9, 6, 4, 5, 11], seed 2)
+column-permutation fixtures:witness_relevant/adjacent-swap: ok ('Failure witness' against HEAD:design/04-modular-verification-language.md, from [1, 2, 3, 4, 5, 7, 6, 8, 9, 10, 11, 12, 14, 13])
+column-permutation fixtures:witness_relevant/shared-1-11: ok ('Failure witness' against HEAD:design/04-modular-verification-language.md, from [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 12, 13, 14])
+
+fixture leaves, repeat 1 per shape (LIVE)
+  oracle            fixture             shape     row    expect     got      answered  p     thr  leaf               VERDICT       draft-only         bytes  q   worst-q  sep@0.6  edit  paths-warn  stable×2
+  ----------------  ------------------  --------  -----  ---------  -------  --------  ----  ---  -----------------  ------------  -----------------  -----  --  -------  -------  ----  ----------  --------
+  witness_relevant  good                per-atom  row1   holds      holds    holds     0.88  0.5  decides            PASS          PASS               169    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row2   holds      holds    holds     0.84  0.5  decides            PASS          PASS               140    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row3   holds      holds    holds     0.83  0.5  decides            PASS          PASS               145    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row4   holds      holds    holds     0.85  0.5  decides            PASS          PASS               215    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row5   holds      holds    holds     0.68  0.5  decides            PASS          PASS               236    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row6   holds      holds    holds     0.92  0.5  decides            PASS          PASS               205    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row7   holds      holds    holds     0.86  0.5  decides            PASS          PASS               244    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row8   holds      holds    holds     0.72  0.5  decides            PASS          PASS               229    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row9   holds      holds    holds     0.91  0.5  decides            PASS          PASS               160    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row10  holds      holds    holds     0.74  0.5  decides            PASS          PASS               217    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row11  holds      holds    holds     0.75  0.5  decides            PASS          PASS               192    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row12  holds      holds    holds     0.96  0.5  decides            PASS          PASS               184    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row13  holds      holds    holds     0.92  0.5  decides            PASS          PASS               201    14  14       yes      ok    0           same    
+  witness_relevant  good                per-atom  row14  holds      holds    holds     0.67  0.5  decides            PASS          PASS               219    14  14       yes      ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row1   fails      holds    holds     0.61  0.5  decides            NO-GO         PASS (not caught)  222    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row2   fails      holds    holds     0.51  0.5  decides            NO-GO         PASS (not caught)  168    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row3   ambiguous  holds    holds     0.76  0.5  decides            NO-GO         PASS (not caught)  140    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row4   fails      holds    holds     0.73  0.5  decides            NO-GO         PASS (not caught)  136    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row5   fails      holds    holds     0.58  0.5  decides            NO-GO         PASS (not caught)  217    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row6   fails      fails    fails     0.51  0.5  decides            NO-GO         PASS (not caught)  235    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row7   ambiguous  holds    holds     0.87  0.5  decides            NO-GO         PASS (not caught)  218    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row8   fails      holds    holds     0.65  0.5  decides            NO-GO         PASS (not caught)  228    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row9   fails      holds    holds     0.69  0.5  decides            NO-GO         PASS (not caught)  238    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row10  fails      holds    holds     0.55  0.5  decides            NO-GO         PASS (not caught)  156    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row11  ambiguous  holds    holds     0.63  0.5  decides            NO-GO         PASS (not caught)  233    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row12  fails      holds    holds     0.71  0.5  decides            NO-GO         PASS (not caught)  176    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row13  ambiguous  holds    holds     0.88  0.5  decides            NO-GO         PASS (not caught)  198    14  14       no       ok    0           same    
+  witness_relevant  defective-swapped   per-atom  row14  fails      holds    holds     0.80  0.5  decides            NO-GO         PASS (not caught)  191    14  14       no       ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row1   fails      holds    holds     0.50  0.5  decides            NO-GO         PASS (not caught)  244    14  14       no       ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row2   ambiguous  holds    holds     0.79  0.5  decides            NO-GO         PASS (not caught)  240    14  14       no       ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row3   fails      fails    fails     0.51  0.5  decides            NO-GO         PASS (not caught)  162    14  14       no       ok    0           FLIPS   
+  witness_relevant  derangement-s1      per-atom  row4   fails      holds    holds     0.73  0.5  decides            NO-GO         PASS (not caught)  173    14  14       no       ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row5   fails      unknown  holds     0.43  0.5  threshold-demoted  NO-GO         PASS (not caught)  216    14  14       no       ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row6   fails      fails    fails     0.65  0.5  decides            NO-GO         PASS (not caught)  182    14  14       yes      ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row7   fails      holds    holds     0.54  0.5  decides            NO-GO         PASS (not caught)  150    14  14       no       ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row8   fails      holds    holds     0.60  0.5  decides            NO-GO         PASS (not caught)  371    14  14       no       ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row9   fails      holds    holds     0.78  0.5  decides            NO-GO         PASS (not caught)  191    14  14       no       ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row10  fails      holds    holds     0.81  0.5  decides            NO-GO         PASS (not caught)  162    14  14       no       ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row11  fails      fails    fails     0.60  0.5  decides            NO-GO         PASS (not caught)  231    14  14       yes      ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row12  fails      unknown  holds     0.41  0.5  threshold-demoted  NO-GO         PASS (not caught)  134    14  14       no       ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row13  fails      holds    holds     0.67  0.5  decides            NO-GO         PASS (not caught)  232    14  14       no       ok    0           same    
+  witness_relevant  derangement-s1      per-atom  row14  ambiguous  holds    holds     0.72  0.5  decides            NO-GO         PASS (not caught)  211    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row1   fails      holds    holds     0.64  0.5  decides            NO-GO         PASS (not caught)  141    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row2   fails      holds    holds     0.56  0.5  decides            NO-GO         PASS (not caught)  382    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row3   fails      unknown  fails     0.49  0.5  threshold-demoted  NO-GO         PASS (not caught)  223    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row4   ambiguous  holds    holds     0.72  0.5  decides            NO-GO         PASS (not caught)  231    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row5   fails      holds    holds     0.86  0.5  decides            NO-GO         PASS (not caught)  161    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row6   fails      fails    fails     0.63  0.5  decides            NO-GO         PASS (not caught)  185    14  14       yes      ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row7   fails      holds    holds     0.54  0.5  decides            NO-GO         PASS (not caught)  150    14  14       no       ok    0           FLIPS   
+  witness_relevant  derangement-s2      per-atom  row8   fails      holds    holds     0.83  0.5  decides            NO-GO         PASS (not caught)  179    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row9   fails      holds    holds     0.72  0.5  decides            NO-GO         PASS (not caught)  219    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row10  fails      holds    holds     0.60  0.5  decides            NO-GO         PASS (not caught)  156    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row11  fails      holds    holds     0.79  0.5  decides            NO-GO         PASS (not caught)  223    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row12  fails      holds    holds     0.56  0.5  decides            NO-GO         PASS (not caught)  218    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row13  fails      holds    holds     0.63  0.5  decides            NO-GO         PASS (not caught)  251    14  14       no       ok    0           same    
+  witness_relevant  derangement-s2      per-atom  row14  fails      holds    holds     0.85  0.5  decides            NO-GO         PASS (not caught)  180    14  14       no       ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row1   holds      holds    holds     0.85  0.5  decides            NEEDS-REVIEW  PASS               169    14  14       yes      ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row2   holds      holds    holds     0.84  0.5  decides            NEEDS-REVIEW  PASS               140    14  14       yes      ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row3   holds      holds    holds     0.81  0.5  decides            NEEDS-REVIEW  PASS               145    14  14       yes      ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row4   holds      holds    holds     0.82  0.5  decides            NEEDS-REVIEW  PASS               215    14  14       yes      ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row5   holds      holds    holds     0.65  0.5  decides            NEEDS-REVIEW  PASS               236    14  14       yes      ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row6   ambiguous  holds    holds     0.57  0.5  decides            NEEDS-REVIEW  PASS (not caught)  374    14  14       no       ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row7   ambiguous  holds    holds     0.84  0.5  decides            NEEDS-REVIEW  PASS (not caught)  218    14  14       no       ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row8   holds      holds    holds     0.70  0.5  decides            NEEDS-REVIEW  PASS               229    14  14       yes      ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row9   holds      holds    holds     0.89  0.5  decides            NEEDS-REVIEW  PASS               160    14  14       yes      ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row10  holds      holds    holds     0.74  0.5  decides            NEEDS-REVIEW  PASS               217    14  14       yes      ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row11  holds      holds    holds     0.78  0.5  decides            NEEDS-REVIEW  PASS               192    14  14       yes      ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row12  holds      holds    holds     0.95  0.5  decides            NEEDS-REVIEW  PASS               184    14  14       yes      ok    0           same    
+  witness_relevant  adjacent-swap       per-atom  row13  fails      unknown  holds     0.48  0.5  threshold-demoted  NEEDS-REVIEW  PASS (not caught)  229    14  14       no       ok    0           FLIPS   
+  witness_relevant  adjacent-swap       per-atom  row14  fails      holds    holds     0.76  0.5  decides            NEEDS-REVIEW  PASS (not caught)  191    14  14       no       ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row1   holds      holds    holds     0.87  0.5  decides            PASS          PASS               169    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row2   holds      holds    holds     0.83  0.5  decides            PASS          PASS               140    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row3   ambiguous  holds    holds     0.76  0.5  decides            PASS          PASS (not caught)  140    14  14       no       ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row4   holds      holds    holds     0.87  0.5  decides            PASS          PASS               215    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row5   holds      holds    holds     0.65  0.5  decides            PASS          PASS               236    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row6   holds      holds    holds     0.93  0.5  decides            PASS          PASS               205    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row7   holds      holds    holds     0.90  0.5  decides            PASS          PASS               387    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row8   holds      holds    holds     0.71  0.5  decides            PASS          PASS               229    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row9   holds      holds    holds     0.91  0.5  decides            PASS          PASS               160    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row10  holds      holds    holds     0.67  0.5  decides            PASS          PASS               217    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row11  holds      holds    holds     0.75  0.5  decides            PASS          PASS               192    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row12  holds      holds    holds     0.95  0.5  decides            PASS          PASS               184    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row13  holds      holds    holds     0.92  0.5  decides            PASS          PASS               201    14  14       yes      ok    0           same    
+  witness_relevant  near-miss-2-3       per-atom  row14  holds      holds    holds     0.65  0.5  decides            PASS          PASS               219    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row1   holds      holds    holds     0.85  0.5  decides            PASS          PASS               183    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row2   holds      holds    holds     0.81  0.5  decides            PASS          PASS               140    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row3   holds      holds    holds     0.86  0.5  decides            PASS          PASS               145    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row4   holds      holds    holds     0.83  0.5  decides            PASS          PASS               215    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row5   holds      holds    holds     0.62  0.5  decides            PASS          PASS               236    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row6   holds      holds    holds     0.89  0.5  decides            PASS          PASS               205    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row7   holds      holds    holds     0.90  0.5  decides            PASS          PASS               387    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row8   holds      holds    holds     0.70  0.5  decides            PASS          PASS               229    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row9   holds      holds    holds     0.92  0.5  decides            PASS          PASS               160    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row10  holds      holds    holds     0.76  0.5  decides            PASS          PASS               217    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row11  holds      holds    holds     0.79  0.5  decides            PASS          PASS               178    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row12  holds      holds    holds     0.95  0.5  decides            PASS          PASS               184    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row13  holds      holds    holds     0.91  0.5  decides            PASS          PASS               201    14  14       yes      ok    0           same    
+  witness_relevant  shared-1-11         per-atom  row14  holds      holds    holds     0.66  0.5  decides            PASS          PASS               219    14  14       yes      ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row1   holds      holds    holds     0.86  0.5  decides            NEEDS-REVIEW  PASS               169    14  14       yes      ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row2   neutral    holds    holds     0.62  0.5  decides            NEEDS-REVIEW  PASS (not caught)  66     14  14       no       ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row3   fails      unknown  holds     0.44  0.5  threshold-demoted  NEEDS-REVIEW  PASS (not caught)  230    14  14       no       ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row4   fails      holds    holds     0.55  0.5  decides            NEEDS-REVIEW  PASS (not caught)  248    14  14       no       ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row5   holds      holds    holds     0.64  0.5  decides            NEEDS-REVIEW  PASS               236    14  14       yes      ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row6   neutral    unknown  unknown   0.51  0.5  judge-unknown      NEEDS-REVIEW  PASS (not caught)  56     14  14       no       ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row7   fails      unknown  holds     0.44  0.5  threshold-demoted  NEEDS-REVIEW  PASS (not caught)  179    14  14       no       ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row8   fails      holds    holds     0.65  0.5  decides            NEEDS-REVIEW  PASS (not caught)  174    14  14       no       ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row9   holds      holds    holds     0.90  0.5  decides            NEEDS-REVIEW  PASS               160    14  14       yes      ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row10  neutral    unknown  unknown   0.50  0.5  judge-unknown      NEEDS-REVIEW  PASS (not caught)  64     14  14       no       ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row11  fails      holds    holds     0.87  0.5  decides            NEEDS-REVIEW  PASS (not caught)  241    14  14       no       ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row12  neutral    holds    holds     0.79  0.5  decides            NEEDS-REVIEW  PASS (not caught)  85     14  14       no       ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row13  holds      holds    holds     0.92  0.5  decides            NEEDS-REVIEW  PASS               201    14  14       yes      ok    0           same    
+  witness_relevant  relevance-controls  per-atom  row14  neutral    holds    holds     0.58  0.5  decides            NEEDS-REVIEW  PASS (not caught)  69     14  14       no       ok    0           FLIPS   
+
+per fixture and shape (per-row oracles): cells on their expected side at p >= 0.6
+  oracle/fixture@shape                          expected side(s)       k/n    separates  VERDICT     
+  --------------------------------------------  ---------------------  -----  ---------  ------------
+  witness_relevant/good@per-atom                holds                  14/14  yes        PASS        
+  witness_relevant/defective-swapped@per-atom   fails+ambiguous        0/14   no         NO-GO       
+  witness_relevant/derangement-s1@per-atom      fails+ambiguous        2/14   no         NO-GO       
+  witness_relevant/derangement-s2@per-atom      fails+ambiguous        1/14   no         NO-GO       
+  witness_relevant/adjacent-swap@per-atom       holds+ambiguous+fails  10/14  no         NEEDS-REVIEW
+  witness_relevant/near-miss-2-3@per-atom       holds+ambiguous        13/14  no         PASS        
+  witness_relevant/shared-1-11@per-atom         holds                  14/14  yes        PASS        
+  witness_relevant/relevance-controls@per-atom  holds+neutral+fails    4/14   no         NEEDS-REVIEW
+
+false pass (defective fixtures whose document VERDICT is PASS)
+  witness_relevant/near-miss-2-3@per-atom PASS
+
+questions: main 224, follow-ups 0, requests 224; worst case live 224 (spans skipped: main only)
+
+ledger round9-R1: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  per-atom  normal  16    224       224     0              [14]                     84680       77.10    0           112            2        224             224            
+projection (live, ledger round9-R1): main 224, worst 224; cap at 1.5x worst = 336; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round9-R1.json
+ledger: live spent 224 / cap 336
+complete: true

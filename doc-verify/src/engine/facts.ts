@@ -735,6 +735,29 @@ export function cellsEvidence(document: DocumentFacts, rowId: string, columns: s
   return { sections: [row.section], text, pieces: [{ id: rowId, startLine: row.line, offset: 0, text }] };
 }
 
+/**
+ * `core.row_with_column(D, R, C)` (kernel-trials round 9, R2): row `R`'s cells under `Property`
+ * and `C` as `core.cells` renders them, a blank line, `Properties in this table:`, then one line
+ * ` - <property>` per row of `R`'s table in table order, `R`'s own suffixed ` (this row)` and an
+ * empty Property cell listed as `(unnamed)`. One piece at the row's line. No `Property`/`C` line
+ * at all yields no evidence, as `core.cells`.
+ */
+export function rowWithColumnEvidence(document: DocumentFacts, rowId: string, column: string): EvidenceText | undefined {
+  const own = cellsEvidence(document, rowId, ["Property", column]);
+  const row = document.rows.get(rowId);
+  if (own === undefined || row === undefined) {
+    return undefined;
+  }
+  const list = [...document.rows.values()]
+    .filter((other) => other.table === row.table)
+    .map((other) => {
+      const property = other.cells.get("Property") ?? "";
+      return ` - ${property.length === 0 ? "(unnamed)" : property}${other.id === rowId ? " (this row)" : ""}\n`;
+    });
+  const text = `${own.text}\nProperties in this table:\n${list.join("")}`;
+  return { sections: [row.section], text, pieces: [{ id: rowId, startLine: row.line, offset: 0, text }] };
+}
+
 /** `core.cell(D, R, C)`: the text of row `R`'s cell under column `C`, at the row's line. */
 export function cellEvidence(document: DocumentFacts, rowId: string, column: string): EvidenceText | undefined {
   const row = document.rows.get(rowId);

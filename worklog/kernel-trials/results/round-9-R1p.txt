@@ -1,0 +1,53 @@
+oracle-test --fixtures (LIVE; shapes per-atom; repeat 1; spans skipped)
+column-permutation fixtures:witness_relevant_paraphrase/defective-swapped: ok ('Failure witness' against verification_falsifies/good.md, from [14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+
+fixture leaves, repeat 1 per shape (LIVE)
+  oracle                       fixture             shape     row    expect     got      answered  p     thr  leaf               VERDICT       draft-only         bytes  q   worst-q  sep@0.6  edit  paths-warn  stable
+  ---------------------------  ------------------  --------  -----  ---------  -------  --------  ----  ---  -----------------  ------------  -----------------  -----  --  -------  -------  ----  ----------  ------
+  witness_relevant_paraphrase  defective-swapped   per-atom  row1   fails      holds    holds     0.80  0.5  decides            NEEDS-REVIEW  PASS (not caught)  222    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row2   fails      holds    holds     0.56  0.5  decides            NEEDS-REVIEW  PASS (not caught)  168    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row3   ambiguous  holds    holds     0.86  0.5  decides            NEEDS-REVIEW  PASS (not caught)  140    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row4   fails      holds    holds     0.66  0.5  decides            NEEDS-REVIEW  PASS (not caught)  136    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row5   fails      holds    holds     0.79  0.5  decides            NEEDS-REVIEW  PASS (not caught)  217    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row6   fails      unknown  holds     0.49  0.5  threshold-demoted  NEEDS-REVIEW  PASS (not caught)  235    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row7   ambiguous  holds    holds     0.84  0.5  decides            NEEDS-REVIEW  PASS (not caught)  218    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row8   fails      holds    holds     0.70  0.5  decides            NEEDS-REVIEW  PASS (not caught)  228    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row9   fails      holds    holds     0.77  0.5  decides            NEEDS-REVIEW  PASS (not caught)  238    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row10  fails      holds    holds     0.69  0.5  decides            NEEDS-REVIEW  PASS (not caught)  156    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row11  ambiguous  holds    holds     0.87  0.5  decides            NEEDS-REVIEW  PASS (not caught)  233    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row12  fails      holds    holds     0.87  0.5  decides            NEEDS-REVIEW  PASS (not caught)  176    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row13  ambiguous  holds    holds     0.89  0.5  decides            NEEDS-REVIEW  PASS (not caught)  198    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  defective-swapped   per-atom  row14  fails      holds    holds     0.92  0.5  decides            NEEDS-REVIEW  PASS (not caught)  191    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row1   holds      holds    holds     0.87  0.5  decides            NEEDS-REVIEW  PASS               169    14  14       yes      ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row2   neutral    holds    holds     0.95  0.5  decides            NEEDS-REVIEW  PASS (not caught)  66     14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row3   fails      holds    holds     0.69  0.5  decides            NEEDS-REVIEW  PASS (not caught)  230    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row4   fails      holds    holds     0.87  0.5  decides            NEEDS-REVIEW  PASS (not caught)  248    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row5   holds      holds    holds     0.71  0.5  decides            NEEDS-REVIEW  PASS               236    14  14       yes      ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row6   neutral    unknown  holds     0.49  0.5  threshold-demoted  NEEDS-REVIEW  PASS (not caught)  56     14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row7   fails      holds    holds     0.76  0.5  decides            NEEDS-REVIEW  PASS (not caught)  179    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row8   fails      holds    holds     0.71  0.5  decides            NEEDS-REVIEW  PASS (not caught)  174    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row9   holds      holds    holds     0.93  0.5  decides            NEEDS-REVIEW  PASS               160    14  14       yes      ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row10  neutral    unknown  fails     0.36  0.5  threshold-demoted  NEEDS-REVIEW  PASS (not caught)  64     14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row11  fails      holds    holds     0.93  0.5  decides            NEEDS-REVIEW  PASS (not caught)  241    14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row12  neutral    holds    holds     0.93  0.5  decides            NEEDS-REVIEW  PASS (not caught)  85     14  14       no       ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row13  holds      holds    holds     0.94  0.5  decides            NEEDS-REVIEW  PASS               201    14  14       yes      ok    0           n/a   
+  witness_relevant_paraphrase  relevance-controls  per-atom  row14  neutral    holds    holds     0.87  0.5  decides            NEEDS-REVIEW  PASS (not caught)  69     14  14       no       ok    0           n/a   
+
+per fixture and shape (per-row oracles): cells on their expected side at p >= 0.6
+  oracle/fixture@shape                                     expected side(s)     k/n   separates  VERDICT     
+  -------------------------------------------------------  -------------------  ----  ---------  ------------
+  witness_relevant_paraphrase/defective-swapped@per-atom   fails+ambiguous      0/14  no         NEEDS-REVIEW
+  witness_relevant_paraphrase/relevance-controls@per-atom  holds+neutral+fails  4/14  no         NEEDS-REVIEW
+
+false pass (defective fixtures whose document VERDICT is PASS)
+  none
+
+questions: main 28, follow-ups 0, requests 28; worst case live 28 (spans skipped: main only)
+
+ledger round9-R1p: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  per-atom  normal  2     28        28      0              [14]                     10282       9.97     0           28             1        28              28             
+projection (live, ledger round9-R1p): main 28, worst 28; cap at 1.5x worst = 42; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round9-R1p.json
+ledger: live spent 28 / cap 42
+complete: true

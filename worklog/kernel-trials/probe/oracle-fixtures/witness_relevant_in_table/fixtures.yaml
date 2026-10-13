@@ -1,0 +1,284 @@
+# Round 9 candidate set R2 (relevance only, the row plus the table's property list). Fixture-local module (extra_files); files from
+# ../verification_falsifies (design/04's verification table: row1 = 'Binding by construction' ...
+# row14 = 'Trust boundary holds'). Per-row expected labels are the lead's
+# (verification_falsifies/relevance-row-labels.yaml, label_by: lead), copied with `others`
+# expanded into `expect_cells` (the key the runner reads); `ambiguous` and `neutral` rows are
+# reported, not counted (`counts:` per fixture, the labels file's). Permutation fixtures carry the lead's fixed
+# `from` (row i carries base row from[i]'s witness; base HEAD, or the fixture's `base:` file) under the
+# column-permutation invariant; the
+# others are evidence-column-only against HEAD.
+oracle: witness_relevant_in_table
+declared_in: worklog/kernel-trials/probe/oracle-fixtures/witness_relevant_in_table/module.yaml (fixture-local)
+threshold: 0.5
+separation: 0.6
+label_by: lead
+labels_file: ../verification_falsifies/relevance-row-labels.yaml
+constraint: round9-witness-relevant-in-table
+files_from: ../verification_falsifies
+extra_files:
+  worklog/kernel-trials/probe/oracle-fixtures/witness_relevant_in_table/module.yaml: module.yaml
+rule:
+  pattern: design/{0[1-9],[1-9][0-9]}-*.md
+  artifact_kind: design
+  modules:
+    - doc-verify:artifact
+    - worklog/kernel-trials/probe/oracle-fixtures/witness_relevant_in_table/module.yaml
+document: design/04-modular-verification-language.md
+companion:
+  path: design/04-modular-verification-language.yaml
+  file: companion.yaml
+invariant: evidence-column-only
+atom:
+  inputs: "witness_relevant_in_table(D, R, Failure witness)"
+  evidence: "core.row_with_column(D, R, C)"
+  sections:
+    - verification-design
+  column: Failure witness
+  per_row: true
+  rows: 14
+fixtures:
+  - name: good
+    file: good.md
+    expect: holds
+    note: >-
+      the set's base file (round 4c's good.md); HEAD's witnesses, every row its own; no per-row labels needed (all holds).
+  - name: defective-swapped
+    file: defective-swapped.md
+    expect: fails
+    invariant: column-permutation
+    base: good.md
+    from: [14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    expect_cells:
+      row1: fails
+      row2: fails
+      row3: ambiguous
+      row4: fails
+      row5: fails
+      row6: fails
+      row7: ambiguous
+      row8: fails
+      row9: fails
+      row10: fails
+      row11: ambiguous
+      row12: fails
+      row13: ambiguous
+      row14: fails
+    counts: { counted: 10, ambiguous: 4, bar: 8 }  # the labels file's counts entry, verbatim
+    reported: [row3, row7, row11, row13]
+    note: >-
+      round 4c's shift-by-one file, unchanged: row i carries row i-1's witness; relabelled by the lead for that direction; permutation base the set's good.md (the 4c base), not HEAD
+    labels:  # the lead's rows block from verification_falsifies/relevance-row-labels.yaml, copied unchanged
+        row1: { label: fails, confidence: medium, why: "trust boundary's five breaches on binding; 'a split atom's evidence' is request vocabulary, not binding" }
+        row2: { label: fails, confidence: high, why: "binding on threshold" }
+        row3: { label: ambiguous, why: "threshold witness on three-valued soundness: a wrong label from a demotion reads as a soundness failure" }
+        row4: { label: fails, confidence: high, why: "three-valued soundness on static checks" }
+        row5: { label: fails, confidence: medium, why: "static checks (an unsafe construct accepted) on modules compose" }
+        row6: { label: fails, confidence: high, why: "composition failures on rounds bounded" }
+        row7: { label: ambiguous, why: "rounds bounded on request shape: a depth-1 batched program's one round is both" }
+        row8: { label: fails, confidence: high, why: "request shape on extends law" }
+        row9: { label: fails, confidence: high, why: "extends law on diagnostics" }
+        row10: { label: fails, confidence: high, why: "diagnostics on nesting baseline" }
+        row11: { label: ambiguous, why: "nesting baseline's populations on nested classification: shared 'nested' vocabulary" }
+        row12: { label: fails, confidence: high, why: "nested classification on migration parity" }
+        row13: { label: ambiguous, why: "migration parity on migrated-constraint separation: both are migration rows" }
+        row14: { label: fails, confidence: high, why: "separation on trust boundary" }
+  - name: derangement-s1
+    file: derangement-s1.md
+    expect: fails
+    invariant: column-permutation
+    from: [5, 8, 9, 11, 10, 12, 3, 7, 13, 1, 14, 2, 4, 6]
+    seed: 1
+    expect_cells:
+      row1: fails
+      row2: ambiguous
+      row3: fails
+      row4: fails
+      row5: fails
+      row6: fails
+      row7: fails
+      row8: fails
+      row9: fails
+      row10: fails
+      row11: fails
+      row12: fails
+      row13: fails
+      row14: ambiguous
+    counts: { counted: 12, ambiguous: 2, bar: 11 }  # the labels file's counts entry, verbatim
+    reported: [row2, row14]
+    note: >-
+      seeded derangement, seed 1 (mulberry32 Fisher-Yates with rejection; from fixed by the lead)
+    labels:  # the lead's rows block from verification_falsifies/relevance-row-labels.yaml, copied unchanged
+        row1: { label: fails, confidence: high, why: "modules compose on binding" }
+        row2: { label: ambiguous, why: "extends law on threshold: 'a child that raises an inherited threshold' names the threshold" }
+        row3: { label: fails, confidence: high, why: "diagnostics on soundness" }
+        row4: { label: fails, confidence: high, why: "nested classification on static checks" }
+        row5: { label: fails, confidence: high, why: "nesting baseline on modules compose" }
+        row6: { label: fails, confidence: high, why: "migration parity on rounds bounded" }
+        row7: { label: fails, confidence: high, why: "soundness on request shape" }
+        row8: { label: fails, confidence: medium, why: "request shape on extends law (adjacent pair)" }
+        row9: { label: fails, confidence: high, why: "separation on diagnostics" }
+        row10: { label: fails, confidence: high, why: "binding on nesting baseline" }
+        row11: { label: fails, confidence: high, why: "trust boundary on nested classification" }
+        row12: { label: fails, confidence: high, why: "threshold on migration parity" }
+        row13: { label: fails, confidence: high, why: "static checks on separation" }
+        row14: { label: ambiguous, why: "rounds bounded on trust boundary: 'a single atom's evidence split across requests' is also in row 14's own witness" }
+  - name: derangement-s2
+    file: derangement-s2.md
+    expect: fails
+    invariant: column-permutation
+    from: [2, 7, 10, 8, 1, 13, 3, 12, 14, 9, 6, 4, 5, 11]
+    seed: 2
+    expect_cells:
+      row1: fails
+      row2: fails
+      row3: fails
+      row4: ambiguous
+      row5: fails
+      row6: fails
+      row7: fails
+      row8: fails
+      row9: fails
+      row10: fails
+      row11: fails
+      row12: fails
+      row13: fails
+      row14: fails
+    counts: { counted: 13, ambiguous: 1, bar: 11 }  # the labels file's counts entry, verbatim
+    reported: [row4]
+    note: >-
+      seeded derangement, seed 2 (from fixed by the lead)
+    labels:  # the lead's rows block from verification_falsifies/relevance-row-labels.yaml, copied unchanged
+        row1: { label: fails, confidence: high, why: "threshold on binding (adjacent pair)" }
+        row2: { label: fails, confidence: high, why: "request shape on threshold" }
+        row3: { label: fails, confidence: high, why: "nesting baseline on soundness" }
+        row4: { label: ambiguous, why: "extends law on static checks: 'loads without waive' is a loader acceptance" }
+        row5: { label: fails, confidence: high, why: "binding on modules compose" }
+        row6: { label: fails, confidence: high, why: "separation on rounds bounded" }
+        row7: { label: fails, confidence: high, why: "soundness on request shape" }
+        row8: { label: fails, confidence: high, why: "migration parity on extends law" }
+        row9: { label: fails, confidence: high, why: "trust boundary on diagnostics" }
+        row10: { label: fails, confidence: high, why: "diagnostics on nesting baseline (adjacent pair)" }
+        row11: { label: fails, confidence: high, why: "rounds bounded on nested classification" }
+        row12: { label: fails, confidence: high, why: "static checks on migration parity" }
+        row13: { label: fails, confidence: high, why: "modules compose on separation" }
+        row14: { label: fails, confidence: medium, why: "nested classification (with row 1's binding clause) on trust boundary" }
+  - name: adjacent-swap
+    file: adjacent-swap.md
+    expect: fails
+    invariant: column-permutation
+    from: [1, 2, 3, 4, 5, 7, 6, 8, 9, 10, 11, 12, 14, 13]
+    expect_cells:
+      row1: holds
+      row2: holds
+      row3: holds
+      row4: holds
+      row5: holds
+      row6: ambiguous
+      row7: ambiguous
+      row8: holds
+      row9: holds
+      row10: holds
+      row11: holds
+      row12: holds
+      row13: fails
+      row14: fails
+    counts: { wrong_counted: 2, ambiguous: 2, right: 10 }  # the labels file's counts entry, verbatim
+    reported: [row6, row7]
+    note: >-
+      rows 6<->7 and 13<->14 exchanged; the others HEAD's
+    labels:  # the lead's rows block from verification_falsifies/relevance-row-labels.yaml, copied unchanged
+        row6: { label: ambiguous, why: "request shape on rounds bounded: one round per batched program is both" }
+        row7: { label: ambiguous, why: "rounds bounded on request shape: the same overlap" }
+        row13: { label: fails, confidence: medium, why: "trust boundary on separation" }
+        row14: { label: fails, confidence: medium, why: "separation on trust boundary" }
+        others: { label: holds, confidence: high, why: "HEAD's own witnesses on rows 1-5, 8-12" }
+  - name: near-miss-2-3
+    file: near-miss-2-3.md
+    expect: holds
+    from: [1, 2, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    expect_cells:
+      row1: holds
+      row2: holds
+      row3: ambiguous
+      row4: holds
+      row5: holds
+      row6: holds
+      row7: holds
+      row8: holds
+      row9: holds
+      row10: holds
+      row11: holds
+      row12: holds
+      row13: holds
+      row14: holds
+    counts: { counted: 0, reported: 1 }  # the labels file's counts entry, verbatim
+    reported: [row3]
+    note: >-
+      row 2's witness on row 3, row 3's own dropped (not a permutation: evidence-column-only)
+    labels:  # the lead's rows block from verification_falsifies/relevance-row-labels.yaml, copied unchanged
+        row3: { label: ambiguous, why: "threshold witness on three-valued soundness: a wrong label from a demotion is a soundness failure in a judge's reading; reported, not counted" }
+        others: { label: holds, confidence: high, why: "HEAD's own witnesses" }
+  - name: shared-1-11
+    file: shared-1-11.md
+    expect: holds
+    invariant: column-permutation
+    from: [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 12, 13, 14]
+    expect_cells:
+      row1: holds
+      row2: holds
+      row3: holds
+      row4: holds
+      row5: holds
+      row6: holds
+      row7: holds
+      row8: holds
+      row9: holds
+      row10: holds
+      row11: holds
+      row12: holds
+      row13: holds
+      row14: holds
+    counts: { counted: 2, expect: holds }  # the labels file's counts entry, verbatim
+    note: >-
+      rows 1 and 11 exchanged (a shared clause; both labelled holds)
+    labels:  # the lead's rows block from verification_falsifies/relevance-row-labels.yaml, copied unchanged
+        row1: { label: holds, confidence: medium, why: "row 11's witness opens with row 1's own clause (two atoms receive each other's answer); a legitimate overlap" }
+        row11: { label: holds, confidence: medium, why: "row 1's witness is the shared clause; a scripted misclassification is a binding failure too" }
+        others: { label: holds, confidence: high, why: "HEAD's own witnesses" }
+  - name: relevance-controls
+    file: relevance-controls.md
+    expect: fails
+    expect_cells:
+      row1: holds
+      row2: neutral
+      row3: fails
+      row4: fails
+      row5: holds
+      row6: neutral
+      row7: fails
+      row8: fails
+      row9: holds
+      row10: neutral
+      row11: fails
+      row12: neutral
+      row13: holds
+      row14: neutral
+    counts: { genuine: 4, decoy: 5, neutral_reported: 5 }  # the labels file's counts entry, verbatim
+    reported: [row2, row6, row10, row12, row14]
+    note: >-
+      genuine rows 1, 5, 9, 13; relevance-neutral rows 2, 6, 10, 12, 14 (reported, not counted); decoy-wrong-failure rows 3, 4, 7, 8, 11
+    labels:  # the lead's rows block from verification_falsifies/relevance-row-labels.yaml, copied unchanged
+        row1: { label: holds, class: genuine, confidence: high }
+        row2: { label: neutral, class: relevance-neutral, text: "the check fails", why: "reported, not counted" }
+        row3: { label: fails, class: decoy-wrong-failure, confidence: high, text_prefix: "With three-valued evaluation unchanged, ", from: 12 }
+        row4: { label: fails, class: decoy-wrong-failure, confidence: high, text_prefix: "With the static checks unchanged, ", from: 10 }
+        row5: { label: holds, class: genuine, confidence: high }
+        row6: { label: neutral, class: relevance-neutral, text: "a test is red" }
+        row7: { label: fails, class: decoy-wrong-failure, confidence: medium, text_prefix: "Under the declared request shape, ", from: 2 }
+        row8: { label: fails, class: decoy-wrong-failure, confidence: high, text_prefix: "Under the extends law, ", from: 9 }
+        row9: { label: holds, class: genuine, confidence: high }
+        row10: { label: neutral, class: relevance-neutral, text: "the output is wrong" }
+        row11: { label: fails, class: decoy-wrong-failure, confidence: medium, text_prefix: "With nested classification unchanged, ", from: 13 }
+        row12: { label: neutral, class: relevance-neutral, text: "behaviour differs from the specification" }
+        row13: { label: holds, class: genuine, confidence: high }
+        row14: { label: neutral, class: relevance-neutral, text: "a regression appears" }

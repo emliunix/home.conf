@@ -12,22 +12,28 @@
 oracle_family: witness_relevant
 fixtures:
   defective-swapped:
-    from: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 1]
+    # Round 4c's file, unchanged: row i carries the witness of row i-1 (row 1 carries row 14's).
+    # Relabelled by the lead 2026-10-13 09:40 for that direction after the builder found the first
+    # `from` list ran the other way; the ambiguous count (4) and the bar (8 of 10) are unchanged.
+    # The permutation base for this fixture is the set's `good.md` (the 4c base, design/04 before
+    # round 6's row-7 edit), not HEAD, so the 4c 0/14 baseline stays comparable.
+    base: good.md
+    from: [14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     rows:
-      row1: { label: ambiguous, why: "row 2's threshold witness on binding: 'a rule reads a probability' touches binding-by-content" }
-      row2: { label: fails, confidence: high, why: "three-valued soundness on threshold" }
-      row3: { label: fails, confidence: high, why: "static checks on soundness" }
-      row4: { label: fails, confidence: high, why: "composition on static checks" }
-      row5: { label: ambiguous, why: "rounds bounded on modules compose: a depth-2 program's rounds is a loader-level property too" }
-      row6: { label: fails, confidence: medium, why: "request shape on rounds bounded; related vocabulary but a different property" }
-      row7: { label: ambiguous, why: "extends law on request shape: both are about declared knobs loading" }
-      row8: { label: fails, confidence: high, why: "diagnostics on extends law" }
-      row9: { label: fails, confidence: high, why: "nesting counts on diagnostics" }
-      row10: { label: fails, confidence: high, why: "nested classification on nesting baseline" }
-      row11: { label: fails, confidence: medium, why: "migration parity on nested classification" }
-      row12: { label: fails, confidence: high, why: "separation on migration parity" }
-      row13: { label: ambiguous, why: "trust boundary on separation: 'a PASS driven by confidence' is a separation failure in other words" }
-      row14: { label: fails, confidence: high, why: "binding on trust boundary" }
+      row1: { label: fails, confidence: medium, why: "trust boundary's five breaches on binding; 'a split atom's evidence' is request vocabulary, not binding" }
+      row2: { label: fails, confidence: high, why: "binding on threshold" }
+      row3: { label: ambiguous, why: "threshold witness on three-valued soundness: a wrong label from a demotion reads as a soundness failure" }
+      row4: { label: fails, confidence: high, why: "three-valued soundness on static checks" }
+      row5: { label: fails, confidence: medium, why: "static checks (an unsafe construct accepted) on modules compose" }
+      row6: { label: fails, confidence: high, why: "composition failures on rounds bounded" }
+      row7: { label: ambiguous, why: "rounds bounded on request shape: a depth-1 batched program's one round is both" }
+      row8: { label: fails, confidence: high, why: "request shape on extends law" }
+      row9: { label: fails, confidence: high, why: "extends law on diagnostics" }
+      row10: { label: fails, confidence: high, why: "diagnostics on nesting baseline" }
+      row11: { label: ambiguous, why: "nesting baseline's populations on nested classification: shared 'nested' vocabulary" }
+      row12: { label: fails, confidence: high, why: "nested classification on migration parity" }
+      row13: { label: ambiguous, why: "migration parity on migrated-constraint separation: both are migration rows" }
+      row14: { label: fails, confidence: high, why: "separation on trust boundary" }
   derangement-s1:
     seed: 1
     from: [5, 8, 9, 11, 10, 12, 3, 7, 13, 1, 14, 2, 4, 6]

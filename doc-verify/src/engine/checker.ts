@@ -39,7 +39,7 @@ export interface Oracle {
   labels: string[];
   ask: string;
   threshold: number;
-  evidence: { form: "own" | "body"; section: number } | { form: "union"; sections: number } | { form: "cell"; row: number; column: number } | { form: "column"; row: number; column: number } | { form: "cells"; row: number; columns: number };
+  evidence: { form: "own" | "body"; section: number } | { form: "union"; sections: number } | { form: "cell"; row: number; column: number } | { form: "column"; row: number; column: number } | { form: "cells"; row: number; columns: number } | { form: "row_with_column"; row: number; column: number };
   maxBytes: number | undefined;
   source: OracleSource;
 }
@@ -220,6 +220,14 @@ function checkOracleHead(
       if (position(document) === 0 && row !== undefined && columns !== undefined) {
         shape = { form: "cells", row, columns };
       }
+    } else if (alias.kind === "atom" && alias.name === "core" && call.kind === "compound" && call.functor === "row_with_column" && call.args.length === 3) {
+      // `row_with_column(D, R, C)`: one row's Property and `C` cells plus its table's property list.
+      const [document, rowTerm, columnTerm] = call.args as [Term, Term, Term];
+      const row = position(rowTerm);
+      const column = position(columnTerm);
+      if (position(document) === 0 && row !== undefined && column !== undefined) {
+        shape = { form: "row_with_column", row, column };
+      }
     } else if (alias.kind === "atom" && alias.name === "core" && call.kind === "compound" && (call.functor === "cell" || call.functor === "column") && call.args.length === 3) {
       // `cell(D, R, C)`: one row's cell; `column(D, T, C)`: a table's cells under one header.
       const [document, rowTerm, columnTerm] = call.args as [Term, Term, Term];
@@ -245,7 +253,7 @@ function checkOracleHead(
     }
   }
   if (shape === undefined) {
-    issues.push(`${where}.evidence: evidence is core.own(D, S), core.body(D, S), core.union(D, L), core.cell(D, R, C), core.cells(D, R, L) or core.column(D, T, C) over the oracle's input variables, with the document first`);
+    issues.push(`${where}.evidence: evidence is core.own(D, S), core.body(D, S), core.union(D, L), core.cell(D, R, C), core.cells(D, R, L), core.column(D, T, C) or core.row_with_column(D, R, C) over the oracle's input variables, with the document first`);
     return undefined;
   }
   for (const placeholder of declared.source.ask.matchAll(/\{([A-Za-z_][A-Za-z0-9_]*)\}/g)) {
