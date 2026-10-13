@@ -59,6 +59,14 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
    under `require`); clingo says `undetermined`. Reachable from a legal module. Gate: the round 7
    property track's `count-bound` class (7.5% of programs) must report 0 after the fix; the fix
    belongs to the kernel before design 06's step 2 parity.
+   **Closed 2026-10-13** (design 06 step 3): a bound result is compared through `core_cmp`
+   (6f261fc), and identical count goals share one aux predicate so two counts of the same goal
+   are equal (`core_same_count/2`, landed in doc-verify by the builder's review-fix commits). The
+   round 7 S1 C5 arm re-run on the probe with both changes applied (in a scratch worktree; the
+   committed probe stays the record): failing kinds `{"loop-shape":1}`, count-bound class 0 of
+   1500 programs (was 63), complete; the seeds table flips as before (K3' 0 on `sound`, as
+   corrected). Records: `results/item-7-fix-S1-C5.txt`, `results/item-7-fix-seeds.txt`; tests:
+   `doc-verify/tests/kernel/regressions.test.ts`.
 8. **A loop-resting binding is demanded once before it is called unfounded** (round 7 finding 2):
    a choose conjunction no answer satisfies, behind a loop, keeps its atom in Dem for one round.
    Statuses and verdict are the WFS's; one judge question is wasted. Open precision item; the

@@ -1,0 +1,294 @@
+seed K1: core.pl patch applies
+seed K2: core.pl patch applies
+seed K3': core.pl patch applies
+seed K4-low: core.pl patch applies
+seed K4-high: core.pl patch applies
+seed K1 (control, predicted sound) arm C5: triggers 453 (per 500: 151.0), flips 172, other-kind flips 65 {"loop-wfs":65}, signature-only diffs 0, green-still 0, skipped 0, witness 19->3 minimal=true
+  witness K1 C5
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _), o1(D, S)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+flip of sound
+seed K2 (control, predicted D1) arm C5: triggers 1320 (per 500: 440.0), flips 496, other-kind flips 62 {"D2":54,"policy":38}, signature-only diffs 0, green-still 0, skipped 0, witness 22->3 minimal=true
+  witness K2 C5
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "o1(D, S)"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+flip of D1
+seed K3' (axis, predicted sound) arm C5: triggers 265 (per 500: 88.3), flips 0, other-kind flips 89 {"M2":73,"loop-wfs":16}, signature-only diffs 1, green-still 0, skipped 0, witness none
+REFUTING: axis seed K3' flips 0 < 5 on C5
+seed K4-low (axis, predicted sound) arm C5: triggers 442 (per 500: 147.3), flips 129, other-kind flips 61 {"loop-wfs":58,"D2":3,"policy":2}, signature-only diffs 4, green-still 0, skipped 0, witness 14->4 minimal=true
+  witness K4-low C5
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+flip of sound
+seed K4-high (axis, predicted count-exact) arm C5: triggers 142 (per 500: 47.3), flips 17, other-kind flips 17 {"loop-wfs":16,"sound":1}, signature-only diffs 10, green-still 0, skipped 0, witness 17->3 minimal=true
+  witness K4-high C5
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+flip of count-exact
+seed S3a (control, predicted exact) arm C5: triggers 846 (per 500: 282.0), flips 258, other-kind flips 20 {"loop-stable":19,"D1":1}, signature-only diffs 0, green-still 0, skipped 0, witness 19->3 minimal=true
+  witness S3a C5
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _), o1(D, S)"
+    require: "o1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+flip of exact
+seed S3b (axis, predicted odd-loop) arm C5: triggers 412 (per 500: 137.3), flips 373, other-kind flips 0 {}, signature-only diffs 0, green-still 0, skipped 0, witness 15->4 minimal=true
+  witness S3b C5
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "o1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+flip of odd-loop
+seed S3c (axis, predicted exact) arm C5: triggers 212 (per 500: 70.7), flips 42, other-kind flips 9 {"loop-stable":3,"D1":6}, signature-only diffs 0, green-still 0, skipped 0, witness 22->5 minimal=true
+  witness S3c C5
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y]
+rules:
+  p1(D, S0): core.section(D, S0, _), k(D, S0, x), k(D, S0, y)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+flip of exact
+seed K1 (control, predicted sound) arm C5-features: triggers 365 (per 500: 121.7), flips 95, other-kind flips 0 {}, signature-only diffs 0, green-still 0, skipped 0, witness 10->4 minimal=true
+  witness K1 C5-features
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.selected(D, S0)
+constraints:
+  c2:
+    forall: "core.section(D, S, _), o1(D, S)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+flip of sound
+seed K2 (control, predicted D1) arm C5-features: triggers 1443 (per 500: 481.0), flips 895, other-kind flips 180 {"D2":151,"policy":112}, signature-only diffs 0, green-still 0, skipped 0, witness 10->3 minimal=true
+  witness K2 C5-features
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "o2(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+flip of D1
+seed K3' (axis, predicted sound) arm C5-features: triggers 0 (per 500: 0.0), flips 0, other-kind flips 0 {}, signature-only diffs 0, green-still 0, skipped 0, witness none
+seed K4-low (axis, predicted sound) arm C5-features: triggers 0 (per 500: 0.0), flips 0, other-kind flips 0 {}, signature-only diffs 0, green-still 0, skipped 0, witness none
+seed K4-high (axis, predicted count-exact) arm C5-features: triggers 0 (per 500: 0.0), flips 0, other-kind flips 0 {}, signature-only diffs 0, green-still 0, skipped 0, witness none
+seed S3a (control, predicted exact) arm C5-features: triggers 780 (per 500: 260.0), flips 284, other-kind flips 2 {"D1":2}, signature-only diffs 0, green-still 0, skipped 0, witness 10->3 minimal=true
+  witness S3a C5-features
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _), o1(D, S)"
+    require: "o1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+flip of exact
+seed S3b (axis, predicted odd-loop) arm C5-features: triggers 0 (per 500: 0.0), flips 0, other-kind flips 0 {}, signature-only diffs 0, green-still 0, skipped 0, witness none
+seed S3c (axis, predicted exact) arm C5-features: triggers 0 (per 500: 0.0), flips 0, other-kind flips 0 {}, signature-only diffs 0, green-still 0, skipped 0, witness none
+seed K1 arm C5-shrink: flips 172 (= C5, same programs), witness unshrunk 19
+seed K2 arm C5-shrink: flips 496 (= C5, same programs), witness unshrunk 22
+seed K3' arm C5-shrink: flips 0 (= C5, same programs), witness unshrunk none
+seed K4-low arm C5-shrink: flips 129 (= C5, same programs), witness unshrunk 14
+seed K4-high arm C5-shrink: flips 17 (= C5, same programs), witness unshrunk 17
+seed S3a arm C5-shrink: flips 258 (= C5, same programs), witness unshrunk 19
+seed S3b arm C5-shrink: flips 373 (= C5, same programs), witness unshrunk 15
+seed S3c arm C5-shrink: flips 42 (= C5, same programs), witness unshrunk 22
+seeds-table wall 1044411 ms, evaluations S1 187560 S3 19367, instances 14039
+refuting cells: 1
+complete: true
+exit 1

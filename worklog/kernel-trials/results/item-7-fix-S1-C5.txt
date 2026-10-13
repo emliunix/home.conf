@@ -1,0 +1,144 @@
+counterexample nondet-same (same-instance history dependence): seed 1 program 301 size 19->16 (fast-check shrinks 167) minimal=false (neighbours tried 2, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y, z]
+rules:
+  anc(D, S): core.section(D, S, P), core.section(D, P, _)
+  anc(D, T): core.section(D, T, U), anc(D, U)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    forbid: "not k(D, S, y), core.heading(D, S, H0), matches(H0, 'refs')"
+    severity: error
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "core.depth(D, S, Dep1), Dep1 < 4"
+    severity: error
+  c3:
+    forall: "core.section(D, S, _), o3(D, S)"
+    forbid: "anc(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, refs)
+depth(d, c, 1)
+--- ans
+{"w::o2(d,a)":"holds","w::o2(d,c)":"holds","w::o3(d,b)":"holds","w::k(d,b)":"x"}
+--- problems
+first run ["D2: answering w::k(d,a)=x outside Dem changes a status"]
+same instance again []
+sequence replayed on another instance []
+input {"w::o2(d,a)":"holds","w::o2(d,c)":"holds","w::o3(d,b)":"holds","w::k(d,b)":"x","w::k(d,a)":"x"}
+as call 20 of 28 in the check sequence on one instance: {"v":"BLOCKED","s":{},"d":{"full":[],"prefix":[]},"u":null,"x":"error(instantiation_error,_2646)"}
+as the first call on a new instance: {"v":"NO-GO","s":{"c1":[{"D":"d","S":"a","status":"satisfied"},{"D":"d","S":"b","status":"satisfied"},{"D":"d","S":"c","status":"undetermined"}],"c2":[{"D":"d","S":"a","status":"satisfied"},{"D":"d","S":"b","status":"satisfied"},{"D":"d","S":"c","status":"satisfied"}],"c3":[{"D":"d","S":"a","status"
+--- non-minimal: the neighbour "delete rule 1" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y, z]
+rules:
+  anc(D, S): core.section(D, S, P), core.section(D, P, _)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    forbid: "not k(D, S, y), core.heading(D, S, H0), matches(H0, 'refs')"
+    severity: error
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "core.depth(D, S, Dep1), Dep1 < 4"
+    severity: error
+  c3:
+    forall: "core.section(D, S, _), o3(D, S)"
+    forbid: "anc(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, refs)
+depth(d, c, 1)
+--- neighbour ans
+{"w::o2(d,a)":"holds","w::o2(d,c)":"holds","w::o3(d,b)":"holds","w::k(d,b)":"x"}
+counterexample loop-shape class=other REFUTING (new finding): seed 3 program 98 size 21->7 (fast-check shrinks 180) minimal=true (neighbours tried 7, skipped 4) (design-04 checker refuses it: rules.loop: negation or count over loop in the same stratum; S1 runs it)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y]
+rules:
+  p1(D, S0): core.section(D, S0, _), k(D, S0, x), k(D, S0, y)
+  p1(D, S1): core.section(D, S1, _), loop(D, S1)
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+loop-shape: c1/a rests on a loop, not listed unfounded
+arm C5 subject S1: programs 1500, failing-program kinds {"loop-shape":1}, invalidSkipped 0, capSkipped 0, shrinkReplayMissed 0, d1Weak 121, exempt 127
+skips (reason: count): {}
+recorded distinct shrunk triples per kind|class: {"loop-shape|other":1}; non-minimal 0
+expected (pre-registered red): 0; refuting: 2
+nondet: freshInstance=0 sameInstance=1
+coverage: {"choose":0.272,"count":0.723,"matches":0.618,"in":0.637,"cmp":0.637,"recursion":0.128,"negativeLoop":0.325,"unknown":0.392,"countBound":0.075,"countCorrelated":0.105,"unboundMatches":0.067,"loopReachable":0.273} triggers: {"choosePair":0.141,"countBoundary":0.538,"oddReachable":0.245} undeterminedShare 0.773
+weights: {"chooseOracle":0.3,"answerRate":0.4,"unknownOfAnswered":0.15,"negation":0.3,"in":0.1,"matches":0.1,"cmp":0.1,"count":0.1,"choose":0.3,"countUncorrelatedInGoals":0.5,"recursion":0.2,"negativeLoop":0.15,"loopReachable":0.5,"loopViaPredicate":0.5,"nonempty":0.25,"oracleForall":0.4,"unboundMatches":0.08,"countBound":0.1,"chooseTriggerFloor":0.45,"countBoundaryFloor":0.25,"oddLoopFloor":0.22}
+cost: wall 369235 ms, checking 158933 ms, shrinker 207640 ms, minimality 380 ms, evaluations S1 180149 S3 0, instances 4141
+complete: true
