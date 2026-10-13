@@ -160,3 +160,21 @@ claims in other documents (phase 3).
 - S5: per-oracle decision rows, including C ≈ A. S6: M is a per-atom smoke run.
 - S7: the seeds are corrected and extended, and the predicate runs boundary and `npm test`.
 - Notes: the claim is the title only; caps are stated; the unmeasured list is extended.
+
+## Amendment before the run (2026-10-14, after the build, before any live call)
+
+1. **M track.** The 12 subtle module pages of round 8 are now refused by the structural pre-check
+   (`structure.dated-prose`, gate-ledger item 10 closed by 61e84db after this plan was written), so
+   they never reach the judge under any arm. M's judged units are the remaining ones (good,
+   good-near, the real module pages: 12 per arm in the mock run). M stays a no-harm smoke on those;
+   the subtle pages are reported as structural catches, and `complete` for M counts the judged units.
+2. **Builder interpretations accepted** (no tuning to labels; recorded as decision rows with the
+   verdict): steps root-down whatever the order of Kinds; a depth-1 heading appears only as `title`;
+   every same-text sibling carries its index; a `section_keyed` token is a run of non-space,
+   non-punctuation characters, matched exactly and case-sensitively; the run-time echo rule applies to
+   every oracle with a context and `context_may_echo` does not exempt it; several context inputs render
+   as groups; D's "next row" is fixed from goals/04's keys; C's fallback asks with `Q = []`;
+   real-cells runs one document per batch under `--variants`.
+3. **Mock cost** (builder, no live call): E-fix 132, E-real 60, E-der 30, W-fix 168, W-real 104,
+   M 32 questions per arm, all under the caps; every label found under every arm; context bytes A
+   106–146, C 208–272; C fallback 0.
