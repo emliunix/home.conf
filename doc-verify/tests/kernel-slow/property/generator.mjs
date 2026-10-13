@@ -307,7 +307,8 @@ function materialize(raw) {
   // gap 2: a count in a forall (over an oracle; the binding is the forall's S)
   if (featuresOn && on(raw.countForallOn, WEIGHTS.countForall) && raw.keepForced[8] !== null) {
     const c = constraints[raw.countForallOn % constraints.length];
-    c.forall.push({ kind: "count", over: "oracle", target: oraRef(raw.countForallOn), op: ">=", K: 1 + (raw.countForallOn % 2) });
+    // the unbound-matches mode needs a section-only forall (else its goal may never be reached)
+    if (!c.goal.some(isUnboundMatches)) c.forall.push({ kind: "count", over: "oracle", target: oraRef(raw.countForallOn), op: ">=", K: 1 + (raw.countForallOn % 2) });
   }
   // gap 3: a count over a choose label; often a second one over another label (aux sharing)
   if (choose && on(raw.countChooseOn, WEIGHTS.countChoose) && raw.keepForced[9] !== null) {
@@ -320,7 +321,7 @@ function materialize(raw) {
   // gap 3: a forall over a choose label
   if (choose && on(raw.chooseForallOn, WEIGHTS.chooseForall)) {
     const c = constraints[raw.chooseForallOn % constraints.length];
-    c.forall.push({ kind: "choose", name: choose.name, label: choose.labels[raw.chooseForallOn % choose.labels.length], neg: false });
+    if (!c.goal.some(isUnboundMatches)) c.forall.push({ kind: "choose", name: choose.name, label: choose.labels[raw.chooseForallOn % choose.labels.length], neg: false });
   }
 
   // atoms + answers; cap free <= 10
@@ -476,7 +477,8 @@ export function normalize(g0) {
       if (l.kind !== "count") return true;
       if (l.bind === "shared") {
         // a shared literal needs an anchor: an earlier count over the same oracle in the group
-        return lits.slice(0, i).some((x) => x.kind === "count" && x.over === "oracle" && x.target === l.target && !x.bind);
+        // (not a sibling-var count: its goal differs, so N would not be the same count)
+        return lits.slice(0, i).some((x) => x.kind === "count" && x.over === "oracle" && x.target === l.target && !x.bind && !x.siblingVar);
       }
       if (l.bind) return true;
       const k = JSON.stringify(l);
@@ -526,6 +528,8 @@ export function reaches(g, hit) {
   };
   return g.constraints.some((c) => [...c.forall, ...c.goal].some((l) => refersTo(l, visit)));
 }
+
+const isUnboundMatches = (l) => l.kind === "matches" && !!l.unbound;
 
 /** Does literal `l` refer to a predicate for which `visit` holds? */
 function refersTo(l, visit) {
