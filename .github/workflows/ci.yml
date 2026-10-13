@@ -74,6 +74,21 @@ jobs:
           path: doc-verify-report.json
           if-no-files-found: ignore
 
+  skill-dispatch:
+    # Every skill's dispatch check with its case suites (the commit hook skips the cases;
+    # CHECK_DISPATCH_SKIP_CASES). The worktree-sop cases build throwaway repositories, so git
+    # needs an identity.
+    name: skill-dispatch
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: git config --global user.name ci && git config --global user.email ci@example.invalid
+      - run: for f in skills/*/tests/check-dispatch.mjs; do node "$f" || exit 1; done
+
   tracked-ignored:
     name: tracked-ignored
     runs-on: ubuntu-latest

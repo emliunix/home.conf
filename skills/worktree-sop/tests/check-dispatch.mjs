@@ -258,9 +258,8 @@ async function checkRedGreen() {
 // ⚠ THE LOCK MUTATION TABLE IS NOT HERE EITHER, for the canonical table's reason: placement.
 // Measured 2026-10-13: `check-lock-mutations.mjs` is ~92 s against ~7 s for the cases, and this
 // check fires on every commit under `skills/`, so an unrelated skill edit paid the table and was
-// blocked by its verdict. The table runs where a change can actually affect it: the
-// `worktree-sop-lock-mutations` hook in the repository `.pre-commit-config.yaml`, scoped to the
-// lock script and its tests, and at the lander's step:
+// blocked by its verdict. The table runs in CI's mutation job (`npm run test:mutations`) and at
+// the lander's step:
 //
 //   node skills/worktree-sop/tests/check-lock-mutations.mjs
 async function checkLockCases() {
@@ -277,10 +276,18 @@ async function checkLockCases() {
   }
 }
 
+// The two case suites (~19 s) run in CI's skill-dispatch job; the commit hook sets
+// CHECK_DISPATCH_SKIP_CASES=1 and keeps the reachability checks (moved 2026-10-14: the hook took
+// 28 s on any worktree-sop edit). Run with the variable unset to get everything.
+const skipCases = process.env.CHECK_DISPATCH_SKIP_CASES === "1";
 checkSurface();
 await checkRedGreen();
-await checkLockCases();
-await checkCanonicalCases();
+if (!skipCases) {
+  await checkLockCases();
+  await checkCanonicalCases();
+} else {
+  console.log("check-dispatch: case suites skipped (CHECK_DISPATCH_SKIP_CASES=1); CI runs them");
+}
 
 if (failures.length) {
   console.error(`check-dispatch: ${failures.length} failure(s)`);
@@ -288,5 +295,7 @@ if (failures.length) {
   process.exit(1);
 }
 console.log(
-  "check-dispatch: ok (surface, serialization red/green, stale recovery, lock classification, lock cases, canonical checkout)",
+  skipCases
+    ? "check-dispatch: ok (surface, serialization red/green, stale recovery, lock classification; case suites skipped)"
+    : "check-dispatch: ok (surface, serialization red/green, stale recovery, lock classification, lock cases, canonical checkout)",
 );
