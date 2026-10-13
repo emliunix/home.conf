@@ -1,0 +1,9 @@
+arm C5-features subject S1: programs 1500, failing-program kinds {}, invalidSkipped 0, capSkipped 0, d1Weak 0, exempt 0
+skips (reason: count): {}
+recorded distinct shrunk triples per kind|class: {}; non-minimal 0
+expected (pre-registered red): 0; refuting: 0
+nondet: freshInstance=0 sameInstance=0
+coverage: {"choose":0,"count":0,"matches":0,"in":0,"cmp":0,"recursion":0,"negativeLoop":0,"unknown":0,"countBound":0,"countCorrelated":0,"unboundMatches":0,"loopReachable":0} triggers: {"choosePair":0,"countBoundary":0,"oddReachable":0} undeterminedShare 0.886
+weights: {"chooseOracle":0.3,"answerRate":0.4,"unknownOfAnswered":0.15,"negation":0.3,"in":0.1,"matches":0.1,"cmp":0.1,"count":0.1,"choose":0.3,"countUncorrelatedInGoals":0.5,"recursion":0.2,"negativeLoop":0.15,"loopReachable":0.5,"loopViaPredicate":0.5,"nonempty":0.25,"oracleForall":0.4,"unboundMatches":0.08,"countBound":0.1,"chooseTriggerFloor":0.45,"countBoundaryFloor":0.25,"oddLoopFloor":0.22}
+cost: wall 75513 ms, checking 75292 ms, shrinker 0 ms, minimality 0 ms, evaluations S1 36398 S3 0, instances 1500
+complete: true

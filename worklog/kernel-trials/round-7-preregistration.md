@@ -100,7 +100,7 @@ only (model §3 says they over-approximate).
 | K1 | S1 | require violated under a `u` forall (round 2's `core.pl` text patch, applied by a kernel load option) | control | both arms, `sound` |
 | K2 | S1 | forall-only demand (round 2's patch) | control | both arms, `D1` |
 | S3a | S3 | status rule ignoring the body (`defect: ignore-body`) | control | both arms, exact equality |
-| K3' | S1 | an answered `choose` leaves the other labels `u` (patch of `core_not_label`/`core_choose`) | axis | C5 only, `sound` (a `forbid` over another label is `satisfied` by enumeration, `undetermined` by the kernel is conservatism; the flip is on `cover`/`sound` where the kernel says `t` for a label the answer rules out) |
+| K3' | S1 | an answered `choose` leaves the other labels `u` (patch of `core_not_label`/`core_choose`) | axis | C5 only, `sound` (a `forbid` over another label is `satisfied` by enumeration, `undetermined` by the kernel is conservatism; the flip is on `cover`/`sound` where the kernel says `t` for a label the answer rules out) **Corrected at the verdict (2026-10-13): this defect is conservative by construction (a `u` label never passes a `require` or fails a `forbid`), so `sound` cannot flip; its property is `M2` (the total-answer check), where it flips 73 times under C5 and 0 under C5−features. The refuting cell against the original prediction stands in the results.** |
 | K4-low | S1 | `count` interval upper bound one too low | axis | C5 only, `sound` |
 | K4-high | S1 | `count` interval upper bound one too high | axis | C5 only, exactness on uncorrelated counts |
 | S3b | S3 | UNSAT treated as vacuous (`defect: unsat-vacuous`) | axis | C5 only, odd-loop shape (verdict PASS where NEEDS-REVIEW) |
@@ -134,7 +134,7 @@ minimal / non-minimal counts with the non-minimal program; seed witnesses ≤ 8 
 | Measure | Expectation | Refuting cell | Confidence |
 | --- | --- | --- | --- |
 | controls K1, K2, S3a | flipped in both arms (K1 ≈ 7%, K2 ≈ 67%, S3a ≈ 20% of programs, as before) | not flipped in either | high |
-| axis K3', K4-low, K4-high | flipped in C5 (≥ 5 flips each), 0 in C5−features | 0 flips in C5, or any in C5−features | medium |
+| axis K3', K4-low, K4-high | flipped in C5 (≥ 5 flips each), 0 in C5−features (K3' corrected at the verdict: flips counted under `M2`, not `sound`) | 0 flips in C5, or any in C5−features | medium |
 | axis S3b, S3c | flipped in C5 (≥ 5 each), 0 in C5−features | as above | medium-high |
 | triggers | each ≥ 20 of 500 | a floor missed | medium |
 | S3 × D1 | red, pre-registered; witness ≤ 6 atoms | a witness > 6 atoms, or green (the item-5 finding gone) | medium |
@@ -171,6 +171,19 @@ missing-literal gate and the non-ground-negation static check (kernel-side; roun
 answer growth (M1 is checked on one extension). Real documents against random (the conservatism
 figure is the generator's). Whether a loop counterexample is the kernel's or the S3-versus-WFS
 gap: tagged by cause.
+
+**Pre-run amendment, 2026-10-13 07:42 (lead, after the first builder runs and before the verdict's
+run):** a `count-bound` mode is added to the C5 grammar at a fixed share (10% of programs with a
+`count`): either two `count` literals over the same oracle sharing one result variable, or one
+`count` whose result is a constant `K`. The lead found on a minimal valid program (3 sections, one
+oracle, `o2(d,a)=holds`, the others unanswered) that S1 reports every instance `satisfied` (PASS)
+under a repeated count with a shared `N`, while a single count, a fresh `M`, and S3 report
+`undetermined`: `core_count/3` binds its result to an interval term when atoms are unknown, and a
+bound result then fails unification instead of delaying. The oracle reads a bound result as "true
+iff the exact count equals it", `undetermined` over completions where it varies. The expected
+outcome row "unmutated S1, loop-free: 0 counterexamples" is predicted to fail in exactly this
+class; any other class remains a new finding. The builder's fresh-variable rendering for every
+other count and its literal-identical dedupe stand as normalisation.
 
 ## Review
 

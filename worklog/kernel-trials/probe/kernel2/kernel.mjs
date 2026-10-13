@@ -118,7 +118,8 @@ export class Kernel {
    */
   async load(programText, opts = {}) {
     const { countMode = "interval", sandbox = false, gateSkip = false, directiveSkip = false,
-            countPrimitive = false, dropPrimitive = null, censusWiden = [], catchSkip = false } = opts;
+            countPrimitive = false, dropPrimitive = null, censusWiden = [], catchSkip = false,
+            corePatch = null } = opts;
     // Load refusal (finding 4): a directive runs at consult before the gate, so the program text
     // is scanned for a disallowed directive BEFORE it is written and consulted.
     if (sandbox && !directiveSkip) {
@@ -132,7 +133,11 @@ export class Kernel {
     }
     const name = `/k${fileCounter += 1}.pl`;
     const decl = sandbox ? `\n% ======== gate\n${sandboxDecl({ countPrimitive, dropPrimitive })}\n` : "";
-    this.swipl.FS.writeFile(name, `${readFileSync(CORE_PL, "utf8")}${decl}\n\n% ======== program\n${programText}\n`);
+    // corePatch: in-memory text rewrite of core.pl for seeded defects (round 7); committed file untouched.
+    let coreText = readFileSync(CORE_PL, "utf8");
+    if (typeof corePatch === "function") coreText = corePatch(coreText);
+    else if (typeof corePatch === "string") coreText = corePatch;
+    this.swipl.FS.writeFile(name, `${coreText}${decl}\n\n% ======== program\n${programText}\n`);
     const t0 = performance.now();
     this.run(`consult('${name}')`);
     this.consultMs = performance.now() - t0;

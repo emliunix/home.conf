@@ -21,10 +21,13 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
 | Round 5 scheduler | `full` and `prefix` reach the same final statuses on random multi-leaf programs; corpus round-1 demand equal | `node worklog/kernel-trials/probe/run-boundary.mjs --scheduler` | `prefix` made to take a leaf outside `Dem` (invariance fails) | yes |
 | Round 6 request shape | the shape comparer sees a confident flip, a discordant cell and a position trend when they exist, and nothing on a clean pair; the engine's default shape is the declared one | `node worklog/kernel-trials/probe/compare-shapes.mjs --self-test` and `npx vitest run doc-verify/tests/oracles/request-shape.test.ts` | the comparer's planted synthetic pair; `request-shape.mutations.md` M2 (the default flipped back) | yes |
 | Reference self-check | the naive reference matches hand derivations and brute force | `node worklog/kernel-trials/probe/reference/run-reference.mjs worklog/kernel-trials/probe/witnesses/*.yaml` and `node worklog/kernel-trials/probe/reference/random-brute.mjs 500 1` | reference mutated: demand without goal leaves (15/200), `not u` read as `t` (76/200) | yes |
+| Round 7 property track | S1 matches the model on random programs over the whole language (loop-free by enumeration, loops by an alternating-fixpoint WFS), S3 matches stable models; every axis seed is visible only with the full grammar; counterexamples shrink to minimal programs | `node worklog/kernel-trials/probe/run-property.mjs --subject S1 --arm C5 --programs 500 --seeds 1,2,3` (and `--arm C5-features`, `--arm C5-shrink`, `--subject S3`, `--seeds-table`) | eight in-memory seeds: K1 170, K2 478, S3a 258 flips (controls, both arms); K4-low 121, K4-high 17, S3b 373, S3c 42 (axis, C5 only); K3' 73 under M2 | S1 C5 `false` (one same-instance non-determinism, round 7 finding 3); the other arms `true`; exit 1 on the refuting cells |
+| Round 8 module-page shape | the four `module-*` libraries' `current_not_history` separates seeded history from current law equally under `batched` and `per-atom`, and agrees with the lead's labels on the real pages | `node worklog/kernel-trials/probe/oracle-test.mjs --fixtures --oracle current_not_history --request-shape both --repeat 2 --no-spans --ledger round8-pages --cap 240` and the real-cells, pairs, claims and comparer commands of `round-8-verdict.md` | the gross pages (structural NO-GO under both shapes); the comparer's planted section-keyed flip | `true` on every track (the first claims/real attempt returned BLOCKED with no question sent and was re-run) |
 
 ## Open items
 
-1. **Convert the random checks to property tests with shrinking** (fast-check or equivalent):
+1. **Convert the random checks to property tests with shrinking** — **closed by round 7** (2026-10-13; `round-7-verdict.md`): fast-check 4.10.2 over a structural arbitrary for the whole language, subject pluggable, independent oracles, coverage and weights per run, every distinct minimal counterexample printed with its triple, eight seeds reddening it. Original text follows.
+   **Convert the random checks to property tests with shrinking** (fast-check or equivalent):
    properties = model §9 gates, generator grammar over the whole language (joins, `choose`,
    `count`, `matches`, `present`, recursion, negative loops), subject pluggable (kernel, reference,
    TypeScript evaluator), coverage line per run, minimal counterexample printed. Owner's question
@@ -49,4 +52,25 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
 6. **The random generator cannot see two defect classes** (round 4b seeds): no `choose` oracles
    and no UNSAT programs, so `no-exclusivity` and `unsat-vacuous` flip only witnesses. Extending
    the generator (item 1's property tests) is where this closes.
+7. **A bound `count` result loses undefinedness** (round 7 finding 1): `core_count/3` binds its
+   result to an interval term when atoms are unknown; a second count sharing the variable, or a
+   constant result, fails unification instead of delaying (false PASS under `forbid`, false NO-GO
+   under `require`); clingo says `undetermined`. Reachable from a legal module. Gate: the round 7
+   property track's `count-bound` class (7.5% of programs) must report 0 after the fix; the fix
+   belongs to the kernel before design 06's step 2 parity.
+8. **A loop-resting binding is demanded once before it is called unfounded** (round 7 finding 2):
+   a choose conjunction no answer satisfies, behind a loop, keeps its atom in Dem for one round.
+   Statuses and verdict are the WFS's; one judge question is wasted. Open precision item; the
+   model's syntactic support is the current text.
+9. **History-dependent `instantiation_error` on a reused kernel instance** (round 7 finding 3):
+   one program in 1500 raises it as call 20 of a 28-call sequence on one instance and never on
+   a fresh one. Production uses a fresh instance per check; the harness keeps the triple and the
+   history (`results/round-7-S1-C5.txt`). Open until reproduced in isolation and fixed.
+10. **`current_not_history` passes regex-clean history under both request shapes** (round 8):
+    11 of 12 seeded pages whose one edited sentence states a former value or order read
+    `holds` at 0.6–0.98 under `batched` and `per-atom` alike; the hook's dated-prose regex
+    catches only dated and numbered history. Open: a question round on this oracle (a
+    per-sentence or per-paragraph ask, or an explicit former-value clause) with
+    `probe/oracle-fixtures/module_*_pages/` as its fixtures; until then the module-page history
+    check is the regex plus a judge that misses the subtle form.
 

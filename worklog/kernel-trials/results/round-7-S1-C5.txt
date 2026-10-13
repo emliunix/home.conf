@@ -1,0 +1,1492 @@
+counterexample sound class=count-bound expected (count-bound, amendment 07:42): seed 1 program 38 size 13->3 (fast-check shrinks 172) minimal=true (neighbours tried 1, skipped 4)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c3:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+sound: c3 b violated but not in every completion
+counterexample sound class=count-bound expected (count-bound, amendment 07:42): seed 1 program 89 size 13->4 (fast-check shrinks 174) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+sound: c1 a violated but not in every completion
+sound: c1 b violated but not in every completion
+counterexample verdict class=count-bound expected (count-bound, amendment 07:42): seed 1 program 89 size 13->4 (fast-check shrinks 174) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+verdict: NO-GO under ans, not in every completion
+counterexample policy class=count-bound expected (count-bound, amendment 07:42): seed 1 program 89 size 13->4 (fast-check shrinks 174) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+policy: rounds end [["c1",["[[\"D\",\"d\"],[\"S\",\"a\"],[\"status\",\"violated\"]]","[[\"D\",\"d\"],[\"S\",\"b\"],[\"status\",\"violated\"]]"]]], total [["c1",[]]]
+counterexample loop-wfs class=count-bound expected (count-bound, amendment 07:42): seed 1 program 125 size 15->6 (fast-check shrinks 173) minimal=false (neighbours tried 2, skipped 1) (design-04 checker refuses it: rules.loop: negation or count over loop in the same stratum; S1 runs it)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "o2(D, S)"
+    severity: error
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o2(D, C1)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+loop-wfs: subject/WFS c2/a violated/undetermined, c2/b violated/undetermined
+loop-wfs: verdict subject NO-GO WFS NEEDS-REVIEW
+--- non-minimal: the neighbour "delete constraint c1" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o2(D, C1)), N0), N0 >= 1"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{}
+counterexample sound class=count-bound expected (count-bound, amendment 07:42): seed 1 program 141 size 13->3 (fast-check shrinks 182) minimal=true (neighbours tried 1, skipped 4)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+sound: c1 b violated but not in every completion
+counterexample loop-wfs class=count-bound expected (count-bound, amendment 07:42): seed 1 program 226 size 18->5 (fast-check shrinks 182) minimal=false (neighbours tried 4, skipped 2) (design-04 checker refuses it: rules.loop: negation or count over loop in the same stratum; S1 runs it)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "o1(D, S), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+loop-wfs: subject/WFS c1/a violated/undetermined, c1/b violated/undetermined
+loop-wfs: verdict subject NO-GO WFS NEEDS-REVIEW
+--- non-minimal: the neighbour "delete goal literal 0 of c1" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{}
+counterexample loop-wfs class=count-bound expected (count-bound, amendment 07:42): seed 1 program 255 size 17->5 (fast-check shrinks 178) minimal=false (neighbours tried 4, skipped 2) (design-04 checker refuses it: rules.loop: negation or count over loop in the same stratum; S1 runs it)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "o1(D, S), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+loop-wfs: subject/WFS c1/a violated/undetermined, c1/c violated/undetermined
+loop-wfs: verdict subject NO-GO WFS NEEDS-REVIEW
+--- non-minimal: the neighbour "delete goal literal 0 of c1" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+--- neighbour ans
+{}
+counterexample loop-wfs class=count-bound expected (count-bound, amendment 07:42): seed 1 program 282 size 15->6 (fast-check shrinks 180) minimal=false (neighbours tried 1, skipped 0) (design-04 checker refuses it: rules.loop: negation or count over loop in the same stratum; S1 runs it)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _)
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "o1(D, S), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+loop-wfs: subject/WFS c1/a violated/undetermined, c1/b violated/undetermined
+loop-wfs: verdict subject NO-GO WFS NEEDS-REVIEW
+--- non-minimal: the neighbour "delete rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "o1(D, S), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{}
+counterexample nondet-same (same-instance history dependence): seed 1 program 301 size 19->16 (fast-check shrinks 167) minimal=false (neighbours tried 2, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y, z]
+rules:
+  anc(D, S): core.section(D, S, P), core.section(D, P, _)
+  anc(D, T): core.section(D, T, U), anc(D, U)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    forbid: "not k(D, S, y), core.heading(D, S, H0), matches(H0, 'refs')"
+    severity: error
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "core.depth(D, S, Dep1), Dep1 < 4"
+    severity: error
+  c3:
+    forall: "core.section(D, S, _), o3(D, S)"
+    forbid: "anc(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, refs)
+depth(d, c, 1)
+--- ans
+{"w::o2(d,a)":"holds","w::o2(d,c)":"holds","w::o3(d,b)":"holds","w::k(d,b)":"x"}
+--- problems
+first run ["D2: answering w::k(d,a)=x outside Dem changes a status"]
+same instance again []
+sequence replayed on another instance []
+input {"w::o2(d,a)":"holds","w::o2(d,c)":"holds","w::o3(d,b)":"holds","w::k(d,b)":"x","w::k(d,a)":"x"}
+as call 20 of 28 in the check sequence on one instance: {"v":"BLOCKED","s":{},"d":{"full":[],"prefix":[]},"u":null,"x":"error(instantiation_error,_2646)"}
+as the first call on a new instance: {"v":"NO-GO","s":{"c1":[{"D":"d","S":"a","status":"satisfied"},{"D":"d","S":"b","status":"satisfied"},{"D":"d","S":"c","status":"undetermined"}],"c2":[{"D":"d","S":"a","status":"satisfied"},{"D":"d","S":"b","status":"satisfied"},{"D":"d","S":"c","status":"satisfied"}],"c3":[{"D":"d","S":"a","status"
+--- non-minimal: the neighbour "delete rule 1" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y, z]
+rules:
+  anc(D, S): core.section(D, S, P), core.section(D, P, _)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    forbid: "not k(D, S, y), core.heading(D, S, H0), matches(H0, 'refs')"
+    severity: error
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "core.depth(D, S, Dep1), Dep1 < 4"
+    severity: error
+  c3:
+    forall: "core.section(D, S, _), o3(D, S)"
+    forbid: "anc(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, refs)
+depth(d, c, 1)
+--- neighbour ans
+{"w::o2(d,a)":"holds","w::o2(d,c)":"holds","w::o3(d,b)":"holds","w::k(d,b)":"x"}
+counterexample loop-wfs class=count-bound expected (count-bound, amendment 07:42): seed 1 program 349 size 13->5 (fast-check shrinks 178) minimal=false (neighbours tried 2, skipped 1) (design-04 checker refuses it: rules.loop: negation or count over loop in the same stratum; S1 runs it)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "o1(D, S)"
+    severity: error
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+loop-wfs: subject/WFS c2/a violated/undetermined
+loop-wfs: verdict subject NO-GO WFS NEEDS-REVIEW
+--- non-minimal: the neighbour "delete constraint c1" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- neighbour ans
+{}
+counterexample loop-wfs class=count-bound expected (count-bound, amendment 07:42): seed 2 program 35 size 18->7 (fast-check shrinks 178) minimal=false (neighbours tried 2, skipped 3) (design-04 checker refuses it: rules.loop: negation or count over loop2 in the same stratum; rules.loop2: negation or cou; S1 runs it)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o2(D, C1)), N0), N0 >= 1
+  loop(D, S): core.section(D, S, _), not loop2(D, S)
+  loop2(D, T): core.section(D, T, _), not loop(D, T)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "o2(D, S)"
+    severity: error
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+loop-wfs: subject/WFS c2/b violated/undetermined
+loop-wfs: verdict subject NO-GO WFS NEEDS-REVIEW
+--- non-minimal: the neighbour "delete constraint c1" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o2(D, C1)), N0), N0 >= 1
+  loop(D, S): core.section(D, S, _), not loop2(D, S)
+  loop2(D, T): core.section(D, T, _), not loop(D, T)
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{}
+counterexample D2 class=count-bound expected (count-bound, amendment 07:42): seed 2 program 61 size 18->5 (fast-check shrinks 174) minimal=true (neighbours tried 4, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{"w::o1(d,a)":"holds"}
+--- problems
+D2: answering w::o1(d,b)=holds outside Dem changes a status
+counterexample loop-wfs class=count-bound expected (count-bound, amendment 07:42): seed 2 program 86 size 15->5 (fast-check shrinks 182) minimal=false (neighbours tried 5, skipped 3) (design-04 checker refuses it: rules.loop: negation or count over loop in the same stratum; S1 runs it)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o2(D, C1)), N0), N0 >= 1, loop(D, S0)
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+loop-wfs: subject/WFS c1/b violated/undetermined
+loop-wfs: verdict subject NO-GO WFS NEEDS-REVIEW
+--- non-minimal: the neighbour "delete literal 2 of rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o2(D, C1)), N0), N0 >= 1
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{}
+counterexample loop-wfs class=count-bound expected (count-bound, amendment 07:42): seed 2 program 89 size 16->6 (fast-check shrinks 188) minimal=true (neighbours tried 3, skipped 5) (design-04 checker refuses it: rules.loop: negation or count over loop2 in the same stratum; rules.loop2: negation or cou; S1 runs it)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  loop(D, S): core.section(D, S, _), not loop2(D, S)
+  loop2(D, T): core.section(D, T, _), not loop(D, T)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+loop-wfs: subject/WFS c1/a violated/undetermined, c1/b violated/undetermined
+loop-wfs: verdict subject NO-GO WFS NEEDS-REVIEW
+counterexample sound class=count-bound expected (count-bound, amendment 07:42): seed 2 program 97 size 13->5 (fast-check shrinks 177) minimal=false (neighbours tried 2, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+sound: c1 a violated but not in every completion
+sound: c1 b violated but not in every completion
+--- non-minimal: the neighbour "delete section a" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{}
+counterexample D2 class=count-bound expected (count-bound, amendment 07:42): seed 2 program 97 size 13->6 (fast-check shrinks 176) minimal=false (neighbours tried 3, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    forbid: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{"w::o1(d,b)":"holds"}
+--- problems
+D2: answering w::o1(d,a)=holds outside Dem changes a status
+D2: answering w::o1(d,a)=fails outside Dem changes a status
+--- non-minimal: the neighbour "delete section b" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    forbid: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- neighbour ans
+{}
+counterexample policy class=count-bound expected (count-bound, amendment 07:42): seed 2 program 97 size 13->5 (fast-check shrinks 176) minimal=false (neighbours tried 2, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    forbid: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+policy: rounds end [["c1",[]]], total [["c1",["[[\"D\",\"d\"],[\"S\",\"a\"],[\"status\",\"violated\"]]","[[\"D\",\"d\"],[\"S\",\"b\"],[\"status\",\"violated\"]]"]]]
+--- non-minimal: the neighbour "delete section a" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    forbid: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{}
+counterexample sound class=count-bound expected (count-bound, amendment 07:42): seed 2 program 185 size 18->3 (fast-check shrinks 188) minimal=true (neighbours tried 1, skipped 4)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+sound: c1 a violated but not in every completion
+counterexample sound class=count-bound expected (count-bound, amendment 07:42): seed 2 program 188 size 20->4 (fast-check shrinks 178) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, e, root)
+heading(d, e, notes)
+depth(d, e, 1)
+--- ans
+{}
+--- problems
+sound: c1 b violated but not in every completion
+sound: c1 e violated but not in every completion
+counterexample verdict class=count-bound expected (count-bound, amendment 07:42): seed 2 program 188 size 20->4 (fast-check shrinks 178) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, e, root)
+heading(d, e, notes)
+depth(d, e, 1)
+--- ans
+{}
+--- problems
+verdict: NO-GO under ans, not in every completion
+counterexample D2 class=count-bound expected (count-bound, amendment 07:42): seed 2 program 188 size 20->5 (fast-check shrinks 178) minimal=true (neighbours tried 4, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, e, root)
+heading(d, e, notes)
+depth(d, e, 1)
+--- ans
+{"w::o1(d,b)":"holds"}
+--- problems
+D2: answering w::o1(d,e)=holds outside Dem changes a status
+counterexample sound class=count-bound expected (count-bound, amendment 07:42): seed 2 program 236 size 19->4 (fast-check shrinks 180) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+sound: c1 a violated but not in every completion
+sound: c1 c violated but not in every completion
+counterexample verdict class=count-bound expected (count-bound, amendment 07:42): seed 2 program 236 size 19->4 (fast-check shrinks 180) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+verdict: NO-GO under ans, not in every completion
+counterexample D2 class=count-bound expected (count-bound, amendment 07:42): seed 2 program 236 size 19->5 (fast-check shrinks 181) minimal=true (neighbours tried 4, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{"w::o1(d,a)":"holds"}
+--- problems
+D2: answering w::o1(d,c)=holds outside Dem changes a status
+counterexample verdict class=count-bound expected (count-bound, amendment 07:42): seed 2 program 273 size 12->5 (fast-check shrinks 178) minimal=false (neighbours tried 2, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+verdict: NO-GO under ans, not in every completion
+--- non-minimal: the neighbour "delete section a" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{}
+counterexample D2 class=count-bound expected (count-bound, amendment 07:42): seed 2 program 273 size 12->6 (fast-check shrinks 178) minimal=false (neighbours tried 3, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o2(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{"w::o2(d,b)":"holds"}
+--- problems
+D2: answering w::o2(d,a)=holds outside Dem changes a status
+D2: answering w::o2(d,a)=fails outside Dem changes a status
+--- non-minimal: the neighbour "delete section b" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o2(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- neighbour ans
+{}
+counterexample sound class=count-bound expected (count-bound, amendment 07:42): seed 2 program 305 size 9->4 (fast-check shrinks 182) minimal=false (neighbours tried 1, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+sound: c1 a violated but not in every completion
+--- non-minimal: the neighbour "delete rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- neighbour ans
+{}
+counterexample loop-shape class=other REFUTING (new finding): seed 3 program 98 size 21->7 (fast-check shrinks 180) minimal=true (neighbours tried 7, skipped 4) (design-04 checker refuses it: rules.loop: negation or count over loop in the same stratum; S1 runs it)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y]
+rules:
+  p1(D, S0): core.section(D, S0, _), k(D, S0, x), k(D, S0, y)
+  p1(D, S1): core.section(D, S1, _), loop(D, S1)
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+loop-shape: c1/a rests on a loop, not listed unfounded
+counterexample policy class=count-bound expected (count-bound, amendment 07:42): seed 3 program 184 size 21->4 (fast-check shrinks 179) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+policy: rounds end [["c1",["[[\"D\",\"d\"],[\"S\",\"a\"],[\"status\",\"violated\"]]","[[\"D\",\"d\"],[\"S\",\"c\"],[\"status\",\"violated\"]]"]]], total [["c1",[]]]
+counterexample sound class=count-bound expected (count-bound, amendment 07:42): seed 3 program 205 size 17->4 (fast-check shrinks 175) minimal=false (neighbours tried 1, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o2(D, C1)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+sound: c2 a violated but not in every completion
+sound: c2 b violated but not in every completion
+--- non-minimal: the neighbour "delete section a" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o2(D, C1)), N0), N0 >= 1"
+    severity: error
+--- neighbour facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{}
+counterexample loop-wfs class=count-bound expected (count-bound, amendment 07:42): seed 3 program 277 size 16->5 (fast-check shrinks 179) minimal=false (neighbours tried 5, skipped 3) (design-04 checker refuses it: rules.loop: negation or count over loop in the same stratum; S1 runs it)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1, loop(D, S0)
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+loop-wfs: subject/WFS c1/a violated/undetermined
+loop-wfs: verdict subject NO-GO WFS NEEDS-REVIEW
+--- non-minimal: the neighbour "delete literal 2 of rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+  loop(D, S): core.section(D, S, _), not loop(D, S)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- neighbour ans
+{}
+counterexample sound class=count-bound expected (count-bound, amendment 07:42): seed 3 program 357 size 14->8 (fast-check shrinks 165) minimal=false (neighbours tried 1, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o2(D, S0)
+  p1(D, S1): core.section(D, S1, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{"w::o2(d,a)":"fails"}
+--- problems
+sound: c1 a violated but not in every completion
+--- non-minimal: the neighbour "delete rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{"w::o2(d,a)":"fails"}
+counterexample verdict class=count-bound expected (count-bound, amendment 07:42): seed 3 program 357 size 14->8 (fast-check shrinks 165) minimal=false (neighbours tried 1, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o2(D, S0)
+  p1(D, S1): core.section(D, S1, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{"w::o2(d,a)":"fails"}
+--- problems
+verdict: NO-GO under ans, not in every completion
+--- non-minimal: the neighbour "delete rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, count(C1, (core.section(D, C1, _), o1(D, C1)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{"w::o2(d,a)":"fails"}
+arm C5 subject S1: programs 1500, failing-program kinds {"sound":26,"verdict":15,"policy":5,"loop-wfs":16,"D2":5,"loop-shape":1}, invalidSkipped 0, capSkipped 0, shrinkReplayMissed 0, d1Weak 115, exempt 126
+skips (reason: count): {}
+recorded distinct shrunk triples per kind|class: {"sound|count-bound":10,"verdict|count-bound":5,"policy|count-bound":3,"loop-wfs|count-bound":9,"D2|count-bound":5,"loop-shape|other":1}; non-minimal 17
+expected (pre-registered red): 32; refuting: 1
+nondet: freshInstance=0 sameInstance=1
+coverage: {"choose":0.272,"count":0.723,"matches":0.618,"in":0.637,"cmp":0.637,"recursion":0.128,"negativeLoop":0.325,"unknown":0.392,"countBound":0.075,"countCorrelated":0.105,"unboundMatches":0.067,"loopReachable":0.273} triggers: {"choosePair":0.141,"countBoundary":0.538,"oddReachable":0.245} undeterminedShare 0.759
+weights: {"chooseOracle":0.3,"answerRate":0.4,"unknownOfAnswered":0.15,"negation":0.3,"in":0.1,"matches":0.1,"cmp":0.1,"count":0.1,"choose":0.3,"countUncorrelatedInGoals":0.5,"recursion":0.2,"negativeLoop":0.15,"loopReachable":0.5,"loopViaPredicate":0.5,"nonempty":0.25,"oracleForall":0.4,"unboundMatches":0.08,"countBound":0.1,"chooseTriggerFloor":0.45,"countBoundaryFloor":0.25,"oddLoopFloor":0.22}
+cost: wall 452407 ms, checking 112182 ms, shrinker 325693 ms, minimality 2666 ms, evaluations S1 186956 S3 0, instances 7161
+complete: false (non-deterministic counterexamples)

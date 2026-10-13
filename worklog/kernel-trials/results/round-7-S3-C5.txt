@@ -1,0 +1,1750 @@
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 5 atoms): seed 1 program 6 size 19->5 (fast-check shrinks 182) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+section(d, e, c)
+heading(d, e, notes)
+depth(d, e, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c1/b undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 5 atoms): seed 1 program 29 size 15->5 (fast-check shrinks 175) minimal=true (neighbours tried 6, skipped 1)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o3(D, C0)), N0), N0 >= 1, o1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,a)=holds w::o1(d,b)=holds leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 1 program 55 size 15->6 (fast-check shrinks 187) minimal=true (neighbours tried 5, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 5 atoms): seed 1 program 73 size 14->5 (fast-check shrinks 185) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 1 program 98 size 21->6 (fast-check shrinks 180) minimal=true (neighbours tried 8, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y]
+rules:
+  p1(D, S0): core.section(D, S0, _), k(D, S0, x), o1(D, S0)
+constraints:
+  c2:
+    forall: "core.section(D, S, _), o2(D, S)"
+    forbid: "not p1(D, S)"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o2(d,b)=holds leaves c2/b undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 1 program 147 size 18->6 (fast-check shrinks 162) minimal=true (neighbours tried 5, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c2/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 8 atoms): seed 1 program 155 size 15->8 (fast-check shrinks 174) minimal=false (neighbours tried 2, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y]
+rules:
+  p1(D, S0): core.section(D, S0, _), k(D, S0, y)
+  p1(D, S1): core.selected(D, S1)
+  p1(D, S2): core.section(D, S2, _), not o2(D, S2)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), p1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c1/b undetermined; answering non-Dem atoms decides it (joint)
+--- non-minimal: the neighbour "delete rule 1" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y]
+rules:
+  p1(D, S0): core.section(D, S0, _), k(D, S0, y)
+  p1(D, S1): core.section(D, S1, _), not o2(D, S1)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), p1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- neighbour facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- neighbour ans
+{}
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 5 atoms): seed 1 program 184 size 15->5 (fast-check shrinks 166) minimal=true (neighbours tried 6, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _), o2(D, S)"
+    require: "o3(D, S), o1(D, S)"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o2(d,b)=holds leaves c2/b undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 8 atoms): seed 1 program 200 size 16->8 (fast-check shrinks 169) minimal=true (neighbours tried 9, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o1(D, S0)
+  p1(D, S1): core.section(D, S1, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 3
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,a)=holds w::o1(d,b)=holds w::o1(d,c)=fails leaves c1/c undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 5 atoms): seed 1 program 250 size 16->5 (fast-check shrinks 177) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, e, root)
+heading(d, e, notes)
+depth(d, e, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 1 program 254 size 16->6 (fast-check shrinks 167) minimal=true (neighbours tried 6, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _), o2(D, S)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 3"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+section(d, e, c)
+heading(d, e, notes)
+depth(d, e, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o2(d,b)=holds w::o2(d,c)=holds w::o2(d,e)=holds leaves c1/b undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 7 atoms): seed 1 program 313 size 17->7 (fast-check shrinks 179) minimal=true (neighbours tried 8, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o1(D, S0)
+  p1(D, S1): core.section(D, S1, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,b)=holds w::o1(d,c)=fails leaves c1/c undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 10 atoms): seed 1 program 326 size 19->10 (fast-check shrinks 175) minimal=false (neighbours tried 3, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+  p1(D, S1): core.section(D, S1, _), o1(D, S1)
+  anc(D, S): core.section(D, S, P), core.section(D, P, _)
+  anc(D, T): core.section(D, T, U), anc(D, U)
+constraints:
+  c1:
+    forall: "core.section(D, S, _), o2(D, S)"
+    forbid: "p1(D, S)"
+    severity: error
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "anc(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o2(d,a)=holds w::o2(d,c)=fails leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+--- non-minimal: the neighbour "delete rule 2" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+  p1(D, S1): core.section(D, S1, _), o1(D, S1)
+  anc(D, T): core.section(D, T, U), anc(D, U)
+constraints:
+  c1:
+    forall: "core.section(D, S, _), o2(D, S)"
+    forbid: "p1(D, S)"
+    severity: error
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "anc(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+--- neighbour ans
+{}
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 1 program 376 size 19->6 (fast-check shrinks 168) minimal=false (neighbours tried 1, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o2(D, S0)
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "o2(D, S), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o2(d,a)=holds w::o2(d,b)=holds leaves c2/a undetermined; answering non-Dem atoms decides it (joint)
+--- non-minimal: the neighbour "delete rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "o2(D, S), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{}
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 5 atoms): seed 1 program 389 size 21->5 (fast-check shrinks 186) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+section(d, e, c)
+heading(d, e, notes)
+depth(d, e, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 1 program 445 size 17->6 (fast-check shrinks 179) minimal=false (neighbours tried 1, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+section(d, e, c)
+heading(d, e, notes)
+depth(d, e, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c2/b undetermined; answering non-Dem atoms decides it (joint)
+--- non-minimal: the neighbour "delete oracle o1" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2"
+    severity: error
+--- neighbour facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+section(d, e, c)
+heading(d, e, notes)
+depth(d, e, 1)
+--- neighbour ans
+{}
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 7 atoms): seed 1 program 452 size 14->7 (fast-check shrinks 170) minimal=true (neighbours tried 8, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+  p1(D, S1): core.section(D, S1, _), o1(D, S1)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,a)=holds w::o1(d,b)=fails leaves c1/b undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 5 atoms): seed 1 program 476 size 17->5 (fast-check shrinks 172) minimal=true (neighbours tried 3, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 5 atoms): seed 2 program 18 size 22->5 (fast-check shrinks 180) minimal=true (neighbours tried 5, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _), o3(D, S)"
+    forbid: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o3(d,a)=holds w::o3(d,b)=holds leaves c2/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 2 program 19 size 18->6 (fast-check shrinks 172) minimal=true (neighbours tried 4, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 3"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+section(d, e, c)
+heading(d, e, notes)
+depth(d, e, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 9 atoms): seed 2 program 27 size 19->9 (fast-check shrinks 161) minimal=false (neighbours tried 6, skipped 1)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+  p1(D, S1): core.section(D, S1, _), not o2(D, S1)
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S), o3(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{"w::o2(d,b)":"fails"}
+--- problems
+D1: Dem labelling w::o3(d,a)=holds w::o3(d,b)=holds w::o3(d,c)=holds leaves c2/a undetermined; answering non-Dem atoms decides it (joint)
+--- non-minimal: the neighbour "delete section b" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+  p1(D, S1): core.section(D, S1, _), not o2(D, S1)
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S), o3(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+--- neighbour ans
+{}
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 2 program 106 size 16->6 (fast-check shrinks 174) minimal=true (neighbours tried 7, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, o1(D, S0)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,a)=holds w::o1(d,b)=holds leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 7 atoms): seed 2 program 128 size 19->7 (fast-check shrinks 168) minimal=true (neighbours tried 8, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o3(D, S0)
+  p1(D, S1): core.section(D, S1, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o3(d,a)=holds w::o3(d,b)=fails leaves c1/b undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 8 atoms): seed 2 program 176 size 18->8 (fast-check shrinks 169) minimal=true (neighbours tried 9, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.selected(D, S0)
+  p1(D, S1): core.section(D, S1, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 4
+constraints:
+  c2:
+    forall: "core.section(D, S, _), o1(D, S)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+section(d, e, c)
+heading(d, e, notes)
+depth(d, e, 1)
+selected(d, a)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,b)=holds w::o1(d,c)=holds w::o1(d,e)=holds leaves c2/b undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 2 program 213 size 15->6 (fast-check shrinks 173) minimal=true (neighbours tried 6, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _), o2(D, S)"
+    require: "count(C0, (core.section(D, C0, _), o3(D, C0)), N0), N0 >= 3"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o2(d,a)=holds w::o2(d,b)=holds w::o2(d,c)=holds leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 2 program 257 size 14->6 (fast-check shrinks 184) minimal=true (neighbours tried 7, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1
+constraints:
+  c3:
+    forall: "core.section(D, S, _), o2(D, S)"
+    forbid: "p1(D, S)"
+    severity: error
+--- facts
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+section(d, e, c)
+heading(d, e, notes)
+depth(d, e, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o2(d,c)=holds w::o2(d,e)=holds leaves c3/c undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 5 atoms): seed 2 program 270 size 18->5 (fast-check shrinks 174) minimal=true (neighbours tried 7, skipped 1)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _), o1(D, S)"
+    require: "o2(D, S), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,a)=holds w::o1(d,b)=holds leaves c2/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 2 program 353 size 17->6 (fast-check shrinks 178) minimal=true (neighbours tried 7, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y]
+rules:
+  p1(D, S0): core.section(D, S0, _), k(D, S0, y)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::k(d,a)=x w::k(d,b)=y leaves c1/b undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 2 program 444 size 14->6 (fast-check shrinks 178) minimal=true (neighbours tried 7, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y]
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S), k(D, S, x)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::k(d,a)=x w::k(d,b)=x leaves c2/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 2 program 458 size 15->6 (fast-check shrinks 177) minimal=true (neighbours tried 8, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.selected(D, S0), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1, o2(D, S0)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+selected(d, b)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o2(d,b)=holds leaves c1/b undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 3 program 3 size 22->6 (fast-check shrinks 184) minimal=false (neighbours tried 1, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _)
+constraints:
+  c1:
+    forall: "core.section(D, S, _), o1(D, S)"
+    forbid: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+section(d, e, c)
+heading(d, e, notes)
+depth(d, e, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,c)=holds w::o1(d,e)=holds leaves c1/c undetermined; answering non-Dem atoms decides it (joint)
+--- non-minimal: the neighbour "delete rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _), o1(D, S)"
+    forbid: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1"
+    severity: error
+--- neighbour facts
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+section(d, e, c)
+heading(d, e, notes)
+depth(d, e, 1)
+--- neighbour ans
+{}
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 7 atoms): seed 3 program 18 size 15->7 (fast-check shrinks 173) minimal=true (neighbours tried 8, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o1(D, S0)
+  p1(D, S1): core.section(D, S1, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+constraints:
+  c3:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,a)=holds w::o1(d,b)=fails leaves c3/b undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 3 program 51 size 13->6 (fast-check shrinks 173) minimal=false (neighbours tried 1, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o1(D, S0)
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c2/a undetermined; answering non-Dem atoms decides it (joint)
+--- non-minimal: the neighbour "delete rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+--- neighbour ans
+{}
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 7 atoms): seed 3 program 229 size 13->7 (fast-check shrinks 169) minimal=false (neighbours tried 1, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o1(D, S0)
+  p1(D, S1): core.section(D, S1, _), o3(D, S1), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,a)=holds w::o1(d,b)=fails leaves c1/b undetermined; answering non-Dem atoms decides it (joint)
+--- non-minimal: the neighbour "delete rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o3(D, S0), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- neighbour ans
+{}
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 5 atoms): seed 3 program 278 size 23->5 (fast-check shrinks 180) minimal=true (neighbours tried 7, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C1, (core.section(D, C1, _), o1(D, C1)), N1), N1 >= 1, not p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 8 atoms): seed 3 program 322 size 25->8 (fast-check shrinks 177) minimal=false (neighbours tried 2, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y]
+rules:
+  p1(D, S0): core.section(D, S0, _), k(D, S0, x)
+  p1(D, S1): core.section(D, S1, _), count(C0, (core.section(D, C0, _), o1(D, C0)), N0), N0 >= 2
+  p1(D, S2): core.section(D, S2, _), o1(D, S2), o2(D, S2)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::k(d,a)=y leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+--- non-minimal: the neighbour "delete rule 1" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y]
+rules:
+  p1(D, S0): core.section(D, S0, _), k(D, S0, x)
+  p1(D, S1): core.section(D, S1, _), o1(D, S1), o2(D, S1)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "p1(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- neighbour ans
+{}
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 7 atoms): seed 3 program 339 size 16->7 (fast-check shrinks 166) minimal=true (neighbours tried 9, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o3(D, S0)
+  p2(D, S1): core.section(D, S1, _), p1(D, S1), o2(D, S1)
+constraints:
+  c1:
+    forall: "core.section(D, S, _), o1(D, S)"
+    require: "p2(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,a)=holds leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 7 atoms): seed 3 program 357 size 14->7 (fast-check shrinks 158) minimal=false (neighbours tried 1, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.selected(D, S0)
+  p1(D, S1): core.section(D, S1, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, o1(D, S1)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C1, (core.section(D, C1, _), p1(D, C1)), N1), N1 >= 1"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+--- non-minimal: the neighbour "delete rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1, o1(D, S0)
+constraints:
+  c1:
+    forall: "core.section(D, S, _)"
+    require: "count(C1, (core.section(D, C1, _), p1(D, C1)), N1), N1 >= 1"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, c, root)
+heading(d, c, notes)
+depth(d, c, 1)
+--- neighbour ans
+{}
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 7 atoms): seed 3 program 365 size 18->7 (fast-check shrinks 181) minimal=true (neighbours tried 8, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  k(D, S, L):
+    ask: q
+    evidence: core.own(D, S)
+    choose: [x, y]
+rules:
+  p1(D, S0): core.section(D, S0, _), k(D, S0, y)
+  p1(D, S1): core.section(D, S1, _), o1(D, S1)
+constraints:
+  c1:
+    forall: "core.section(D, S, _), o3(D, S)"
+    forbid: "p1(D, S)"
+    severity: error
+--- facts
+section(d, b, root)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o3(d,b)=holds leaves c1/b undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 7 atoms): seed 3 program 418 size 14->7 (fast-check shrinks 169) minimal=true (neighbours tried 9, skipped 3)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), o1(D, S0)
+  p1(D, S1): core.section(D, S1, _), o2(D, S1)
+constraints:
+  c1:
+    forall: "core.section(D, S, _), o3(D, S)"
+    require: "not p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o3(d,a)=holds leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 5 atoms): seed 3 program 433 size 11->5 (fast-check shrinks 169) minimal=true (neighbours tried 5, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o1(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules: {}
+constraints:
+  c1:
+    forall: "core.section(D, S, _), o1(D, S)"
+    forbid: "count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o1(d,a)=holds w::o1(d,b)=holds leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 7 atoms): seed 3 program 450 size 15->7 (fast-check shrinks 175) minimal=false (neighbours tried 1, skipped 0)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _)
+  p3(D, S1): core.selected(D, S1), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "p3(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+selected(d, a)
+--- ans
+{}
+--- problems
+D1: Dem labelling  leaves c2/a undetermined; answering non-Dem atoms decides it (joint)
+--- non-minimal: the neighbour "delete rule 0" still fails
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p3(D, S0): core.selected(D, S0), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 2
+constraints:
+  c2:
+    forall: "core.section(D, S, _)"
+    require: "p3(D, S)"
+    severity: error
+--- neighbour facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+section(d, c, b)
+heading(d, c, notes)
+depth(d, c, 1)
+selected(d, a)
+--- neighbour ans
+{}
+counterexample D1 class=any expected (S3 x D1, gate-ledger item 5: decided only jointly, 6 atoms): seed 3 program 465 size 15->6 (fast-check shrinks 172) minimal=true (neighbours tried 7, skipped 2)
+--- module
+schema_version: 2
+kind: verification-module
+module: w
+rounds: 9
+imports: {core: doc-verify:core}
+oracles:
+  o2(D, S):
+    ask: q
+    evidence: core.own(D, S)
+  o3(D, S):
+    ask: q
+    evidence: core.own(D, S)
+rules:
+  p1(D, S0): core.section(D, S0, _), count(C0, (core.section(D, C0, _), o2(D, C0)), N0), N0 >= 1
+constraints:
+  c1:
+    forall: "core.section(D, S, _), o3(D, S)"
+    forbid: "p1(D, S)"
+    severity: error
+--- facts
+section(d, a, root)
+heading(d, a, notes)
+depth(d, a, 1)
+section(d, b, a)
+heading(d, b, notes)
+depth(d, b, 1)
+--- ans
+{}
+--- problems
+D1: Dem labelling w::o3(d,a)=holds w::o3(d,b)=holds leaves c1/a undetermined; answering non-Dem atoms decides it (joint)
+S3 x D1 (expected red): 43 recorded witnesses, smallest 5 atoms (bound 6), 16 larger than the bound; sizes [5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,7,7,7,7,7,7,7,7,7,7,8,8,8,8,9,10]
+arm C5 subject S3: programs 1500, failing-program kinds {"D1":85}, invalidSkipped 0, capSkipped 0, d1Weak 0, exempt 0
+skips (reason: count): {}
+recorded distinct shrunk triples per kind|class: {"D1|any":43}; non-minimal 11
+expected (pre-registered red): 43; refuting: 0
+nondet: freshInstance=0 sameInstance=0
+coverage: {"choose":0.272,"count":0.723,"matches":0.618,"in":0.637,"cmp":0.637,"recursion":0.128,"negativeLoop":0.325,"unknown":0.392,"countBound":0.075,"countCorrelated":0.105,"unboundMatches":0.067,"loopReachable":0.273} triggers: {"choosePair":0.141,"countBoundary":0.538,"oddReachable":0.245} undeterminedShare 0.753
+weights: {"chooseOracle":0.3,"answerRate":0.4,"unknownOfAnswered":0.15,"negation":0.3,"in":0.1,"matches":0.1,"cmp":0.1,"count":0.1,"choose":0.3,"countUncorrelatedInGoals":0.5,"recursion":0.2,"negativeLoop":0.15,"loopReachable":0.5,"loopViaPredicate":0.5,"nonempty":0.25,"oracleForall":0.4,"unboundMatches":0.08,"countBound":0.1,"chooseTriggerFloor":0.45,"countBoundaryFloor":0.25,"oddLoopFloor":0.22}
+cost: wall 294462 ms, checking 134246 ms, shrinker 95505 ms, minimality 1889 ms, evaluations S1 0 S3 16390, instances 7344
+complete: true
