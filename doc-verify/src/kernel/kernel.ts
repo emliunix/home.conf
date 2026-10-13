@@ -60,7 +60,7 @@ function allowedCore(): string {
   return heads.map((head) => {
     const m = /^([a-z_][A-Za-z0-9_]*)(?:\((.*)\))?$/.exec(head);
     if (m === null) throw new Error(`sandbox entry ${head} is not a head`);
-    return `${m[1] as string}/${String(m[2] === undefined ? 0 : (m[2] as string).split(",").length)}`;
+    return `${m[1] as string}/${String(m[2] === undefined ? 0 : m[2].split(",").length)}`;
   }).join(",");
 }
 
