@@ -240,13 +240,24 @@ class SkillManager:
         if not target_path.is_symlink() and not target_path.exists():
             raise FileNotFoundError(f"Skill not found in target: {skill_name}")
 
-        # Refuse rather than "succeed": with no source there is nothing to move back,
-        # and the move would deposit the dangling link in the SOURCE tree -- a versioned
-        # path.
-        if not source_path.exists():
+        # Two inputs reach here with no source and need OPPOSITE answers. The predicate
+        # is therefore not "is the source absent" but "would the move deposit a
+        # NON-RESOLVING entry in the source tree" -- the harm this refusal exists for:
+        #
+        #   · target does not resolve (a dangling link) -> the move puts an
+        #     UNRESOLVABLE path in the versioned source tree. REFUSE it.
+        #   · target resolves (a real dir, or a link to a live one) -> ADOPT: move it
+        #     into the versioned source and link back. A documented product action
+        #     (`docs/README.md`: "Manage (Enter): Moves unmanaged skills to source
+        #     and creates a symlink"); a guard does not get to delete it.
+        #
+        # `target_path.exists()` FOLLOWS the link, so it is exactly "does the thing"
+        # being moved resolve" -- the property that decides which case this is.
+        if not source_path.exists() and not target_path.exists():
             raise FileNotFoundError(
                 f"Skill has no source to restore: {skill_name} "
-                f"(refusing to move {target_path} into {self.source_dir})"
+                f"(refusing to move the non-resolving {target_path} "
+                f"into {self.source_dir})"
             )
 
         if source_path.exists():
@@ -255,8 +266,9 @@ class SkillManager:
             else:
                 target_path.unlink()
         else:
-            if source_path.exists():
-                shutil.rmtree(source_path)
+            # No source, and the target resolves: ADOPT it into the versioned tree.
+            # Moving a resolving entry lands something that resolves, so the symlink
+            # below always has a real destination.
             shutil.move(str(target_path), str(source_path))
 
         os.symlink(source_path, target_path)

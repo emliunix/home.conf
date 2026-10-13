@@ -156,18 +156,82 @@ def test_activate_over_a_live_dir_link_replaces_it(farm: tuple[Path, Path]) -> N
     assert os.path.realpath(target / "linked") == os.path.realpath(source / "linked")
 
 
-def test_manage_refuses_when_the_source_is_absent(farm: tuple[Path, Path]) -> None:
-    """The refusal: with no source there is nothing to restore, and the move would
-    deposit the dangling link in the SOURCE tree."""
+def test_manage_refuses_a_non_resolving_target(farm: tuple[Path, Path]) -> None:
+    """Clause B, narrowed to the harm it names: refuse when the move would deposit a
+    NON-RESOLVING entry in the versioned source tree.
+
+    ⚠ THE PREDICATE IS NOT "the source is absent". The card said that and it was broader
+    than the defect: a second input has no source and needs the OPPOSITE answer (see
+    the ADOPT case below). What separates them is whether the moved thing resolves.
+    """
     source, target = farm
     os.symlink(target / "gone", target / "orphan")
     manager = SkillManager(source, target)
+
+    assert not os.path.exists(target / "orphan"), (
+        "the fixture is genuinely non-resolving"
+    )
 
     with pytest.raises(FileNotFoundError, match="no source to restore"):
         manager.manage_skill("orphan")
 
     assert not (source / "orphan").exists(), "the source tree must not receive the link"
     assert os.path.lexists(target / "orphan"), "the target link must be left untouched"
+
+
+def test_manage_adopts_a_real_directory_absent_from_source(
+    farm: tuple[Path, Path],
+) -> None:
+    """⚠ THE ARM THAT WAS MISSING, and the reason a green suite coexisted with a
+    regression of a DOCUMENTED, TUI-REACHABLE action.
+
+    `docs/README.md`: *"Manage (Enter): Moves unmanaged skills to source and creates a
+    symlink"*, enabled exactly when the row is `UNMANAGED` -- which `get_skill_status`
+    returns when the source is absent. So this input takes the SAME path as the refusal
+    above and must succeed: a real directory is not a dangling link, and moving it
+    deposits something that resolves.
+
+    Its absence was the gap: the suite's only `manage_skill` arm asserted the repair
+    case, so nothing distinguished "refuses a broken link" from "refuses everything".
+    """
+    source, target = farm
+    _skill(target, "adoptable")
+    manager = SkillManager(source, target)
+
+    assert not (source / "adoptable").exists(), "the fixture starts unmanaged"
+
+    assert manager.manage_skill("adoptable") is True
+
+    adopted = source / "adoptable"
+    assert adopted.is_dir() and not adopted.is_symlink(), (
+        "the real directory moved to source"
+    )
+    assert (adopted / "SKILL.md").is_file(), "the adopted content came with it"
+    assert os.path.realpath(target / "adoptable") == os.path.realpath(adopted), (
+        "and the target is now a link back to it"
+    )
+
+
+def test_manage_adopts_a_link_to_a_live_directory(farm: tuple[Path, Path]) -> None:
+    """The second resolving shape. A target link whose destination EXISTS is still an
+    entry that resolves, so the move deposits a resolvable path and ADOPT applies.
+
+    `target_path.exists()` FOLLOWS the link, which is exactly why it is the right
+    discriminant here, and why `is_symlink()` alone would call this case broken.
+    """
+    source, target = farm
+    live = farm[0].parent / "elsewhere" / "linked"
+    live.mkdir(parents=True)
+    (live / "SKILL.md").write_text("---\nname: linked\ndescription: d\n---\n")
+    os.symlink(live, target / "linked")
+    manager = SkillManager(source, target)
+
+    assert manager.manage_skill("linked") is True
+
+    assert os.path.realpath(target / "linked") == os.path.realpath(source / "linked"), (
+        "the target now points into the versioned source tree"
+    )
+    assert os.path.exists(source / "linked"), "and what it points at resolves"
 
 
 def test_manage_repairs_when_the_source_exists(farm: tuple[Path, Path]) -> None:
