@@ -3,149 +3,124 @@
 ## User inputs
 
 Owner, 2026-10-12 (design/05 §User inputs): "We actually accept breaking current language, given
-we have a strong and trusted kernel." Goal 04 workstream W3: "migration: the engine libraries and
-home.conf modules onto the kernel; the TypeScript evaluator kept as the differential reference
-until parity, then deleted." Owner, 2026-10-13 (task.md item 5): a numbered design with its
-verification table, no implementation this pass.
+we have a strong and trusted kernel." Owner, 2026-10-13 (task.md item 5): a numbered design with
+its verification table, no implementation that pass. Owner, 2026-10-13, after reading this
+design's first version (four differential rounds with the TypeScript evaluator kept as a
+reference until parity): "Not anywhere, we just keep errors observed as tests and our tests all
+pass, we simply replace with the new, update the design. So we tidy the experiments into prod
+level codebase?" — and, on the plan to do so, "go as your plan".
 
 ## Problem statement
 
-Two evaluators exist and only one is trusted. The kernel passes every model §9 gate (round 2:
-24 of 24 witnesses, 1700 random programs, 0 counterexamples), the 26-document corpus and the
-clingo differential (round 4b), and the boundary round (round 5, in force); the property track
-(round 7) is in progress and not cited here. The TypeScript evaluator fails 14 of the same 24
-round-2 witnesses (S2, `round-2-verdict.md`): eleven where the model moved beyond design 04
-(missing-literal and demand semantics) and three where design 04 over-demands. That evaluator is
-what `doc-verify check` runs today. Every oracle round since has shipped into modules the
-TypeScript evaluator evaluates, so the measured kernel has no production path, and the host's
-fact vocabulary (table facts, evidence forms) grows on the engine that will be deleted.
-Observable: `node worklog/kernel-trials/probe/run-conformance.mjs` prints 14 S2 `MISMATCH`
-lines and 0 S1 lines on the round-2 witness set (24 steps; round 4b's set is 23 files, round 5's
-48 steps, and each count below names its set).
+Two evaluators exist and only one is trusted. The kernel (`worklog/kernel-trials/probe/kernel2/
+core.pl`) passes every model §9 gate (round 2: 24 of 24 witnesses, 1700 random programs), the
+26-document corpus and the clingo differential (round 4b), the boundary round (round 5) and the
+property track (round 7, with one defect: gate-ledger item 7). The TypeScript evaluator
+(`doc-verify/src/engine/evaluate.ts`) fails 14 of the same 24 witnesses (round 2: 11 where the
+model moved beyond design 04, 3 over-demands), and it is what `doc-verify check` runs. The kernel
+lives in the experiment tree with its runtime vendored there, so nothing the rounds measured has
+a production path. Observable: `git grep -l core.pl doc-verify/` prints nothing, and
+`node worklog/kernel-trials/probe/run-conformance.mjs` prints 14 S2 `MISMATCH` lines.
 
 ## Scope - what we touch
 
-In scope: the host-to-kernel seam (`checker.ts` → a kernel adapter in place of `runProgram`),
-the translation of design-04 modules to the kernel's program text
-(`worklog/kernel-trials/probe/kernel2/translate.mjs` promoted from probe to engine), the kernel's
-own files (`core.pl`, the sandbox gate, the budget) and the swipl-wasm runtime as a dependency of
-`doc-verify/`, the engine report shape the kernel must fill (`EngineReport`: constraints,
-bindings, proofs, oracle leaves, requests), the differential gates that keep the TypeScript
-evaluator and clingo as references until parity, and the deletion. Out of scope: the module
-language (unchanged; it "may break" only where the kernel's static checks are stricter, and each
-such break is a listed finding), the judge and its request shape (round 6), the oracle toolkit,
-and the clingo subject's own code (S3 stays the differential reference, decisions row 2026-10-12,
-and its gate-ledger rows `--s3` and `--s3 --random 500` stay in every migration predicate).
+In scope: the kernel (`core.pl`), its loader with the sandbox gate and the inference budget, and
+the module-to-program translator, moved from `worklog/kernel-trials/probe/kernel2/` into
+doc-verify/src/kernel/ as typed sources; `swipl-wasm` 8.2.2 a dependency of the package; the
+kernel's missing diagnostics (proof trees, the certain and possible populations) and its count
+defect (gate-ledger item 7); the seam (`runProgram` evaluates through the kernel); the deletion
+of `evaluate.ts`; and the observed errors of rounds 1–7 as doc-verify tests. Out of scope: the
+module language (the parser and `checker.ts` stay; a module the kernel's stricter static checks
+refuse is a listed break with its repair), the judge and request shape, the oracle toolkit and
+its fixtures (they stay in the programme tree), and the open judge-side items (gate-ledger 10,
+11).
 
 ## Rationale
 
-Alternatives: (a) keep the TypeScript evaluator and fix its 14 failures against the model: that
-rebuilds an unverified evaluator by hand, which goal 04's R1 ("a trusted kernel, not an invented
-one") rejects; (b) run both forever: two evaluators means two places a PASS can be wrong and
-double the gate cost; (c) migrate to the kernel behind the existing host seam, differential until
-parity, then delete: the kernel is already measured on every gate, the host seam is one function,
-and parity is a mechanical check the conformance runner already performs on witnesses and the
-corpus. (c) is chosen. The order inside (c) is seam first (the adapter fills `EngineReport` from
-the kernel's report lines), then parity on the corpus at draft and promotion with a scripted
-judge, then the live corpus, then deletion; the TypeScript evaluator stays reachable by a flag
-until the last step so a regression has a comparison.
-
-**Parity against a reference known to be wrong.** The TypeScript evaluator is a subject, never a
-baseline (decisions row 2026-10-12). Parity therefore means: no divergence between the engines
-outside the **known-divergence set**, which is the 14 round-2 failures, each classified (11
-model-beyond-04, 3 over-demand) in `worklog/kernel-trials/round-2-verdict.md`, plus any corpus
-divergence step 2 traces to one of those 14 and records by witness id. A divergence outside the
-set is a finding against the kernel adapter until the model decides otherwise; the clingo gates
-are the second implementation that agrees with the model's decided part.
+The first version of this design kept the TypeScript evaluator behind `--engine ts` as a
+differential reference through four rounds (11–14) and flipped the default only after live
+corpus parity. That buys a comparison with an evaluator the programme already records as wrong
+on 14 witnesses (decisions row 2026-10-12: the evaluator is a subject, never a baseline), at the
+cost of two code paths and a flag. The owner's alternative is chosen: every error the rounds
+observed is already a reproducible case with its expected result derived from the model, so the
+cases become tests; the kernel replaces the evaluator in one change; the suite, not a second
+engine, is the gate. The clingo subject (S3) stays as what it already is, a second
+implementation of the model's decided part, now in the slow test suite instead of a probe flag.
 
 ## Model
 
-- **Host**: parses Markdown to the dump (sections, references, tables), composes modules, asks
-  the judge per atom (round 6; the four `module-*` libraries stay pinned `batched` and one module
-  page demotes under per-atom, round 6 §Left unmeasured and round 8, so step 2's corpus parity
-  runs each library under its pinned shape), caches by (model, question, labels, evidence,
-  policy, shape), renders reports. Unchanged by this design except the seam.
-- **Seam**: `runProgram(input)` in `doc-verify/src/engine/index.ts` becomes `runKernel(input)`:
-  translate the composed module and the dump to program text; load into a fresh instance with the
-  sandbox gate (round 5); per round, set the answer state, evaluate under the budget, read
-  statuses, demand, missing literals, unfounded and proof trees; the host asks the demanded atoms
-  under the declared policy (`prefix` default) and repeats until `Dem = ∅` or the round cap. The
-  `EngineReport` fields the kernel fills come from `core_report/1`'s lines; proof trees from the
-  kernel's meta-interpreter (round 1 K3).
-- **Kernel**: `core.pl` as measured; the sandbox gate and the budget as round 5 shipped them;
-  tables abolished per step (incremental tabling not relied on; round 2 verdict, visflow design 20
-  F15). One fresh WebAssembly instance per check (round 1 K4: 28 ms warm, 65–82 ms cold startup).
-- **Reference**: the TypeScript evaluator behind `--engine ts` (a flag added in step 1; it does
-  not exist in `cli.ts` today), run by the differential gate only; deleted when the gate has been
-  green on the corpus for the migration's acceptance.
-- **Static checks**: the kernel's (groundness of negation, bound `matches`) replace the
-  checker's where they overlap; a module the kernel rejects that the checker accepted is a listed
-  language break with its repair.
+- **Host**: parses Markdown to facts, loads and checks modules (`module.ts`, `checker.ts`,
+  `compose.ts`), asks the judge (`oracles.ts`), caches, renders reports. Unchanged except that it
+  no longer evaluates rules.
+- **Seam**: `runProgram(input)` in `doc-verify/src/engine/index.ts` keeps its signature and its
+  `EngineReport`. Per check: translate the composed program and the facts to program text, load
+  it into one fresh WebAssembly instance through the sandbox gate, then per round set the answer
+  state, evaluate under the budget, read the report lines, ask the demanded atoms under the
+  declared policy (`prefix` default), and repeat until nothing is demanded or the round cap.
+- **Kernel** (doc-verify/src/kernel/core.pl): the measured `core.pl` plus three additions —
+  proof trees from a meta-interpreter over the residual program (round 1 K3's
+  `worklog/kernel-trials/probe/prolog/k3-proof.pl`, `fact/1` and `oracle/2` leaves), reported per binding; the certain
+  and possible population counts; and the count fix (a `count` whose result is already bound
+  compares it with the interval and delays when the interval does not decide it).
+- **Loader** (doc-verify/src/kernel/kernel.ts): round 5's three layers — the instance, the
+  sandbox gate over every module-derived clause (`catch/3` and its cleanup relatives refused),
+  the inference budget — and one fresh instance per check (round 7 finding 3: a reused instance
+  can raise a history-dependent `instantiation_error`).
+- **Translator** (doc-verify/src/kernel/translate.ts): `translate.mjs` typed, unchanged in
+  behaviour.
 
 ## Supersedes
 
-Each line below replaces the named earlier text when this design's step lands; until then the
-earlier text stands.
-
-| Earlier text | Replaced by | At step |
-| --- | --- | --- |
-| design/04 §Engine: `runProgram` as the evaluator of a composed module | §Model "Seam": `runKernel`, the TypeScript evaluator behind `--engine ts` | 1 |
-| design/05 §Design, kernel: "The host never evaluates a rule" (true of the probe path) | the same sentence, true of the production path; the adapter is the only host code between dump and verdict | 1 |
-| design/05 §Design, module language: "it refuses nothing else" | the kernel's static checks refuse groundness-of-negation and unbound-`matches` violations too; each refusal of a module the checker accepted is a listed language break with its repair (§Model "Static checks") | 2 |
-| design/05 §Verification rows "Trust boundary", "Open vocabulary", "Oracle split", whose commands grep or run against `worklog/kernel-trials/probe/` | the same rows pointed at doc-verify/engine/kernel/ (step 4) | 4 |
-| design/05 §Verification row "Model conformance": S2 run as a second subject | S2 deleted; S3 (clingo) the remaining second subject | 4 |
-
-**Constitution:** unchanged by this design. The lines it will touch are invariant 5's "In force
-… under swipl-wasm 8.2.2" and its "Not covered" list (which move from the probe to the production
-path), invariant 3's "prefix is the default policy", and invariant 7's host-computed table facts
-(`core.table/3` "computed in the host for now"); per AGENTS.md an amendment comes from a verdict,
-so step 4's verdict (round 14) amends them citing this design, and no earlier step does.
+| Earlier text | Replaced by |
+| --- | --- |
+| this design's first version: steps 1–4 as rounds 11–14, `--engine ts`, the known-divergence set, the default flip | one replacement gated by the test suite (§Decision); no rounds 11–14, no flag |
+| design/04 §Engine: `evaluate.ts` as the evaluator of a composed module | the kernel behind the same `runProgram` |
+| design/05 §Design, kernel: "The host never evaluates a rule" (true of the probe path) | true of the production path |
+| design/05 §Design, module language: "it refuses nothing else" | the kernel's static checks also refuse ungrounded negation and unbound `matches`; each module so refused is listed in §Language breaks with its repair |
+| design/05 §Verification rows pointing at `worklog/kernel-trials/probe/` (trust boundary, model conformance) | the same rows pointed at doc-verify/src/kernel/ and the test files below; S2 removed |
+| constitution invariant 5 "In force … under swipl-wasm 8.2.2" on the probe path, invariant 7's host-computed table facts | the production path; amended when this design's change lands, citing this design |
 
 ## Decision
 
-Migrate behind the seam in four steps, each a preregistered round under `worklog/kernel-trials/`
-with a verdict, a gate predicate that can be re-run, and a seeded defect that turns the gate red
-(the constitution's R6, the seeded-defect rule). The default engine flips to the kernel at step 3's verdict
-and flips back by the same flag on any later red gate.
+One change, in this order, each step leaving `npm test` green:
 
-| Step | Round | Gate predicate | Seeded defect (must turn it red) | Verdict file | If red |
-| --- | --- | --- | --- | --- | --- |
-| 1 adapter fills `EngineReport`; `--engine kernel\|ts` added | 11 | `npm test -- report diagnostics` under both engines (the engine-flag matrix added to the suite in this step) | the adapter drops the `missing` field of one finding | `round-11-verdict.md` | the flag stays `ts`; the adapter is fixed, round re-run |
-| 2 parity on witnesses and the scripted corpus | 12 | `node worklog/kernel-trials/probe/run-conformance.mjs --corpus --s3 --random 500` (S1 and S3 green) and `doc-verify check --all --engine ts` diffed against `--engine kernel` under `DOC_VERIFY_MOCK_JUDGE=1`, at draft and promotion; the diff must be empty outside the known-divergence set | a translator mutation that flips `forbid` to `require` on one constraint | `round-12-verdict.md` | every divergence outside the set is classified; a kernel-adapter defect is fixed and the round re-run; a model gap goes to a decision row |
-| 3 parity live on the corpus | 13 | the same two checks with the production judge, cache off, run as a recorded command with its output in results/round-13-live-parity.txt (results only: no endpoint, no evidence text) | an answer-state mutation (one `holds` read as `fails`) under `--engine kernel` | `round-13-verdict.md` | the default stays `ts`; otherwise it flips to `kernel` |
-| 4 deletion; translator and kernel moved under doc-verify/engine/kernel/ (step 4); swipl-wasm a dependency of `doc-verify/` | 14 | `git grep evaluate.ts doc-verify/` empty; `doc-verify check --engine ts` refused; design/05's boundary, vocabulary and split rows green on the new paths | a copy of `evaluate.ts` left under `doc-verify/src/` | `round-14-verdict.md`; the constitution lines above amended | the deletion is reverted by the same commit's parent |
+| Step | What lands | Gate |
+| --- | --- | --- |
+| 1 | The observed errors as tests (§Verification design rows 1–5), run against the probe kernel through a small adapter; the count-bound cases marked expected-to-fail | `npm test` green with the expected failures listed |
+| 2 | Kernel, loader and translator under doc-verify/src/kernel/; `swipl-wasm` a dependency; the tests pointed at the new path | the same suite green |
+| 3 | The count fix, proof trees, populations | the count-bound cases pass; the expected-failure list is empty |
+| 4 | `runProgram` through the kernel; `evaluate.ts` deleted; existing tests that asserted the evaluator's behaviour where the model differs are rewritten to the model, each citing its round-2 witness | `npm test` green; `git grep -l evaluate doc-verify/src` empty; `npm run check` and `doc-verify check --all` with the mock judge run |
+| 5 | The property track and the clingo differential as `npm run test:kernel-slow`; design/05 and the constitution amended; this design's Status `landed` | the slow suite green; the seeds table reddens it |
+
+A step that turns the suite red is fixed before the next step lands; nothing is merged to `main`
+by this design.
 
 ## Verification design
 
-Commands marked "(step N)" do not exist until that step adds them; the rows are predictions
-against the shipped `witness_observable_in_row` oracle until the lead's labels say otherwise.
-
 | Property | Failure witness | Command |
 | --- | --- | --- |
-| Seam fills the report | under `--engine kernel` the report diagnostics test prints a finding whose `missing`, `deciding`, or `proof` field is empty or whose JSON shape differs from the `--engine ts` run of the same witness | `npm test -- report diagnostics` under both engines (step 1) |
-| Witness parity | the conformance runner prints an S1 `MISMATCH` line, or the engine-golden diff prints a witness step where statuses, demand or verdict differ between engines and the step is not in the known-divergence set | `node worklog/kernel-trials/probe/run-conformance.mjs --corpus --s3 --random 500` and `npm test -- engine-golden` (step 2) |
-| Corpus parity, scripted | the diff of the two `check --all` JSON reports prints a document whose verdict or findings differ with the same scripted answers | `doc-verify check --all --engine ts` against `--engine kernel` under `DOC_VERIFY_MOCK_JUDGE=1`, diffed (step 2) |
-| Corpus parity, live | the same diff non-empty with the production judge, cache off, at promotion | the recorded command of step 3, output worklog/kernel-trials/results/round-13-live-parity.txt |
-| Boundary carried over | round 5's seeds run against the production kernel files: E1 (a host-effect clause) or E17 (`catch/3`) not `rejected`, or E18 (`numlist/3` over 20M) not `BLOCKED` under the budget | `node worklog/kernel-trials/probe/run-boundary.mjs --gate --budget --kernel-dir doc-verify/engine/kernel` (the `--kernel-dir` flag, step 4) |
-| Language breaks listed | the static-check census prints a module path the kernel refuses that is absent from design/06-language-breaks.md (written in step 2) | `node worklog/kernel-trials/probe/static-census.mjs` over every module named by a `.doc-verify.yaml` rule (step 2) |
-| Deletion complete | `git grep` prints a path, or `doc-verify check --engine ts` exits 0 | `git grep evaluate.ts doc-verify/` empty; the flag refused (step 4) |
-| Cost | `time` on the draft-profile corpus check under `--engine kernel` prints a wall time above the TypeScript engine's plus the measured kernel floor (round 1 K4: 46–105 ms per 24-document corpus including startup; round 5: 6% budget overhead); the exact bar is pre-registered in round 11 from that step's first measurement | `time doc-verify check --all --profile draft` under both engines (step 1) |
+| Model conformance | a witness step of `probe/witnesses/*.yaml` (24 steps, round 2) or round 4b's 23 files where statuses, demand, missing literal or verdict differ from the hand-derived `expect` | npx vitest run doc-verify/tests/kernel/witnesses.test.ts |
+| Corpus | a corpus document whose kernel verdict differs from the model-derived expectation of round 2's `corpus-draft.yaml` | npx vitest run doc-verify/tests/kernel/corpus.test.ts |
+| Trust boundary | round 5's seeds: E1 (a host-effect clause) or E17 (`catch/3`) not refused at load, or E18 (`numlist/3` over 20M) not stopped by the budget; any of the 48 steps off its recorded outcome | npx vitest run doc-verify/tests/kernel/boundary.test.ts |
+| Round 7 regressions | the minimal count-bound triple (two counts sharing `N0`, `ans: {}`) reads `violated` instead of `undetermined`, the hand-made `forbid` case reads `satisfied`, or a constant count result does not delay | npx vitest run doc-verify/tests/kernel/regressions.test.ts |
+| Diagnostics filled | a violated binding whose report has an empty `proof`, a violated `require` without `missing`, or populations that differ from the binding list | `npx vitest run doc-verify/tests/report` |
+| One engine | `git grep -l "evaluate.ts\|from \"./evaluate" doc-verify/src` prints a path | `git grep` as written |
+| Property track | a property of the model's §9 fails on 500 programs × seeds 1–3 against the independent WFS and stable-model oracles; or a seed of round 7's table fails to flip its property | `npm run test:kernel-slow` |
+| Cost | `time npm run check` slower than the evaluator's by more than the kernel floor (round 1 K4: 65–82 ms cold start per check) times the document count | `time npm run check` before and after step 4 |
+
+## Language breaks
+
+Filled at step 4: every module named by a `.doc-verify.yaml` rule that the kernel refuses and the
+checker accepted, with its repair. Empty until then.
 
 ## Left undecided
 
-- Whether the `cheapest-evidence` and `most-pruning` scheduler policies ever ship (round 5,
-  unmeasured; `prefix` stays the default).
-- The four `module-*` libraries pinned `batched` (round 6; round 8 decides per library).
-- Translator quoting as its own gate (round 5 §Left unmeasured).
-- Native SWI-Prolog and memory beyond the budget (round 5; invariant 5 "Not covered").
-- The judge-side outbound policy: not part of this migration, still gated by `npm test --
-  semantic confidentiality`.
-- The relevance gap in `witness_observable_in_row` (round 4c: a swapped witness column passes
-  14/14): this design's own table would pass it; round 9 measures the relevance question.
-- The S1 D1 gap (round 4b: 38 programs where demand is incomplete) and S3's D1 incompleteness:
-  the migration inherits the S1 gap as is.
-- Memory of one WebAssembly instance per check at scale (one instance per check, never pooled,
-  is the Model's choice; its cost at corpus scale is step 1's measurement).
+- The judge-side open items: `current_not_history`'s question (gate-ledger 10) and the relevance
+  instrument (gate-ledger 11).
+- Demand precision on loop-resting bindings (gate-ledger 8) and the S1 D1 gap (round 4b): the
+  kernel keeps them as measured.
+- Scheduler policies other than `prefix`; native SWI-Prolog; memory beyond the budget.
+- Memory of one instance per check at corpus scale (measured by the cost row).
 
 ## Goal
 
@@ -161,10 +136,13 @@ the round-6 pin named; the property track named as in progress), 5 (the known-di
 S3 gates kept), 6 (the step table with gate, seeded defect, verdict file and rollback; step 3
 recorded), 7 (witnesses rewritten as printed output; commands marked by step; E1/E17/E18 named),
 8 (step 3 records results only), 9 (cost bar from K4 and round 5, set in round 11), 10 (§Left
-undecided), 11 (one `## Goal`; goal 04's R-labels), 12 (this section cites the review). The
-migration rounds 11–14 will be preregistered under `worklog/kernel-trials/` and this design
-amended by their verdicts.
+undecided), 11 (one `## Goal`; goal 04's R-labels), 12 (this section cites the review). That review read the first version; the owner's
+2026-10-13 direction replaced its §Decision (rounds 11–14 withdrawn, §Supersedes row 1), and
+the rewrite keeps findings 2, 7 and 11 (named constitution lines, printed-output witnesses, one
+`## Goal`).
 
 ## Status
 
-draft
+reviewed
+
+Note: approved by the owner 2026-10-13; implementation in progress on `dv/trusted-kernel-trials`.
