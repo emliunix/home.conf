@@ -640,25 +640,6 @@ core_prove(core_naf(G), Mode, Seen, [not(Child)]) :- !,
     core_prove_negated(G, Mode, Seen, Child).
 core_prove(\+ G, Mode, Seen, [not(Child)]) :- !,
     core_prove_negated(G, Mode, Seen, Child).
-
-% A `not G` node follows G's status: f → certain not (name G only); u → possible, with G's
-% subtree when it builds; never call_delays(G, true) which would fail and drop the proof.
-core_prove_negated(G, _Mode, Seen, Node) :-
-    core_lit_text(G, Text),
-    (   \+ call_delays(G, _)
-    ->  Node = builtin(Text)
-    ;   call_delays(G, true)
-    ->  Node = builtin(Text)
-    ;   catch(
-            ( core_prove(G, u, Seen, Kids),
-              ( Kids = [One] -> Node = One ; Node = rule(Text, '', Kids) )
-            ),
-            _,
-            fail
-        )
-    ->  true
-    ;   Node = builtin(Text)
-    ).
 core_prove(memberchk(X, L), _, _, [builtin(T)]) :- !,
     core_lit_text(memberchk(X, L), T).
 core_prove(core_matches(X, R), _, _, [builtin(T)]) :- !, core_lit_text(core_matches(X, R), T).
@@ -690,6 +671,25 @@ core_prove(G, Mode, Seen, [Node]) :-
 core_prove_one(G, Mode, Seen, Node) :-
     core_prove(G, Mode, Seen, Kids),
     ( Kids = [Node] -> true ; Node = rule(G, '', Kids) ).
+
+% A `not G` node follows G's status: f → certain not (name G only); u → possible, with G's
+% subtree when it builds; never call_delays(G, true) which would fail and drop the proof.
+core_prove_negated(G, _Mode, Seen, Node) :-
+    core_lit_text(G, Text),
+    (   \+ call_delays(G, _)
+    ->  Node = builtin(Text)
+    ;   call_delays(G, true)
+    ->  Node = builtin(Text)
+    ;   catch(
+            ( core_prove(G, u, Seen, Kids),
+              ( Kids = [One] -> Node = One ; Node = rule(Text, '', Kids) )
+            ),
+            _,
+            fail
+        )
+    ->  true
+    ;   Node = builtin(Text)
+    ).
 
 core_prove_derived(G, Mode, Seen, Node) :-
     % Bind through call_delays before naming the atom (possible mode must not use \+ \+,

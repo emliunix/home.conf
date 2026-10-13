@@ -117,11 +117,11 @@ export function decideVerdict(constraints: ConstraintReport[], failure: EngineFa
   if (failure !== undefined && failure.verdict === "NO-GO") {
     return { verdict: failure.verdict, decidedBy: "engine" };
   }
-  // Budget / resource (and other BLOCKED failures): never treat empty/satisfied constraints as PASS.
+  // Kernel budget/resource (and other BLOCKED failures): never treat empty/satisfied constraints as PASS.
   if (failure !== undefined && failure.verdict === "BLOCKED") {
     const by =
-      /budget/i.test(failure.message) ? "budget"
-      : /resource/i.test(failure.message) ? "resource"
+      /kernel inference budget/i.test(failure.message) ? "budget"
+      : /kernel resource error/i.test(failure.message) ? "resource"
       : "engine";
     return { verdict: "BLOCKED", decidedBy: by };
   }

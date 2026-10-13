@@ -95,8 +95,9 @@ ${PURPOSE_ORACLE}rules:
     expect(await issues(`rules:
   r(D, X): core.section(D, _, _)
 `)).toMatch(/X is unsafe/);
+    // Y local to the negation alone is lifted; shared with a later literal is unsafe.
     expect(await issues(`rules:
-  r(D): core.section(D, _, _), not core.child(D, Y, _)
+  r(D, Y): core.section(D, _, _), not core.child(D, Y, _), core.heading(D, Y, _)
 `)).toMatch(/Y is unsafe/);
     expect(await issues(`rules:
   r(D): core.section(D, _, _), N > 2
