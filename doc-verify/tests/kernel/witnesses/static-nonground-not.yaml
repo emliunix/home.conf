@@ -14,6 +14,7 @@ facts:
   - section(d, a, root)
 steps:
   # Y is local to the negation (existential: no child of X). Translate lifts it; accepted.
+  # The shared-variable unsafe form stays covered by static-nonground-not-shared.yaml (rejected).
   - answers: {}
     expect:
       statuses: {c1: [{D: d, S: a, status: satisfied}]}

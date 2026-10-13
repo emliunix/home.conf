@@ -437,7 +437,8 @@ function resolveLiteral(
   return { kind: "pos", predicate, args };
 }
 
-function literalVarNames(literal: Literal): string[] {
+/** Named variables occurring in a literal (anonymous `_` excluded). Shared with the translator. */
+export function literalVarNames(literal: Literal): string[] {
   const s = new Set<string>();
   const add = (t: Term) => variablesOf(t, s);
   switch (literal.kind) {
@@ -471,11 +472,42 @@ function literalVarNames(literal: Literal): string[] {
 }
 
 /**
+ * Named variables local to a negated literal: they occur in `neg` and in no other literal of
+ * `body`, and not in `outer` (head / params / count result / forall-bound names). The translator
+ * lifts exactly these (plus anonymous `_`); the checker allows them unbound.
+ */
+export function localNegationVars(
+  neg: Extract<Literal, { kind: "neg" }>,
+  body: Literal[],
+  outer: Iterable<string>,
+): Set<string> {
+  const forbidden = new Set<string>(outer);
+  for (const lit of body) {
+    if (lit === neg) continue;
+    for (const n of literalVarNames(lit)) forbidden.add(n);
+  }
+  const local = new Set<string>();
+  for (const arg of neg.args) {
+    for (const n of variablesOf(arg)) {
+      if (!forbidden.has(n)) local.add(n);
+    }
+  }
+  return local;
+}
+
+function termHasAnonymous(term: Term): boolean {
+  if (term.kind === "var") return term.name === "_";
+  if (term.kind === "compound") return term.args.some(termHasAnonymous);
+  return false;
+}
+
+/**
  * Range restriction plus the bound-inputs rule for oracles, read left to right. A
  * positive literal binds its variables, except that an oracle literal's inputs must
  * already be bound; `not`, `in`, `matches`, comparisons and `count` bind nothing but `count`'s result.
  * Negation may carry anonymous/`_` and variables local to that literal (the translator lifts them);
  * a variable shared with other literals yet unbound at the negation is refused here.
+ * Oracle negation is never lifted: every argument (inputs and choose label) must be bound.
  */
 function checkSafety(
   head: Term[],
@@ -486,6 +518,8 @@ function checkSafety(
   outer: Set<string> = new Set(),
 ): Set<string> {
   const bound = new Set(outer);
+  const scopeOuter = new Set(outer);
+  for (const t of head) variablesOf(t, scopeOuter);
   const unsafe = (name: string, what: string): void => {
     issues.push(`${where}: ${name} is unsafe; ${what}`);
   };
@@ -497,15 +531,6 @@ function checkSafety(
         }
       }
     }
-  };
-  const varsElsewhere = (skip: Literal): Set<string> => {
-    const s = new Set<string>();
-    for (const t of head) variablesOf(t, s);
-    for (const other of body) {
-      if (other === skip) continue;
-      for (const n of literalVarNames(other)) s.add(n);
-    }
-    return s;
   };
 
   for (const literal of body) {
@@ -525,16 +550,21 @@ function checkSafety(
         break;
       }
       case "neg": {
-        if (oracleInputs.has(literal.predicate) && literal.args.some((term) => term.kind === "var" && term.name === "_")) {
-          issues.push(`${where}: not over oracle ${local(literal.predicate)} needs every argument bound`);
+        if (oracleInputs.has(literal.predicate)) {
+          // Refuse: lifting an oracle into an existential would ask the judge about unbound atoms.
+          const bad = literal.args.some((term) => termHasAnonymous(term) || [...variablesOf(term)].some((n) => !bound.has(n)));
+          if (bad) {
+            issues.push(`${where}: not over oracle ${local(literal.predicate)} needs every argument bound (inputs and label; oracle negation is not lifted)`);
+          }
+          break;
         }
         // Anonymous `_` and variables local to this negated literal are OK (translate lifts them).
         // A variable shared with other literals yet unbound here is unsafe.
-        const elsewhere = varsElsewhere(literal);
+        const localVars = localNegationVars(literal, body, scopeOuter);
         for (const arg of literal.args) {
           for (const name of variablesOf(arg)) {
             if (bound.has(name)) continue;
-            if (elsewhere.has(name)) {
+            if (!localVars.has(name)) {
               unsafe(name, "negation needs it bound by an earlier positive literal (it is shared with other literals)");
             }
           }
@@ -551,7 +581,10 @@ function checkSafety(
         requireBound([literal.left, literal.right], "it is not bound by an earlier positive literal");
         break;
       case "count": {
-        checkSafety([], literal.goal, where, oracleInputs, issues, bound);
+        const countOuter = new Set(bound);
+        if (literal.variable.kind === "var") countOuter.add(literal.variable.name);
+        if (literal.result.kind === "var") countOuter.add(literal.result.name);
+        checkSafety([], literal.goal, where, oracleInputs, issues, countOuter);
         if (literal.result.kind === "var") {
           bound.add(literal.result.name);
         }

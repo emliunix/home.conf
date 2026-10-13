@@ -14,7 +14,7 @@
 
 import { compileModule } from "../engine/index.js";
 import { loadModule, type ConstraintSource, type OracleSource, type ParsedModule, type RequestShape } from "../engine/module.js";
-import type { Literal } from "../engine/checker.js";
+import { localNegationVars, type Literal } from "../engine/checker.js";
 import { listItems, quoteAtom, readCanonical, variablesOf, writeTerm, type Term } from "../engine/terms.js";
 
 /** A fact term with a qualified functor (`core::section`, `w::n`, …). */
@@ -293,14 +293,17 @@ export function translateProgram(program: TranslateProgram, facts: FactTerm[]): 
   const auxTables: string[] = [];
   let negLift = 0;
 
-  /** True when every named variable in `term` is in `bound` (anonymous `_` is never bound). */
-  const groundFor = (term: Term, bound: Set<string>): boolean => {
-    if (term.kind === "var") return term.name !== "_" && bound.has(term.name);
-    if (term.kind === "compound") return term.args.every((a) => groundFor(a, bound));
-    return true;
+  const termHasAnonymous = (term: Term): boolean => {
+    if (term.kind === "var") return term.name === "_";
+    if (term.kind === "compound") return term.args.some(termHasAnonymous);
+    return false;
   };
 
-  const literal = (lit: Literal, outerVars: Set<string>): string => {
+  /**
+   * Translate one literal in a body. `outer` is head/params/count-result/forall-bound names;
+   * locality (what to lift under negation) uses the shared `localNegationVars` with this body.
+   */
+  const literal = (lit: Literal, body: Literal[], outer: Set<string>): string => {
     switch (lit.kind) {
       case "pos":
         return call(lit.predicate, lit.args);
@@ -312,9 +315,12 @@ export function translateProgram(program: TranslateProgram, facts: FactTerm[]): 
           const label = choose ? writeTerm((lit.args.at(-1) as Term)) : "holds";
           return `core_not_label(${call(lit.predicate, inputs)},${label})`;
         }
-        // Local/anonymous vars in the negated call: lift to core_neg_k(Bound...) :- p(...).
-        if (!lit.args.every((a) => groundFor(a, outerVars))) {
-          const headVars = [...new Set(lit.args.flatMap((a) => [...variablesOf(a)]))].filter((n) => outerVars.has(n)).sort();
+        // Lift only vars local to this negated literal (shared helper with the checker).
+        const local = localNegationVars(lit, body, outer);
+        const atomVars = [...new Set(lit.args.flatMap((a) => [...variablesOf(a)]))];
+        const lift = lit.args.some(termHasAnonymous) || atomVars.some((n) => local.has(n));
+        if (lift) {
+          const headVars = atomVars.filter((n) => !local.has(n)).sort();
           negLift += 1;
           const name = `core_neg_${negLift}`;
           const headArgs = headVars.map((n) => `_V_${n}`).join(",");
@@ -341,9 +347,11 @@ export function translateProgram(program: TranslateProgram, facts: FactTerm[]): 
         const v = lit.variable.kind === "var" ? lit.variable.name : (() => { throw new Error("count variable"); })();
         const inner = new Set<string>();
         for (const g of lit.goal) for (const n of literalVars(g)) inner.add(n);
-        const outer = [...inner].filter((n) => n !== v && outerVars.has(n)).sort();
-        const params = [...outer, v];
-        const goalText = lit.goal.map((g) => literal(g, new Set(params))).join(", ");
+        const captured = [...inner].filter((n) => n !== v && outer.has(n)).sort();
+        const params = [...captured, v];
+        const countOuter = new Set(params);
+        if (lit.result.kind === "var") countOuter.add(lit.result.name);
+        const goalText = lit.goal.map((g) => literal(g, lit.goal, countOuter)).join(", ");
         // Identical count goals (up to renaming the head's variables) share one aux predicate, so
         // two counts of the same goal have the same undetermined instances (core_same_count/2).
         const canonical = params.reduce((t, n, i) => t.replace(new RegExp(`\\b_V_${n}\\b`, "g"), `_P${i}`), goalText);
@@ -360,16 +368,11 @@ export function translateProgram(program: TranslateProgram, facts: FactTerm[]): 
     }
   };
 
-  const outside = (terms: Term[], bodyLits: Literal[], index: number) => {
-    const s = new Set<string>();
-    for (const t of terms) variablesOf(t, s);
-    bodyLits.forEach((l, i) => {
-      if (i !== index) for (const n of literalVars(l)) s.add(n);
-    });
-    return s;
+  const bodyText = (lits: Literal[], headTerms: Term[]) => {
+    const outer = new Set<string>();
+    for (const t of headTerms) variablesOf(t, outer);
+    return lits.length === 0 ? "true" : lits.map((l) => literal(l, lits, outer)).join(", ");
   };
-  const bodyText = (lits: Literal[], headTerms: Term[]) =>
-    lits.length === 0 ? "true" : lits.map((l, i) => literal(l, outside(headTerms, lits, i))).join(", ");
 
   out.push("% ---- facts (the document dump, model §1)");
   for (const f of facts) out.push(`${call(f.functor, f.args)}.`);
