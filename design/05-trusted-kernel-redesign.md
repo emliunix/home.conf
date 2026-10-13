@@ -135,7 +135,8 @@ an ordinary oracle whose labels are sentence ids.
 Selection and snapshots as design 02 and 03. A markdown-to-facts dump: every syntax-tree node as
 `node(Doc, Id, Type, Parent, StartLine, EndLine, Text)` plus metadata facts from the companion and
 the rule. The judge client, per-atom cache and outbound policy as design 04. A findings renderer
-that adds path, line and span to the kernel's records. The host never evaluates a rule.
+that adds path, line and span to the kernel's records. The host never evaluates a rule (true of
+the production path since design/06: `doc-verify/src/kernel/`, `evaluate.ts` deleted).
 
 ### Kernel
 
@@ -192,7 +193,10 @@ A module is a Prolog file. Rules are clauses. Oracles and constraints are direct
 
 `extends` is a module import. Params are facts the importing module supplies. The loader (itself
 Prolog) validates arity, labels, evidence shapes and that every oracle input is bound by facts
-before the oracle literal; it refuses nothing else.
+before the oracle literal; it refuses nothing else. *(amended by design/06)* It also refuses a
+negation whose variable is shared with another literal yet unbound at that point, and an oracle
+negation with an unbound input; a negated literal whose unbound variables are local to it is
+lifted by the translator into a helper (`not p(X, _)` means no `Y` with `p(X, Y)`).
 
 ### Oracle toolkit (the split the owner set)
 
@@ -256,11 +260,11 @@ constitution line citing it. The loop has no terminal round: a later question re
 | Property | Failure witness | Command |
 | --- | --- | --- |
 | Feasibility (round 1) | the probe runner prints `complete: false`, an undefined leaf comes back `t` or `f` (K1), a demanded atom is missing from the demand set or an undemanded one is in it (K2), a proof tree lacks its `fact/1` or `oracle/2` leaves (K3), or the 24-document corpus takes more than a second (K4) | `node worklog/kernel-trials/probe/run-probes.mjs` |
-| Model conformance (round 2, **passed**) | the conformance runner prints a `MISMATCH` line for the kernel on a §9 witness step, a random program whose statuses differ from brute-force enumeration, or a corpus document whose statuses differ from the reference's expectation | `node worklog/kernel-trials/probe/run-conformance.mjs --corpus --random 200 --d3` |
+| Model conformance (round 2, **passed**) | the conformance runner prints a `MISMATCH` line for the kernel on a §9 witness step, a random program whose statuses differ from brute-force enumeration, or a corpus document whose statuses differ from the reference's expectation | `node worklog/kernel-trials/probe/run-conformance.mjs --corpus --random 200 --d3`; on the production kernel (design/06): `npx vitest run doc-verify/tests/kernel` and `npm run test:kernel-slow` (S2 removed) |
 | Gate suite form | a universal gate (M1, M2, D1, D2, PASS-is-final) tested only by hand-written cases, or a counterexample reported without a minimal program | property tests with shrinking over a full-language generator, subject pluggable (gate ledger item 1) |
 | Soundness by construction | a PASS is reachable with an undefined leaf in some constraint instance | seeded: an unanswered oracle under a require; expected undefined, never PASS |
 | Demand is the engine's | an atom the verdict no longer depends on is demanded, or one it depends on is never demanded | seeded cases from round 1 K1, kept as regression |
-| Trust boundary (round 5, **in force**) | a module reaches the judge, the network, the filesystem, or runs past the budget without BLOCKED; a boundary gate that cannot be made to fail | `node worklog/kernel-trials/probe/run-boundary.mjs --containment`, `--gate`, `--budget`, `--mutations` |
+| Trust boundary (round 5, **in force**) | a module reaches the judge, the network, the filesystem, or runs past the budget without BLOCKED; a boundary gate that cannot be made to fail | `node worklog/kernel-trials/probe/run-boundary.mjs --containment`, `--gate`, `--budget`, `--mutations`; on the production kernel (design/06): `npx vitest run doc-verify/tests/kernel/boundary.test.ts` |
 | Open vocabulary | a grep of the host for `artifact_kind` branching, `DATED_PROSE` or `required_sections` returns a match outside the module language and the dump | grep gate: no `artifact_kind` branching, no `DATED_PROSE`, no `required_sections` in the host |
 | Constitution governed | a constitution line changes without a citing design | review gate on `docs/doc-verify-constitution.md` |
 | Oracle split | the engine reads anything about an oracle beyond its declaration, or refuses an oracle for lack of fixtures, or the fixture runner changes an engine result | grep gate on the kernel's inputs; a fixture-less oracle evaluates; `oracle test` has no effect on `check` |

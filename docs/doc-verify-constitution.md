@@ -84,6 +84,11 @@ are specified in `docs/doc-verify-model.md` §9).
    directives and `catch/3`-class control refused) and an inference budget derived from the corpus
    and sharp to the inference. Not covered: memory as such, native SWI-Prolog, the judge-side
    outbound policy (design/02's, gated by `npm test -- semantic confidentiality`).
+   *Production path 2026-10-14 (design/06):* the same three layers are what `doc-verify check`
+   runs (`doc-verify/src/kernel/`, one fresh instance per check, `swipl-wasm` 8.2.2 a dependency);
+   a budget or resource overrun is BLOCKED. A negated literal whose unbound variables are local to
+   it is lifted into a helper, so the groundness check sees a ground call; any other non-ground
+   negation is refused when the module loads.
 6. **Identity is by content, never position.** Atoms, evidence hashes, cache keys, answer binding.
    *Root:* R3; a corollary of invariant 2, since an answer bound to the wrong atom makes 2 meaningless. *Falsifier:* two atoms of one oracle receiving each other's answer, or a reordered batch changing any fact (design/04 "Binding by construction").
 7. **The fact vocabulary is open.** *(added by design/05)* The host hands the kernel a mechanical
