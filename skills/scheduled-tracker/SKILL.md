@@ -133,6 +133,15 @@ These are standing lead checks, not a second methodology:
   the commits that exist only on this host. A ref that could not be read is
   reported as unread, never as unchanged.
 
+  **One card, one worktree, one writer.** Create the worktree in the same act as
+  the card, name it for the card, and carry its path, branch, and base ref in the
+  card body. A second member may read someone else's worktree; it may not edit
+  one, because the tree can change between two of its own commands even with no
+  other writer — hooks and suites save and restore working-tree state around
+  their own runs. Close the worktree in the same act that closes the card, and
+  report the standing worktree count each pass so dead trees cannot accumulate
+  silently.
+
   A branch is transit, not storage: `main` is the return point for finished
   work, while a named release line holds only the commits awaiting its committed
   replay.
