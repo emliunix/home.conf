@@ -24,15 +24,22 @@ const GIT_ENV = {
   GIT_CONFIG_SYSTEM: "/dev/null",
 };
 
+// The probe's throwaway repository must never see the caller's repository. A commit hook exports
+// GIT_DIR, GIT_INDEX_FILE and (in a linked worktree) GIT_COMMON_DIR; inherited, they point
+// `git init` and `git config` in the temp directory at the REAL repository (2026-10-14: the shared
+// config gained `core.bare = true` and a `[user]` of this probe, breaking every worktree).
+const PROBE_ENV = Object.fromEntries(Object.entries(GIT_ENV).filter(([key]) =>
+  !key.startsWith("GIT_") || key === "GIT_CONFIG_GLOBAL" || key === "GIT_CONFIG_SYSTEM"));
+
 function git(cwd, args) {
-  return execFileSync("git", args, { cwd, encoding: "utf8", env: GIT_ENV });
+  return execFileSync("git", args, { cwd, encoding: "utf8", env: PROBE_ENV });
 }
 
-function trackedIgnored(cwd) {
+function trackedIgnored(cwd, env = GIT_ENV) {
   const out = execFileSync("git", ["ls-files", "-ci", "--exclude-standard"], {
     cwd,
     encoding: "utf8",
-    env: GIT_ENV,
+    env,
   });
   return out.split("\n").filter(Boolean);
 }
@@ -49,7 +56,7 @@ function selfTest() {
     git(dir, ["add", ".gitignore"]);
     git(dir, ["add", "-f", "pkg/__pycache__/mod.cpython-311.pyc"]);
     git(dir, ["commit", "-qm", "seed"]);
-    const red = trackedIgnored(dir);
+    const red = trackedIgnored(dir, PROBE_ENV);
     if (red.length === 0) {
       process.stderr.write(
         "tracked-ignored: NOT ARMED — seeded tracked .pyc did not appear in `git ls-files -ci --exclude-standard`\n",
@@ -57,7 +64,7 @@ function selfTest() {
       return 2;
     }
     git(dir, ["rm", "-q", "--cached", "pkg/__pycache__/mod.cpython-311.pyc"]);
-    const green = trackedIgnored(dir);
+    const green = trackedIgnored(dir, PROBE_ENV);
     if (green.length !== 0) {
       process.stderr.write(
         `tracked-ignored: restore did not clear the seed: ${green.join(", ")}\n`,
