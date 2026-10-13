@@ -6,6 +6,7 @@ target
 .opencode
 node_modules
 doc-verify/dist/
+doc-verify/tests/kernel-slow/.results/
 .doc-verify-cache/
 doc-verify-report.json
 __pycache__/
