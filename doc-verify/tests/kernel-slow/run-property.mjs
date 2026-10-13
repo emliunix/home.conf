@@ -33,6 +33,13 @@ const programs = Number(opt("programs", "500"));
 const seedList = opt("seeds", "1,2,3").split(",").map(Number);
 const PROPERTY_TIMEOUT_MS = 10 * 60 * 1000; // checking time per arm (shrinking reported separately)
 const SHRINK_LIMIT_MS = Number(opt("shrink-limit-ms", "60000"));
+// --weights k=v,k=v overrides generator weights for this run (e.g. to isolate one form); printed
+// in the `weights:` line, and a zeroed form then misses its gap floor (`complete` false)
+for (const kv of opt("weights", "").split(",").filter(Boolean)) {
+  const [k, v] = kv.split("=");
+  if (!(k in WEIGHTS) || !Number.isFinite(Number(v))) { console.error(`--weights: bad ${kv}`); process.exit(2); }
+  WEIGHTS[k] = Number(v);
+}
 const resultsDir = path.resolve(import.meta.dirname, ".results");
 mkdirSync(resultsDir, { recursive: true });
 
@@ -43,6 +50,12 @@ const ARMS = {
 };
 const NAMED_FEATURES = ["choose", "count", "matches", "in", "cmp", "recursion", "negativeLoop", "unknown"];
 const TRIGGER_FLOORS = { choosePair: 0.10, countBoundary: 0.10, oddReachable: 0.07 };
+// generator-coverage-audit gaps: each form's share of the programs run must reach its floor, so a
+// form that stops being generated (a weight, or a normalize remap dropping it) fails `complete`
+const GAP_FLOORS = {
+  negLocal: 0.15, negLocalPred: 0.04, negBaseFact: 0.05, negSiblingShared: 0.06,
+  refuseNegation: 0.01, refuseNestedCount: 0.005, countForall: 0.03, countChoose: 0.03, chooseForall: 0.03,
+};
 const SEED_WITNESS_MAX_ATOMS = 8;
 
 const logLines = [];
@@ -322,11 +335,12 @@ async function runArm(subject, armName, n, seeds) {
 
   const ms = performance.now() - t0;
   const share = (v) => (programsRun ? +(v / programsRun).toFixed(3) : 0);
-  const cov = Object.fromEntries([...NAMED_FEATURES, "countBound", "countCorrelated", "countSiblingVar", "unboundMatches", "loopReachable"].map((k) => [k, share(featureHits[k] ?? 0)]));
+  const cov = Object.fromEntries([...NAMED_FEATURES, "countBound", "countCorrelated", "countSiblingVar", "unboundMatches", "loopReachable", ...Object.keys(GAP_FLOORS)].map((k) => [k, share(featureHits[k] ?? 0)]));
   const trig = Object.fromEntries(Object.entries(triggerHits).map(([k, v]) => [k, share(v)]));
   if (featuresOn) {
     for (const k of NAMED_FEATURES) if (cov[k] < 0.05) reasons.push(`coverage narrowed: ${k}=${cov[k]}`);
     for (const [k, floor] of Object.entries(TRIGGER_FLOORS)) if (trig[k] < floor) reasons.push(`trigger floor missed: ${k}=${trig[k]} < ${floor}`);
+    for (const [k, floor] of Object.entries(GAP_FLOORS)) if (cov[k] < floor) reasons.push(`gap floor missed: ${k}=${cov[k]} < ${floor}`);
   }
   if (timedOut) reasons.push("timeout (10 min of checking)");
   // Fresh-instance nondet is refuting. Same-instance history dependence (gate-ledger item 9) is

@@ -44,6 +44,8 @@ export function completions(atoms, base, choose) {
   return out;
 }
 
+/** The sections whose parent (the `section(d, S, P)` fact) is `s`. */
+const childrenOf = (g, s) => g.sections.filter((z) => g.parents[z] === s);
 const holdsOp = (op, n, K) => (op === ">=" ? n >= K : op === "<" ? n < K : op === "=:=" ? n === K : false);
 const cmpDepth = (l, d) => (l.op === "<" ? d < l.K : l.op === ">=" ? d >= l.K : d === l.K);
 
@@ -76,7 +78,20 @@ export function twoValued(g, comp, loopSet = null) {
         return !leaf(l.negTarget ?? l.target, s2);
       }).length;
     }
-    return g.sections.filter((s2) => (l.over === "pred" ? atomVal(l.target, s2) : leaf(l.target, s2))).length;
+    return g.sections.filter((s2) => (l.over === "pred" ? atomVal(l.target, s2) : l.over === "choose" ? leaf(l.target, s2, l.label) : leaf(l.target, s2))).length;
+  };
+  // gap-1 negations (model §3: a variable local to a negated goal is existential inside it)
+  const negx = (l, s) => {
+    const kids = childrenOf(g, s);
+    switch (l.variant) {
+      case "anyPred": return !g.sections.some((z) => atomVal(l.target, z));
+      case "selected": return l.anon ? g.selected.length === 0 : !g.selected.includes(s);
+      case "child": return kids.length === 0;
+      case "heading": return g.headings[s] === undefined;
+      case "childNot": return kids.some((z) => !atomVal(l.target, z));
+      case "countLeaf": return holdsOp(l.op, g.sections.filter((z) => childrenOf(g, z).length === 0).length, l.K);
+      default: throw new Error(`twoValued: negx ${l.variant}`);
+    }
   };
   const lit = (l, s) => {
     switch (l.kind) {
@@ -87,6 +102,7 @@ export function twoValued(g, comp, loopSet = null) {
       case "cmp": return cmpDepth(l, g.depths[s]);
       case "depthBind": return true; // every section has a depth; binds Ksib = g.depths[s]
       case "count": { const n = countOf(l, s); return l.bind === "const" ? n === l.K : holdsOp(l.op, n, l.K); }
+      case "negx": return negx(l, s);
       default: throw new Error(`twoValued: literal ${l.kind}`);
     }
   };
@@ -193,6 +209,7 @@ export function enumerateStatuses(g, ans) {
 
 const neg3 = (v) => (v === "t" ? "f" : v === "f" ? "t" : "u");
 const and3 = (vs) => (vs.includes("f") ? "f" : vs.includes("u") ? "u" : "t");
+const or3 = (vs) => (vs.includes("t") ? "t" : vs.includes("u") ? "u" : "f");
 
 function leaf3(g, ans, name, s, label = "holds") {
   const key = `w::${name}(d,${s})`;
@@ -235,12 +252,56 @@ function static3(g, ans, l, s) {
           if (v !== "t") p++;
         }
       } else {
-        for (const s2 of g.sections) { const v = leaf3(g, ans, l.target, s2); if (v === "t") c++; if (v !== "f") p++; }
+        for (const s2 of g.sections) { const v = leaf3(g, ans, l.target, s2, l.over === "choose" ? l.label : "holds"); if (v === "t") c++; if (v !== "f") p++; }
       }
       return interval3(l, c, p);
     }
+    case "negx": {
+      // forms over base facts or oracle leaves only (a derived target is ground() / wfs()'s)
+      const kids = childrenOf(g, s);
+      switch (l.variant) {
+        case "selected": return (l.anon ? g.selected.length === 0 : !g.selected.includes(s)) ? "t" : "f";
+        case "child": return kids.length === 0 ? "t" : "f";
+        case "heading": return g.headings[s] === undefined ? "t" : "f";
+        case "countLeaf": {
+          const n = g.sections.filter((z) => childrenOf(g, z).length === 0).length;
+          return holdsOp(l.op, n, l.K) ? "t" : "f";
+        }
+        case "childNot": {
+          if (!g.oracles.includes(l.target)) return null;
+          return or3(kids.map((z) => neg3(leaf3(g, ans, l.target, z))));
+        }
+        default: return null;
+      }
+    }
     default: return null;
   }
+}
+
+/** static3, refusing a literal it has no value for (never read a missing value as `t`). */
+function static3Strict(g, ans, l, s) {
+  const v = static3(g, ans, l, s);
+  if (v === null) throw new Error(`oracle: no three-valued reading of ${JSON.stringify(l)}`);
+  return v;
+}
+
+/** Is `l` a negation over a derived predicate (existential inside the negation, or per child)? */
+const derivedNegx = (g, l) => l.kind === "negx" && (l.variant === "anyPred" || (l.variant === "childNot" && !g.oracles.includes(l.target)));
+
+/**
+ * Auxiliary ground atoms for the gap-1 negations over a derived predicate p, defined from the
+ * model (§3), not from a translation: `exists:p` is ∃z p(z) (the body of `not p(D, _)`), and
+ * `childnot:p/s` is ∃z (section(z, s) ∧ not p(z)). Their rules are added once to `out`.
+ */
+function existsAtom(g, out, p) {
+  const a = `exists:${p}`;
+  if (!out.some((r) => r.head === a)) for (const z of g.sections) out.push({ head: a, pos: [`${p}/${z}`], neg: [], k: "t" });
+  return a;
+}
+function childNotAtom(g, out, p, s) {
+  const a = `childnot:${p}/${s}`;
+  if (!out.some((r) => r.head === a)) for (const z of childrenOf(g, s)) out.push({ head: a, pos: [], neg: [`${p}/${z}`], k: "t" });
+  return a;
 }
 
 /** Ground program: { head, pos: [atom], neg: [atom], k: t|u (body constants; f-bodies dropped) }. */
@@ -261,12 +322,15 @@ function ground(g, ans) {
       }
       if (ru.base === "selected" && !g.selected.includes(s)) continue;
       for (const l of ru.body) {
-        if (l.kind === "atom" || l.kind === "choose") {
+        if (derivedNegx(g, l)) {
+          if (l.variant === "anyPred") r.neg.push(existsAtom(g, out, l.target));
+          else r.pos.push(childNotAtom(g, out, l.target, s));
+        } else if (l.kind === "atom" || l.kind === "choose") {
           const lv = leaf3(g, ans, l.name, s, l.kind === "choose" ? l.label : "holds");
           if (lv !== null) r.k.push(l.neg ? neg3(lv) : lv);
           else (l.neg ? r.neg : r.pos).push(`${l.name}/${s}`);
         } else {
-          r.k.push(static3(g, ans, l, s));
+          r.k.push(static3Strict(g, ans, l, s));
         }
       }
       const k = and3(r.k);
@@ -311,6 +375,11 @@ export function wfs(g, ans) {
   const { T, O } = wellFounded(g, ans);
   const derived = (name, s) => (T.has(`${name}/${s}`) ? "t" : O.has(`${name}/${s}`) ? "u" : "f");
   const lit = (l, s) => {
+    if (derivedNegx(g, l)) {
+      return l.variant === "anyPred"
+        ? neg3(or3(g.sections.map((z) => derived(l.target, z))))
+        : or3(childrenOf(g, s).map((z) => neg3(derived(l.target, z))));
+    }
     if (l.kind === "atom" || l.kind === "choose") {
       const lv = leaf3(g, ans, l.name, s, l.kind === "choose" ? l.label : "holds");
       const v = lv !== null ? lv : derived(l.name, s);
@@ -321,7 +390,7 @@ export function wfs(g, ans) {
       for (const s2 of g.sections) { const v = derived(l.target, s2); if (v === "t") c++; if (v !== "f") p++; }
       return interval3(l, c, p);
     }
-    return static3(g, ans, l, s);
+    return static3Strict(g, ans, l, s);
   };
   const statuses = {};
   for (const c of g.constraints) {

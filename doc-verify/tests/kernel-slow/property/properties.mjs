@@ -14,6 +14,12 @@ import {
   completions, twoValued, enumerateStatuses, canon, unboundMatches,
   wfs, restingOnLoop, statusVector, vectorDiff,
 } from "./oracle.mjs";
+import { REFUSAL_REASON } from "./generator.mjs";
+
+/** The literals of `g` that the checker must refuse (generator `refuse` forms). */
+export function refusalForms(g) {
+  return [...g.rules.flatMap((r) => r.body), ...g.constraints.flatMap((c) => [...c.forall, ...c.goal])].filter((l) => l.kind === "refuse");
+}
 
 export const EXPECTED_FAILURES = {
   // S3 x D1: pre-registered red (round 4b item 5): the single-flip class, shrunk witness <= 6
@@ -33,6 +39,7 @@ const want = (only, kind) => !only || only === kind;
  */
 export function expectedRejection(g, subject) {
   if (unboundMatches(g)) return "matches-unbound";
+  if (refusalForms(g).length) return "checker-refuses";
   const lits = [...g.rules.flatMap((r) => r.body), ...g.constraints.flatMap((c) => c.goal)];
   if (subject === "S3" && lits.some((l) => l.kind === "count" && l.bind === "const")) return "count-const";
   return null;
@@ -63,6 +70,18 @@ export function checkProgram(g, evaluate0, { subject, only = null } = {}) {
 
   const here = evaluate(g.ans);
   const expectRej = expectedRejection(g, subject);
+  if (expectRej === "checker-refuses") {
+    // S1 records the checker's refusal (and runs the kernel past it); S3 is rejected by the same
+    // checker. Each refusal form must be refused for its own reason.
+    const msg = subject === "S1" ? here.checkerRejected : here.rejected;
+    if (want(only, expectRej)) {
+      for (const l of refusalForms(g)) {
+        if (!msg) problems.push(`checker-refuses: ${l.variant} accepted by the checker`);
+        else if (!REFUSAL_REASON[l.variant].test(msg)) problems.push(`checker-refuses: ${l.variant} refused for another reason: ${msg.slice(0, 160)}`);
+      }
+    }
+    return out();
+  }
   if (expectRej) {
     if (want(only, expectRej) && !here.rejected) problems.push(`${expectRej}: expected rejected, got ${here.verdict}`);
     return out();
@@ -70,6 +89,11 @@ export function checkProgram(g, evaluate0, { subject, only = null } = {}) {
   if (here.rejected) {
     if (want(only, "rejected")) problems.push(`rejected: ${here.rejected}`);
     return out();
+  }
+  // the gap-1 forms are safe (bound, anonymous, or local to the negation): the checker must accept
+  // them. Other refusals S1 runs past (unstratified loops, a constant count result) are not this.
+  if (want(only, "checker-accepts") && here.checkerRejected && /unsafe|not over oracle/.test(here.checkerRejected)) {
+    problems.push(`checker-accepts: a safe negation refused: ${here.checkerRejected.slice(0, 160)}`);
   }
   if (g.loopOn) return subject === "S1" ? loopsS1(g, here, only, out, problems) : loopsS3(g, here, only, out, problems);
   return subject === "S1" ? loopFreeS1(g, here, evaluate, only, out, problems) : loopFreeS3(g, here, evaluate, only, out, problems);

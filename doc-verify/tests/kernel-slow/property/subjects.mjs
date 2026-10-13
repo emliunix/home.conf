@@ -28,16 +28,25 @@ export async function makeS1(moduleYaml, facts, { corePatch = null } = {}) {
   const kernel = await Kernel.create();
   counters.instances += 1;
   const patch = typeof corePatch === "string" ? corePatcher(corePatch) : corePatch;
-  await kernel.load(translateProgram(program, facts.map(parseFactText)), { corePatch: patch });
+  try {
+    await kernel.load(translateProgram(program, facts.map(parseFactText)), { corePatch: patch });
+  } catch (e) {
+    // a program the checker refused may not load at all; the refusal is still reported
+    if (!checkerRejected) throw e;
+    const rejected = `load: ${e.message ?? e}`;
+    return { rejected, checkerRejected, evaluate: () => ({ rejected, checkerRejected }) };
+  }
   return {
     program, checkerRejected,
     evaluate(ans) {
       counters.S1 += 1;
+      // the checker's refusal rides on every result (properties.mjs: checker-refuses / -accepts)
+      const tag = checkerRejected ? { checkerRejected } : {};
       try {
         kernel.setAnswers(ans);
-        return kernel.evaluate(program);
+        return { ...kernel.evaluate(program), ...tag };
       } catch (e) {
-        return { rejected: String(e.prolog ?? e.message ?? e), statuses: {}, demand: { full: [], prefix: [] }, verdict: "BLOCKED" };
+        return { rejected: String(e.prolog ?? e.message ?? e), statuses: {}, demand: { full: [], prefix: [] }, verdict: "BLOCKED", ...tag };
       }
     },
   };

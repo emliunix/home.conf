@@ -30,6 +30,14 @@ export const WEIGHTS = {
   // (and often a negation inside the count); catches aux capture that omits non-head body vars
   countSiblingVar: 0.18,
   countSiblingNeg: 0.55,   // of countSiblingVar programs: also negate inside the count goal
+  // generator-coverage-audit gaps (worklog/kernel-trials/results/generator-coverage-audit.md)
+  negLocal: 0.35,          // gap 1: negation with local/anonymous variables or a base-fact target
+  negShared: 0.10,         // gap 1: a sibling-bound variable under a negated derived atom, in a goal
+  negRefuse: 0.06,        // gaps 1/2: a form the checker must refuse (oracle-local, sibling-shared, nested count)
+  countForall: 0.08,       // gap 2: a count in a constraint's forall
+  countChoose: 0.35,       // gap 3: of choose programs, a count whose goal is a choose label
+  countChoosePair: 0.50,   // of countChoose programs: a second count over another label
+  chooseForall: 0.25,      // gap 3: of choose programs, a forall over a choose label
   // trigger floors (plan: >= 20 of 500): reserved slots that force the trigger's site
   chooseTriggerFloor: 0.45,
   countBoundaryFloor: 0.25,
@@ -60,7 +68,7 @@ export function programArbitrary({ featuresOn = true } = {}) {
     keepSec: keeps(4), keepOra: keeps(3), keepRule: keeps(6), keepBody: keeps(18),
     keepCons: keeps(3), keepGoal: keeps(6),
     // keep-masks of the literals the switches below insert (so the shrinker can delete them too)
-    keepForced: keeps(6),
+    keepForced: keeps(11),
     selectedMask: fc.integer({ min: 0, max: 15 }),
     headingIdx: ints(4, 0, 5),
     depthVals: ints(4, 1, 4),
@@ -87,6 +95,16 @@ export function programArbitrary({ featuresOn = true } = {}) {
     countBoundKind: fc.integer({ min: 0, max: 1 }),
     countSiblingVar: fc.integer({ min: 0, max: 99 }),
     countSiblingNeg: fc.integer({ min: 0, max: 99 }),
+    negLocalOn: fc.integer({ min: 0, max: 99 }),
+    negLocalKind: fc.integer({ min: 0, max: 99 }),
+    negLocalSite: fc.integer({ min: 0, max: 99 }),
+    negSharedOn: fc.integer({ min: 0, max: 99 }),
+    negRefuseOn: fc.integer({ min: 0, max: 99 }),
+    negRefuseKind: fc.integer({ min: 0, max: 99 }),
+    countForallOn: fc.integer({ min: 0, max: 99 }),
+    countChooseOn: fc.integer({ min: 0, max: 99 }),
+    countChooseBits: fc.integer({ min: 0, max: 99 }),
+    chooseForallOn: fc.integer({ min: 0, max: 99 }),
     answerBits: ints(16, 0, 99),
     totalMask: fc.integer({ min: 0, max: 0xffff }),
     midMask: fc.integer({ min: 0, max: 0xffff }),
@@ -261,6 +279,50 @@ function materialize(raw) {
     }
   }
 
+  // ---- generator-coverage-audit gaps ------------------------------------------------------------
+  const plainRules = rules.filter((r) => !r.special);
+  // gap 1: negation with local/anonymous variables or a base-fact target. The target is a raw
+  // name, remapped by normalize to a stratified predicate (or an oracle / a base fact).
+  if (featuresOn && on(raw.negLocalOn, WEIGHTS.negLocal) && raw.keepForced[6] !== null) {
+    const k = raw.negLocalKind, k10 = Math.floor(k / 10);
+    const variant = NEGX_VARIANTS[k % NEGX_VARIANTS.length];
+    const lit = { kind: "negx", variant, target: predNames[k10 % predNames.length], anon: k10 % 2 === 1 };
+    if (variant === "childNot" && k10 % 3 === 2) lit.target = oraRef(k);
+    if (variant === "countLeaf") Object.assign(lit, { op: [">=", "<", "=:="][k10 % 3], K: 1 + (k10 % 2) });
+    const site = raw.negLocalSite;
+    if (site % 2 === 1 && plainRules.length) plainRules[site % plainRules.length].body.push(lit);
+    else constraints[site % constraints.length].goal.push(lit);
+  }
+  // the sibling-shared form over a derived atom: `core.section(D, Z, S), not pK(D, Z)` -- Z is
+  // bound by a sibling, so it is NOT local; lifting it (∃Z under the not) changes the meaning
+  if (featuresOn && on(raw.negSharedOn, WEIGHTS.negShared) && raw.keepForced[10] !== null) {
+    constraints[raw.negSharedOn % constraints.length].goal.push({ kind: "negx", variant: "childNot", target: predNames[raw.negSharedOn % predNames.length] });
+  }
+  // forms the checker must refuse (expected `checker-refuses`)
+  if (featuresOn && on(raw.negRefuseOn, WEIGHTS.negRefuse) && raw.keepForced[7] !== null) {
+    const variant = REFUSE_VARIANTS[raw.negRefuseKind % REFUSE_VARIANTS.length];
+    const target = variant === "sharedUnsafe" ? predNames[raw.negRefuseKind % predNames.length] : oraRef(raw.negRefuseKind);
+    constraints[constraints.length - 1].goal.push({ kind: "refuse", variant, target });
+  }
+  // gap 2: a count in a forall (over an oracle; the binding is the forall's S)
+  if (featuresOn && on(raw.countForallOn, WEIGHTS.countForall) && raw.keepForced[8] !== null) {
+    const c = constraints[raw.countForallOn % constraints.length];
+    c.forall.push({ kind: "count", over: "oracle", target: oraRef(raw.countForallOn), op: ">=", K: 1 + (raw.countForallOn % 2) });
+  }
+  // gap 3: a count over a choose label; often a second one over another label (aux sharing)
+  if (choose && on(raw.countChooseOn, WEIGHTS.countChoose) && raw.keepForced[9] !== null) {
+    const b = raw.countChooseBits;
+    const mk = (li) => ({ kind: "count", over: "choose", target: choose.name, label: choose.labels[li % choose.labels.length], op: [">=", "<"][b % 2], K: 1 + (Math.floor(b / 2) % 2) });
+    const grp = b % 3 === 0 && plainRules.length ? plainRules[b % plainRules.length].body : constraints[b % constraints.length].goal;
+    grp.push(mk(b));
+    if (on(b, WEIGHTS.countChoosePair)) constraints[(b + 1) % constraints.length].goal.push(mk(b + 1));
+  }
+  // gap 3: a forall over a choose label
+  if (choose && on(raw.chooseForallOn, WEIGHTS.chooseForall)) {
+    const c = constraints[raw.chooseForallOn % constraints.length];
+    c.forall.push({ kind: "choose", name: choose.name, label: choose.labels[raw.chooseForallOn % choose.labels.length], neg: false });
+  }
+
   // atoms + answers; cap free <= 10
   const atoms = [];
   for (const o of oracles) for (const s of sections) atoms.push(`w::${o}(d,${s})`);
@@ -292,6 +354,16 @@ function materialize(raw) {
     totalMask: raw.totalMask, midMask: raw.midMask,
   });
 }
+
+/** Gap-1 negation forms (generator-coverage-audit); renderRaw gives the text of each. */
+export const NEGX_VARIANTS = ["anyPred", "selected", "child", "heading", "childNot", "countLeaf", "childNot", "anyPred"]; // the lifting-sensitive forms twice
+/** Forms the checker must refuse, with the refusal it must give. */
+export const REFUSE_VARIANTS = ["oracleLocal", "sharedUnsafe", "nestedCount"];
+export const REFUSAL_REASON = {
+  oracleLocal: /not over oracle \S+ needs every argument bound/,
+  sharedUnsafe: /is unsafe; negation needs it bound/,
+  nestedCount: /count does not nest/,
+};
 
 const predIndex = (name) => { const m = /^p(\d+)$/.exec(name); return m ? Number(m[1]) : null; };
 const SPECIAL_HEADS = new Set(["anc", "loop", "loop2"]);
@@ -359,6 +431,21 @@ export function normalize(g0) {
       return { ...l, name: g.choose.name, label: labs.includes(l.label) ? l.label : labs[Math.abs(hash(l.label)) % labs.length] };
     }
     if (l.kind === "depthBind") return l;
+    const oraOf = (t) => (ora.includes(t) ? t : ora[(Number(String(t).slice(1)) - 1 || 0) % ora.length]);
+    if (l.kind === "negx") {
+      const overPred = l.variant === "anyPred" || (l.variant === "childNot" && predIndex(l.target) !== null);
+      if (l.variant === "childNot" && !overPred) return { ...l, target: oraOf(l.target) };
+      if (!overPred) { const { target, ...rest } = l; return rest; } // a base-fact form: no target
+      const ok = head === null ? pPool : allowed(head);
+      if (ok.includes(l.target)) return l;
+      if (ok.length) return { ...l, target: pick(ok, l.target) };
+      // no stratified predicate to negate here: an oracle (childNot) or a base fact (anyPred)
+      return l.variant === "childNot" ? { ...l, target: ora[0] } : { kind: "negx", variant: "selected", anon: !!l.anon };
+    }
+    if (l.kind === "refuse") {
+      if (l.variant === "sharedUnsafe") return { ...l, target: pPool.includes(l.target) ? l.target : pPool.length ? pick(pPool, l.target) : null };
+      return { ...l, target: oraOf(l.target) };
+    }
     if (l.kind === "count") {
       if (l.over === "pred") {
         // correlated counts appear in constraint goals only
@@ -367,7 +454,12 @@ export function normalize(g0) {
         const { bind, ...rest } = l;
         return { ...rest, over: "oracle", target: ora[0] };
       }
-      const target = ora.includes(l.target) ? l.target : ora[(Number(String(l.target).slice(1)) - 1 || 0) % ora.length];
+      if (l.over === "choose") {
+        if (!g.choose) { const { label, ...rest } = l; return { ...rest, over: "oracle", target: ora[0] }; }
+        const labs = g.choose.labels;
+        return { ...l, target: g.choose.name, label: labs.includes(l.label) ? l.label : labs[Math.abs(hash(l.label)) % labs.length] };
+      }
+      const target = oraOf(l.target);
       const negTarget = l.negTarget && ora.includes(l.negTarget) ? l.negTarget
         : l.negInside ? (ora.length > 1 ? ora[1] : ora[0]) : undefined;
       return {
@@ -430,11 +522,17 @@ export function reaches(g, hit) {
     if (seen.has(name)) return false;
     seen.add(name);
     if (hit(name)) return true;
-    return g.rules.filter((r) => r.head === name && !r.special).some((r) => r.body.some((l) =>
-      (l.kind === "atom" && visit(l.name)) || (l.kind === "count" && l.over === "pred" && visit(l.target))));
+    return g.rules.filter((r) => r.head === name && !r.special).some((r) => r.body.some((l) => refersTo(l, visit)));
   };
-  return g.constraints.some((c) => [...c.forall, ...c.goal].some((l) =>
-    (l.kind === "atom" && visit(l.name)) || (l.kind === "count" && l.over === "pred" && visit(l.target))));
+  return g.constraints.some((c) => [...c.forall, ...c.goal].some((l) => refersTo(l, visit)));
+}
+
+/** Does literal `l` refer to a predicate for which `visit` holds? */
+function refersTo(l, visit) {
+  if (l.kind === "atom") return visit(l.name);
+  if (l.kind === "count" && l.over === "pred") return visit(l.target);
+  if ((l.kind === "negx" || l.kind === "refuse") && l.target) return visit(l.target);
+  return false;
 }
 
 function hash(s) {
@@ -461,6 +559,9 @@ export function isValid(g0) {
       if (!g.choose.labels.includes(l.label)) return `${where}: dangling label ${l.label}`;
     }
     if (l.kind === "count" && l.over === "oracle" && !ora.has(l.target)) return `${where}: dangling count oracle ${l.target}`;
+    if (l.kind === "count" && l.over === "choose" && (!g.choose || !g.choose.labels.includes(l.label))) return `${where}: bad choose count ${l.label}`;
+    if ((l.kind === "negx" || l.kind === "refuse") && l.target && !defined.has(l.target)) return `${where}: dangling negated ${l.target}`;
+    if (l.kind === "negx" && l.target && head && predIndex(head) !== null && predIndex(l.target) !== null && predIndex(l.target) >= predIndex(head)) return `${where}: unstratified ${l.target}`;
     if (l.kind === "count" && l.over === "pred" && (head !== null || !heads.has(l.target))) return `${where}: bad correlated count ${l.target}`;
     return null;
   };
@@ -509,6 +610,16 @@ export function featureFlags(g) {
     countSiblingVar: lits.some((l) => l.kind === "count" && !!l.siblingVar),
     unboundMatches: lits.some((l) => l.kind === "matches" && l.unbound),
     loopReachable: !!g.loopReachable,
+    // generator-coverage-audit gaps (each has a floor in run-property.mjs)
+    negLocal: lits.some((l) => l.kind === "negx"),
+    negLocalPred: lits.some((l) => l.kind === "negx" && (l.variant === "anyPred" || l.variant === "childNot") && predIndex(l.target) !== null),
+    negBaseFact: lits.some((l) => l.kind === "negx" && ["selected", "child", "heading", "countLeaf"].includes(l.variant)),
+    negSiblingShared: lits.some((l) => l.kind === "negx" && l.variant === "childNot"),
+    refuseNegation: lits.some((l) => l.kind === "refuse" && l.variant !== "nestedCount"),
+    refuseNestedCount: lits.some((l) => l.kind === "refuse" && l.variant === "nestedCount"),
+    countForall: g.constraints.some((c) => c.forall.some((l) => l.kind === "count")),
+    countChoose: lits.some((l) => l.kind === "count" && l.over === "choose"),
+    chooseForall: g.constraints.some((c) => c.forall.some((l) => l.kind === "choose")),
   };
 }
 
@@ -554,7 +665,9 @@ function renderRaw(g) {
     seq += 1;
     const atom = l.over === "pred" ? `${l.target}(D, ${c})` : `${l.target}(D, ${c})`;
     let goal;
-    if (l.siblingVar) {
+    if (l.over === "choose") {
+      goal = `(core.section(D, ${c}, _), ${l.target}(D, ${c}, ${l.label}))`;
+    } else if (l.siblingVar) {
       const neg = l.negInside ? `, not ${l.negTarget ?? l.target}(D, ${c})` : "";
       goal = `(core.section(D, ${c}, _), core.depth(D, ${c}, ${l.siblingVar})${neg})`;
     } else {
@@ -577,6 +690,35 @@ function renderRaw(g) {
       case "cmp": { const d = `Dep${seq++}`; return `core.depth(D, ${v}, ${d}), ${d} ${l.op} ${l.K}`; }
       case "depthBind": return `core.depth(D, ${v}, ${l.varName})`;
       case "count": return countText(l, v, anchors);
+      case "negx": {
+        const z = `Z${seq++}`;
+        switch (l.variant) {
+          case "anyPred": return `not ${l.target}(D, ${l.anon ? "_" : z})`;
+          case "selected": return `not core.selected(D, ${l.anon ? "_" : v})`;
+          case "child": return `not core.section(D, ${z}, ${v})`;
+          case "heading": return `not core.heading(D, ${v}, ${z})`;
+          case "childNot": return `core.section(D, ${z}, ${v}), not ${l.target}(D, ${z})`;
+          case "countLeaf": {
+            const c = `C${seq}`, n = `N${seq}`;
+            seq += 1;
+            return `count(${c}, (core.section(D, ${c}, _), not core.section(D, ${z}, ${c})), ${n}), ${n} ${l.op} ${l.K}`;
+          }
+          default: throw new Error(`unknown negx variant ${l.variant}`);
+        }
+      }
+      case "refuse": {
+        const z = `Z${seq++}`;
+        switch (l.variant) {
+          case "oracleLocal": return `not ${l.target}(D, ${z})`;
+          case "sharedUnsafe": return `not ${l.target ? `${l.target}(D, ${z})` : `core.selected(D, ${z})`}, core.section(D, ${z}, ${v})`;
+          case "nestedCount": {
+            const c = `C${seq}`, n = `N${seq}`, c2 = `C${seq + 1}`, m = `N${seq + 1}`;
+            seq += 2;
+            return `count(${c}, (core.section(D, ${c}, _), count(${c2}, (core.section(D, ${c2}, ${c}), ${l.target}(D, ${c2})), ${m}), ${m} >= 1), ${n}), ${n} >= 1`;
+          }
+          default: throw new Error(`unknown refuse variant ${l.variant}`);
+        }
+      }
       default: throw new Error(`unknown literal kind ${l.kind}`);
     }
   };
