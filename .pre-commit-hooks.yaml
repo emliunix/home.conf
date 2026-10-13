@@ -1,7 +1,10 @@
 - id: document-contracts
   name: document contracts
   language: node
-  entry: doc-verify check --staged --profile auto --format text --verbose
+  # Structural only: a commit asks no judge (offline, free, deterministic). A consumer that wants
+  # the judge at commit time sets `args` or runs `--profile promotion` in CI. Changed from `auto`
+  # 2026-10-14; consumers adapt (owner: we break, downstream plans its own fix).
+  entry: doc-verify check --staged --profile draft --format text --verbose
   pass_filenames: false
   files: '(^|/).+\.(md|ya?ml)$'
   require_serial: true
