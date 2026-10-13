@@ -13,6 +13,8 @@ module: |
 facts:
   - section(d, a, root)
 steps:
-  # Y is unbound when the negation is reached: the negated goal is not ground (§8) -> rejected.
+  # Y is local to the negation (existential: no child of X). Translate lifts it; accepted.
   - answers: {}
-    expect: {rejected: true}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: satisfied}]}
+      verdict: PASS

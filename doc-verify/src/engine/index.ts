@@ -45,6 +45,8 @@ export interface RunProgramInput {
   /** Runs only constraints without `profiles` or listing this profile. */
   profile?: string;
   cache?: OracleCache;
+  /** Override the default inference budget (tests inject a tiny limit). */
+  inferenceBudget?: number;
 }
 
 /** Loads and checks a module; a malformed module throws `ModuleError`. */
@@ -71,12 +73,14 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
   const store = new OracleStore();
   const requests: RequestRecord[] = [];
   let failure: EngineFailure | undefined;
-  let lastReport = await evalKernel(program, facts, store);
+  const budget = input.inferenceBudget ?? INFERENCE_BUDGET;
+  let lastReport = await evalKernel(program, facts, store, budget);
 
   for (let round = 1; round <= program.rounds && failure === undefined; round += 1) {
     if (lastReport.rejected) {
       throw new ModuleError([`kernel refused the module: ${lastReport.rejected}`]);
     }
+    if (lastReport.blocked || lastReport.resource) break;
     const demandKeys = lastReport.demand.prefix;
     if (demandKeys.length === 0) break;
     const demands = demandsFromKeys(demandKeys, program);
@@ -96,7 +100,7 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
         throw error;
       }
     }
-    lastReport = await evalKernel(program, facts, store);
+    lastReport = await evalKernel(program, facts, store, budget);
   }
 
   if (lastReport.rejected) {
@@ -104,6 +108,8 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
   }
   if (lastReport.blocked) {
     failure = { verdict: "BLOCKED", message: `kernel inference budget exceeded (${String(lastReport.budget)})` };
+  } else if (lastReport.resource) {
+    failure = { verdict: "BLOCKED", message: `kernel resource error (${lastReport.resource})` };
   }
 
   const findings: string[] = [];
@@ -122,7 +128,19 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
     }
   }
 
-  const constraints = constraintReports(program, lastReport, store);
+  const halted = lastReport.blocked !== undefined || lastReport.resource !== undefined;
+  const constraints = halted
+    ? program.constraints.map((constraint) => ({
+        id: constraint.id,
+        status: "undetermined" as const,
+        severity: constraint.severity,
+        weight: constraint.weight,
+        mode: constraint.mode,
+        population: 0,
+        certainPopulation: 0,
+        bindings: [],
+      }))
+    : constraintReports(program, lastReport, store);
   const { verdict, decidedBy } = decideVerdict(constraints, failure, program.warningThreshold);
   return {
     module: program.module,
@@ -141,7 +159,7 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
 }
 
 /** One fresh kernel instance per evaluation (round 7 finding 3). */
-async function evalKernel(program: Program, facts: FactTerm[], store: OracleStore) {
+async function evalKernel(program: Program, facts: FactTerm[], store: OracleStore, budget: number) {
   const text = translateProgram(program, facts);
   const kernel = await Kernel.create();
   try {
@@ -163,7 +181,7 @@ async function evalKernel(program: Program, facts: FactTerm[], store: OracleStor
     throw e;
   }
   kernel.setAnswers(answersFromStore(store));
-  return kernel.evaluate(program, { budget: INFERENCE_BUDGET });
+  return kernel.evaluate(program, { budget });
 }
 
 /** The rules whose predicates the given constraints reach, directly or through other rules. */

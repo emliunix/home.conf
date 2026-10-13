@@ -144,13 +144,18 @@ function mapNode(term: Term, store: OracleStore): ProofNode {
 }
 
 function mapProofTree(canon: string, constraint: Constraint, store: OracleStore, status: BindingStatus): ProofNode {
+  const empty = (note: string): ProofNode => ({
+    kind: "binding",
+    atom: `${constraint.id}: ${status}`,
+    children: [{ kind: "builtin", atom: note }],
+  });
   if (canon === "") {
-    return { kind: "binding", atom: `${constraint.id}: ${status}`, children: [] };
+    return empty("proof could not be built");
   }
   try {
     const term = readCanonical(canon);
     if (term.kind !== "compound" || term.functor !== "tree" || term.args.length < 3) {
-      return { kind: "binding", atom: `${constraint.id}: ${status}`, children: [] };
+      return empty("proof could not be built");
     }
     const forallT = term.args[0] as Term;
     const goalT = term.args[1] as Term;
@@ -180,7 +185,7 @@ function mapProofTree(canon: string, constraint: Constraint, store: OracleStore,
     }
     return { kind: "binding", atom: `${constraint.id}: ${status}`, children };
   } catch {
-    return { kind: "binding", atom: `${constraint.id}: ${status}`, children: [] };
+    return empty("proof could not be built");
   }
 }
 

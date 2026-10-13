@@ -289,7 +289,16 @@ export function translateProgram(program: TranslateProgram, facts: FactTerm[]): 
   const oracles = new Map(program.oracles.map((o) => [o.predicate, o]));
   const derived = new Set(program.rules.map((r) => r.predicate));
   const aux: string[] = [];
+  const auxByGoal = new Map<string, string>();
   const auxTables: string[] = [];
+  let negLift = 0;
+
+  /** True when every named variable in `term` is in `bound` (anonymous `_` is never bound). */
+  const groundFor = (term: Term, bound: Set<string>): boolean => {
+    if (term.kind === "var") return term.name !== "_" && bound.has(term.name);
+    if (term.kind === "compound") return term.args.every((a) => groundFor(a, bound));
+    return true;
+  };
 
   const literal = (lit: Literal, outerVars: Set<string>): string => {
     switch (lit.kind) {
@@ -302,6 +311,20 @@ export function translateProgram(program: TranslateProgram, facts: FactTerm[]): 
           const inputs = choose ? lit.args.slice(0, -1) : lit.args;
           const label = choose ? writeTerm((lit.args.at(-1) as Term)) : "holds";
           return `core_not_label(${call(lit.predicate, inputs)},${label})`;
+        }
+        // Local/anonymous vars in the negated call: lift to core_neg_k(Bound...) :- p(...).
+        if (!lit.args.every((a) => groundFor(a, outerVars))) {
+          const headVars = [...new Set(lit.args.flatMap((a) => [...variablesOf(a)]))].filter((n) => outerVars.has(n)).sort();
+          negLift += 1;
+          const name = `core_neg_${negLift}`;
+          const headArgs = headVars.map((n) => `_V_${n}`).join(",");
+          const head = headVars.length === 0 ? name : `${name}(${headArgs})`;
+          aux.push(`${head} :- ${call(lit.predicate, lit.args)}.`);
+          if (derived.has(lit.predicate)) {
+            auxTables.push(`${name}/${headVars.length}`);
+            return `core_tnot(${head})`;
+          }
+          return `core_naf(${head})`;
         }
         if (derived.has(lit.predicate)) return `core_tnot(${call(lit.predicate, lit.args)})`;
         return `core_naf(${call(lit.predicate, lit.args)})`;
@@ -319,11 +342,20 @@ export function translateProgram(program: TranslateProgram, facts: FactTerm[]): 
         const inner = new Set<string>();
         for (const g of lit.goal) for (const n of literalVars(g)) inner.add(n);
         const outer = [...inner].filter((n) => n !== v && outerVars.has(n)).sort();
-        const name = `core_aux_${aux.length + 1}`;
-        const head = `${name}(${[...outer, v].map((n) => `_V_${n}`).join(",")})`;
-        auxTables.push(`${name}/${outer.length + 1}`);
-        aux.push(`${head} :- ${lit.goal.map((g) => literal(g, new Set([...outer, v]))).join(", ")}.`);
-        return `core_count(_V_${v},${head},${writeTerm(lit.result)})`;
+        const params = [...outer, v];
+        const goalText = lit.goal.map((g) => literal(g, new Set(params))).join(", ");
+        // Identical count goals (up to renaming the head's variables) share one aux predicate, so
+        // two counts of the same goal have the same undetermined instances (core_same_count/2).
+        const canonical = params.reduce((t, n, i) => t.replace(new RegExp(`\\b_V_${n}\\b`, "g"), `_P${i}`), goalText);
+        let name = auxByGoal.get(canonical);
+        const args = params.map((n) => `_V_${n}`).join(",");
+        if (name === undefined) {
+          name = `core_aux_${auxByGoal.size + 1}`;
+          auxByGoal.set(canonical, name);
+          auxTables.push(`${name}/${params.length}`);
+          aux.push(`${name}(${args}) :- ${goalText}.`);
+        }
+        return `core_count(_V_${v},${name}(${args}),${writeTerm(lit.result)})`;
       }
     }
   };

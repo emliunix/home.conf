@@ -76,21 +76,32 @@ ${PURPOSE_ORACLE}constraints:
 
 describe("stratified negation, recursion and count", () => {
   it("evaluates negation over a lower stratum with no judge call", async () => {
-    // Model § static-nonground-not: `not core.child(D, S, _)` is refused; ground via a
-    // lower-stratum rule (has_child) instead of the design-04 bare form.
     const program = moduleText(`rules:
   has_child(D, S): core.child(D, S, _)
   leaf(D, S): core.section(D, S, _), not has_child(D, S)
+  bare(D, S): core.section(D, S, _), not core.child(D, S, _)
 constraints:
   top-level-is-leaf:
     forall: core.section(D, S, _), core.depth(D, S, 2)
-    require: leaf(D, S)
+    require: leaf(D, S), bare(D, S)
     severity: error
 `);
     const { backend, requests } = scriptedJudge(() => ({ value: "unknown" }));
     const report = await run(program, backend);
     expect(requests).toHaveLength(0);
     expect(statuses(report, "top-level-is-leaf")).toEqual({ "problem-statement": "satisfied", scope: "violated", rationale: "satisfied" });
+  });
+
+  it("refuses unsafe negation where an unbound variable is shared with other literals", async () => {
+    const program = moduleText(`rules:
+  bad(D, S, Y): core.section(D, S, _), not core.child(D, S, Y), core.heading(D, Y, _)
+constraints:
+  c1:
+    forall: core.section(D, S, _)
+    require: bad(D, S, Y)
+    severity: error
+`);
+    await expect(run(program, scriptedJudge(() => ({ value: "unknown" })).backend)).rejects.toThrow(/shared with other literals|unsafe/);
   });
 
   it("computes a recursive closure and counts it", async () => {

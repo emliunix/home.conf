@@ -127,7 +127,14 @@ core_count(V, G, N) :-
     ),
     % A result already bound (a constant, or a variable an earlier count bound) is compared, not
     % unified: an interval would fail unification where the comparison is u (gate-ledger item 7).
-    (   var(N) -> N = M ; core_cmp(=:=, N, M) ).
+    (   var(N) -> N = M
+    ;   core_same_count(N, M) -> true
+    ;   core_cmp(=:=, N, M)
+    ).
+
+% Two intervals over the same undetermined instances count the same goal (the instances carry
+% the goal), so they are equal in every completion: t, where the interval comparison alone says u.
+core_same_count(core_iv(L, H, U1), core_iv(L, H, U2)) :- U1 \== [], U1 =@= U2.
 
 core_bounds(N, N, N, []) :- integer(N), !.
 core_bounds(core_iv(L, H, Us), L, H, Us).
@@ -597,13 +604,21 @@ core_prove_goal(_G, f, _, []) :- !.
 % Do not call_delays the whole body again: status already decided the binding, and
 % re-running would re-execute injected side effects (boundary E14's open/3).
 core_prove_goal(core_forall(Id, Vals), Mode, Seen, Kids) :- !,
-    once((clause(core_forall(Id, Vals), Body), core_prove(Body, Mode, Seen, Kids))).
+    (   once((clause(core_forall(Id, Vals), Body), core_prove(Body, Mode, Seen, Kids)))
+    ->  true
+    ;   Kids = [builtin('proof could not be built')]
+    ).
 core_prove_goal(core_goal(Id, Vals), Mode, Seen, Kids) :- !,
-    once((clause(core_goal(Id, Vals), Body), core_prove(Body, Mode, Seen, Kids))).
+    (   once((clause(core_goal(Id, Vals), Body), core_prove(Body, Mode, Seen, Kids)))
+    ->  true
+    ;   Kids = [builtin('proof could not be built')]
+    ).
 core_prove_goal(G, Mode, Seen, Kids) :-
     (   Mode == t -> call_delays(G, true) ; call_delays(G, _) ),
-    once(core_prove(G, Mode, Seen, Kids0)),
-    Kids = Kids0.
+    (   once(core_prove(G, Mode, Seen, Kids0))
+    ->  Kids = Kids0
+    ;   Kids = [builtin('proof could not be built')]
+    ).
 
 % core_prove(+Goal, +Mode, +Seen, -Kids): Kids is a list of proof nodes for Goal's body.
 core_prove(true, _, _, []) :- !.
@@ -620,11 +635,30 @@ core_prove(core_not_label(A, _), _Mode, _, [not(N)]) :- !,
 core_prove(core_choose(A, _, _), Mode, Seen, Kids) :- !,
     core_prove(core_label(A, _), Mode, Seen, Kids).
 core_prove(core_tnot(G), Mode, Seen, [not(Child)]) :- !,
-    core_prove_one(G, Mode, Seen, Child).
+    core_prove_negated(G, Mode, Seen, Child).
 core_prove(core_naf(G), Mode, Seen, [not(Child)]) :- !,
-    core_prove_one(G, Mode, Seen, Child).
+    core_prove_negated(G, Mode, Seen, Child).
 core_prove(\+ G, Mode, Seen, [not(Child)]) :- !,
-    core_prove_one(G, Mode, Seen, Child).
+    core_prove_negated(G, Mode, Seen, Child).
+
+% A `not G` node follows G's status: f → certain not (name G only); u → possible, with G's
+% subtree when it builds; never call_delays(G, true) which would fail and drop the proof.
+core_prove_negated(G, _Mode, Seen, Node) :-
+    core_lit_text(G, Text),
+    (   \+ call_delays(G, _)
+    ->  Node = builtin(Text)
+    ;   call_delays(G, true)
+    ->  Node = builtin(Text)
+    ;   catch(
+            ( core_prove(G, u, Seen, Kids),
+              ( Kids = [One] -> Node = One ; Node = rule(Text, '', Kids) )
+            ),
+            _,
+            fail
+        )
+    ->  true
+    ;   Node = builtin(Text)
+    ).
 core_prove(memberchk(X, L), _, _, [builtin(T)]) :- !,
     core_lit_text(memberchk(X, L), T).
 core_prove(core_matches(X, R), _, _, [builtin(T)]) :- !, core_lit_text(core_matches(X, R), T).
