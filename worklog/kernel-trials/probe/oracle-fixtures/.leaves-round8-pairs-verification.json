@@ -1,0 +1,1505 @@
+{
+ "ledger": "round8-pairs-verification",
+ "runs": [
+  {
+   "run": "fixtures:module_verification_pages_pairs/good",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/good",
+   "source": "module_verification_pages_pairs/good",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "batched",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "batched"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4689.4169999999995,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 1,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 546
+   },
+   "split": false,
+   "splits": [],
+   "atomic": null,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 2,
+     "stateBytes": 830,
+     "ms": 703.2389999999996,
+     "keys": [
+      "current_not_history-d1fdd5b1e2d5",
+      "pairs_every_property-f5a9fd468d85"
+     ],
+     "oracles": [
+      "current_not_history",
+      "pairs_every_property"
+     ],
+     "mixed": true
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_verification_pages_pairs/good",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/good",
+     "source": "module_verification_pages_pairs/good",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "batched",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-verification.current_not_history(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "current_not_history-d1fdd5b1e2d5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.03,
+      0.1
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 2,
+     "requestStateBytes": 830,
+     "followup": false,
+     "bytes": 273,
+     "cacheHit": false,
+     "textHash": "9e35773ba09ed701",
+     "questionHash": "5e73f981c6579bde",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_verification_pages_pairs/good",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/good",
+     "source": "module_verification_pages_pairs/good",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "batched",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "PASS",
+     "oracle": "pairs_every_property",
+     "atom": "doc-verify.module-verification.pairs_every_property(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "pairs_every_property-f5a9fd468d85",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.88,
+      0.02,
+      0.1
+     ],
+     "p": 0.88,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 1,
+     "requestSize": 2,
+     "requestStateBytes": 830,
+     "followup": false,
+     "bytes": 273,
+     "cacheHit": false,
+     "textHash": "9e35773ba09ed701",
+     "questionHash": "c12d965689452e8d",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T01:47:16.476Z"
+  },
+  {
+   "run": "fixtures:module_verification_pages_pairs/good",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/good",
+   "source": "module_verification_pages_pairs/good",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5071.436874999999,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 546
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 462,
+     "ms": 676.8582499999993,
+     "keys": [
+      "current_not_history-d1fdd5b1e2d5"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 463,
+     "ms": 426.85704199999964,
+     "keys": [
+      "pairs_every_property-f5a9fd468d85"
+     ],
+     "oracles": [
+      "pairs_every_property"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_verification_pages_pairs/good",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/good",
+     "source": "module_verification_pages_pairs/good",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-verification.current_not_history(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "current_not_history-d1fdd5b1e2d5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.83,
+      0.03,
+      0.14
+     ],
+     "p": 0.83,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 462,
+     "followup": false,
+     "bytes": 273,
+     "cacheHit": false,
+     "textHash": "9e35773ba09ed701",
+     "questionHash": "5e73f981c6579bde",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_verification_pages_pairs/good",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/good",
+     "source": "module_verification_pages_pairs/good",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "PASS",
+     "oracle": "pairs_every_property",
+     "atom": "doc-verify.module-verification.pairs_every_property(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "pairs_every_property-f5a9fd468d85",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.82,
+      0.05,
+      0.13
+     ],
+     "p": 0.82,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 463,
+     "followup": false,
+     "bytes": 273,
+     "cacheHit": false,
+     "textHash": "9e35773ba09ed701",
+     "questionHash": "c12d965689452e8d",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T01:47:21.671Z"
+  },
+  {
+   "run": "fixtures:module_verification_pages_pairs/good",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/good",
+   "source": "module_verification_pages_pairs/good",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4890.043749999999,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 546
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 462,
+     "ms": 429.6167499999974,
+     "keys": [
+      "current_not_history-d1fdd5b1e2d5"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 463,
+     "ms": 459.62625000000116,
+     "keys": [
+      "pairs_every_property-f5a9fd468d85"
+     ],
+     "oracles": [
+      "pairs_every_property"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_verification_pages_pairs/good",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/good",
+     "source": "module_verification_pages_pairs/good",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-verification.current_not_history(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "current_not_history-d1fdd5b1e2d5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.82,
+      0.03,
+      0.15
+     ],
+     "p": 0.82,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 462,
+     "followup": false,
+     "bytes": 273,
+     "cacheHit": false,
+     "textHash": "9e35773ba09ed701",
+     "questionHash": "5e73f981c6579bde",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_verification_pages_pairs/good",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/good",
+     "source": "module_verification_pages_pairs/good",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "PASS",
+     "oracle": "pairs_every_property",
+     "atom": "doc-verify.module-verification.pairs_every_property(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "pairs_every_property-f5a9fd468d85",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.81,
+      0.04,
+      0.15
+     ],
+     "p": 0.81,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 463,
+     "followup": false,
+     "bytes": 273,
+     "cacheHit": false,
+     "textHash": "9e35773ba09ed701",
+     "questionHash": "c12d965689452e8d",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T01:47:26.562Z"
+  },
+  {
+   "run": "fixtures:module_verification_pages_pairs/good",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/good",
+   "source": "module_verification_pages_pairs/good",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 2,
+   "shape": "batched",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "batched"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4488.574249999998,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 1,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 546
+   },
+   "split": false,
+   "splits": [],
+   "atomic": null,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 2,
+     "stateBytes": 830,
+     "ms": 556.2072499999995,
+     "keys": [
+      "current_not_history-d1fdd5b1e2d5",
+      "pairs_every_property-f5a9fd468d85"
+     ],
+     "oracles": [
+      "current_not_history",
+      "pairs_every_property"
+     ],
+     "mixed": true
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_verification_pages_pairs/good",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/good",
+     "source": "module_verification_pages_pairs/good",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "batched",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-verification.current_not_history(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "current_not_history-d1fdd5b1e2d5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.88,
+      0.03,
+      0.09
+     ],
+     "p": 0.88,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 2,
+     "requestStateBytes": 830,
+     "followup": false,
+     "bytes": 273,
+     "cacheHit": false,
+     "textHash": "9e35773ba09ed701",
+     "questionHash": "5e73f981c6579bde",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_verification_pages_pairs/good",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/good",
+     "source": "module_verification_pages_pairs/good",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "batched",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "PASS",
+     "oracle": "pairs_every_property",
+     "atom": "doc-verify.module-verification.pairs_every_property(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "pairs_every_property-f5a9fd468d85",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.02,
+      0.11
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 1,
+     "requestSize": 2,
+     "requestStateBytes": 830,
+     "followup": false,
+     "bytes": 273,
+     "cacheHit": false,
+     "textHash": "9e35773ba09ed701",
+     "questionHash": "c12d965689452e8d",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T01:47:31.103Z"
+  },
+  {
+   "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/seeded-unpaired",
+   "source": "module_verification_pages_pairs/seeded-unpaired",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "batched",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "batched"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4693.590709,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 1,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 712
+   },
+   "split": false,
+   "splits": [],
+   "atomic": null,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "NO-GO"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 2,
+     "stateBytes": 1000,
+     "ms": 679.593665999997,
+     "keys": [
+      "current_not_history-d1fdd5b1e2d5",
+      "pairs_every_property-f5a9fd468d85"
+     ],
+     "oracles": [
+      "current_not_history",
+      "pairs_every_property"
+     ],
+     "mixed": true
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/seeded-unpaired",
+     "source": "module_verification_pages_pairs/seeded-unpaired",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "batched",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "NO-GO",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-verification.current_not_history(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "current_not_history-d1fdd5b1e2d5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.77,
+      0.11,
+      0.12
+     ],
+     "p": 0.77,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 2,
+     "requestStateBytes": 1000,
+     "followup": false,
+     "bytes": 356,
+     "cacheHit": false,
+     "textHash": "58973528e295f039",
+     "questionHash": "5e73f981c6579bde",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/seeded-unpaired",
+     "source": "module_verification_pages_pairs/seeded-unpaired",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "batched",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "NO-GO",
+     "oracle": "pairs_every_property",
+     "atom": "doc-verify.module-verification.pairs_every_property(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "pairs_every_property-f5a9fd468d85",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.41,
+      0.5700000000000001,
+      0.02
+     ],
+     "p": 0.5700000000000001,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 1,
+     "requestSize": 2,
+     "requestStateBytes": 1000,
+     "followup": false,
+     "bytes": 356,
+     "cacheHit": false,
+     "textHash": "58973528e295f039",
+     "questionHash": "c12d965689452e8d",
+     "expect": "fails",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T01:47:39.819Z"
+  },
+  {
+   "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/seeded-unpaired",
+   "source": "module_verification_pages_pairs/seeded-unpaired",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5112.684625000002,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 712
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "NO-GO"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 547,
+     "ms": 650.2074580000044,
+     "keys": [
+      "current_not_history-d1fdd5b1e2d5"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 548,
+     "ms": 491.8585419999945,
+     "keys": [
+      "pairs_every_property-f5a9fd468d85"
+     ],
+     "oracles": [
+      "pairs_every_property"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/seeded-unpaired",
+     "source": "module_verification_pages_pairs/seeded-unpaired",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "NO-GO",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-verification.current_not_history(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "current_not_history-d1fdd5b1e2d5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.69,
+      0.16,
+      0.15
+     ],
+     "p": 0.69,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 547,
+     "followup": false,
+     "bytes": 356,
+     "cacheHit": false,
+     "textHash": "58973528e295f039",
+     "questionHash": "5e73f981c6579bde",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/seeded-unpaired",
+     "source": "module_verification_pages_pairs/seeded-unpaired",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "NO-GO",
+     "oracle": "pairs_every_property",
+     "atom": "doc-verify.module-verification.pairs_every_property(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "pairs_every_property-f5a9fd468d85",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.44,
+      0.54,
+      0.02
+     ],
+     "p": 0.54,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 548,
+     "followup": false,
+     "bytes": 356,
+     "cacheHit": false,
+     "textHash": "58973528e295f039",
+     "questionHash": "c12d965689452e8d",
+     "expect": "fails",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T01:47:44.980Z"
+  },
+  {
+   "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/seeded-unpaired",
+   "source": "module_verification_pages_pairs/seeded-unpaired",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4629.146333999997,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 712
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "NO-GO"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 547,
+     "ms": 423.84604099999706,
+     "keys": [
+      "current_not_history-d1fdd5b1e2d5"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 548,
+     "ms": 441.1233330000032,
+     "keys": [
+      "pairs_every_property-f5a9fd468d85"
+     ],
+     "oracles": [
+      "pairs_every_property"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/seeded-unpaired",
+     "source": "module_verification_pages_pairs/seeded-unpaired",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "NO-GO",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-verification.current_not_history(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "current_not_history-d1fdd5b1e2d5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.68,
+      0.14,
+      0.18
+     ],
+     "p": 0.68,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 547,
+     "followup": false,
+     "bytes": 356,
+     "cacheHit": false,
+     "textHash": "58973528e295f039",
+     "questionHash": "5e73f981c6579bde",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/seeded-unpaired",
+     "source": "module_verification_pages_pairs/seeded-unpaired",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "NO-GO",
+     "oracle": "pairs_every_property",
+     "atom": "doc-verify.module-verification.pairs_every_property(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "pairs_every_property-f5a9fd468d85",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.45,
+      0.53,
+      0.02
+     ],
+     "p": 0.53,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 548,
+     "followup": false,
+     "bytes": 356,
+     "cacheHit": false,
+     "textHash": "58973528e295f039",
+     "questionHash": "c12d965689452e8d",
+     "expect": "fails",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T01:47:49.610Z"
+  },
+  {
+   "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/seeded-unpaired",
+   "source": "module_verification_pages_pairs/seeded-unpaired",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 2,
+   "shape": "batched",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "batched"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 4249.512584000004,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 1,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 712
+   },
+   "split": false,
+   "splits": [],
+   "atomic": null,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "NO-GO"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 2,
+     "stateBytes": 1000,
+     "ms": 447.98041699999885,
+     "keys": [
+      "current_not_history-d1fdd5b1e2d5",
+      "pairs_every_property-f5a9fd468d85"
+     ],
+     "oracles": [
+      "current_not_history",
+      "pairs_every_property"
+     ],
+     "mixed": true
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/seeded-unpaired",
+     "source": "module_verification_pages_pairs/seeded-unpaired",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "batched",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "NO-GO",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-verification.current_not_history(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "current_not_history-d1fdd5b1e2d5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.77,
+      0.1,
+      0.13
+     ],
+     "p": 0.77,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 2,
+     "requestStateBytes": 1000,
+     "followup": false,
+     "bytes": 356,
+     "cacheHit": false,
+     "textHash": "58973528e295f039",
+     "questionHash": "5e73f981c6579bde",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_verification_pages_pairs/seeded-unpaired",
+     "mode": "fixtures",
+     "fixture": "module_verification_pages_pairs/seeded-unpaired",
+     "source": "module_verification_pages_pairs/seeded-unpaired",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "batched",
+     "document": "docs/modules/_fixtures/verification.md",
+     "verdict": "NO-GO",
+     "oracle": "pairs_every_property",
+     "atom": "doc-verify.module-verification.pairs_every_property(docs/modules/_fixtures/verification.md, acme-widget--verification)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--verification",
+     "origRowId": "",
+     "key": "pairs_every_property-f5a9fd468d85",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.47,
+      0.51,
+      0.02
+     ],
+     "p": 0.51,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 1,
+     "requestSize": 2,
+     "requestStateBytes": 1000,
+     "followup": false,
+     "bytes": 356,
+     "cacheHit": false,
+     "textHash": "58973528e295f039",
+     "questionHash": "c12d965689452e8d",
+     "expect": "fails",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T01:47:53.910Z"
+  },
+  {
+   "run": "fixtures:module_verification_pages_pairs/gross",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/gross",
+   "source": "module_verification_pages_pairs/gross",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "batched",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "batched"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 3698.133542000003,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": null,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T01:48:01.340Z"
+  },
+  {
+   "run": "fixtures:module_verification_pages_pairs/gross",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/gross",
+   "source": "module_verification_pages_pairs/gross",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 3666.7204580000034,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T01:48:05.065Z"
+  },
+  {
+   "run": "fixtures:module_verification_pages_pairs/gross",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/gross",
+   "source": "module_verification_pages_pairs/gross",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 3766.156584000004,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T01:48:08.833Z"
+  },
+  {
+   "run": "fixtures:module_verification_pages_pairs/gross",
+   "mode": "fixtures",
+   "fixture": "module_verification_pages_pairs/gross",
+   "source": "module_verification_pages_pairs/gross",
+   "set": "module_verification_pages_pairs",
+   "ledger": "round8-pairs-verification",
+   "arm": "normal",
+   "repeat": 2,
+   "shape": "batched",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/module-verification.yaml",
+     "request_shape": "batched"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 3898.3693749999948,
+   "cost": {
+    "main": 0,
+    "followups": 0,
+    "requests": 0,
+    "asked": 0,
+    "worst": 0,
+    "bytes": 0
+   },
+   "split": false,
+   "splits": [],
+   "atomic": null,
+   "verdicts": {
+    "docs/modules/_fixtures/verification.md": "NO-GO"
+   },
+   "requests": [],
+   "leaves": [],
+   "at": "2026-10-13T01:48:12.783Z"
+  }
+ ]
+}

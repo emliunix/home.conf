@@ -1,0 +1,3825 @@
+{
+ "ledger": "round10-goal",
+ "runs": [
+  {
+   "run": "real-cells:labels-r10.yaml",
+   "mode": "real-cells",
+   "fixture": "labels-r10.yaml",
+   "source": "labels-r10.yaml",
+   "set": null,
+   "ledger": "round10-goal",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": "labels-r10.yaml",
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/goal.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:artifact",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/module.yaml",
+     "request_shape": "per-atom"
+    }
+   ],
+   "wall_ms": 14489.061125,
+   "cost": {
+    "main": 30,
+    "followups": 0,
+    "requests": 30,
+    "asked": 30,
+    "worst": 30,
+    "bytes": 23118
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "requests": 9
+    },
+    {
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "requests": 8
+    },
+    {
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "requests": 7
+    },
+    {
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "requests": 6
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "goals/01-document-verification-and-skill-transfer.md": "PASS",
+    "goals/02-companion-driven-document-verification.md": "NO-GO",
+    "goals/03-modular-verification-language.md": "NO-GO",
+    "goals/04-trusted-kernel.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 3512,
+     "ms": 542.8232080000007,
+     "keys": [
+      "coverage_complete-8bc232103f7b"
+     ],
+     "oracles": [
+      "coverage_complete"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 493,
+     "ms": 321.47729100000015,
+     "keys": [
+      "evidence_reasons-68461cc13ea6"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 2,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 612,
+     "ms": 365.6330419999995,
+     "keys": [
+      "evidence_reasons-86362616eea2"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 3,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 533,
+     "ms": 307.59850000000006,
+     "keys": [
+      "evidence_reasons-c714526ea674"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 4,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 567,
+     "ms": 309.0737909999998,
+     "keys": [
+      "evidence_reasons-a2e7bea9eee2"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 5,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 507,
+     "ms": 328.97229199999947,
+     "keys": [
+      "evidence_reasons-7ef251cbbffe"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 6,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 520,
+     "ms": 354.01637500000015,
+     "keys": [
+      "evidence_reasons-ae1eac377ff8"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 7,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 484,
+     "ms": 320.5852500000001,
+     "keys": [
+      "evidence_reasons-4d9d46b079cc"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 8,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 302,
+     "ms": 326.28308300000026,
+     "keys": [
+      "evidence_reasons-3d249e961197"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 9,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 5182,
+     "ms": 323.88325000000077,
+     "keys": [
+      "coverage_complete-454295c77c8e"
+     ],
+     "oracles": [
+      "coverage_complete"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 10,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 278,
+     "ms": 653.52225,
+     "keys": [
+      "evidence_reasons_required-bf27b6e11b44"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 11,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 290,
+     "ms": 319.2077909999989,
+     "keys": [
+      "evidence_reasons_required-9629a35478c6"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 12,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 277,
+     "ms": 296.87283299999945,
+     "keys": [
+      "evidence_reasons_required-062073f71ab0"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 13,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 304,
+     "ms": 337.1414160000004,
+     "keys": [
+      "evidence_reasons_required-ba93a76f7608"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 14,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 302,
+     "ms": 341.83941700000105,
+     "keys": [
+      "evidence_reasons_required-461219f9072a"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 15,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 331,
+     "ms": 301.9448339999999,
+     "keys": [
+      "evidence_reasons_required-75ce126fdd31"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 16,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 329,
+     "ms": 307.63524999999936,
+     "keys": [
+      "evidence_reasons_required-c4cddf9072fe"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 17,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 3170,
+     "ms": 329.9400830000013,
+     "keys": [
+      "coverage_complete-a9c902dddae8"
+     ],
+     "oracles": [
+      "coverage_complete"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 18,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 304,
+     "ms": 294.6929999999993,
+     "keys": [
+      "evidence_reasons_required-f4bdcaf2f790"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 19,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 300,
+     "ms": 300.8464589999985,
+     "keys": [
+      "evidence_reasons_required-8085138104a7"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 20,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 328,
+     "ms": 306.02404099999876,
+     "keys": [
+      "evidence_reasons_required-2c705ed66596"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 21,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 316,
+     "ms": 328.92875000000095,
+     "keys": [
+      "evidence_reasons_required-298a66ccdaa2"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 22,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 371,
+     "ms": 323.3437909999993,
+     "keys": [
+      "evidence_reasons_required-bc5dec30ee0d"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 23,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 295,
+     "ms": 315.53516599999966,
+     "keys": [
+      "evidence_reasons_required-9afd395fc9ba"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 24,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 4931,
+     "ms": 333.4215000000004,
+     "keys": [
+      "coverage_complete-1ce4d5c8304f"
+     ],
+     "oracles": [
+      "coverage_complete"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 25,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 885,
+     "ms": 286.0289159999993,
+     "keys": [
+      "evidence_reasons-1e8aebfec14b"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 26,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 732,
+     "ms": 327.71875,
+     "keys": [
+      "evidence_reasons-59c2f856b78a"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 27,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 716,
+     "ms": 294.68933300000026,
+     "keys": [
+      "evidence_reasons-c5bdfd1b2ecd"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 28,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 858,
+     "ms": 301.1737910000011,
+     "keys": [
+      "evidence_reasons-d5922cf54013"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 29,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 821,
+     "ms": 304.5519170000007,
+     "keys": [
+      "evidence_reasons-e9957c49b44c"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "coverage_complete",
+     "atom": "round4.required_cells.coverage_complete(goals/01-document-verification-and-skill-transfer.md, [user-requirements-frozen-root, ac-coverage])",
+     "row": "",
+     "rowId": "",
+     "section": "",
+     "origRowId": "",
+     "key": "coverage_complete-8bc232103f7b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.8099999999999999,
+      0.17,
+      0.02
+     ],
+     "p": 0.8099999999999999,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 3512,
+     "followup": false,
+     "bytes": 3232,
+     "cacheHit": false,
+     "textHash": "2cc75e4c26abae22",
+     "questionHash": "dd39e75c7a13f339",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row1, Evidence)",
+     "row": "row1",
+     "rowId": "acceptance-evidence#row1",
+     "section": "",
+     "origRowId": "acceptance-evidence#row1",
+     "key": "evidence_reasons-68461cc13ea6",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 493,
+     "followup": false,
+     "bytes": 305,
+     "cacheHit": false,
+     "textHash": "b0b40704f0c5e409",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row2, Evidence)",
+     "row": "row2",
+     "rowId": "acceptance-evidence#row2",
+     "section": "",
+     "origRowId": "acceptance-evidence#row2",
+     "key": "evidence_reasons-86362616eea2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.04,
+      0
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 2,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 612,
+     "followup": false,
+     "bytes": 424,
+     "cacheHit": false,
+     "textHash": "df5f95bb4fec37e3",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row3, Evidence)",
+     "row": "row3",
+     "rowId": "acceptance-evidence#row3",
+     "section": "",
+     "origRowId": "acceptance-evidence#row3",
+     "key": "evidence_reasons-c714526ea674",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.84,
+      0.14,
+      0.02
+     ],
+     "p": 0.84,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 3,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 533,
+     "followup": false,
+     "bytes": 345,
+     "cacheHit": false,
+     "textHash": "cbcbeb619d44a450",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row4, Evidence)",
+     "row": "row4",
+     "rowId": "acceptance-evidence#row4",
+     "section": "",
+     "origRowId": "acceptance-evidence#row4",
+     "key": "evidence_reasons-a2e7bea9eee2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 4,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 567,
+     "followup": false,
+     "bytes": 379,
+     "cacheHit": false,
+     "textHash": "6d2c7dbfc5e2747f",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row5, Evidence)",
+     "row": "row5",
+     "rowId": "acceptance-evidence#row5",
+     "section": "",
+     "origRowId": "acceptance-evidence#row5",
+     "key": "evidence_reasons-7ef251cbbffe",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.99,
+      0.01,
+      0
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 5,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 507,
+     "followup": false,
+     "bytes": 319,
+     "cacheHit": false,
+     "textHash": "0a38a5971a5ea7fb",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row6, Evidence)",
+     "row": "row6",
+     "rowId": "acceptance-evidence#row6",
+     "section": "",
+     "origRowId": "acceptance-evidence#row6",
+     "key": "evidence_reasons-ae1eac377ff8",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 6,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 520,
+     "followup": false,
+     "bytes": 332,
+     "cacheHit": false,
+     "textHash": "8687df30084d75e7",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row7, Evidence)",
+     "row": "row7",
+     "rowId": "acceptance-evidence#row7",
+     "section": "",
+     "origRowId": "acceptance-evidence#row7",
+     "key": "evidence_reasons-4d9d46b079cc",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.84,
+      0.15,
+      0.01
+     ],
+     "p": 0.84,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 7,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 484,
+     "followup": false,
+     "bytes": 296,
+     "cacheHit": false,
+     "textHash": "ae37b54d7789ac16",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row8, Evidence)",
+     "row": "row8",
+     "rowId": "acceptance-evidence#row8",
+     "section": "",
+     "origRowId": "acceptance-evidence#row8",
+     "key": "evidence_reasons-3d249e961197",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.66,
+      0.32,
+      0.02
+     ],
+     "p": 0.66,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 8,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 302,
+     "followup": false,
+     "bytes": 114,
+     "cacheHit": false,
+     "textHash": "abfa7c93c550662b",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "coverage_complete",
+     "atom": "round4.required_cells.coverage_complete(goals/02-companion-driven-document-verification.md, [user-requirements---frozen-root, ac-coverage])",
+     "row": "",
+     "rowId": "",
+     "section": "",
+     "origRowId": "",
+     "key": "coverage_complete-454295c77c8e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.7,
+      0.24,
+      0.06
+     ],
+     "p": 0.7,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 9,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 5182,
+     "followup": false,
+     "bytes": 4872,
+     "cacheHit": false,
+     "textHash": "a5478fcccdf15bf5",
+     "questionHash": "dd39e75c7a13f339",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row1, Evidence required)",
+     "row": "row1",
+     "rowId": "ac-coverage#row1",
+     "section": "",
+     "origRowId": "ac-coverage#row1",
+     "key": "evidence_reasons_required-bf27b6e11b44",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0,
+      1,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 10,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 278,
+     "followup": false,
+     "bytes": 91,
+     "cacheHit": false,
+     "textHash": "b2ff9a7c9d149093",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row2, Evidence required)",
+     "row": "row2",
+     "rowId": "ac-coverage#row2",
+     "section": "",
+     "origRowId": "ac-coverage#row2",
+     "key": "evidence_reasons_required-9629a35478c6",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.01,
+      0.99,
+      0
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 11,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 290,
+     "followup": false,
+     "bytes": 103,
+     "cacheHit": false,
+     "textHash": "85dd8cf2e8cb11e0",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row3, Evidence required)",
+     "row": "row3",
+     "rowId": "ac-coverage#row3",
+     "section": "",
+     "origRowId": "ac-coverage#row3",
+     "key": "evidence_reasons_required-062073f71ab0",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.06,
+      0.93,
+      0.01
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 12,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 277,
+     "followup": false,
+     "bytes": 90,
+     "cacheHit": false,
+     "textHash": "61e84cbe834e7cde",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row4, Evidence required)",
+     "row": "row4",
+     "rowId": "ac-coverage#row4",
+     "section": "",
+     "origRowId": "ac-coverage#row4",
+     "key": "evidence_reasons_required-ba93a76f7608",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.1,
+      0.88,
+      0.02
+     ],
+     "p": 0.88,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 13,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 304,
+     "followup": false,
+     "bytes": 117,
+     "cacheHit": false,
+     "textHash": "8f373060f5e8808f",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row5, Evidence required)",
+     "row": "row5",
+     "rowId": "ac-coverage#row5",
+     "section": "",
+     "origRowId": "ac-coverage#row5",
+     "key": "evidence_reasons_required-461219f9072a",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0,
+      0.99,
+      0.01
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 14,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 302,
+     "followup": false,
+     "bytes": 115,
+     "cacheHit": false,
+     "textHash": "67b8cdea126540f2",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row6, Evidence required)",
+     "row": "row6",
+     "rowId": "ac-coverage#row6",
+     "section": "",
+     "origRowId": "ac-coverage#row6",
+     "key": "evidence_reasons_required-75ce126fdd31",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.28,
+      0.7,
+      0.02
+     ],
+     "p": 0.7,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 15,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 331,
+     "followup": false,
+     "bytes": 144,
+     "cacheHit": false,
+     "textHash": "a44910e028b5f0a9",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row7, Evidence required)",
+     "row": "row7",
+     "rowId": "ac-coverage#row7",
+     "section": "",
+     "origRowId": "ac-coverage#row7",
+     "key": "evidence_reasons_required-c4cddf9072fe",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.11,
+      0.87,
+      0.02
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 16,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 329,
+     "followup": false,
+     "bytes": 142,
+     "cacheHit": false,
+     "textHash": "6527a460e9d9e966",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "coverage_complete",
+     "atom": "round4.required_cells.coverage_complete(goals/03-modular-verification-language.md, [user-requirements---frozen-root, ac-coverage])",
+     "row": "",
+     "rowId": "",
+     "section": "",
+     "origRowId": "",
+     "key": "coverage_complete-a9c902dddae8",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.72,
+      0.17,
+      0.11
+     ],
+     "p": 0.72,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 17,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 3170,
+     "followup": false,
+     "bytes": 2905,
+     "cacheHit": false,
+     "textHash": "a3e0b9614d9ac638",
+     "questionHash": "dd39e75c7a13f339",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row1, Evidence required)",
+     "row": "row1",
+     "rowId": "ac-coverage#row1",
+     "section": "",
+     "origRowId": "ac-coverage#row1",
+     "key": "evidence_reasons_required-f4bdcaf2f790",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.24,
+      0.74,
+      0.02
+     ],
+     "p": 0.74,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 18,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 304,
+     "followup": false,
+     "bytes": 126,
+     "cacheHit": false,
+     "textHash": "86fe6c57cd56a025",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row2, Evidence required)",
+     "row": "row2",
+     "rowId": "ac-coverage#row2",
+     "section": "",
+     "origRowId": "ac-coverage#row2",
+     "key": "evidence_reasons_required-8085138104a7",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.26,
+      0.71,
+      0.03
+     ],
+     "p": 0.71,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 19,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 300,
+     "followup": false,
+     "bytes": 122,
+     "cacheHit": false,
+     "textHash": "d63e1ebe02ac9a83",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row3, Evidence required)",
+     "row": "row3",
+     "rowId": "ac-coverage#row3",
+     "section": "",
+     "origRowId": "ac-coverage#row3",
+     "key": "evidence_reasons_required-2c705ed66596",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.32,
+      0.63,
+      0.05
+     ],
+     "p": 0.63,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 20,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 328,
+     "followup": false,
+     "bytes": 150,
+     "cacheHit": false,
+     "textHash": "278e619b066a203a",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row4, Evidence required)",
+     "row": "row4",
+     "rowId": "ac-coverage#row4",
+     "section": "",
+     "origRowId": "ac-coverage#row4",
+     "key": "evidence_reasons_required-298a66ccdaa2",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.02,
+      0.97,
+      0.01
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 21,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 316,
+     "followup": false,
+     "bytes": 138,
+     "cacheHit": false,
+     "textHash": "8d50cbd7a7a55ca1",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row5, Evidence required)",
+     "row": "row5",
+     "rowId": "ac-coverage#row5",
+     "section": "",
+     "origRowId": "ac-coverage#row5",
+     "key": "evidence_reasons_required-bc5dec30ee0d",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.06,
+      0.92,
+      0.02
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 22,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 371,
+     "followup": false,
+     "bytes": 193,
+     "cacheHit": false,
+     "textHash": "c6c3195a8c72c3d9",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row6, Evidence required)",
+     "row": "row6",
+     "rowId": "ac-coverage#row6",
+     "section": "",
+     "origRowId": "ac-coverage#row6",
+     "key": "evidence_reasons_required-9afd395fc9ba",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.05,
+      0.91,
+      0.04
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 23,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 295,
+     "followup": false,
+     "bytes": 117,
+     "cacheHit": false,
+     "textHash": "ecbb7d97ca5d4d61",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "coverage_complete",
+     "atom": "round4.required_cells.coverage_complete(goals/04-trusted-kernel.md, [user-requirements---frozen-root, ac-coverage])",
+     "row": "",
+     "rowId": "",
+     "section": "",
+     "origRowId": "",
+     "key": "coverage_complete-1ce4d5c8304f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.91,
+      0.07,
+      0.02
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 24,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 4931,
+     "followup": false,
+     "bytes": 4705,
+     "cacheHit": false,
+     "textHash": "4689c04b62fc3cfb",
+     "questionHash": "dd39e75c7a13f339",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/04-trusted-kernel.md, ac-coverage#row1, Evidence)",
+     "row": "row1",
+     "rowId": "ac-coverage#row1",
+     "section": "",
+     "origRowId": "ac-coverage#row1",
+     "key": "evidence_reasons-1e8aebfec14b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 25,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 885,
+     "followup": false,
+     "bytes": 731,
+     "cacheHit": false,
+     "textHash": "a80f2bfaac047ce1",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/04-trusted-kernel.md, ac-coverage#row2, Evidence)",
+     "row": "row2",
+     "rowId": "ac-coverage#row2",
+     "section": "",
+     "origRowId": "ac-coverage#row2",
+     "key": "evidence_reasons-59c2f856b78a",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.03,
+      0
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 26,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 732,
+     "followup": false,
+     "bytes": 578,
+     "cacheHit": false,
+     "textHash": "bf20fb501c7e5973",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/04-trusted-kernel.md, ac-coverage#row3, Evidence)",
+     "row": "row3",
+     "rowId": "ac-coverage#row3",
+     "section": "",
+     "origRowId": "ac-coverage#row3",
+     "key": "evidence_reasons-c5bdfd1b2ecd",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.94,
+      0.05,
+      0.01
+     ],
+     "p": 0.94,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 27,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 716,
+     "followup": false,
+     "bytes": 562,
+     "cacheHit": false,
+     "textHash": "11cbb18458a56403",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/04-trusted-kernel.md, ac-coverage#row4, Evidence)",
+     "row": "row4",
+     "rowId": "ac-coverage#row4",
+     "section": "",
+     "origRowId": "ac-coverage#row4",
+     "key": "evidence_reasons-d5922cf54013",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 28,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 858,
+     "followup": false,
+     "bytes": 704,
+     "cacheHit": false,
+     "textHash": "6793e1acdab2d1f2",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/04-trusted-kernel.md, ac-coverage#row5, Evidence)",
+     "row": "row5",
+     "rowId": "ac-coverage#row5",
+     "section": "",
+     "origRowId": "ac-coverage#row5",
+     "key": "evidence_reasons-e9957c49b44c",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 29,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 821,
+     "followup": false,
+     "bytes": 667,
+     "cacheHit": false,
+     "textHash": "2953a9582f3b8bb5",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    }
+   ],
+   "at": "2026-10-13T00:24:52.350Z"
+  },
+  {
+   "run": "real-cells:labels-r10.yaml",
+   "mode": "real-cells",
+   "fixture": "labels-r10.yaml",
+   "source": "labels-r10.yaml",
+   "set": null,
+   "ledger": "round10-goal",
+   "arm": "normal",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": "labels-r10.yaml",
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/goal.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:artifact",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/module.yaml",
+     "request_shape": "per-atom"
+    }
+   ],
+   "wall_ms": 14342.368625,
+   "cost": {
+    "main": 30,
+    "followups": 0,
+    "requests": 30,
+    "asked": 30,
+    "worst": 30,
+    "bytes": 23118
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "requests": 9
+    },
+    {
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "requests": 8
+    },
+    {
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "requests": 7
+    },
+    {
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "requests": 6
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "goals/01-document-verification-and-skill-transfer.md": "PASS",
+    "goals/02-companion-driven-document-verification.md": "NO-GO",
+    "goals/03-modular-verification-language.md": "NO-GO",
+    "goals/04-trusted-kernel.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 3512,
+     "ms": 432.66058300000077,
+     "keys": [
+      "coverage_complete-8bc232103f7b"
+     ],
+     "oracles": [
+      "coverage_complete"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 493,
+     "ms": 326.3499580000025,
+     "keys": [
+      "evidence_reasons-68461cc13ea6"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 2,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 612,
+     "ms": 313.22399999999834,
+     "keys": [
+      "evidence_reasons-86362616eea2"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 3,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 533,
+     "ms": 315.90058299999873,
+     "keys": [
+      "evidence_reasons-c714526ea674"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 4,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 567,
+     "ms": 304.2985000000008,
+     "keys": [
+      "evidence_reasons-a2e7bea9eee2"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 5,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 507,
+     "ms": 319.33229199999914,
+     "keys": [
+      "evidence_reasons-7ef251cbbffe"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 6,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 520,
+     "ms": 331.27279199999975,
+     "keys": [
+      "evidence_reasons-ae1eac377ff8"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 7,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 484,
+     "ms": 361.7305830000005,
+     "keys": [
+      "evidence_reasons-4d9d46b079cc"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 8,
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 302,
+     "ms": 330.92725000000064,
+     "keys": [
+      "evidence_reasons-3d249e961197"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 9,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 5182,
+     "ms": 306.4835830000011,
+     "keys": [
+      "coverage_complete-454295c77c8e"
+     ],
+     "oracles": [
+      "coverage_complete"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 10,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 278,
+     "ms": 305.33604099999866,
+     "keys": [
+      "evidence_reasons_required-bf27b6e11b44"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 11,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 290,
+     "ms": 275.4857499999998,
+     "keys": [
+      "evidence_reasons_required-9629a35478c6"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 12,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 277,
+     "ms": 276.2063339999986,
+     "keys": [
+      "evidence_reasons_required-062073f71ab0"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 13,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 304,
+     "ms": 272.9008329999997,
+     "keys": [
+      "evidence_reasons_required-ba93a76f7608"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 14,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 302,
+     "ms": 276.9777499999982,
+     "keys": [
+      "evidence_reasons_required-461219f9072a"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 15,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 331,
+     "ms": 288.55254199999763,
+     "keys": [
+      "evidence_reasons_required-75ce126fdd31"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 16,
+     "document": "goals/02-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 329,
+     "ms": 286.9494169999998,
+     "keys": [
+      "evidence_reasons_required-c4cddf9072fe"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 17,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 3170,
+     "ms": 306.75970900000175,
+     "keys": [
+      "coverage_complete-a9c902dddae8"
+     ],
+     "oracles": [
+      "coverage_complete"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 18,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 304,
+     "ms": 1023.1416250000002,
+     "keys": [
+      "evidence_reasons_required-f4bdcaf2f790"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 19,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 300,
+     "ms": 316.68908400000146,
+     "keys": [
+      "evidence_reasons_required-8085138104a7"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 20,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 328,
+     "ms": 312.04991599999994,
+     "keys": [
+      "evidence_reasons_required-2c705ed66596"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 21,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 316,
+     "ms": 275.8163749999985,
+     "keys": [
+      "evidence_reasons_required-298a66ccdaa2"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 22,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 371,
+     "ms": 289.01308300000164,
+     "keys": [
+      "evidence_reasons_required-bc5dec30ee0d"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 23,
+     "document": "goals/03-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 295,
+     "ms": 397.7997499999983,
+     "keys": [
+      "evidence_reasons_required-9afd395fc9ba"
+     ],
+     "oracles": [
+      "evidence_reasons_required"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 24,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 4931,
+     "ms": 296.3138340000005,
+     "keys": [
+      "coverage_complete-1ce4d5c8304f"
+     ],
+     "oracles": [
+      "coverage_complete"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 25,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 885,
+     "ms": 306.57554099999834,
+     "keys": [
+      "evidence_reasons-1e8aebfec14b"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 26,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 732,
+     "ms": 307.36733300000196,
+     "keys": [
+      "evidence_reasons-59c2f856b78a"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 27,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 716,
+     "ms": 282.065083999998,
+     "keys": [
+      "evidence_reasons-c5bdfd1b2ecd"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 28,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 858,
+     "ms": 283.2680419999997,
+     "keys": [
+      "evidence_reasons-d5922cf54013"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 29,
+     "document": "goals/04-trusted-kernel.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 821,
+     "ms": 374.23899999999776,
+     "keys": [
+      "evidence_reasons-e9957c49b44c"
+     ],
+     "oracles": [
+      "evidence_reasons"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "coverage_complete",
+     "atom": "round4.required_cells.coverage_complete(goals/01-document-verification-and-skill-transfer.md, [user-requirements-frozen-root, ac-coverage])",
+     "row": "",
+     "rowId": "",
+     "section": "",
+     "origRowId": "",
+     "key": "coverage_complete-8bc232103f7b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.13,
+      0.01
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 3512,
+     "followup": false,
+     "bytes": 3232,
+     "cacheHit": false,
+     "textHash": "2cc75e4c26abae22",
+     "questionHash": "dd39e75c7a13f339",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row1, Evidence)",
+     "row": "row1",
+     "rowId": "acceptance-evidence#row1",
+     "section": "",
+     "origRowId": "acceptance-evidence#row1",
+     "key": "evidence_reasons-68461cc13ea6",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 493,
+     "followup": false,
+     "bytes": 305,
+     "cacheHit": false,
+     "textHash": "b0b40704f0c5e409",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row2, Evidence)",
+     "row": "row2",
+     "rowId": "acceptance-evidence#row2",
+     "section": "",
+     "origRowId": "acceptance-evidence#row2",
+     "key": "evidence_reasons-86362616eea2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.03,
+      0
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 2,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 612,
+     "followup": false,
+     "bytes": 424,
+     "cacheHit": false,
+     "textHash": "df5f95bb4fec37e3",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row3, Evidence)",
+     "row": "row3",
+     "rowId": "acceptance-evidence#row3",
+     "section": "",
+     "origRowId": "acceptance-evidence#row3",
+     "key": "evidence_reasons-c714526ea674",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.12,
+      0.02
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 3,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 533,
+     "followup": false,
+     "bytes": 345,
+     "cacheHit": false,
+     "textHash": "cbcbeb619d44a450",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row4, Evidence)",
+     "row": "row4",
+     "rowId": "acceptance-evidence#row4",
+     "section": "",
+     "origRowId": "acceptance-evidence#row4",
+     "key": "evidence_reasons-a2e7bea9eee2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 4,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 567,
+     "followup": false,
+     "bytes": 379,
+     "cacheHit": false,
+     "textHash": "6d2c7dbfc5e2747f",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row5, Evidence)",
+     "row": "row5",
+     "rowId": "acceptance-evidence#row5",
+     "section": "",
+     "origRowId": "acceptance-evidence#row5",
+     "key": "evidence_reasons-7ef251cbbffe",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.99,
+      0.01,
+      0
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 5,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 507,
+     "followup": false,
+     "bytes": 319,
+     "cacheHit": false,
+     "textHash": "0a38a5971a5ea7fb",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row6, Evidence)",
+     "row": "row6",
+     "rowId": "acceptance-evidence#row6",
+     "section": "",
+     "origRowId": "acceptance-evidence#row6",
+     "key": "evidence_reasons-ae1eac377ff8",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 6,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 520,
+     "followup": false,
+     "bytes": 332,
+     "cacheHit": false,
+     "textHash": "8687df30084d75e7",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row7, Evidence)",
+     "row": "row7",
+     "rowId": "acceptance-evidence#row7",
+     "section": "",
+     "origRowId": "acceptance-evidence#row7",
+     "key": "evidence_reasons-4d9d46b079cc",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.13,
+      0.01
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 7,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 484,
+     "followup": false,
+     "bytes": 296,
+     "cacheHit": false,
+     "textHash": "ae37b54d7789ac16",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/01-document-verification-and-skill-transfer.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/01-document-verification-and-skill-transfer.md, acceptance-evidence#row8, Evidence)",
+     "row": "row8",
+     "rowId": "acceptance-evidence#row8",
+     "section": "",
+     "origRowId": "acceptance-evidence#row8",
+     "key": "evidence_reasons-3d249e961197",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.63,
+      0.34,
+      0.03
+     ],
+     "p": 0.63,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 8,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 302,
+     "followup": false,
+     "bytes": 114,
+     "cacheHit": false,
+     "textHash": "abfa7c93c550662b",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "coverage_complete",
+     "atom": "round4.required_cells.coverage_complete(goals/02-companion-driven-document-verification.md, [user-requirements---frozen-root, ac-coverage])",
+     "row": "",
+     "rowId": "",
+     "section": "",
+     "origRowId": "",
+     "key": "coverage_complete-454295c77c8e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.78,
+      0.18,
+      0.04
+     ],
+     "p": 0.78,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 9,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 5182,
+     "followup": false,
+     "bytes": 4872,
+     "cacheHit": false,
+     "textHash": "a5478fcccdf15bf5",
+     "questionHash": "dd39e75c7a13f339",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row1, Evidence required)",
+     "row": "row1",
+     "rowId": "ac-coverage#row1",
+     "section": "",
+     "origRowId": "ac-coverage#row1",
+     "key": "evidence_reasons_required-bf27b6e11b44",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0,
+      1,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 10,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 278,
+     "followup": false,
+     "bytes": 91,
+     "cacheHit": false,
+     "textHash": "b2ff9a7c9d149093",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row2, Evidence required)",
+     "row": "row2",
+     "rowId": "ac-coverage#row2",
+     "section": "",
+     "origRowId": "ac-coverage#row2",
+     "key": "evidence_reasons_required-9629a35478c6",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.01,
+      0.98,
+      0.01
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 11,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 290,
+     "followup": false,
+     "bytes": 103,
+     "cacheHit": false,
+     "textHash": "85dd8cf2e8cb11e0",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row3, Evidence required)",
+     "row": "row3",
+     "rowId": "ac-coverage#row3",
+     "section": "",
+     "origRowId": "ac-coverage#row3",
+     "key": "evidence_reasons_required-062073f71ab0",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.06,
+      0.93,
+      0.01
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 12,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 277,
+     "followup": false,
+     "bytes": 90,
+     "cacheHit": false,
+     "textHash": "61e84cbe834e7cde",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row4, Evidence required)",
+     "row": "row4",
+     "rowId": "ac-coverage#row4",
+     "section": "",
+     "origRowId": "ac-coverage#row4",
+     "key": "evidence_reasons_required-ba93a76f7608",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.08,
+      0.9,
+      0.02
+     ],
+     "p": 0.9,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 13,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 304,
+     "followup": false,
+     "bytes": 117,
+     "cacheHit": false,
+     "textHash": "8f373060f5e8808f",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row5, Evidence required)",
+     "row": "row5",
+     "rowId": "ac-coverage#row5",
+     "section": "",
+     "origRowId": "ac-coverage#row5",
+     "key": "evidence_reasons_required-461219f9072a",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0,
+      0.99,
+      0.01
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 14,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 302,
+     "followup": false,
+     "bytes": 115,
+     "cacheHit": false,
+     "textHash": "67b8cdea126540f2",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row6, Evidence required)",
+     "row": "row6",
+     "rowId": "ac-coverage#row6",
+     "section": "",
+     "origRowId": "ac-coverage#row6",
+     "key": "evidence_reasons_required-75ce126fdd31",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.3,
+      0.68,
+      0.02
+     ],
+     "p": 0.68,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 15,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 331,
+     "followup": false,
+     "bytes": 144,
+     "cacheHit": false,
+     "textHash": "a44910e028b5f0a9",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/02-companion-driven-document-verification.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/02-companion-driven-document-verification.md, ac-coverage#row7, Evidence required)",
+     "row": "row7",
+     "rowId": "ac-coverage#row7",
+     "section": "",
+     "origRowId": "ac-coverage#row7",
+     "key": "evidence_reasons_required-c4cddf9072fe",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.07,
+      0.91,
+      0.02
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 16,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 329,
+     "followup": false,
+     "bytes": 142,
+     "cacheHit": false,
+     "textHash": "6527a460e9d9e966",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "coverage_complete",
+     "atom": "round4.required_cells.coverage_complete(goals/03-modular-verification-language.md, [user-requirements---frozen-root, ac-coverage])",
+     "row": "",
+     "rowId": "",
+     "section": "",
+     "origRowId": "",
+     "key": "coverage_complete-a9c902dddae8",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.75,
+      0.16,
+      0.09
+     ],
+     "p": 0.75,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 17,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 3170,
+     "followup": false,
+     "bytes": 2905,
+     "cacheHit": false,
+     "textHash": "a3e0b9614d9ac638",
+     "questionHash": "dd39e75c7a13f339",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row1, Evidence required)",
+     "row": "row1",
+     "rowId": "ac-coverage#row1",
+     "section": "",
+     "origRowId": "ac-coverage#row1",
+     "key": "evidence_reasons_required-f4bdcaf2f790",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.22,
+      0.76,
+      0.02
+     ],
+     "p": 0.76,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 18,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 304,
+     "followup": false,
+     "bytes": 126,
+     "cacheHit": false,
+     "textHash": "86fe6c57cd56a025",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row2, Evidence required)",
+     "row": "row2",
+     "rowId": "ac-coverage#row2",
+     "section": "",
+     "origRowId": "ac-coverage#row2",
+     "key": "evidence_reasons_required-8085138104a7",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.32,
+      0.65,
+      0.03
+     ],
+     "p": 0.65,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 19,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 300,
+     "followup": false,
+     "bytes": 122,
+     "cacheHit": false,
+     "textHash": "d63e1ebe02ac9a83",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row3, Evidence required)",
+     "row": "row3",
+     "rowId": "ac-coverage#row3",
+     "section": "",
+     "origRowId": "ac-coverage#row3",
+     "key": "evidence_reasons_required-2c705ed66596",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.32,
+      0.64,
+      0.04
+     ],
+     "p": 0.64,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 20,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 328,
+     "followup": false,
+     "bytes": 150,
+     "cacheHit": false,
+     "textHash": "278e619b066a203a",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row4, Evidence required)",
+     "row": "row4",
+     "rowId": "ac-coverage#row4",
+     "section": "",
+     "origRowId": "ac-coverage#row4",
+     "key": "evidence_reasons_required-298a66ccdaa2",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.01,
+      0.98,
+      0.01
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 21,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 316,
+     "followup": false,
+     "bytes": 138,
+     "cacheHit": false,
+     "textHash": "8d50cbd7a7a55ca1",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row5, Evidence required)",
+     "row": "row5",
+     "rowId": "ac-coverage#row5",
+     "section": "",
+     "origRowId": "ac-coverage#row5",
+     "key": "evidence_reasons_required-bc5dec30ee0d",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.06,
+      0.93,
+      0.01
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 22,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 371,
+     "followup": false,
+     "bytes": 193,
+     "cacheHit": false,
+     "textHash": "c6c3195a8c72c3d9",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/03-modular-verification-language.md",
+     "verdict": "NO-GO",
+     "oracle": "evidence_reasons_required",
+     "atom": "round4.required_cells.evidence_reasons_required(goals/03-modular-verification-language.md, ac-coverage#row6, Evidence required)",
+     "row": "row6",
+     "rowId": "ac-coverage#row6",
+     "section": "",
+     "origRowId": "ac-coverage#row6",
+     "key": "evidence_reasons_required-9afd395fc9ba",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.06,
+      0.91,
+      0.03
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 23,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 295,
+     "followup": false,
+     "bytes": 117,
+     "cacheHit": false,
+     "textHash": "ecbb7d97ca5d4d61",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "coverage_complete",
+     "atom": "round4.required_cells.coverage_complete(goals/04-trusted-kernel.md, [user-requirements---frozen-root, ac-coverage])",
+     "row": "",
+     "rowId": "",
+     "section": "",
+     "origRowId": "",
+     "key": "coverage_complete-1ce4d5c8304f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.94,
+      0.05,
+      0.01
+     ],
+     "p": 0.94,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 24,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 4931,
+     "followup": false,
+     "bytes": 4705,
+     "cacheHit": false,
+     "textHash": "4689c04b62fc3cfb",
+     "questionHash": "dd39e75c7a13f339",
+     "expect": null,
+     "lead": null
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/04-trusted-kernel.md, ac-coverage#row1, Evidence)",
+     "row": "row1",
+     "rowId": "ac-coverage#row1",
+     "section": "",
+     "origRowId": "ac-coverage#row1",
+     "key": "evidence_reasons-1e8aebfec14b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 25,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 885,
+     "followup": false,
+     "bytes": 731,
+     "cacheHit": false,
+     "textHash": "a80f2bfaac047ce1",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/04-trusted-kernel.md, ac-coverage#row2, Evidence)",
+     "row": "row2",
+     "rowId": "ac-coverage#row2",
+     "section": "",
+     "origRowId": "ac-coverage#row2",
+     "key": "evidence_reasons-59c2f856b78a",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.95,
+      0.04,
+      0.01
+     ],
+     "p": 0.95,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 26,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 732,
+     "followup": false,
+     "bytes": 578,
+     "cacheHit": false,
+     "textHash": "bf20fb501c7e5973",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/04-trusted-kernel.md, ac-coverage#row3, Evidence)",
+     "row": "row3",
+     "rowId": "ac-coverage#row3",
+     "section": "",
+     "origRowId": "ac-coverage#row3",
+     "key": "evidence_reasons-c5bdfd1b2ecd",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.94,
+      0.06,
+      0
+     ],
+     "p": 0.94,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 27,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 716,
+     "followup": false,
+     "bytes": 562,
+     "cacheHit": false,
+     "textHash": "11cbb18458a56403",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/04-trusted-kernel.md, ac-coverage#row4, Evidence)",
+     "row": "row4",
+     "rowId": "ac-coverage#row4",
+     "section": "",
+     "origRowId": "ac-coverage#row4",
+     "key": "evidence_reasons-d5922cf54013",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 28,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 858,
+     "followup": false,
+     "bytes": 704,
+     "cacheHit": false,
+     "textHash": "6793e1acdab2d1f2",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "labels-r10.yaml",
+     "source": "labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "goals/04-trusted-kernel.md",
+     "verdict": "PASS",
+     "oracle": "evidence_reasons",
+     "atom": "round4.required_cells.evidence_reasons(goals/04-trusted-kernel.md, ac-coverage#row5, Evidence)",
+     "row": "row5",
+     "rowId": "ac-coverage#row5",
+     "section": "",
+     "origRowId": "ac-coverage#row5",
+     "key": "evidence_reasons-e9957c49b44c",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 29,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 821,
+     "followup": false,
+     "bytes": 667,
+     "cacheHit": false,
+     "textHash": "2953a9582f3b8bb5",
+     "questionHash": "4f097926158e9c2b",
+     "expect": null,
+     "lead": "holds"
+    }
+   ],
+   "at": "2026-10-13T00:25:06.695Z"
+  }
+ ]
+}

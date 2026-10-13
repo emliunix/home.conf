@@ -1,0 +1,2449 @@
+{
+ "ledger": "round9-real-deranged",
+ "runs": [
+  {
+   "run": "real-cells:relevance-deranged.yaml",
+   "mode": "real-cells",
+   "fixture": "relevance-deranged.yaml",
+   "source": "relevance-deranged.yaml",
+   "set": null,
+   "ledger": "round9-real-deranged",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": "relevance-deranged.yaml",
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/artifact.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/witness_relevant/module.yaml",
+     "request_shape": "per-atom"
+    }
+   ],
+   "wall_ms": 12339.996791,
+   "cost": {
+    "main": 19,
+    "followups": 0,
+    "requests": 19,
+    "asked": 19,
+    "worst": 19,
+    "bytes": 3509
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "requests": 9
+    },
+    {
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "requests": 10
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md": "NEEDS-REVIEW",
+    "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md": "NO-GO"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 392,
+     "ms": 457.48633299999983,
+     "keys": [
+      "witness_relevant-a156c8004914"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 387,
+     "ms": 351.5006659999999,
+     "keys": [
+      "witness_relevant-b46d29917f5a"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 2,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 413,
+     "ms": 378.0681249999998,
+     "keys": [
+      "witness_relevant-0b18a670f7eb"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 3,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 462,
+     "ms": 321.7000829999997,
+     "keys": [
+      "witness_relevant-de1e4c71e031"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 4,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 402,
+     "ms": 376.5772500000003,
+     "keys": [
+      "witness_relevant-fa3b594c93f7"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 5,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 516,
+     "ms": 349.6423329999998,
+     "keys": [
+      "witness_relevant-7dce4d8db841"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 6,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 387,
+     "ms": 310.58708299999944,
+     "keys": [
+      "witness_relevant-86879ec9c014"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 7,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 347,
+     "ms": 516.2432499999995,
+     "keys": [
+      "witness_relevant-346487053772"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 8,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 409,
+     "ms": 308.69429200000013,
+     "keys": [
+      "witness_relevant-f377954b32ad"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 9,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 351,
+     "ms": 414.9677499999998,
+     "keys": [
+      "witness_relevant-9153100f5243"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 10,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 500,
+     "ms": 1806.2583749999994,
+     "keys": [
+      "witness_relevant-72b0ca6acf95"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 11,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 391,
+     "ms": 351.0994580000006,
+     "keys": [
+      "witness_relevant-3384a2e8b0f8"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 12,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 416,
+     "ms": 327.27879100000064,
+     "keys": [
+      "witness_relevant-46da4fce99b4"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 13,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 428,
+     "ms": 357.0735000000004,
+     "keys": [
+      "witness_relevant-1f4cd4b56062"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 14,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 333,
+     "ms": 349.82666600000084,
+     "keys": [
+      "witness_relevant-07c95aa45eed"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 15,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 453,
+     "ms": 307.1687500000007,
+     "keys": [
+      "witness_relevant-f23a176fedcb"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 16,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 377,
+     "ms": 384.7017500000002,
+     "keys": [
+      "witness_relevant-5c38427b05b8"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 17,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 567,
+     "ms": 346.91179100000045,
+     "keys": [
+      "witness_relevant-e5f63a9fa7d6"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 18,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 502,
+     "ms": 356.9509590000016,
+     "keys": [
+      "witness_relevant-d20f1eec9ab4"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant-a156c8004914",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.77,
+      0.21,
+      0.02
+     ],
+     "p": 0.77,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 392,
+     "followup": false,
+     "bytes": 146,
+     "cacheHit": false,
+     "textHash": "eb764aee480b7097",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant-b46d29917f5a",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.66,
+      0.3,
+      0.04
+     ],
+     "p": 0.66,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 387,
+     "followup": false,
+     "bytes": 141,
+     "cacheHit": false,
+     "textHash": "f7aac394461ba6e6",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant-0b18a670f7eb",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.54,
+      0.35,
+      0.11
+     ],
+     "p": 0.54,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 2,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 413,
+     "followup": false,
+     "bytes": 167,
+     "cacheHit": false,
+     "textHash": "aa5ef39057d365a8",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant-de1e4c71e031",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.78,
+      0.16,
+      0.06
+     ],
+     "p": 0.78,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 3,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 462,
+     "followup": false,
+     "bytes": 216,
+     "cacheHit": false,
+     "textHash": "c382e95c14949e25",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant-fa3b594c93f7",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.78,
+      0.15,
+      0.07
+     ],
+     "p": 0.78,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 4,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 402,
+     "followup": false,
+     "bytes": 156,
+     "cacheHit": false,
+     "textHash": "47beb13f29b62ecc",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant-7dce4d8db841",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.1,
+      0.04
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 5,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 516,
+     "followup": false,
+     "bytes": 270,
+     "cacheHit": false,
+     "textHash": "d2946f99edbb244f",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "ambiguous"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant-86879ec9c014",
+     "label": "unknown",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.38,
+      0.39,
+      0.23
+     ],
+     "p": 0.39,
+     "threshold": 0.5,
+     "leafShape": "threshold-demoted",
+     "finding": null,
+     "request": 6,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 387,
+     "followup": false,
+     "bytes": 141,
+     "cacheHit": false,
+     "textHash": "172fd015174b5f4d",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant-346487053772",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.5,
+      0.34,
+      0.16
+     ],
+     "p": 0.5,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 7,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 347,
+     "followup": false,
+     "bytes": 101,
+     "cacheHit": false,
+     "textHash": "9d0db95b7dd48182",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "ambiguous"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant-f377954b32ad",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.76,
+      0.2,
+      0.04
+     ],
+     "p": 0.76,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 8,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 409,
+     "followup": false,
+     "bytes": 163,
+     "cacheHit": false,
+     "textHash": "bc14e28463f13e10",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant-9153100f5243",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.63,
+      0.31,
+      0.06
+     ],
+     "p": 0.63,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 9,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 351,
+     "followup": false,
+     "bytes": 120,
+     "cacheHit": false,
+     "textHash": "5cb8cc669ff93290",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row10, [Property, Failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_relevant-72b0ca6acf95",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.59,
+      0.34,
+      0.07
+     ],
+     "p": 0.59,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 10,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 500,
+     "followup": false,
+     "bytes": 269,
+     "cacheHit": false,
+     "textHash": "320ac63faa4f1c37",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant-3384a2e8b0f8",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.56,
+      0.35,
+      0.09
+     ],
+     "p": 0.56,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 11,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 391,
+     "followup": false,
+     "bytes": 160,
+     "cacheHit": false,
+     "textHash": "b855364b15892337",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "ambiguous"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant-46da4fce99b4",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.9,
+      0.09,
+      0.01
+     ],
+     "p": 0.9,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 12,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 416,
+     "followup": false,
+     "bytes": 185,
+     "cacheHit": false,
+     "textHash": "b8d39f8ca2e30e16",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "ambiguous"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant-1f4cd4b56062",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.26,
+      0.62,
+      0.12
+     ],
+     "p": 0.62,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 13,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 428,
+     "followup": false,
+     "bytes": 197,
+     "cacheHit": false,
+     "textHash": "6a62cfea87088ce1",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant-07c95aa45eed",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.14,
+      0.7,
+      0.16
+     ],
+     "p": 0.7,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 14,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 333,
+     "followup": false,
+     "bytes": 102,
+     "cacheHit": false,
+     "textHash": "ea888b640afc07a0",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant-f23a176fedcb",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.07,
+      0.01
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 15,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 453,
+     "followup": false,
+     "bytes": 222,
+     "cacheHit": false,
+     "textHash": "87b622706f0a2495",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant-5c38427b05b8",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.64,
+      0.33,
+      0.03
+     ],
+     "p": 0.64,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 16,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 377,
+     "followup": false,
+     "bytes": 146,
+     "cacheHit": false,
+     "textHash": "6ed4e8b4edfc6b9f",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant-e5f63a9fa7d6",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.8,
+      0.13,
+      0.07
+     ],
+     "p": 0.8,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 17,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 567,
+     "followup": false,
+     "bytes": 336,
+     "cacheHit": false,
+     "textHash": "42448f190ae4d633",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant-d20f1eec9ab4",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.76,
+      0.21,
+      0.03
+     ],
+     "p": 0.76,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 18,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 502,
+     "followup": false,
+     "bytes": 271,
+     "cacheHit": false,
+     "textHash": "38405ce5c3a4407f",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    }
+   ],
+   "at": "2026-10-13T03:09:11.499Z"
+  },
+  {
+   "run": "real-cells:relevance-deranged.yaml",
+   "mode": "real-cells",
+   "fixture": "relevance-deranged.yaml",
+   "source": "relevance-deranged.yaml",
+   "set": null,
+   "ledger": "round9-real-deranged",
+   "arm": "normal",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": "relevance-deranged.yaml",
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/artifact.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/witness_relevant/module.yaml",
+     "request_shape": "per-atom"
+    }
+   ],
+   "wall_ms": 10618.043333000001,
+   "cost": {
+    "main": 19,
+    "followups": 0,
+    "requests": 19,
+    "asked": 19,
+    "worst": 19,
+    "bytes": 3509
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "requests": 9
+    },
+    {
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "requests": 10
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md": "NEEDS-REVIEW",
+    "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md": "NO-GO"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 392,
+     "ms": 402.8315419999999,
+     "keys": [
+      "witness_relevant-a156c8004914"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 387,
+     "ms": 362.5879160000004,
+     "keys": [
+      "witness_relevant-b46d29917f5a"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 2,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 413,
+     "ms": 304.3485419999997,
+     "keys": [
+      "witness_relevant-0b18a670f7eb"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 3,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 462,
+     "ms": 381.5174580000021,
+     "keys": [
+      "witness_relevant-de1e4c71e031"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 4,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 402,
+     "ms": 325.50404100000014,
+     "keys": [
+      "witness_relevant-fa3b594c93f7"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 5,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 516,
+     "ms": 317.1737499999981,
+     "keys": [
+      "witness_relevant-7dce4d8db841"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 6,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 387,
+     "ms": 401.91854199999943,
+     "keys": [
+      "witness_relevant-86879ec9c014"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 7,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 347,
+     "ms": 360.97441600000093,
+     "keys": [
+      "witness_relevant-346487053772"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 8,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 409,
+     "ms": 585.4859579999975,
+     "keys": [
+      "witness_relevant-f377954b32ad"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 9,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 351,
+     "ms": 374.15258299999914,
+     "keys": [
+      "witness_relevant-9153100f5243"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 10,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 500,
+     "ms": 305.1077089999999,
+     "keys": [
+      "witness_relevant-72b0ca6acf95"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 11,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 391,
+     "ms": 399.75245899999936,
+     "keys": [
+      "witness_relevant-3384a2e8b0f8"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 12,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 416,
+     "ms": 335.24529099999927,
+     "keys": [
+      "witness_relevant-46da4fce99b4"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 13,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 428,
+     "ms": 353.40979100000186,
+     "keys": [
+      "witness_relevant-1f4cd4b56062"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 14,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 333,
+     "ms": 361.30104199999914,
+     "keys": [
+      "witness_relevant-07c95aa45eed"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 15,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 453,
+     "ms": 308.0159999999996,
+     "keys": [
+      "witness_relevant-f23a176fedcb"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 16,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 377,
+     "ms": 333.9710419999974,
+     "keys": [
+      "witness_relevant-5c38427b05b8"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 17,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 567,
+     "ms": 408.2827500000021,
+     "keys": [
+      "witness_relevant-e5f63a9fa7d6"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 18,
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 502,
+     "ms": 315.76320799999667,
+     "keys": [
+      "witness_relevant-d20f1eec9ab4"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant-a156c8004914",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.7,
+      0.27,
+      0.03
+     ],
+     "p": 0.7,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 392,
+     "followup": false,
+     "bytes": 146,
+     "cacheHit": false,
+     "textHash": "eb764aee480b7097",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant-b46d29917f5a",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.64,
+      0.32,
+      0.04
+     ],
+     "p": 0.64,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 387,
+     "followup": false,
+     "bytes": 141,
+     "cacheHit": false,
+     "textHash": "f7aac394461ba6e6",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant-0b18a670f7eb",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.53,
+      0.39,
+      0.08
+     ],
+     "p": 0.53,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 2,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 413,
+     "followup": false,
+     "bytes": 167,
+     "cacheHit": false,
+     "textHash": "aa5ef39057d365a8",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant-de1e4c71e031",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.77,
+      0.17,
+      0.06
+     ],
+     "p": 0.77,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 3,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 462,
+     "followup": false,
+     "bytes": 216,
+     "cacheHit": false,
+     "textHash": "c382e95c14949e25",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant-fa3b594c93f7",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.8,
+      0.15,
+      0.05
+     ],
+     "p": 0.8,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 4,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 402,
+     "followup": false,
+     "bytes": 156,
+     "cacheHit": false,
+     "textHash": "47beb13f29b62ecc",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant-7dce4d8db841",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.88,
+      0.1,
+      0.02
+     ],
+     "p": 0.88,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 5,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 516,
+     "followup": false,
+     "bytes": 270,
+     "cacheHit": false,
+     "textHash": "d2946f99edbb244f",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "ambiguous"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant-86879ec9c014",
+     "label": "unknown",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.32,
+      0.43,
+      0.25
+     ],
+     "p": 0.43,
+     "threshold": 0.5,
+     "leafShape": "threshold-demoted",
+     "finding": null,
+     "request": 6,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 387,
+     "followup": false,
+     "bytes": 141,
+     "cacheHit": false,
+     "textHash": "172fd015174b5f4d",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant-346487053772",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.58,
+      0.3,
+      0.12
+     ],
+     "p": 0.58,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 7,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 347,
+     "followup": false,
+     "bytes": 101,
+     "cacheHit": false,
+     "textHash": "9d0db95b7dd48182",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "ambiguous"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant-f377954b32ad",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.12,
+      0.03
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 8,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 409,
+     "followup": false,
+     "bytes": 163,
+     "cacheHit": false,
+     "textHash": "bc14e28463f13e10",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant-9153100f5243",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.6,
+      0.32,
+      0.08
+     ],
+     "p": 0.6,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 9,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 351,
+     "followup": false,
+     "bytes": 120,
+     "cacheHit": false,
+     "textHash": "5cb8cc669ff93290",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row10, [Property, Failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_relevant-72b0ca6acf95",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.64,
+      0.3,
+      0.06
+     ],
+     "p": 0.64,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 10,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 500,
+     "followup": false,
+     "bytes": 269,
+     "cacheHit": false,
+     "textHash": "320ac63faa4f1c37",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant-3384a2e8b0f8",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.56,
+      0.36,
+      0.08
+     ],
+     "p": 0.56,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 11,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 391,
+     "followup": false,
+     "bytes": 160,
+     "cacheHit": false,
+     "textHash": "b855364b15892337",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "ambiguous"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant-46da4fce99b4",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.9,
+      0.09,
+      0.01
+     ],
+     "p": 0.9,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 12,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 416,
+     "followup": false,
+     "bytes": 185,
+     "cacheHit": false,
+     "textHash": "b8d39f8ca2e30e16",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "ambiguous"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant-1f4cd4b56062",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.31,
+      0.55,
+      0.14
+     ],
+     "p": 0.55,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 13,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 428,
+     "followup": false,
+     "bytes": 197,
+     "cacheHit": false,
+     "textHash": "6a62cfea87088ce1",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant-07c95aa45eed",
+     "label": "fails",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.13,
+      0.75,
+      0.12
+     ],
+     "p": 0.75,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 14,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 333,
+     "followup": false,
+     "bytes": 102,
+     "cacheHit": false,
+     "textHash": "ea888b640afc07a0",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant-f23a176fedcb",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.07,
+      0.01
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 15,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 453,
+     "followup": false,
+     "bytes": 222,
+     "cacheHit": false,
+     "textHash": "87b622706f0a2495",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant-5c38427b05b8",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.68,
+      0.29,
+      0.03
+     ],
+     "p": 0.68,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 16,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 377,
+     "followup": false,
+     "bytes": 146,
+     "cacheHit": false,
+     "textHash": "6ed4e8b4edfc6b9f",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant-e5f63a9fa7d6",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.78,
+      0.16,
+      0.06
+     ],
+     "p": 0.78,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 17,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 567,
+     "followup": false,
+     "bytes": 336,
+     "cacheHit": false,
+     "textHash": "42448f190ae4d633",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    },
+    {
+     "run": "real-cells:relevance-deranged.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-deranged.yaml",
+     "source": "relevance-deranged.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md",
+     "verdict": "NO-GO",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant-d20f1eec9ab4",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.77,
+      0.19,
+      0.04
+     ],
+     "p": 0.77,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 18,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 502,
+     "followup": false,
+     "bytes": 271,
+     "cacheHit": false,
+     "textHash": "38405ce5c3a4407f",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "fails"
+    }
+   ],
+   "at": "2026-10-13T03:09:22.122Z"
+  }
+ ]
+}

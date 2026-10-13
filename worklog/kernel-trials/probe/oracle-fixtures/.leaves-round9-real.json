@@ -1,0 +1,3803 @@
+{
+ "ledger": "round9-real",
+ "runs": [
+  {
+   "run": "real-cells:relevance-labels.yaml",
+   "mode": "real-cells",
+   "fixture": "relevance-labels.yaml",
+   "source": "relevance-labels.yaml",
+   "set": null,
+   "ledger": "round9-real",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": "relevance-labels.yaml",
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/artifact.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/witness_relevant/module.yaml",
+     "request_shape": "per-atom"
+    }
+   ],
+   "wall_ms": 16297.330542000002,
+   "cost": {
+    "main": 30,
+    "followups": 0,
+    "requests": 30,
+    "asked": 30,
+    "worst": 30,
+    "bytes": 5803
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "requests": 11
+    },
+    {
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "requests": 9
+    },
+    {
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "requests": 10
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "design/02-programmatic-document-contract-verification.md": "PASS",
+    "design/03-companion-driven-document-verification.md": "NEEDS-REVIEW",
+    "design/05-trusted-kernel-redesign.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 385,
+     "ms": 546.7123329999995,
+     "keys": [
+      "witness_relevant-bdf48094513b"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 504,
+     "ms": 368.0433749999993,
+     "keys": [
+      "witness_relevant-d5322ea720ab"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 2,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 462,
+     "ms": 327.6765830000004,
+     "keys": [
+      "witness_relevant-952480975a73"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 3,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 405,
+     "ms": 319.4467079999995,
+     "keys": [
+      "witness_relevant-f538065cee02"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 4,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 381,
+     "ms": 299.4703749999999,
+     "keys": [
+      "witness_relevant-f85fd5fc91e9"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 5,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 410,
+     "ms": 350.46820800000023,
+     "keys": [
+      "witness_relevant-75f079b8ce5a"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 6,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 392,
+     "ms": 326.4001669999998,
+     "keys": [
+      "witness_relevant-d4881f58f8d9"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 7,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 423,
+     "ms": 342.9393340000006,
+     "keys": [
+      "witness_relevant-a2ad2239536e"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 8,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 360,
+     "ms": 589.8604580000001,
+     "keys": [
+      "witness_relevant-d18a2ae70503"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 9,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 345,
+     "ms": 343.801875000001,
+     "keys": [
+      "witness_relevant-c48a18468e42"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 10,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 361,
+     "ms": 329.19708399999945,
+     "keys": [
+      "witness_relevant-046f9a839d78"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 11,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 319,
+     "ms": 355.23604200000045,
+     "keys": [
+      "witness_relevant-6d0a1e768be3"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 12,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 293,
+     "ms": 375.82720899999913,
+     "keys": [
+      "witness_relevant-ed8faf3fbad7"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 13,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 351,
+     "ms": 341.4583330000005,
+     "keys": [
+      "witness_relevant-927f0c6ef344"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 14,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 344,
+     "ms": 326.8089579999996,
+     "keys": [
+      "witness_relevant-dabcd1cf3824"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 15,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 327,
+     "ms": 379.32154100000116,
+     "keys": [
+      "witness_relevant-a4d29638c8c2"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 16,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 365,
+     "ms": 356.00775000000067,
+     "keys": [
+      "witness_relevant-bc44b0c7c89b"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 17,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 407,
+     "ms": 365.3602499999997,
+     "keys": [
+      "witness_relevant-04996951eea5"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 18,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 345,
+     "ms": 524.5002079999995,
+     "keys": [
+      "witness_relevant-3de41b43439f"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 19,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 451,
+     "ms": 529.0104580000007,
+     "keys": [
+      "witness_relevant-737d25671c1f"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 20,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 510,
+     "ms": 444.5251669999998,
+     "keys": [
+      "witness_relevant-72209862a92a"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 21,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 407,
+     "ms": 518.6627080000017,
+     "keys": [
+      "witness_relevant-b95d57321926"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 22,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 472,
+     "ms": 523.770790999999,
+     "keys": [
+      "witness_relevant-b89244d7ba0f"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 23,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 356,
+     "ms": 521.2504580000004,
+     "keys": [
+      "witness_relevant-026a9017ec87"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 24,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 298,
+     "ms": 524.2558339999996,
+     "keys": [
+      "witness_relevant-2cbbc824d210"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 25,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 317,
+     "ms": 526.7542080000003,
+     "keys": [
+      "witness_relevant-e501b5eef4df"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 26,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 382,
+     "ms": 327.8165000000008,
+     "keys": [
+      "witness_relevant-a86a2e1f8437"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 27,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 361,
+     "ms": 342.3027920000004,
+     "keys": [
+      "witness_relevant-862c018df65b"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 28,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 275,
+     "ms": 313.05075000000033,
+     "keys": [
+      "witness_relevant-5c482b7a9f6f"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 29,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 370,
+     "ms": 587.0457090000018,
+     "keys": [
+      "witness_relevant-f485daa0a6a3"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row1, [Property, Observable failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant-bdf48094513b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.12,
+      0.02
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 385,
+     "followup": false,
+     "bytes": 191,
+     "cacheHit": false,
+     "textHash": "9dffd17cf480440f",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row10, [Property, Observable failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_relevant-d5322ea720ab",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.13,
+      0.02
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 504,
+     "followup": false,
+     "bytes": 310,
+     "cacheHit": false,
+     "textHash": "c5224277e089e269",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row11, [Property, Observable failure witness])",
+     "row": "row11",
+     "rowId": "verification-design#row11",
+     "section": "",
+     "origRowId": "verification-design#row11",
+     "key": "witness_relevant-952480975a73",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.03,
+      0.01
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 2,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 462,
+     "followup": false,
+     "bytes": 268,
+     "cacheHit": false,
+     "textHash": "9e2da77f905c78a7",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row2, [Property, Observable failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant-f538065cee02",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.66,
+      0.29,
+      0.05
+     ],
+     "p": 0.66,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 3,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 405,
+     "followup": false,
+     "bytes": 211,
+     "cacheHit": false,
+     "textHash": "28673f94c2f58c2a",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row3, [Property, Observable failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant-f85fd5fc91e9",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.9299999999999999,
+      0.05,
+      0.02
+     ],
+     "p": 0.9299999999999999,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 4,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 381,
+     "followup": false,
+     "bytes": 187,
+     "cacheHit": false,
+     "textHash": "9aba1891c9ec07de",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row4, [Property, Observable failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant-75f079b8ce5a",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.02,
+      0.01
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 5,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 410,
+     "followup": false,
+     "bytes": 216,
+     "cacheHit": false,
+     "textHash": "9b3e1651b2b2d31d",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row5, [Property, Observable failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant-d4881f58f8d9",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.13,
+      0.02
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 6,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 392,
+     "followup": false,
+     "bytes": 198,
+     "cacheHit": false,
+     "textHash": "b8aa796cb9fe3e6d",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row6, [Property, Observable failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant-a2ad2239536e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.11,
+      0.02
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 7,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 423,
+     "followup": false,
+     "bytes": 229,
+     "cacheHit": false,
+     "textHash": "49a29bf59f3bc0c7",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row7, [Property, Observable failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant-d18a2ae70503",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.03,
+      0.01
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 8,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 360,
+     "followup": false,
+     "bytes": 166,
+     "cacheHit": false,
+     "textHash": "597787446b3c5bc6",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row8, [Property, Observable failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant-c48a18468e42",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.62,
+      0.29,
+      0.09
+     ],
+     "p": 0.62,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 9,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 345,
+     "followup": false,
+     "bytes": 151,
+     "cacheHit": false,
+     "textHash": "f218b670e626a5b3",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row9, [Property, Observable failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant-046f9a839d78",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.72,
+      0.24,
+      0.04
+     ],
+     "p": 0.72,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 10,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 361,
+     "followup": false,
+     "bytes": 167,
+     "cacheHit": false,
+     "textHash": "d6d4fce56ca9276e",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant-6d0a1e768be3",
+     "label": "unknown",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.45,
+      0.47,
+      0.08
+     ],
+     "p": 0.47,
+     "threshold": 0.5,
+     "leafShape": "threshold-demoted",
+     "finding": null,
+     "request": 11,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 319,
+     "followup": false,
+     "bytes": 130,
+     "cacheHit": false,
+     "textHash": "4f42018051cce2db",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant-ed8faf3fbad7",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.67,
+      0.27,
+      0.05
+     ],
+     "p": 0.67,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 12,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 293,
+     "followup": false,
+     "bytes": 104,
+     "cacheHit": false,
+     "textHash": "9c1862ee4b59eaba",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant-927f0c6ef344",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.95,
+      0.04,
+      0.01
+     ],
+     "p": 0.95,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 13,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 351,
+     "followup": false,
+     "bytes": 162,
+     "cacheHit": false,
+     "textHash": "f54af7249b80194a",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant-dabcd1cf3824",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.03,
+      0.01
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 14,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 344,
+     "followup": false,
+     "bytes": 155,
+     "cacheHit": false,
+     "textHash": "d6f53c4d3f9c0150",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant-a4d29638c8c2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.12,
+      0.02
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 15,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 327,
+     "followup": false,
+     "bytes": 138,
+     "cacheHit": false,
+     "textHash": "4181f82842391a5e",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant-bc44b0c7c89b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.03,
+      0.01
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 16,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 365,
+     "followup": false,
+     "bytes": 176,
+     "cacheHit": false,
+     "textHash": "5e945f9516cc39a5",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant-04996951eea5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.08,
+      0.07
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 17,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 407,
+     "followup": false,
+     "bytes": 218,
+     "cacheHit": false,
+     "textHash": "f64a61641b6a3ab0",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant-3de41b43439f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.71,
+      0.19,
+      0.1
+     ],
+     "p": 0.71,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 18,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 345,
+     "followup": false,
+     "bytes": 156,
+     "cacheHit": false,
+     "textHash": "e7d3344b12907b5e",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant-737d25671c1f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.91,
+      0.07,
+      0.02
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 19,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 451,
+     "followup": false,
+     "bytes": 262,
+     "cacheHit": false,
+     "textHash": "34a5a74a7ee0d2a5",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant-72209862a92a",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.1,
+      0.05
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 20,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 510,
+     "followup": false,
+     "bytes": 336,
+     "cacheHit": false,
+     "textHash": "9c3e1215da4b4ff4",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row10, [Property, Failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_relevant-b95d57321926",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.82,
+      0.15,
+      0.03
+     ],
+     "p": 0.82,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 21,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 407,
+     "followup": false,
+     "bytes": 233,
+     "cacheHit": false,
+     "textHash": "587ff3b00a77667b",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant-b89244d7ba0f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.91,
+      0.07,
+      0.02
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 22,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 472,
+     "followup": false,
+     "bytes": 298,
+     "cacheHit": false,
+     "textHash": "3684fae93c8cf727",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant-026a9017ec87",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.69,
+      0.26,
+      0.05
+     ],
+     "p": 0.69,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 23,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 356,
+     "followup": false,
+     "bytes": 182,
+     "cacheHit": false,
+     "textHash": "4ed51ead89c2828b",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant-2cbbc824d210",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.7,
+      0.24,
+      0.06
+     ],
+     "p": 0.7,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 24,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 298,
+     "followup": false,
+     "bytes": 124,
+     "cacheHit": false,
+     "textHash": "890ad5ec821a0b87",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant-e501b5eef4df",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.82,
+      0.11,
+      0.07
+     ],
+     "p": 0.82,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 25,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 317,
+     "followup": false,
+     "bytes": 143,
+     "cacheHit": false,
+     "textHash": "cd4876a7fc5ae63e",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant-a86a2e1f8437",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.03,
+      0
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 26,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 382,
+     "followup": false,
+     "bytes": 208,
+     "cacheHit": false,
+     "textHash": "4fdddb5f4b804773",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant-862c018df65b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.6,
+      0.32,
+      0.08
+     ],
+     "p": 0.6,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 27,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 361,
+     "followup": false,
+     "bytes": 187,
+     "cacheHit": false,
+     "textHash": "2d91db521c3047f8",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant-5c482b7a9f6f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.12,
+      0.03
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 28,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 275,
+     "followup": false,
+     "bytes": 101,
+     "cacheHit": false,
+     "textHash": "09a6120cc347c8f1",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant-f485daa0a6a3",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.91,
+      0.07,
+      0.02
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 29,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 370,
+     "followup": false,
+     "bytes": 196,
+     "cacheHit": false,
+     "textHash": "24cfcdded14f12ff",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    }
+   ],
+   "at": "2026-10-13T03:08:43.203Z"
+  },
+  {
+   "run": "real-cells:relevance-labels.yaml",
+   "mode": "real-cells",
+   "fixture": "relevance-labels.yaml",
+   "source": "relevance-labels.yaml",
+   "set": null,
+   "ledger": "round9-real",
+   "arm": "normal",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": "relevance-labels.yaml",
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/artifact.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/witness_relevant/module.yaml",
+     "request_shape": "per-atom"
+    }
+   ],
+   "wall_ms": 14993.479667,
+   "cost": {
+    "main": 30,
+    "followups": 0,
+    "requests": 30,
+    "asked": 30,
+    "worst": 30,
+    "bytes": 5803
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "requests": 11
+    },
+    {
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "requests": 9
+    },
+    {
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "requests": 10
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "design/02-programmatic-document-contract-verification.md": "PASS",
+    "design/03-companion-driven-document-verification.md": "PASS",
+    "design/05-trusted-kernel-redesign.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 385,
+     "ms": 536.850916000003,
+     "keys": [
+      "witness_relevant-bdf48094513b"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 504,
+     "ms": 452.59708300000057,
+     "keys": [
+      "witness_relevant-d5322ea720ab"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 2,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 462,
+     "ms": 857.416874999999,
+     "keys": [
+      "witness_relevant-952480975a73"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 3,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 405,
+     "ms": 544.4371659999997,
+     "keys": [
+      "witness_relevant-f538065cee02"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 4,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 381,
+     "ms": 325.60616599999776,
+     "keys": [
+      "witness_relevant-f85fd5fc91e9"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 5,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 410,
+     "ms": 368.26129199999923,
+     "keys": [
+      "witness_relevant-75f079b8ce5a"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 6,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 392,
+     "ms": 310.17341600000145,
+     "keys": [
+      "witness_relevant-d4881f58f8d9"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 7,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 423,
+     "ms": 345.9147920000032,
+     "keys": [
+      "witness_relevant-a2ad2239536e"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 8,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 360,
+     "ms": 394.2631250000013,
+     "keys": [
+      "witness_relevant-d18a2ae70503"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 9,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 345,
+     "ms": 328.590916000001,
+     "keys": [
+      "witness_relevant-c48a18468e42"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 10,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 361,
+     "ms": 361.32354100000157,
+     "keys": [
+      "witness_relevant-046f9a839d78"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 11,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 319,
+     "ms": 350.950458000003,
+     "keys": [
+      "witness_relevant-6d0a1e768be3"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 12,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 293,
+     "ms": 339.2586670000019,
+     "keys": [
+      "witness_relevant-ed8faf3fbad7"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 13,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 351,
+     "ms": 308.24883300000147,
+     "keys": [
+      "witness_relevant-927f0c6ef344"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 14,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 344,
+     "ms": 363.8917500000025,
+     "keys": [
+      "witness_relevant-dabcd1cf3824"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 15,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 327,
+     "ms": 324.013167000001,
+     "keys": [
+      "witness_relevant-a4d29638c8c2"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 16,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 365,
+     "ms": 301.53779099999883,
+     "keys": [
+      "witness_relevant-bc44b0c7c89b"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 17,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 407,
+     "ms": 419.0767500000002,
+     "keys": [
+      "witness_relevant-04996951eea5"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 18,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 345,
+     "ms": 335.8675839999996,
+     "keys": [
+      "witness_relevant-3de41b43439f"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 19,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 451,
+     "ms": 350.5983750000014,
+     "keys": [
+      "witness_relevant-737d25671c1f"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 20,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 510,
+     "ms": 319.51441700000214,
+     "keys": [
+      "witness_relevant-72209862a92a"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 21,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 407,
+     "ms": 343.7103329999991,
+     "keys": [
+      "witness_relevant-b95d57321926"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 22,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 472,
+     "ms": 310.19512499999837,
+     "keys": [
+      "witness_relevant-b89244d7ba0f"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 23,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 356,
+     "ms": 362.17483300000094,
+     "keys": [
+      "witness_relevant-026a9017ec87"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 24,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 298,
+     "ms": 312.6490410000006,
+     "keys": [
+      "witness_relevant-2cbbc824d210"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 25,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 317,
+     "ms": 357.1713750000017,
+     "keys": [
+      "witness_relevant-e501b5eef4df"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 26,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 382,
+     "ms": 377.8929590000007,
+     "keys": [
+      "witness_relevant-a86a2e1f8437"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 27,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 361,
+     "ms": 313.5500830000019,
+     "keys": [
+      "witness_relevant-862c018df65b"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 28,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 275,
+     "ms": 310.4031250000007,
+     "keys": [
+      "witness_relevant-5c482b7a9f6f"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 29,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 370,
+     "ms": 419.7872079999979,
+     "keys": [
+      "witness_relevant-f485daa0a6a3"
+     ],
+     "oracles": [
+      "witness_relevant"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row1, [Property, Observable failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant-bdf48094513b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.12,
+      0.02
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 385,
+     "followup": false,
+     "bytes": 191,
+     "cacheHit": false,
+     "textHash": "9dffd17cf480440f",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row10, [Property, Observable failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_relevant-d5322ea720ab",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.88,
+      0.1,
+      0.02
+     ],
+     "p": 0.88,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 504,
+     "followup": false,
+     "bytes": 310,
+     "cacheHit": false,
+     "textHash": "c5224277e089e269",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row11, [Property, Observable failure witness])",
+     "row": "row11",
+     "rowId": "verification-design#row11",
+     "section": "",
+     "origRowId": "verification-design#row11",
+     "key": "witness_relevant-952480975a73",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.95,
+      0.04,
+      0.01
+     ],
+     "p": 0.95,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 2,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 462,
+     "followup": false,
+     "bytes": 268,
+     "cacheHit": false,
+     "textHash": "9e2da77f905c78a7",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row2, [Property, Observable failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant-f538065cee02",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.65,
+      0.29,
+      0.06
+     ],
+     "p": 0.65,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 3,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 405,
+     "followup": false,
+     "bytes": 211,
+     "cacheHit": false,
+     "textHash": "28673f94c2f58c2a",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row3, [Property, Observable failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant-f85fd5fc91e9",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.05,
+      0.03
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 4,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 381,
+     "followup": false,
+     "bytes": 187,
+     "cacheHit": false,
+     "textHash": "9aba1891c9ec07de",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row4, [Property, Observable failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant-75f079b8ce5a",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.03,
+      0.01
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 5,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 410,
+     "followup": false,
+     "bytes": 216,
+     "cacheHit": false,
+     "textHash": "9b3e1651b2b2d31d",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row5, [Property, Observable failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant-d4881f58f8d9",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.11,
+      0.02
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 6,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 392,
+     "followup": false,
+     "bytes": 198,
+     "cacheHit": false,
+     "textHash": "b8aa796cb9fe3e6d",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row6, [Property, Observable failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant-a2ad2239536e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.84,
+      0.13,
+      0.03
+     ],
+     "p": 0.84,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 7,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 423,
+     "followup": false,
+     "bytes": 229,
+     "cacheHit": false,
+     "textHash": "49a29bf59f3bc0c7",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row7, [Property, Observable failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant-d18a2ae70503",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.02,
+      0.01
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 8,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 360,
+     "followup": false,
+     "bytes": 166,
+     "cacheHit": false,
+     "textHash": "597787446b3c5bc6",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row8, [Property, Observable failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant-c48a18468e42",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.65,
+      0.26,
+      0.09
+     ],
+     "p": 0.65,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 9,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 345,
+     "followup": false,
+     "bytes": 151,
+     "cacheHit": false,
+     "textHash": "f218b670e626a5b3",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/02-programmatic-document-contract-verification.md, verification-design#row9, [Property, Observable failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant-046f9a839d78",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.68,
+      0.28,
+      0.03
+     ],
+     "p": 0.68,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 10,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 361,
+     "followup": false,
+     "bytes": 167,
+     "cacheHit": false,
+     "textHash": "d6d4fce56ca9276e",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant-6d0a1e768be3",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.6,
+      0.35,
+      0.05
+     ],
+     "p": 0.6,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 11,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 319,
+     "followup": false,
+     "bytes": 130,
+     "cacheHit": false,
+     "textHash": "4f42018051cce2db",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant-ed8faf3fbad7",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.77,
+      0.19,
+      0.04
+     ],
+     "p": 0.77,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 12,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 293,
+     "followup": false,
+     "bytes": 104,
+     "cacheHit": false,
+     "textHash": "9c1862ee4b59eaba",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant-927f0c6ef344",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.06,
+      0.02
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 13,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 351,
+     "followup": false,
+     "bytes": 162,
+     "cacheHit": false,
+     "textHash": "f54af7249b80194a",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant-dabcd1cf3824",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.95,
+      0.04,
+      0.01
+     ],
+     "p": 0.95,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 14,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 344,
+     "followup": false,
+     "bytes": 155,
+     "cacheHit": false,
+     "textHash": "d6f53c4d3f9c0150",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant-a4d29638c8c2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.13,
+      0.02
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 15,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 327,
+     "followup": false,
+     "bytes": 138,
+     "cacheHit": false,
+     "textHash": "4181f82842391a5e",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant-bc44b0c7c89b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.95,
+      0.04,
+      0.01
+     ],
+     "p": 0.95,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 16,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 365,
+     "followup": false,
+     "bytes": 176,
+     "cacheHit": false,
+     "textHash": "5e945f9516cc39a5",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant-04996951eea5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.08,
+      0.05
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 17,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 407,
+     "followup": false,
+     "bytes": 218,
+     "cacheHit": false,
+     "textHash": "f64a61641b6a3ab0",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant-3de41b43439f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.71,
+      0.18,
+      0.11
+     ],
+     "p": 0.71,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 18,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 345,
+     "followup": false,
+     "bytes": 156,
+     "cacheHit": false,
+     "textHash": "e7d3344b12907b5e",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/03-companion-driven-document-verification.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant-737d25671c1f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.06,
+      0.02
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 19,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 451,
+     "followup": false,
+     "bytes": 262,
+     "cacheHit": false,
+     "textHash": "34a5a74a7ee0d2a5",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant-72209862a92a",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.11,
+      0.04
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 20,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 510,
+     "followup": false,
+     "bytes": 336,
+     "cacheHit": false,
+     "textHash": "9c3e1215da4b4ff4",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row10, [Property, Failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_relevant-b95d57321926",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.84,
+      0.12,
+      0.04
+     ],
+     "p": 0.84,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 21,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 407,
+     "followup": false,
+     "bytes": 233,
+     "cacheHit": false,
+     "textHash": "587ff3b00a77667b",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant-b89244d7ba0f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.06,
+      0.01
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 22,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 472,
+     "followup": false,
+     "bytes": 298,
+     "cacheHit": false,
+     "textHash": "3684fae93c8cf727",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant-026a9017ec87",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.6900000000000001,
+      0.25,
+      0.06
+     ],
+     "p": 0.6900000000000001,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 23,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 356,
+     "followup": false,
+     "bytes": 182,
+     "cacheHit": false,
+     "textHash": "4ed51ead89c2828b",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant-2cbbc824d210",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.72,
+      0.21,
+      0.07
+     ],
+     "p": 0.72,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 24,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 298,
+     "followup": false,
+     "bytes": 124,
+     "cacheHit": false,
+     "textHash": "890ad5ec821a0b87",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant-e501b5eef4df",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.1,
+      0.05
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 25,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 317,
+     "followup": false,
+     "bytes": 143,
+     "cacheHit": false,
+     "textHash": "cd4876a7fc5ae63e",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant-a86a2e1f8437",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.95,
+      0.04,
+      0.01
+     ],
+     "p": 0.95,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 26,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 382,
+     "followup": false,
+     "bytes": 208,
+     "cacheHit": false,
+     "textHash": "4fdddb5f4b804773",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant-862c018df65b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.66,
+      0.28,
+      0.06
+     ],
+     "p": 0.66,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 27,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 361,
+     "followup": false,
+     "bytes": 187,
+     "cacheHit": false,
+     "textHash": "2d91db521c3047f8",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant-5c482b7a9f6f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.11,
+      0.02
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 28,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 275,
+     "followup": false,
+     "bytes": 101,
+     "cacheHit": false,
+     "textHash": "09a6120cc347c8f1",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:relevance-labels.yaml",
+     "mode": "real-cells",
+     "fixture": "relevance-labels.yaml",
+     "source": "relevance-labels.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_relevant",
+     "atom": "round9.witness_relevant.witness_relevant(design/05-trusted-kernel-redesign.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant-f485daa0a6a3",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.07,
+      0.01
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 29,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 370,
+     "followup": false,
+     "bytes": 196,
+     "cacheHit": false,
+     "textHash": "24cfcdded14f12ff",
+     "questionHash": "460c202056014f0b",
+     "expect": null,
+     "lead": "holds"
+    }
+   ],
+   "at": "2026-10-13T03:08:58.204Z"
+  }
+ ]
+}

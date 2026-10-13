@@ -1,0 +1,1827 @@
+{
+ "ledger": "round9-R1p",
+ "runs": [
+  {
+   "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+   "mode": "fixtures",
+   "fixture": "witness_relevant_paraphrase/defective-swapped",
+   "source": "witness_relevant_paraphrase/defective-swapped",
+   "set": "witness_relevant_paraphrase",
+   "ledger": "round9-R1p",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/artifact.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/witness_relevant_paraphrase/module.yaml",
+     "request_shape": "per-atom"
+    }
+   ],
+   "wall_ms": 8981.265833000001,
+   "cost": {
+    "main": 14,
+    "followups": 0,
+    "requests": 14,
+    "asked": 14,
+    "worst": 14,
+    "bytes": 2756
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "requests": 14
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "design/04-modular-verification-language.md": "NEEDS-REVIEW"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 413,
+     "ms": 440.666416,
+     "keys": [
+      "witness_relevant_paraphrase-8b58928dc4ba"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 347,
+     "ms": 359.7793329999986,
+     "keys": [
+      "witness_relevant_paraphrase-fc7ea52e388d"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 2,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 424,
+     "ms": 295.80433300000004,
+     "keys": [
+      "witness_relevant_paraphrase-3a4c38464e77"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 3,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 367,
+     "ms": 328.0368330000001,
+     "keys": [
+      "witness_relevant_paraphrase-ef8a479386af"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 4,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 389,
+     "ms": 351.6247079999994,
+     "keys": [
+      "witness_relevant_paraphrase-a6ccf7674478"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 5,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 382,
+     "ms": 392.0318750000006,
+     "keys": [
+      "witness_relevant_paraphrase-891e9a4acc67"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 6,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 359,
+     "ms": 294.5655829999996,
+     "keys": [
+      "witness_relevant_paraphrase-f353ccee4188"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 7,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 331,
+     "ms": 423.16879100000006,
+     "keys": [
+      "witness_relevant_paraphrase-95f80bfc72b8"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 8,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 327,
+     "ms": 346.6416250000002,
+     "keys": [
+      "witness_relevant_paraphrase-b1229e657ab2"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 9,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 408,
+     "ms": 369.9308340000007,
+     "keys": [
+      "witness_relevant_paraphrase-30e505c0df76"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 10,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 426,
+     "ms": 570.2141249999986,
+     "keys": [
+      "witness_relevant_paraphrase-56e89dba1fd4"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 11,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 409,
+     "ms": 554.4602500000001,
+     "keys": [
+      "witness_relevant_paraphrase-48dc823a90ff"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 12,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 419,
+     "ms": 304.9122920000009,
+     "keys": [
+      "witness_relevant_paraphrase-c5d6f7300831"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 13,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 429,
+     "ms": 294.4210830000011,
+     "keys": [
+      "witness_relevant_paraphrase-8c7f1c4dbd4f"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant_paraphrase-8b58928dc4ba",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.8,
+      0.16,
+      0.04
+     ],
+     "p": 0.8,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 413,
+     "followup": false,
+     "bytes": 222,
+     "cacheHit": false,
+     "textHash": "e14fb5f6a403e199",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row10, [Property, Failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_relevant_paraphrase-fc7ea52e388d",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.6900000000000001,
+      0.24,
+      0.07
+     ],
+     "p": 0.6900000000000001,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 347,
+     "followup": false,
+     "bytes": 156,
+     "cacheHit": false,
+     "textHash": "3ef9dfbc0807a0ad",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row11, [Property, Failure witness])",
+     "row": "row11",
+     "rowId": "verification-design#row11",
+     "section": "",
+     "origRowId": "verification-design#row11",
+     "key": "witness_relevant_paraphrase-3a4c38464e77",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.09,
+      0.04
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 2,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 424,
+     "followup": false,
+     "bytes": 233,
+     "cacheHit": false,
+     "textHash": "0d4b29d98165d457",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "ambiguous",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row12, [Property, Failure witness])",
+     "row": "row12",
+     "rowId": "verification-design#row12",
+     "section": "",
+     "origRowId": "verification-design#row12",
+     "key": "witness_relevant_paraphrase-ef8a479386af",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.09,
+      0.04
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 3,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 367,
+     "followup": false,
+     "bytes": 176,
+     "cacheHit": false,
+     "textHash": "7400ef1d805ff786",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row13, [Property, Failure witness])",
+     "row": "row13",
+     "rowId": "verification-design#row13",
+     "section": "",
+     "origRowId": "verification-design#row13",
+     "key": "witness_relevant_paraphrase-a6ccf7674478",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.89,
+      0.09,
+      0.02
+     ],
+     "p": 0.89,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 4,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 389,
+     "followup": false,
+     "bytes": 198,
+     "cacheHit": false,
+     "textHash": "1f89d9f698151bf5",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "ambiguous",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row14, [Property, Failure witness])",
+     "row": "row14",
+     "rowId": "verification-design#row14",
+     "section": "",
+     "origRowId": "verification-design#row14",
+     "key": "witness_relevant_paraphrase-891e9a4acc67",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.07,
+      0.01
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 5,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 382,
+     "followup": false,
+     "bytes": 191,
+     "cacheHit": false,
+     "textHash": "06d005ce2f189bf2",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant_paraphrase-f353ccee4188",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.56,
+      0.41,
+      0.03
+     ],
+     "p": 0.56,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 6,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 359,
+     "followup": false,
+     "bytes": 168,
+     "cacheHit": false,
+     "textHash": "35a558be684d64c0",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant_paraphrase-95f80bfc72b8",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.12,
+      0.02
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 7,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 331,
+     "followup": false,
+     "bytes": 140,
+     "cacheHit": false,
+     "textHash": "69c443597081dae7",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "ambiguous",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant_paraphrase-b1229e657ab2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.66,
+      0.29,
+      0.05
+     ],
+     "p": 0.66,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 8,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 327,
+     "followup": false,
+     "bytes": 136,
+     "cacheHit": false,
+     "textHash": "3fd0ef94a6da0362",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant_paraphrase-30e505c0df76",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.79,
+      0.18,
+      0.03
+     ],
+     "p": 0.79,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 9,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 408,
+     "followup": false,
+     "bytes": 217,
+     "cacheHit": false,
+     "textHash": "204c5e3e10e91146",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant_paraphrase-56e89dba1fd4",
+     "label": "unknown",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.49,
+      0.41,
+      0.1
+     ],
+     "p": 0.49,
+     "threshold": 0.5,
+     "leafShape": "threshold-demoted",
+     "finding": null,
+     "request": 10,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 426,
+     "followup": false,
+     "bytes": 235,
+     "cacheHit": false,
+     "textHash": "408d89f3b3f39d39",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant_paraphrase-48dc823a90ff",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.84,
+      0.13,
+      0.03
+     ],
+     "p": 0.84,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 11,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 409,
+     "followup": false,
+     "bytes": 218,
+     "cacheHit": false,
+     "textHash": "b89b964e782c3efc",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "ambiguous",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant_paraphrase-c5d6f7300831",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.7,
+      0.19,
+      0.11
+     ],
+     "p": 0.7,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 12,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 419,
+     "followup": false,
+     "bytes": 228,
+     "cacheHit": false,
+     "textHash": "4b417aefae177285",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/defective-swapped",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/defective-swapped",
+     "source": "witness_relevant_paraphrase/defective-swapped",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant_paraphrase-8c7f1c4dbd4f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.77,
+      0.2,
+      0.03
+     ],
+     "p": 0.77,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 13,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 429,
+     "followup": false,
+     "bytes": 238,
+     "cacheHit": false,
+     "textHash": "869bf261a811eb6d",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T03:08:13.758Z"
+  },
+  {
+   "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+   "mode": "fixtures",
+   "fixture": "witness_relevant_paraphrase/relevance-controls",
+   "source": "witness_relevant_paraphrase/relevance-controls",
+   "set": "witness_relevant_paraphrase",
+   "ledger": "round9-R1p",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/artifact.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/witness_relevant_paraphrase/module.yaml",
+     "request_shape": "per-atom"
+    }
+   ],
+   "wall_ms": 8265.469957999998,
+   "cost": {
+    "main": 14,
+    "followups": 0,
+    "requests": 14,
+    "asked": 14,
+    "worst": 14,
+    "bytes": 2178
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "requests": 14
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "design/04-modular-verification-language.md": "NEEDS-REVIEW"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 360,
+     "ms": 412.8799579999977,
+     "keys": [
+      "witness_relevant_paraphrase-8b58928dc4ba"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 255,
+     "ms": 296.3909999999996,
+     "keys": [
+      "witness_relevant_paraphrase-fc7ea52e388d"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 2,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 432,
+     "ms": 318.9317090000004,
+     "keys": [
+      "witness_relevant_paraphrase-3a4c38464e77"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 3,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 276,
+     "ms": 362.0378329999985,
+     "keys": [
+      "witness_relevant_paraphrase-ef8a479386af"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 4,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 392,
+     "ms": 295.03179100000125,
+     "keys": [
+      "witness_relevant_paraphrase-a6ccf7674478"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 5,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 260,
+     "ms": 324.349000000002,
+     "keys": [
+      "witness_relevant_paraphrase-891e9a4acc67"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 6,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 257,
+     "ms": 310.7551249999997,
+     "keys": [
+      "witness_relevant_paraphrase-f353ccee4188"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 7,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 421,
+     "ms": 300.3913339999999,
+     "keys": [
+      "witness_relevant_paraphrase-95f80bfc72b8"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 8,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 439,
+     "ms": 343.9112090000017,
+     "keys": [
+      "witness_relevant_paraphrase-b1229e657ab2"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 9,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 427,
+     "ms": 294.12674999999945,
+     "keys": [
+      "witness_relevant_paraphrase-30e505c0df76"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 10,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 247,
+     "ms": 420.44420900000114,
+     "keys": [
+      "witness_relevant_paraphrase-56e89dba1fd4"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 11,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 370,
+     "ms": 341.04912500000137,
+     "keys": [
+      "witness_relevant_paraphrase-48dc823a90ff"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 12,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 365,
+     "ms": 314.63833400000294,
+     "keys": [
+      "witness_relevant_paraphrase-c5d6f7300831"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 13,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 351,
+     "ms": 313.22762499999953,
+     "keys": [
+      "witness_relevant_paraphrase-8c7f1c4dbd4f"
+     ],
+     "oracles": [
+      "witness_relevant_paraphrase"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_relevant_paraphrase-8b58928dc4ba",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.11,
+      0.02
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 360,
+     "followup": false,
+     "bytes": 169,
+     "cacheHit": false,
+     "textHash": "6917915f0c2a7f26",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row10, [Property, Failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_relevant_paraphrase-fc7ea52e388d",
+     "label": "unknown",
+     "answered": "fails",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.35,
+      0.36,
+      0.29
+     ],
+     "p": 0.36,
+     "threshold": 0.5,
+     "leafShape": "threshold-demoted",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 255,
+     "followup": false,
+     "bytes": 64,
+     "cacheHit": false,
+     "textHash": "b8877cc146f2e4aa",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "neutral",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row11, [Property, Failure witness])",
+     "row": "row11",
+     "rowId": "verification-design#row11",
+     "section": "",
+     "origRowId": "verification-design#row11",
+     "key": "witness_relevant_paraphrase-3a4c38464e77",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.9299999999999999,
+      0.06,
+      0.01
+     ],
+     "p": 0.9299999999999999,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 2,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 432,
+     "followup": false,
+     "bytes": 241,
+     "cacheHit": false,
+     "textHash": "debd6bac80dce91f",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row12, [Property, Failure witness])",
+     "row": "row12",
+     "rowId": "verification-design#row12",
+     "section": "",
+     "origRowId": "verification-design#row12",
+     "key": "witness_relevant_paraphrase-ef8a479386af",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.04,
+      0.02
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 3,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 276,
+     "followup": false,
+     "bytes": 85,
+     "cacheHit": false,
+     "textHash": "a987fdde8e86f96a",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "neutral",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row13, [Property, Failure witness])",
+     "row": "row13",
+     "rowId": "verification-design#row13",
+     "section": "",
+     "origRowId": "verification-design#row13",
+     "key": "witness_relevant_paraphrase-a6ccf7674478",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.94,
+      0.05,
+      0.01
+     ],
+     "p": 0.94,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 4,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 392,
+     "followup": false,
+     "bytes": 201,
+     "cacheHit": false,
+     "textHash": "74945a5e3827964f",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row14, [Property, Failure witness])",
+     "row": "row14",
+     "rowId": "verification-design#row14",
+     "section": "",
+     "origRowId": "verification-design#row14",
+     "key": "witness_relevant_paraphrase-891e9a4acc67",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.08,
+      0.05
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 5,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 260,
+     "followup": false,
+     "bytes": 69,
+     "cacheHit": false,
+     "textHash": "c59b61b37657ff80",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "neutral",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_relevant_paraphrase-f353ccee4188",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.95,
+      0.03,
+      0.02
+     ],
+     "p": 0.95,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 6,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 257,
+     "followup": false,
+     "bytes": 66,
+     "cacheHit": false,
+     "textHash": "36ae59912fa5e394",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "neutral",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_relevant_paraphrase-95f80bfc72b8",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.69,
+      0.28,
+      0.03
+     ],
+     "p": 0.69,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 7,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 421,
+     "followup": false,
+     "bytes": 230,
+     "cacheHit": false,
+     "textHash": "65fa6218fde5e3f2",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_relevant_paraphrase-b1229e657ab2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.1,
+      0.03
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 8,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 439,
+     "followup": false,
+     "bytes": 248,
+     "cacheHit": false,
+     "textHash": "91fb4cf90d54e4d7",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_relevant_paraphrase-30e505c0df76",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.71,
+      0.24,
+      0.05
+     ],
+     "p": 0.71,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 9,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 427,
+     "followup": false,
+     "bytes": 236,
+     "cacheHit": false,
+     "textHash": "66b19fcb56b5e8e4",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_relevant_paraphrase-56e89dba1fd4",
+     "label": "unknown",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.49,
+      0.28,
+      0.23
+     ],
+     "p": 0.49,
+     "threshold": 0.5,
+     "leafShape": "threshold-demoted",
+     "finding": null,
+     "request": 10,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 247,
+     "followup": false,
+     "bytes": 56,
+     "cacheHit": false,
+     "textHash": "87848c3d51fd0690",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "neutral",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_relevant_paraphrase-48dc823a90ff",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.76,
+      0.19,
+      0.05
+     ],
+     "p": 0.76,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 11,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 370,
+     "followup": false,
+     "bytes": 179,
+     "cacheHit": false,
+     "textHash": "8917b33f8407aad4",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_relevant_paraphrase-c5d6f7300831",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.71,
+      0.21,
+      0.08
+     ],
+     "p": 0.71,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 12,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 365,
+     "followup": false,
+     "bytes": 174,
+     "cacheHit": false,
+     "textHash": "1b476c39a9c0499f",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "fails",
+     "lead": null
+    },
+    {
+     "run": "fixtures:witness_relevant_paraphrase/relevance-controls",
+     "mode": "fixtures",
+     "fixture": "witness_relevant_paraphrase/relevance-controls",
+     "source": "witness_relevant_paraphrase/relevance-controls",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_relevant_paraphrase",
+     "atom": "round9.witness_relevant_paraphrase.witness_relevant_paraphrase(design/04-modular-verification-language.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_relevant_paraphrase-8c7f1c4dbd4f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.06,
+      0.01
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 13,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 351,
+     "followup": false,
+     "bytes": 160,
+     "cacheHit": false,
+     "textHash": "b8fb5d2c7c9e1284",
+     "questionHash": "e2ab359f3555491f",
+     "expect": "holds",
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T03:08:25.893Z"
+  }
+ ]
+}

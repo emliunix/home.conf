@@ -1,0 +1,6511 @@
+{
+ "ledger": "round10-design",
+ "runs": [
+  {
+   "run": "real-cells:witness-labels-r10.yaml",
+   "mode": "real-cells",
+   "fixture": "witness-labels-r10.yaml",
+   "source": "witness-labels-r10.yaml",
+   "set": null,
+   "ledger": "round10-design",
+   "arm": "normal",
+   "repeat": 1,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": "witness-labels-r10.yaml",
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/artifact.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/witness_observable_in_row/module.yaml",
+     "request_shape": "per-atom"
+    }
+   ],
+   "wall_ms": 21502.040125,
+   "cost": {
+    "main": 52,
+    "followups": 0,
+    "requests": 52,
+    "asked": 52,
+    "worst": 52,
+    "bytes": 10377
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "requests": 11
+    },
+    {
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "requests": 9
+    },
+    {
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "requests": 14
+    },
+    {
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "requests": 10
+    },
+    {
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "requests": 8
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "design/02-programmatic-document-contract-verification.md": "PASS",
+    "design/03-companion-driven-document-verification.md": "NEEDS-REVIEW",
+    "design/04-modular-verification-language.md": "PASS",
+    "design/05-trusted-kernel-redesign.md": "PASS",
+    "design/06-kernel-migration.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 394,
+     "ms": 422.5130829999998,
+     "keys": [
+      "witness_observable_in_row-de45b19c6bd5"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 513,
+     "ms": 297.02658299999985,
+     "keys": [
+      "witness_observable_in_row-a8f62f8976f6"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 2,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 471,
+     "ms": 278.3362500000003,
+     "keys": [
+      "witness_observable_in_row-2ab5ad7d743d"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 3,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 414,
+     "ms": 284.88304100000005,
+     "keys": [
+      "witness_observable_in_row-e73d0addb505"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 4,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 390,
+     "ms": 266.2479999999996,
+     "keys": [
+      "witness_observable_in_row-7f046c2932ed"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 5,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 419,
+     "ms": 303.12504100000024,
+     "keys": [
+      "witness_observable_in_row-eda8a8cac116"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 6,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 401,
+     "ms": 332.2848750000003,
+     "keys": [
+      "witness_observable_in_row-ef971c3c40be"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 7,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 432,
+     "ms": 291.81425000000036,
+     "keys": [
+      "witness_observable_in_row-d780351454d1"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 8,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 369,
+     "ms": 282.1301660000008,
+     "keys": [
+      "witness_observable_in_row-9923374d0d77"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 9,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 354,
+     "ms": 310.53654200000074,
+     "keys": [
+      "witness_observable_in_row-d0226c9c7763"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 10,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 370,
+     "ms": 428.73541600000135,
+     "keys": [
+      "witness_observable_in_row-05f20b52a2ac"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 11,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 328,
+     "ms": 517.7028339999997,
+     "keys": [
+      "witness_observable_in_row-4ce1ebfe178d"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 12,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 302,
+     "ms": 297.5977920000005,
+     "keys": [
+      "witness_observable_in_row-736880a2021f"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 13,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 360,
+     "ms": 279.73104199999943,
+     "keys": [
+      "witness_observable_in_row-5f91069e3113"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 14,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 353,
+     "ms": 308.231917000001,
+     "keys": [
+      "witness_observable_in_row-c3091cfa9619"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 15,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 336,
+     "ms": 335.467584,
+     "keys": [
+      "witness_observable_in_row-4cfa16559caa"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 16,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 374,
+     "ms": 411.0622910000002,
+     "keys": [
+      "witness_observable_in_row-4514e6006edd"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 17,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 416,
+     "ms": 323.72962499999994,
+     "keys": [
+      "witness_observable_in_row-476084b6620b"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 18,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 354,
+     "ms": 268.40720800000054,
+     "keys": [
+      "witness_observable_in_row-54ab46fa2dd2"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 19,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 460,
+     "ms": 302.106541000001,
+     "keys": [
+      "witness_observable_in_row-da837ed7bb6e"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 20,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 358,
+     "ms": 296.85662500000035,
+     "keys": [
+      "witness_observable_in_row-7a4409fb1fd5"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 21,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 406,
+     "ms": 395.173041,
+     "keys": [
+      "witness_observable_in_row-8c94810f2190"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 22,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 381,
+     "ms": 280.6666669999995,
+     "keys": [
+      "witness_observable_in_row-f88351d6bf96"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 23,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 373,
+     "ms": 305.481667,
+     "keys": [
+      "witness_observable_in_row-8a9c590a8ecc"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 24,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 390,
+     "ms": 287.6022499999999,
+     "keys": [
+      "witness_observable_in_row-78ad9be4fc5c"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 25,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 408,
+     "ms": 284.18625000000065,
+     "keys": [
+      "witness_observable_in_row-8dea9740e683"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 26,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 329,
+     "ms": 286.66041700000096,
+     "keys": [
+      "witness_observable_in_row-8b6c6a76f164"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 27,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 334,
+     "ms": 296.30454199999986,
+     "keys": [
+      "witness_observable_in_row-d62d544d443c"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 28,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 404,
+     "ms": 285.5321249999997,
+     "keys": [
+      "witness_observable_in_row-fd28cd1497bd"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 29,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 425,
+     "ms": 486.6749170000003,
+     "keys": [
+      "witness_observable_in_row-5c51042b29c6"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 30,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 394,
+     "ms": 296.47299999999996,
+     "keys": [
+      "witness_observable_in_row-3caab8739257"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 31,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 576,
+     "ms": 298.2910419999989,
+     "keys": [
+      "witness_observable_in_row-ecd81e95d357"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 32,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 418,
+     "ms": 274.533958,
+     "keys": [
+      "witness_observable_in_row-245e32b49f6a"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 33,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 349,
+     "ms": 324.62595899999906,
+     "keys": [
+      "witness_observable_in_row-63405697d35b"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 34,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 519,
+     "ms": 305.65741700000217,
+     "keys": [
+      "witness_observable_in_row-b38a649b5273"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 35,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 416,
+     "ms": 279.2530420000003,
+     "keys": [
+      "witness_observable_in_row-6b56bbda6c8c"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 36,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 481,
+     "ms": 271.41766700000153,
+     "keys": [
+      "witness_observable_in_row-7e352d201277"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 37,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 365,
+     "ms": 314.7987910000011,
+     "keys": [
+      "witness_observable_in_row-a105af5d3e5e"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 38,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 307,
+     "ms": 283.14616699999897,
+     "keys": [
+      "witness_observable_in_row-00dc31214b69"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 39,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 326,
+     "ms": 284.50254199999836,
+     "keys": [
+      "witness_observable_in_row-8770474f46f7"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 40,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 391,
+     "ms": 290.0203330000004,
+     "keys": [
+      "witness_observable_in_row-d9bdf2f0dbc1"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 41,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 370,
+     "ms": 277.07724999999846,
+     "keys": [
+      "witness_observable_in_row-fc1462fcb15f"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 42,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 284,
+     "ms": 287.39070899999933,
+     "keys": [
+      "witness_observable_in_row-afa273d5775d"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 43,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 379,
+     "ms": 489.21762500000114,
+     "keys": [
+      "witness_observable_in_row-5fed1ac966a2"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 44,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 424,
+     "ms": 316.4643329999999,
+     "keys": [
+      "witness_observable_in_row-88bd8bc51ded"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 45,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 424,
+     "ms": 275.20858299999963,
+     "keys": [
+      "witness_observable_in_row-7a1a9995c94d"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 46,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 356,
+     "ms": 284.71091700000034,
+     "keys": [
+      "witness_observable_in_row-9f8a35539011"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 47,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 298,
+     "ms": 564.7859590000007,
+     "keys": [
+      "witness_observable_in_row-bd66456f603b"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 48,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 404,
+     "ms": 409.4759580000027,
+     "keys": [
+      "witness_observable_in_row-ca4521f4f2cf"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 49,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 359,
+     "ms": 409.64054199999737,
+     "keys": [
+      "witness_observable_in_row-77ce4750b1c0"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 50,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 289,
+     "ms": 285.5902500000011,
+     "keys": [
+      "witness_observable_in_row-ce8c93d8d3e6"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 51,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 529,
+     "ms": 292.88116699999955,
+     "keys": [
+      "witness_observable_in_row-945748ab8630"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row1, [Property, Observable failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_observable_in_row-de45b19c6bd5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.95,
+      0.05,
+      0
+     ],
+     "p": 0.95,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 394,
+     "followup": false,
+     "bytes": 191,
+     "cacheHit": false,
+     "textHash": "9dffd17cf480440f",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row10, [Property, Observable failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_observable_in_row-a8f62f8976f6",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.04,
+      0
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 513,
+     "followup": false,
+     "bytes": 310,
+     "cacheHit": false,
+     "textHash": "c5224277e089e269",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row11, [Property, Observable failure witness])",
+     "row": "row11",
+     "rowId": "verification-design#row11",
+     "section": "",
+     "origRowId": "verification-design#row11",
+     "key": "witness_observable_in_row-2ab5ad7d743d",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.13,
+      0
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 2,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 471,
+     "followup": false,
+     "bytes": 268,
+     "cacheHit": false,
+     "textHash": "9e2da77f905c78a7",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row2, [Property, Observable failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_observable_in_row-e73d0addb505",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.83,
+      0.16,
+      0.01
+     ],
+     "p": 0.83,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 3,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 414,
+     "followup": false,
+     "bytes": 211,
+     "cacheHit": false,
+     "textHash": "28673f94c2f58c2a",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row3, [Property, Observable failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_observable_in_row-7f046c2932ed",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 4,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 390,
+     "followup": false,
+     "bytes": 187,
+     "cacheHit": false,
+     "textHash": "9aba1891c9ec07de",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row4, [Property, Observable failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_observable_in_row-eda8a8cac116",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.99,
+      0.01,
+      0
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 5,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 419,
+     "followup": false,
+     "bytes": 216,
+     "cacheHit": false,
+     "textHash": "9b3e1651b2b2d31d",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row5, [Property, Observable failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_observable_in_row-ef971c3c40be",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.94,
+      0.05,
+      0.01
+     ],
+     "p": 0.94,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 6,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 401,
+     "followup": false,
+     "bytes": 198,
+     "cacheHit": false,
+     "textHash": "b8aa796cb9fe3e6d",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row6, [Property, Observable failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_observable_in_row-d780351454d1",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.9,
+      0.08,
+      0.02
+     ],
+     "p": 0.9,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 7,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 432,
+     "followup": false,
+     "bytes": 229,
+     "cacheHit": false,
+     "textHash": "49a29bf59f3bc0c7",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row7, [Property, Observable failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_observable_in_row-9923374d0d77",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 8,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 369,
+     "followup": false,
+     "bytes": 166,
+     "cacheHit": false,
+     "textHash": "597787446b3c5bc6",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row8, [Property, Observable failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_observable_in_row-d0226c9c7763",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.91,
+      0.08,
+      0.01
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 9,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 354,
+     "followup": false,
+     "bytes": 151,
+     "cacheHit": false,
+     "textHash": "f218b670e626a5b3",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row9, [Property, Observable failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_observable_in_row-05f20b52a2ac",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.12,
+      0.01
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 10,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 370,
+     "followup": false,
+     "bytes": 167,
+     "cacheHit": false,
+     "textHash": "d6d4fce56ca9276e",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_observable_in_row-4ce1ebfe178d",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.71,
+      0.27,
+      0.02
+     ],
+     "p": 0.71,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 11,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 328,
+     "followup": false,
+     "bytes": 130,
+     "cacheHit": false,
+     "textHash": "4f42018051cce2db",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_observable_in_row-736880a2021f",
+     "label": "unknown",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.48,
+      0.48,
+      0.04
+     ],
+     "p": 0.48,
+     "threshold": 0.5,
+     "leafShape": "tie-or-malformed",
+     "finding": "the distribution ties holds, fails",
+     "request": 12,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 302,
+     "followup": false,
+     "bytes": 104,
+     "cacheHit": false,
+     "textHash": "9c1862ee4b59eaba",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_observable_in_row-5f91069e3113",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.13,
+      0.01
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 13,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 360,
+     "followup": false,
+     "bytes": 162,
+     "cacheHit": false,
+     "textHash": "f54af7249b80194a",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_observable_in_row-c3091cfa9619",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.04,
+      0
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 14,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 353,
+     "followup": false,
+     "bytes": 155,
+     "cacheHit": false,
+     "textHash": "d6f53c4d3f9c0150",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_observable_in_row-4cfa16559caa",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.91,
+      0.08,
+      0.01
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 15,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 336,
+     "followup": false,
+     "bytes": 138,
+     "cacheHit": false,
+     "textHash": "4181f82842391a5e",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_observable_in_row-4514e6006edd",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.99,
+      0.01,
+      0
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 16,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 374,
+     "followup": false,
+     "bytes": 176,
+     "cacheHit": false,
+     "textHash": "5e945f9516cc39a5",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_observable_in_row-476084b6620b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.12,
+      0.01
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 17,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 416,
+     "followup": false,
+     "bytes": 218,
+     "cacheHit": false,
+     "textHash": "f64a61641b6a3ab0",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_observable_in_row-54ab46fa2dd2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.91,
+      0.08,
+      0.01
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 18,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 354,
+     "followup": false,
+     "bytes": 156,
+     "cacheHit": false,
+     "textHash": "e7d3344b12907b5e",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "NEEDS-REVIEW",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_observable_in_row-da837ed7bb6e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.12,
+      0.01
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 19,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 460,
+     "followup": false,
+     "bytes": 262,
+     "cacheHit": false,
+     "textHash": "34a5a74a7ee0d2a5",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_observable_in_row-7a4409fb1fd5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.07,
+      0.01
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 20,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 358,
+     "followup": false,
+     "bytes": 169,
+     "cacheHit": false,
+     "textHash": "6917915f0c2a7f26",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row10, [Property, Failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_observable_in_row-8c94810f2190",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.13,
+      0.01
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 21,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 406,
+     "followup": false,
+     "bytes": 217,
+     "cacheHit": false,
+     "textHash": "2f910ae699a924d4",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row11, [Property, Failure witness])",
+     "row": "row11",
+     "rowId": "verification-design#row11",
+     "section": "",
+     "origRowId": "verification-design#row11",
+     "key": "witness_observable_in_row-f88351d6bf96",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.03,
+      0.01
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 22,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 381,
+     "followup": false,
+     "bytes": 192,
+     "cacheHit": false,
+     "textHash": "5994b82b510a5127",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row12, [Property, Failure witness])",
+     "row": "row12",
+     "rowId": "verification-design#row12",
+     "section": "",
+     "origRowId": "verification-design#row12",
+     "key": "witness_observable_in_row-8a9c590a8ecc",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.9,
+      0.09,
+      0.01
+     ],
+     "p": 0.9,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 23,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 373,
+     "followup": false,
+     "bytes": 184,
+     "cacheHit": false,
+     "textHash": "a1a77a57675505f6",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row13, [Property, Failure witness])",
+     "row": "row13",
+     "rowId": "verification-design#row13",
+     "section": "",
+     "origRowId": "verification-design#row13",
+     "key": "witness_observable_in_row-78ad9be4fc5c",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.9299999999999999,
+      0.06,
+      0.01
+     ],
+     "p": 0.9299999999999999,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 24,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 390,
+     "followup": false,
+     "bytes": 201,
+     "cacheHit": false,
+     "textHash": "74945a5e3827964f",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row14, [Property, Failure witness])",
+     "row": "row14",
+     "rowId": "verification-design#row14",
+     "section": "",
+     "origRowId": "verification-design#row14",
+     "key": "witness_observable_in_row-8dea9740e683",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.12,
+      0.01
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 25,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 408,
+     "followup": false,
+     "bytes": 219,
+     "cacheHit": false,
+     "textHash": "725c5a726d4da111",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_observable_in_row-8b6c6a76f164",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.91,
+      0.09,
+      0
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 26,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 329,
+     "followup": false,
+     "bytes": 140,
+     "cacheHit": false,
+     "textHash": "79fed87bcd3a0daf",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_observable_in_row-d62d544d443c",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.59,
+      0.39,
+      0.02
+     ],
+     "p": 0.59,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 27,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 334,
+     "followup": false,
+     "bytes": 145,
+     "cacheHit": false,
+     "textHash": "e8443a6db45d1e1e",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_observable_in_row-fd28cd1497bd",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.82,
+      0.17,
+      0.01
+     ],
+     "p": 0.82,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 28,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 404,
+     "followup": false,
+     "bytes": 215,
+     "cacheHit": false,
+     "textHash": "25f8fa382a54df3b",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_observable_in_row-5c51042b29c6",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.79,
+      0.2,
+      0.01
+     ],
+     "p": 0.79,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 29,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 425,
+     "followup": false,
+     "bytes": 236,
+     "cacheHit": false,
+     "textHash": "66b19fcb56b5e8e4",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_observable_in_row-3caab8739257",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.03,
+      0
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 30,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 394,
+     "followup": false,
+     "bytes": 205,
+     "cacheHit": false,
+     "textHash": "77835f9ca8c90ebf",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_observable_in_row-ecd81e95d357",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.05,
+      0.02
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 31,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 576,
+     "followup": false,
+     "bytes": 387,
+     "cacheHit": false,
+     "textHash": "dd7b8ce9c380b2a8",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_observable_in_row-245e32b49f6a",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.14,
+      0.01
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 32,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 418,
+     "followup": false,
+     "bytes": 229,
+     "cacheHit": false,
+     "textHash": "2fa4022744f719fb",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_observable_in_row-63405697d35b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.07,
+      0
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 33,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 349,
+     "followup": false,
+     "bytes": 160,
+     "cacheHit": false,
+     "textHash": "b8fb5d2c7c9e1284",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_observable_in_row-b38a649b5273",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.03,
+      0
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 34,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 519,
+     "followup": false,
+     "bytes": 336,
+     "cacheHit": false,
+     "textHash": "9c3e1215da4b4ff4",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row10, [Property, Failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_observable_in_row-6b56bbda6c8c",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.88,
+      0.11,
+      0.01
+     ],
+     "p": 0.88,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 35,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 416,
+     "followup": false,
+     "bytes": 233,
+     "cacheHit": false,
+     "textHash": "587ff3b00a77667b",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_observable_in_row-7e352d201277",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.94,
+      0.06,
+      0
+     ],
+     "p": 0.94,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 36,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 481,
+     "followup": false,
+     "bytes": 298,
+     "cacheHit": false,
+     "textHash": "3684fae93c8cf727",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_observable_in_row-a105af5d3e5e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.81,
+      0.18,
+      0.01
+     ],
+     "p": 0.81,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 37,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 365,
+     "followup": false,
+     "bytes": 182,
+     "cacheHit": false,
+     "textHash": "4ed51ead89c2828b",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_observable_in_row-00dc31214b69",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.14,
+      0.01
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 38,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 307,
+     "followup": false,
+     "bytes": 124,
+     "cacheHit": false,
+     "textHash": "890ad5ec821a0b87",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_observable_in_row-8770474f46f7",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.6799999999999999,
+      0.3,
+      0.02
+     ],
+     "p": 0.6799999999999999,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 39,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 326,
+     "followup": false,
+     "bytes": 143,
+     "cacheHit": false,
+     "textHash": "cd4876a7fc5ae63e",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_observable_in_row-d9bdf2f0dbc1",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.07,
+      0
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 40,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 391,
+     "followup": false,
+     "bytes": 208,
+     "cacheHit": false,
+     "textHash": "4fdddb5f4b804773",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_observable_in_row-fc1462fcb15f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.78,
+      0.21,
+      0.01
+     ],
+     "p": 0.78,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 41,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 370,
+     "followup": false,
+     "bytes": 187,
+     "cacheHit": false,
+     "textHash": "2d91db521c3047f8",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_observable_in_row-afa273d5775d",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.03,
+      0
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 42,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 284,
+     "followup": false,
+     "bytes": 101,
+     "cacheHit": false,
+     "textHash": "09a6120cc347c8f1",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_observable_in_row-5fed1ac966a2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.91,
+      0.08,
+      0.01
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 43,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 379,
+     "followup": false,
+     "bytes": 196,
+     "cacheHit": false,
+     "textHash": "24cfcdded14f12ff",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_observable_in_row-88bd8bc51ded",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 44,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 424,
+     "followup": false,
+     "bytes": 248,
+     "cacheHit": false,
+     "textHash": "21e90b7fab57d1d8",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_observable_in_row-7a1a9995c94d",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 45,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 424,
+     "followup": false,
+     "bytes": 248,
+     "cacheHit": false,
+     "textHash": "9849f0f43b9b8993",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_observable_in_row-9f8a35539011",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.12,
+      0.01
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 46,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 356,
+     "followup": false,
+     "bytes": 180,
+     "cacheHit": false,
+     "textHash": "833a104eeac0ae20",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_observable_in_row-bd66456f603b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.71,
+      0.27,
+      0.02
+     ],
+     "p": 0.71,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 47,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 298,
+     "followup": false,
+     "bytes": 122,
+     "cacheHit": false,
+     "textHash": "6199ab6433ee0056",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_observable_in_row-ca4521f4f2cf",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.07,
+      0.01
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 48,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 404,
+     "followup": false,
+     "bytes": 228,
+     "cacheHit": false,
+     "textHash": "d857df78d809afc5",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_observable_in_row-77ce4750b1c0",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.13,
+      0
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 49,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 359,
+     "followup": false,
+     "bytes": 183,
+     "cacheHit": false,
+     "textHash": "96232fdae2f9f3bf",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_observable_in_row-ce8c93d8d3e6",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.6,
+      0.39,
+      0.01
+     ],
+     "p": 0.6,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 50,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 289,
+     "followup": false,
+     "bytes": 113,
+     "cacheHit": false,
+     "textHash": "fb1b50f2d8ec43b8",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_observable_in_row-945748ab8630",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.13,
+      0.01
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 51,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 529,
+     "followup": false,
+     "bytes": 353,
+     "cacheHit": false,
+     "textHash": "3bbdea0b6dc7cf4f",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    }
+   ],
+   "at": "2026-10-13T00:25:29.100Z"
+  },
+  {
+   "run": "real-cells:witness-labels-r10.yaml",
+   "mode": "real-cells",
+   "fixture": "witness-labels-r10.yaml",
+   "source": "witness-labels-r10.yaml",
+   "set": null,
+   "ledger": "round10-design",
+   "arm": "normal",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": "witness-labels-r10.yaml",
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/.shapes/artifact.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    },
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/witness_observable_in_row/module.yaml",
+     "request_shape": "per-atom"
+    }
+   ],
+   "wall_ms": 20738.181542000002,
+   "cost": {
+    "main": 52,
+    "followups": 0,
+    "requests": 52,
+    "asked": 52,
+    "worst": 52,
+    "bytes": 10377
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "requests": 11
+    },
+    {
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "requests": 9
+    },
+    {
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "requests": 14
+    },
+    {
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "requests": 10
+    },
+    {
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "requests": 8
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "design/02-programmatic-document-contract-verification.md": "PASS",
+    "design/03-companion-driven-document-verification.md": "PASS",
+    "design/04-modular-verification-language.md": "PASS",
+    "design/05-trusted-kernel-redesign.md": "PASS",
+    "design/06-kernel-migration.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 394,
+     "ms": 342.71004200000243,
+     "keys": [
+      "witness_observable_in_row-de45b19c6bd5"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 513,
+     "ms": 368.8720420000027,
+     "keys": [
+      "witness_observable_in_row-a8f62f8976f6"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 2,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 471,
+     "ms": 288.74870799999917,
+     "keys": [
+      "witness_observable_in_row-2ab5ad7d743d"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 3,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 414,
+     "ms": 301.8294999999998,
+     "keys": [
+      "witness_observable_in_row-e73d0addb505"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 4,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 390,
+     "ms": 297.27266699999745,
+     "keys": [
+      "witness_observable_in_row-7f046c2932ed"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 5,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 419,
+     "ms": 301.41608300000007,
+     "keys": [
+      "witness_observable_in_row-eda8a8cac116"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 6,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 401,
+     "ms": 302.5154580000017,
+     "keys": [
+      "witness_observable_in_row-ef971c3c40be"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 7,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 432,
+     "ms": 327.94724999999744,
+     "keys": [
+      "witness_observable_in_row-d780351454d1"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 8,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 369,
+     "ms": 302.7752499999988,
+     "keys": [
+      "witness_observable_in_row-9923374d0d77"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 9,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 354,
+     "ms": 345.23020800000086,
+     "keys": [
+      "witness_observable_in_row-d0226c9c7763"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 10,
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 370,
+     "ms": 332.93083299999853,
+     "keys": [
+      "witness_observable_in_row-05f20b52a2ac"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 11,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 328,
+     "ms": 343.0219580000012,
+     "keys": [
+      "witness_observable_in_row-4ce1ebfe178d"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 12,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 302,
+     "ms": 318.659166999998,
+     "keys": [
+      "witness_observable_in_row-736880a2021f"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 13,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 360,
+     "ms": 298.71100000000297,
+     "keys": [
+      "witness_observable_in_row-5f91069e3113"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 14,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 353,
+     "ms": 296.23270799999955,
+     "keys": [
+      "witness_observable_in_row-c3091cfa9619"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 15,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 336,
+     "ms": 348.42233300000225,
+     "keys": [
+      "witness_observable_in_row-4cfa16559caa"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 16,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 374,
+     "ms": 293.30612499999916,
+     "keys": [
+      "witness_observable_in_row-4514e6006edd"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 17,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 416,
+     "ms": 296.6256250000006,
+     "keys": [
+      "witness_observable_in_row-476084b6620b"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 18,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 354,
+     "ms": 369.6998749999984,
+     "keys": [
+      "witness_observable_in_row-54ab46fa2dd2"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 19,
+     "document": "design/03-companion-driven-document-verification.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 460,
+     "ms": 306.2081670000007,
+     "keys": [
+      "witness_observable_in_row-da837ed7bb6e"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 20,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 358,
+     "ms": 290.8400419999998,
+     "keys": [
+      "witness_observable_in_row-7a4409fb1fd5"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 21,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 406,
+     "ms": 349.7204580000034,
+     "keys": [
+      "witness_observable_in_row-8c94810f2190"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 22,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 381,
+     "ms": 291.09266699999716,
+     "keys": [
+      "witness_observable_in_row-f88351d6bf96"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 23,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 373,
+     "ms": 304.650791,
+     "keys": [
+      "witness_observable_in_row-8a9c590a8ecc"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 24,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 390,
+     "ms": 316.28883399999904,
+     "keys": [
+      "witness_observable_in_row-78ad9be4fc5c"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 25,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 408,
+     "ms": 419.2958329999965,
+     "keys": [
+      "witness_observable_in_row-8dea9740e683"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 26,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 329,
+     "ms": 301.80158400000073,
+     "keys": [
+      "witness_observable_in_row-8b6c6a76f164"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 27,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 334,
+     "ms": 291.86404200000106,
+     "keys": [
+      "witness_observable_in_row-d62d544d443c"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 28,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 404,
+     "ms": 341.2432919999992,
+     "keys": [
+      "witness_observable_in_row-fd28cd1497bd"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 29,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 425,
+     "ms": 529.9293749999997,
+     "keys": [
+      "witness_observable_in_row-5c51042b29c6"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 30,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 394,
+     "ms": 292.79962499999965,
+     "keys": [
+      "witness_observable_in_row-3caab8739257"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 31,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 576,
+     "ms": 302.2474999999977,
+     "keys": [
+      "witness_observable_in_row-ecd81e95d357"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 32,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 418,
+     "ms": 294.9693750000006,
+     "keys": [
+      "witness_observable_in_row-245e32b49f6a"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 33,
+     "document": "design/04-modular-verification-language.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 349,
+     "ms": 310.5737500000032,
+     "keys": [
+      "witness_observable_in_row-63405697d35b"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 34,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 519,
+     "ms": 283.04166700000496,
+     "keys": [
+      "witness_observable_in_row-b38a649b5273"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 35,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 416,
+     "ms": 294.8133330000055,
+     "keys": [
+      "witness_observable_in_row-6b56bbda6c8c"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 36,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 481,
+     "ms": 408.82754099999875,
+     "keys": [
+      "witness_observable_in_row-7e352d201277"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 37,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 365,
+     "ms": 293.65462500000285,
+     "keys": [
+      "witness_observable_in_row-a105af5d3e5e"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 38,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 307,
+     "ms": 290.4538329999996,
+     "keys": [
+      "witness_observable_in_row-00dc31214b69"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 39,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 326,
+     "ms": 343.69916699999885,
+     "keys": [
+      "witness_observable_in_row-8770474f46f7"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 40,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 391,
+     "ms": 314.14208399999916,
+     "keys": [
+      "witness_observable_in_row-d9bdf2f0dbc1"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 41,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 370,
+     "ms": 301.68866600000183,
+     "keys": [
+      "witness_observable_in_row-fc1462fcb15f"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 42,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 284,
+     "ms": 295.7826249999998,
+     "keys": [
+      "witness_observable_in_row-afa273d5775d"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 43,
+     "document": "design/05-trusted-kernel-redesign.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 379,
+     "ms": 296.51787499999773,
+     "keys": [
+      "witness_observable_in_row-5fed1ac966a2"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 44,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 424,
+     "ms": 313.08166699999856,
+     "keys": [
+      "witness_observable_in_row-88bd8bc51ded"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 45,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 424,
+     "ms": 297.43537500000093,
+     "keys": [
+      "witness_observable_in_row-7a1a9995c94d"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 46,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 356,
+     "ms": 295.8507499999978,
+     "keys": [
+      "witness_observable_in_row-9f8a35539011"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 47,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 298,
+     "ms": 315.2304159999985,
+     "keys": [
+      "witness_observable_in_row-bd66456f603b"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 48,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 404,
+     "ms": 297.9382919999989,
+     "keys": [
+      "witness_observable_in_row-ca4521f4f2cf"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 49,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 359,
+     "ms": 322.1420829999988,
+     "keys": [
+      "witness_observable_in_row-77ce4750b1c0"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 50,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 289,
+     "ms": 288.6654999999955,
+     "keys": [
+      "witness_observable_in_row-ce8c93d8d3e6"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 51,
+     "document": "design/06-kernel-migration.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 529,
+     "ms": 334.60279199999786,
+     "keys": [
+      "witness_observable_in_row-945748ab8630"
+     ],
+     "oracles": [
+      "witness_observable_in_row"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row1, [Property, Observable failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_observable_in_row-de45b19c6bd5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.94,
+      0.06,
+      0
+     ],
+     "p": 0.94,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 394,
+     "followup": false,
+     "bytes": 191,
+     "cacheHit": false,
+     "textHash": "9dffd17cf480440f",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row10, [Property, Observable failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_observable_in_row-a8f62f8976f6",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 513,
+     "followup": false,
+     "bytes": 310,
+     "cacheHit": false,
+     "textHash": "c5224277e089e269",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row11, [Property, Observable failure witness])",
+     "row": "row11",
+     "rowId": "verification-design#row11",
+     "section": "",
+     "origRowId": "verification-design#row11",
+     "key": "witness_observable_in_row-2ab5ad7d743d",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.88,
+      0.12,
+      0
+     ],
+     "p": 0.88,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 2,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 471,
+     "followup": false,
+     "bytes": 268,
+     "cacheHit": false,
+     "textHash": "9e2da77f905c78a7",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row2, [Property, Observable failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_observable_in_row-e73d0addb505",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.8,
+      0.19,
+      0.01
+     ],
+     "p": 0.8,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 3,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 414,
+     "followup": false,
+     "bytes": 211,
+     "cacheHit": false,
+     "textHash": "28673f94c2f58c2a",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row3, [Property, Observable failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_observable_in_row-7f046c2932ed",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 4,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 390,
+     "followup": false,
+     "bytes": 187,
+     "cacheHit": false,
+     "textHash": "9aba1891c9ec07de",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row4, [Property, Observable failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_observable_in_row-eda8a8cac116",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.99,
+      0.01,
+      0
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 5,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 419,
+     "followup": false,
+     "bytes": 216,
+     "cacheHit": false,
+     "textHash": "9b3e1651b2b2d31d",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row5, [Property, Observable failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_observable_in_row-ef971c3c40be",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.95,
+      0.04,
+      0.01
+     ],
+     "p": 0.95,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 6,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 401,
+     "followup": false,
+     "bytes": 198,
+     "cacheHit": false,
+     "textHash": "b8aa796cb9fe3e6d",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row6, [Property, Observable failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_observable_in_row-d780351454d1",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.1,
+      0.03
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 7,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 432,
+     "followup": false,
+     "bytes": 229,
+     "cacheHit": false,
+     "textHash": "49a29bf59f3bc0c7",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row7, [Property, Observable failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_observable_in_row-9923374d0d77",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.03,
+      0
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 8,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 369,
+     "followup": false,
+     "bytes": 166,
+     "cacheHit": false,
+     "textHash": "597787446b3c5bc6",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row8, [Property, Observable failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_observable_in_row-d0226c9c7763",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.9,
+      0.09,
+      0.01
+     ],
+     "p": 0.9,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 9,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 354,
+     "followup": false,
+     "bytes": 151,
+     "cacheHit": false,
+     "textHash": "f218b670e626a5b3",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/02-programmatic-document-contract-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/02-programmatic-document-contract-verification.md, verification-design#row9, [Property, Observable failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_observable_in_row-05f20b52a2ac",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.91,
+      0.09,
+      0
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 10,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 370,
+     "followup": false,
+     "bytes": 167,
+     "cacheHit": false,
+     "textHash": "d6d4fce56ca9276e",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_observable_in_row-4ce1ebfe178d",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.7,
+      0.29,
+      0.01
+     ],
+     "p": 0.7,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 11,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 328,
+     "followup": false,
+     "bytes": 130,
+     "cacheHit": false,
+     "textHash": "4f42018051cce2db",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_observable_in_row-736880a2021f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.58,
+      0.39,
+      0.03
+     ],
+     "p": 0.58,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 12,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 302,
+     "followup": false,
+     "bytes": 104,
+     "cacheHit": false,
+     "textHash": "9c1862ee4b59eaba",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_observable_in_row-5f91069e3113",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.13,
+      0.01
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 13,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 360,
+     "followup": false,
+     "bytes": 162,
+     "cacheHit": false,
+     "textHash": "f54af7249b80194a",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_observable_in_row-c3091cfa9619",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.04,
+      0
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 14,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 353,
+     "followup": false,
+     "bytes": 155,
+     "cacheHit": false,
+     "textHash": "d6f53c4d3f9c0150",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_observable_in_row-4cfa16559caa",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.91,
+      0.08,
+      0.01
+     ],
+     "p": 0.91,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 15,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 336,
+     "followup": false,
+     "bytes": 138,
+     "cacheHit": false,
+     "textHash": "4181f82842391a5e",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_observable_in_row-4514e6006edd",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.99,
+      0.01,
+      0
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 16,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 374,
+     "followup": false,
+     "bytes": 176,
+     "cacheHit": false,
+     "textHash": "5e945f9516cc39a5",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_observable_in_row-476084b6620b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.13,
+      0.01
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 17,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 416,
+     "followup": false,
+     "bytes": 218,
+     "cacheHit": false,
+     "textHash": "f64a61641b6a3ab0",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_observable_in_row-54ab46fa2dd2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.07,
+      0.01
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 18,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 354,
+     "followup": false,
+     "bytes": 156,
+     "cacheHit": false,
+     "textHash": "e7d3344b12907b5e",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/03-companion-driven-document-verification.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/03-companion-driven-document-verification.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_observable_in_row-da837ed7bb6e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.13,
+      0.01
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 19,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 460,
+     "followup": false,
+     "bytes": 262,
+     "cacheHit": false,
+     "textHash": "34a5a74a7ee0d2a5",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_observable_in_row-7a4409fb1fd5",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.06,
+      0.01
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 20,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 358,
+     "followup": false,
+     "bytes": 169,
+     "cacheHit": false,
+     "textHash": "6917915f0c2a7f26",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row10, [Property, Failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_observable_in_row-8c94810f2190",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.86,
+      0.13,
+      0.01
+     ],
+     "p": 0.86,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 21,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 406,
+     "followup": false,
+     "bytes": 217,
+     "cacheHit": false,
+     "textHash": "2f910ae699a924d4",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row11, [Property, Failure witness])",
+     "row": "row11",
+     "rowId": "verification-design#row11",
+     "section": "",
+     "origRowId": "verification-design#row11",
+     "key": "witness_observable_in_row-f88351d6bf96",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.96,
+      0.03,
+      0.01
+     ],
+     "p": 0.96,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 22,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 381,
+     "followup": false,
+     "bytes": 192,
+     "cacheHit": false,
+     "textHash": "5994b82b510a5127",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row12, [Property, Failure witness])",
+     "row": "row12",
+     "rowId": "verification-design#row12",
+     "section": "",
+     "origRowId": "verification-design#row12",
+     "key": "witness_observable_in_row-8a9c590a8ecc",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.06,
+      0.01
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 23,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 373,
+     "followup": false,
+     "bytes": 184,
+     "cacheHit": false,
+     "textHash": "a1a77a57675505f6",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row13, [Property, Failure witness])",
+     "row": "row13",
+     "rowId": "verification-design#row13",
+     "section": "",
+     "origRowId": "verification-design#row13",
+     "key": "witness_observable_in_row-78ad9be4fc5c",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.94,
+      0.06,
+      0
+     ],
+     "p": 0.94,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 24,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 390,
+     "followup": false,
+     "bytes": 201,
+     "cacheHit": false,
+     "textHash": "74945a5e3827964f",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row14, [Property, Failure witness])",
+     "row": "row14",
+     "rowId": "verification-design#row14",
+     "section": "",
+     "origRowId": "verification-design#row14",
+     "key": "witness_observable_in_row-8dea9740e683",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.87,
+      0.12,
+      0.01
+     ],
+     "p": 0.87,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 25,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 408,
+     "followup": false,
+     "bytes": 219,
+     "cacheHit": false,
+     "textHash": "725c5a726d4da111",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_observable_in_row-8b6c6a76f164",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.89,
+      0.1,
+      0.01
+     ],
+     "p": 0.89,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 26,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 329,
+     "followup": false,
+     "bytes": 140,
+     "cacheHit": false,
+     "textHash": "79fed87bcd3a0daf",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_observable_in_row-d62d544d443c",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.57,
+      0.41,
+      0.02
+     ],
+     "p": 0.57,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 27,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 334,
+     "followup": false,
+     "bytes": 145,
+     "cacheHit": false,
+     "textHash": "e8443a6db45d1e1e",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_observable_in_row-fd28cd1497bd",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.81,
+      0.18,
+      0.01
+     ],
+     "p": 0.81,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 28,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 404,
+     "followup": false,
+     "bytes": 215,
+     "cacheHit": false,
+     "textHash": "25f8fa382a54df3b",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_observable_in_row-5c51042b29c6",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.84,
+      0.15,
+      0.01
+     ],
+     "p": 0.84,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 29,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 425,
+     "followup": false,
+     "bytes": 236,
+     "cacheHit": false,
+     "textHash": "66b19fcb56b5e8e4",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_observable_in_row-3caab8739257",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 30,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 394,
+     "followup": false,
+     "bytes": 205,
+     "cacheHit": false,
+     "textHash": "77835f9ca8c90ebf",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_observable_in_row-ecd81e95d357",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.05,
+      0.02
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 31,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 576,
+     "followup": false,
+     "bytes": 387,
+     "cacheHit": false,
+     "textHash": "dd7b8ce9c380b2a8",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_observable_in_row-245e32b49f6a",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.83,
+      0.16,
+      0.01
+     ],
+     "p": 0.83,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 32,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 418,
+     "followup": false,
+     "bytes": 229,
+     "cacheHit": false,
+     "textHash": "2fa4022744f719fb",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/04-modular-verification-language.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/04-modular-verification-language.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_observable_in_row-63405697d35b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.93,
+      0.07,
+      0
+     ],
+     "p": 0.93,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 33,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 349,
+     "followup": false,
+     "bytes": 160,
+     "cacheHit": false,
+     "textHash": "b8fb5d2c7c9e1284",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_observable_in_row-b38a649b5273",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.03,
+      0
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 34,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 519,
+     "followup": false,
+     "bytes": 336,
+     "cacheHit": false,
+     "textHash": "9c3e1215da4b4ff4",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row10, [Property, Failure witness])",
+     "row": "row10",
+     "rowId": "verification-design#row10",
+     "section": "",
+     "origRowId": "verification-design#row10",
+     "key": "witness_observable_in_row-6b56bbda6c8c",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.89,
+      0.1,
+      0.01
+     ],
+     "p": 0.89,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 35,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 416,
+     "followup": false,
+     "bytes": 233,
+     "cacheHit": false,
+     "textHash": "587ff3b00a77667b",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_observable_in_row-7e352d201277",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.94,
+      0.06,
+      0
+     ],
+     "p": 0.94,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 36,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 481,
+     "followup": false,
+     "bytes": 298,
+     "cacheHit": false,
+     "textHash": "3684fae93c8cf727",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_observable_in_row-a105af5d3e5e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.79,
+      0.2,
+      0.01
+     ],
+     "p": 0.79,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 37,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 365,
+     "followup": false,
+     "bytes": 182,
+     "cacheHit": false,
+     "textHash": "4ed51ead89c2828b",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_observable_in_row-00dc31214b69",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.79,
+      0.2,
+      0.01
+     ],
+     "p": 0.79,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 38,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 307,
+     "followup": false,
+     "bytes": 124,
+     "cacheHit": false,
+     "textHash": "890ad5ec821a0b87",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_observable_in_row-8770474f46f7",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.73,
+      0.25,
+      0.02
+     ],
+     "p": 0.73,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 39,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 326,
+     "followup": false,
+     "bytes": 143,
+     "cacheHit": false,
+     "textHash": "cd4876a7fc5ae63e",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_observable_in_row-d9bdf2f0dbc1",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.08,
+      0
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 40,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 391,
+     "followup": false,
+     "bytes": 208,
+     "cacheHit": false,
+     "textHash": "4fdddb5f4b804773",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_observable_in_row-fc1462fcb15f",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.76,
+      0.23,
+      0.01
+     ],
+     "p": 0.76,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 41,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 370,
+     "followup": false,
+     "bytes": 187,
+     "cacheHit": false,
+     "textHash": "2d91db521c3047f8",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_observable_in_row-afa273d5775d",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.97,
+      0.03,
+      0
+     ],
+     "p": 0.97,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 42,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 284,
+     "followup": false,
+     "bytes": 101,
+     "cacheHit": false,
+     "textHash": "09a6120cc347c8f1",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/05-trusted-kernel-redesign.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/05-trusted-kernel-redesign.md, verification-design#row9, [Property, Failure witness])",
+     "row": "row9",
+     "rowId": "verification-design#row9",
+     "section": "",
+     "origRowId": "verification-design#row9",
+     "key": "witness_observable_in_row-5fed1ac966a2",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.94,
+      0.06,
+      0
+     ],
+     "p": 0.94,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 43,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 379,
+     "followup": false,
+     "bytes": 196,
+     "cacheHit": false,
+     "textHash": "24cfcdded14f12ff",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row1, [Property, Failure witness])",
+     "row": "row1",
+     "rowId": "verification-design#row1",
+     "section": "",
+     "origRowId": "verification-design#row1",
+     "key": "witness_observable_in_row-88bd8bc51ded",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.98,
+      0.02,
+      0
+     ],
+     "p": 0.98,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 44,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 424,
+     "followup": false,
+     "bytes": 248,
+     "cacheHit": false,
+     "textHash": "21e90b7fab57d1d8",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row2, [Property, Failure witness])",
+     "row": "row2",
+     "rowId": "verification-design#row2",
+     "section": "",
+     "origRowId": "verification-design#row2",
+     "key": "witness_observable_in_row-7a1a9995c94d",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.99,
+      0.01,
+      0
+     ],
+     "p": 0.99,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 45,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 424,
+     "followup": false,
+     "bytes": 248,
+     "cacheHit": false,
+     "textHash": "9849f0f43b9b8993",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row3, [Property, Failure witness])",
+     "row": "row3",
+     "rowId": "verification-design#row3",
+     "section": "",
+     "origRowId": "verification-design#row3",
+     "key": "witness_observable_in_row-9f8a35539011",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.79,
+      0.2,
+      0.01
+     ],
+     "p": 0.79,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 46,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 356,
+     "followup": false,
+     "bytes": 180,
+     "cacheHit": false,
+     "textHash": "833a104eeac0ae20",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row4, [Property, Failure witness])",
+     "row": "row4",
+     "rowId": "verification-design#row4",
+     "section": "",
+     "origRowId": "verification-design#row4",
+     "key": "witness_observable_in_row-bd66456f603b",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.75,
+      0.23,
+      0.02
+     ],
+     "p": 0.75,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 47,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 298,
+     "followup": false,
+     "bytes": 122,
+     "cacheHit": false,
+     "textHash": "6199ab6433ee0056",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row5, [Property, Failure witness])",
+     "row": "row5",
+     "rowId": "verification-design#row5",
+     "section": "",
+     "origRowId": "verification-design#row5",
+     "key": "witness_observable_in_row-ca4521f4f2cf",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.92,
+      0.08,
+      0
+     ],
+     "p": 0.92,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 48,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 404,
+     "followup": false,
+     "bytes": 228,
+     "cacheHit": false,
+     "textHash": "d857df78d809afc5",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row6, [Property, Failure witness])",
+     "row": "row6",
+     "rowId": "verification-design#row6",
+     "section": "",
+     "origRowId": "verification-design#row6",
+     "key": "witness_observable_in_row-77ce4750b1c0",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.85,
+      0.15,
+      0
+     ],
+     "p": 0.85,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 49,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 359,
+     "followup": false,
+     "bytes": 183,
+     "cacheHit": false,
+     "textHash": "96232fdae2f9f3bf",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row7, [Property, Failure witness])",
+     "row": "row7",
+     "rowId": "verification-design#row7",
+     "section": "",
+     "origRowId": "verification-design#row7",
+     "key": "witness_observable_in_row-ce8c93d8d3e6",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.64,
+      0.35,
+      0.01
+     ],
+     "p": 0.64,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 50,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 289,
+     "followup": false,
+     "bytes": 113,
+     "cacheHit": false,
+     "textHash": "fb1b50f2d8ec43b8",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    },
+    {
+     "run": "real-cells:witness-labels-r10.yaml",
+     "mode": "real-cells",
+     "fixture": "witness-labels-r10.yaml",
+     "source": "witness-labels-r10.yaml",
+     "arm": "normal",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "design/06-kernel-migration.md",
+     "verdict": "PASS",
+     "oracle": "witness_observable_in_row",
+     "atom": "round4c.witness_observable_in_row.witness_observable_in_row(design/06-kernel-migration.md, verification-design#row8, [Property, Failure witness])",
+     "row": "row8",
+     "rowId": "verification-design#row8",
+     "section": "",
+     "origRowId": "verification-design#row8",
+     "key": "witness_observable_in_row-945748ab8630",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.9,
+      0.1,
+      0
+     ],
+     "p": 0.9,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 51,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 529,
+     "followup": false,
+     "bytes": 353,
+     "cacheHit": false,
+     "textHash": "3bbdea0b6dc7cf4f",
+     "questionHash": "9e46728df3a1a8ca",
+     "expect": null,
+     "lead": "holds"
+    }
+   ],
+   "at": "2026-10-13T00:25:49.841Z"
+  }
+ ]
+}
