@@ -1,0 +1,277 @@
+{
+  "cap": 172,
+  "live": {
+    "questions": 0,
+    "followups": 0,
+    "requests": 0,
+    "runs": []
+  },
+  "mock": {
+    "projections": {
+      "fixtures:evidence_reasons/good@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/good@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/good@per-atom#D": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/good@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/good-nopath@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/good-nopath@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/good-nopath@per-atom#D": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/good-nopath@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/good-dangling@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/good-dangling@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/good-dangling@per-atom#D": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/good-dangling@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/terse@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/terse@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/terse@per-atom#D": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/terse@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-bare@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-bare@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-bare@per-atom#D": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-bare@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-pointers@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-pointers@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-pointers@per-atom#D": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-pointers@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-restatement@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-restatement@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-restatement@per-atom#D": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-restatement@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-padded@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-padded@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-padded@per-atom#D": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-padded@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-wrongrow@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-wrongrow@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-wrongrow@per-atom#D": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/defective-wrongrow@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/mixed-one-bare@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/mixed-one-bare@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/mixed-one-bare@per-atom#D": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/mixed-one-bare@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/mixed-one-pointer@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/mixed-one-pointer@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/mixed-one-pointer@per-atom#D": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "fixtures:evidence_reasons/mixed-one-pointer@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      }
+    }
+  }
+}

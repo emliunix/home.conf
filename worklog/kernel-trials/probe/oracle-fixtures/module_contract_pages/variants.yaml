@@ -1,0 +1,4 @@
+# Round 12 module variants per arm (oracle-test.mjs --variants): arm -> {module the rule names: variant}.
+# Arm N is the shipped library, unchanged.
+A:
+  doc-verify:module-contract: worklog/kernel-trials/probe/oracle-fixtures/module_contract_pages/variants/A.yaml

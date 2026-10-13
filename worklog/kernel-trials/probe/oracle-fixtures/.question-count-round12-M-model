@@ -1,0 +1,85 @@
+{
+  "cap": 221,
+  "live": {
+    "questions": 0,
+    "followups": 0,
+    "requests": 0,
+    "runs": []
+  },
+  "mock": {
+    "projections": {
+      "fixtures:module_model_pages/good@per-atom#N": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_model_pages/good@per-atom#A": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_model_pages/good-near@per-atom#N": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_model_pages/good-near@per-atom#A": {
+        "main": 2,
+        "asked": 2,
+        "worst": 2,
+        "requests": 2
+      },
+      "fixtures:module_model_pages/subtle-1@per-atom#N": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      },
+      "fixtures:module_model_pages/subtle-1@per-atom#A": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      },
+      "fixtures:module_model_pages/subtle-2@per-atom#N": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      },
+      "fixtures:module_model_pages/subtle-2@per-atom#A": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      },
+      "fixtures:module_model_pages/subtle-3@per-atom#N": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      },
+      "fixtures:module_model_pages/subtle-3@per-atom#A": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      },
+      "fixtures:module_model_pages/gross@per-atom#N": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      },
+      "fixtures:module_model_pages/gross@per-atom#A": {
+        "main": 0,
+        "asked": 0,
+        "worst": 0,
+        "requests": 0
+      }
+    }
+  }
+}

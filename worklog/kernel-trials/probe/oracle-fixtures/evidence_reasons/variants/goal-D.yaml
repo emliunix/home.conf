@@ -1,0 +1,121 @@
+# Kernel-trials round 12, arm D (another row's address, E-fix only): as arm A, but the context is
+# the path of the next row of the table (cyclic), so the Where: block has A's length and form and
+# the wrong content. "Next" is read from the key column of goals/04's AC coverage (R1 -> R2 ... R5
+# -> R1), the only table the E-fix set holds. Generated from doc-verify/lib/goal.yaml.
+# doc-verify:goal - a goal file in the goal-file skill's shape: the epic and the bookkeeping file
+# that drives the process. Extends doc-verify:artifact. The status is the title suffix
+# (`status_from: title`): OPEN | BLOCKED | CLOSED-GREEN. The heading lists accept the template's
+# spelling and the earlier spellings goal files still carry ('frozen root', 'AC coverage').
+#
+# Evidence cells (added 2026-10-13, owner direction): a row of the coverage table needs no file
+# path in its evidence; what it needs is a reasoning chain, judged per cell by `evidence_reasons`
+# on promotion. A path, run or commit a cell does cite is still checked by `paths-resolve`
+# (doc-verify:references, through artifact), so the two checks are independent.
+#
+# Shipped with the engine and versioned with it. First authored as visflow's
+# doc-verify/modules/goal.yaml (visflow design 10).
+schema_version: 2
+kind: verification-module
+module: doc-verify.goal
+extends: [doc-verify:artifact]
+rounds: 1
+request_shape: per-atom
+params:
+  statuses: [open, blocked, closed-green]
+  root_headings:
+    - 'User requirements — anchored root'
+    - 'User requirements — frozen root'
+    - 'User requirements - anchored root'
+    - 'User requirements - frozen root'
+    - 'User requirements (anchored root)'
+    - 'User requirements (frozen root)'
+  coverage_headings: ['AC coverage matrix', 'AC coverage']
+  # Where a goal keeps the evidence taken per requirement: the coverage table itself, or the
+  # separate section goals/01 uses. `evidence_reasons` binds every table there that has an
+  # 'Evidence' column.
+  evidence_headings: ['AC coverage matrix', 'AC coverage', 'Acceptance evidence']
+  # Round 12: the column whose cell names a row's requirement (goals/04 'Requirement', goals/01 'Row').
+  key_headers: ['Requirement', 'Row']
+oracles:
+  coverage_complete(D, L):
+    ask: The AC coverage matrix accounts for every requirement in the anchored root, each mapped to the design or workstream that covers it.
+    evidence: core.union(D, L)
+    threshold: 0.5
+    max_bytes: 16000
+  evidence_reasons(D, R, P, C):
+    ask: >-
+      This is one evidence cell of a goal's AC coverage table. It holds only if it is a reasoning
+      chain: (1) it states observable facts (what was run, read, measured or produced, and where),
+      (2) it draws the requirement's claim from those facts, and (3) it states a conclusion. A bare
+      assertion ("done", "works", "verified"), a bare pointer (a name, a round number or a path with
+      nothing said about what it shows), or a restatement of the requirement fails. A path is not
+      required and its presence alone does not make the cell hold.
+    evidence: core.cell(D, R, C)
+    context: [P]
+    # Calibration (kernel-trials round 10, 2026-10-13, per-atom, two repeats): real cells of goals
+    # 01 and 04 sit at 0.63-0.99 on the lead's side (0 of 13 wrong), seeded genuine cells at
+    # >= 0.67; raising the threshold only demotes right-side cells, so 0.5 stays.
+    threshold: 0.5
+    max_bytes: 4000
+rules:
+  root_section(D, S): top(D, S), core.heading(D, S, H), H in $root_headings
+  design_files_section(D, S): top(D, S), core.heading(D, S, 'Design files')
+  workstreams_section(D, S): top(D, S), core.heading(D, S, 'Workstreams')
+  coverage_section(D, S): top(D, S), core.heading(D, S, H), H in $coverage_headings
+  worklog_section(D, S): top(D, S), core.heading(D, S, 'Worklog')
+  evidence_section(D, S): top(D, S), core.heading(D, S, H), H in $evidence_headings
+  key_col(D, T, K): core.header(D, T, K), K in $key_headers
+  row_path(D, R, C, P): core.row(D, T, R), core.header(D, T, C), key_col(D, T, K), core.cell_path(D, R, C, [title, heading, row_key(K), column], P)
+  next_row(D, R, N): core.row(D, T, R), key_col(D, T, K), core.cell_text(D, R, K, 'R1'), core.row(D, T, N), core.cell_text(D, N, K, 'R2')
+  next_row(D, R, M): core.row(D, T, R), key_col(D, T, K), core.cell_text(D, R, K, 'R2'), core.row(D, T, M), core.cell_text(D, M, K, 'R3')
+  next_row(D, R, O): core.row(D, T, R), key_col(D, T, K), core.cell_text(D, R, K, 'R3'), core.row(D, T, O), core.cell_text(D, O, K, 'R4')
+  next_row(D, R, Q): core.row(D, T, R), key_col(D, T, K), core.cell_text(D, R, K, 'R4'), core.row(D, T, Q), core.cell_text(D, Q, K, 'R5')
+  next_row(D, R, Z): core.row(D, T, R), key_col(D, T, K), core.cell_text(D, R, K, 'R5'), core.row(D, T, Z), core.cell_text(D, Z, K, 'R1')
+  other_row_path(D, R, C, P): next_row(D, R, N), core.header(D, T, C), core.row(D, T, R), row_path(D, N, C, P)
+constraints:
+  goal-has-anchored-root:
+    forall: core.meta(D, kind, goal)
+    require: root_section(D, S)
+    severity: error
+    message: "{D} has no anchored requirements root"
+    repair: "Add '## User requirements — anchored root' with the owner's requirements, verbatim and numbered."
+  goal-has-design-files:
+    forall: core.meta(D, kind, goal)
+    require: design_files_section(D, S)
+    severity: error
+    message: "{D} has no '## Design files' section"
+    repair: "List each design/NN this goal funnels into."
+  goal-has-workstreams:
+    forall: core.meta(D, kind, goal)
+    require: workstreams_section(D, S)
+    severity: error
+    message: "{D} has no '## Workstreams' section"
+    repair: "Group the work into workstreams and phases (goal-file skill)."
+  goal-has-coverage:
+    forall: core.meta(D, kind, goal)
+    require: coverage_section(D, S)
+    severity: error
+    message: "{D} has no '## AC coverage matrix'"
+    repair: "Map every root requirement to the design or workstream that covers it."
+  goal-has-worklog:
+    forall: core.meta(D, kind, goal)
+    require: worklog_section(D, S)
+    severity: error
+    message: "{D} has no '## Worklog' section"
+    repair: "Point to the worklog entries this goal drives."
+  # Every goal, open or closed, fails on a cell that is not a chain (owner ruling 2026-10-13: a
+  # closed goal's text may be refined; it is not exempt).
+  goal-evidence-reasons:
+    forall: evidence_section(D, S), core.table(D, S, T), core.header(D, T, 'Evidence'), core.row(D, T, R)
+    require: core.cell(D, R, 'Evidence'), other_row_path(D, R, 'Evidence', P), evidence_reasons(D, R, P, 'Evidence')
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the evidence cell is empty, a bare assertion or a bare pointer, not a reasoning chain"
+    repair: "Write what was observed (a run, a file, a measurement), what it shows about the requirement, and the conclusion; a path is optional and is checked when present."
+  goal-coverage-complete:
+    forall: root_section(D, R), coverage_section(D, C)
+    require: coverage_complete(D, [R, C])
+    severity: error
+    profiles: [promotion]
+    message: "{C} in {D} leaves a root requirement unmapped"
+    repair: "Add a row for every requirement in {R}, naming the design or workstream that covers it."

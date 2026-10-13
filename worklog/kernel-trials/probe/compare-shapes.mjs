@@ -7,7 +7,7 @@
 // the split `.leaves-P-batched.json` / `.leaves-P-atom.json`, or `.leaves-P-goal.json` ...), pools
 // their runs and partitions them by the shape each run recorded.
 //
-// Units. A cell is (arm, source fixture, oracle, original row id or atom); the normal arm pairs
+// Units. A cell is (order (the sidecar's normal/reversed field), source fixture, oracle, original row id or atom); the normal arm pairs
 // batched with per-atom over every repeat. Cells whose evidence text, question and expected label
 // are identical (column-only fixtures share most rows with HEAD) are one unit: their values are
 // averaged before any statistic, so duplicate cell texts count once.
@@ -169,8 +169,8 @@ function buildCells(runs) {
       const cellId = leaf.origRowId || leaf.section || leaf.atom;
       // A real-cells run checks several documents under one source (the labels file): the document is part of the cell.
       const source = run.mode === "real-cells" ? `${leaf.source}:${leaf.document}` : leaf.source;
-      const id = `${leaf.arm}|${source}|${leaf.oracle}|${cellId}`;
-      const cell = cells.get(id) ?? { id, arm: leaf.arm, source, oracle: leaf.oracle, cellId, mode: run.mode, labelsFile: run.labelsFile, by: {} };
+      const id = `${leaf.order}|${source}|${leaf.oracle}|${cellId}`;
+      const cell = cells.get(id) ?? { id, order: leaf.order, source, oracle: leaf.oracle, cellId, mode: run.mode, labelsFile: run.labelsFile, by: {} };
       (cell.by[leaf.shape] ??= []).push({ ...leaf, mixed: run.requests[leaf.request]?.mixed ?? false });
       cells.set(id, cell);
     }
@@ -202,8 +202,8 @@ export function analyse(runs) {
   let complete = true;
   for (const run of runs) if (run.split) { complete = false; problems.push(`split: ${run.run} rep ${run.repeat}`); }
   const cells = [...buildCells(runs).values()];
-  const normal = cells.filter((c) => c.arm === "normal");
-  const reversed = cells.filter((c) => c.arm === "reversed");
+  const normal = cells.filter((c) => c.order === "normal");
+  const reversed = cells.filter((c) => c.order === "reversed");
   const repeatsOf = (shape) => Math.max(0, ...runs.filter((r) => r.shape === shape).map((r) => r.repeat));
   const wantRep = { [BATCHED]: repeatsOf(BATCHED), [ATOM]: repeatsOf(ATOM) };
   const pairs = [];
@@ -316,7 +316,7 @@ export function analyse(runs) {
   // Cost per shape.
   const cost = {};
   for (const [name, shape, arm] of [[BATCHED, BATCHED, "normal"], [ATOM, ATOM, "normal"], [`${BATCHED} (reversed arm)`, BATCHED, "reversed"]]) {
-    const list = runs.filter((r) => r.shape === shape && (r.arm ?? "normal") === arm);
+    const list = runs.filter((r) => r.shape === shape && r.order === arm);
     if (list.length === 0) continue;
     const reqs = list.flatMap((r) => r.requests);
     const main = reqs.filter((r) => r.kind === "main");
@@ -438,7 +438,7 @@ function synthetic(planted) {
     if (planted && i === 5) { if (shape === BATCHED) { label = "holds"; p = 0.55; } else { label = "fails"; p = 0.7; } }
     const dist = options.map((o) => (o === label ? p : (1 - p) / 2));
     if (label !== exp && !(planted && (i === 3 || i === 5))) throw new Error("synthetic");
-    return { arm, source: "syn/fx", shape, repeat, oracle: "o", atom: `o(d, s#row${i})`, rowId: `s#row${i}`, origRowId: `s#row${i}`, key: `k${i}`,
+    return { order: arm, source: "syn/fx", shape, repeat, oracle: "o", atom: `o(d, s#row${i})`, rowId: `s#row${i}`, origRowId: `s#row${i}`, key: `k${i}`,
       label, answered: label, options, distribution: dist, p, threshold: 0.5, leafShape: "decides", request: 0, position: posIndex, requestSize: shape === ATOM ? 1 : n,
       textHash: `t${i}`, questionHash: "q", expect: exp, lead: null };
   };
@@ -452,7 +452,7 @@ function synthetic(planted) {
         // per-atom: relative position is 0 by construction (size 1); the planted trend lives on batched only.
         leaves.push(leaf);
       }
-      runs.push({ run: `syn@${shape}@${arm}`, mode: "fixtures", repeat, shape, arm, split: false, wall_ms: 1, labelsFile: null,
+      runs.push({ run: `syn@${shape}@${arm}`, mode: "fixtures", repeat, shape, order: arm, split: false, wall_ms: 1, labelsFile: null,
         requests: [{ index: 0, kind: "main", questions: shape === ATOM ? 1 : n, stateBytes: 100, ms: 1, oracles: ["o"], mixed: false }], leaves });
     }
   }
@@ -478,7 +478,7 @@ function syntheticSections(planted) {
         let label = exp, p = 0.9 + jitter;
         if (planted && i === 2 && shape === ATOM) { label = "fails"; p = 0.9; }
         const prefix = shape === ATOM ? "copy.module-model" : "doc-verify.module-model";
-        leaves.push({ arm: "normal", source: "syn/page", shape, repeat, oracle: "current_not_history", atom: `${prefix}.current_not_history(docs/x.md, ${section})`,
+        leaves.push({ order: "normal", source: "syn/page", shape, repeat, oracle: "current_not_history", atom: `${prefix}.current_not_history(docs/x.md, ${section})`,
           rowId: "", origRowId: "", section, key: `k${i}`, label, answered: label, options, distribution: options.map((o) => (o === label ? p : (1 - p) / 2)), p,
           threshold: 0.5, leafShape: "decides", request: shape === ATOM ? i - 1 : 0, position: shape === ATOM ? 0 : i - 1, requestSize: shape === ATOM ? 1 : n,
           textHash: `t${i}`, questionHash: "q", expect: exp, lead: null });
@@ -486,7 +486,7 @@ function syntheticSections(planted) {
       const requests = shape === ATOM
         ? leaves.map((_, i) => ({ index: i, kind: "main", questions: 1, stateBytes: 50, ms: 1, oracles: ["current_not_history"], mixed: false }))
         : [{ index: 0, kind: "main", questions: n, stateBytes: 200, ms: 1, oracles: ["current_not_history"], mixed: false }];
-      runs.push({ run: `syn-sections@${shape}`, mode: "fixtures", repeat, shape, arm: "normal", split: false, wall_ms: 1, labelsFile: null, requests, leaves });
+      runs.push({ run: `syn-sections@${shape}`, mode: "fixtures", repeat, shape, order: "normal", split: false, wall_ms: 1, labelsFile: null, requests, leaves });
     }
   }
   return runs;

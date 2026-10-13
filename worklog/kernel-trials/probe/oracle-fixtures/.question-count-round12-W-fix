@@ -1,0 +1,85 @@
+{
+  "cap": 218,
+  "live": {
+    "questions": 0,
+    "followups": 0,
+    "requests": 0,
+    "runs": []
+  },
+  "mock": {
+    "projections": {
+      "fixtures:witness_observable_in_row/good@per-atom#N": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "fixtures:witness_observable_in_row/good@per-atom#A": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "fixtures:witness_observable_in_row/defective-gross@per-atom#N": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "fixtures:witness_observable_in_row/defective-gross@per-atom#A": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "fixtures:witness_observable_in_row/defective-subtle@per-atom#N": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "fixtures:witness_observable_in_row/defective-subtle@per-atom#A": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "fixtures:witness_observable_in_row/defective-subtle3@per-atom#N": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "fixtures:witness_observable_in_row/defective-subtle3@per-atom#A": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "fixtures:witness_observable_in_row/controls@per-atom#N": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "fixtures:witness_observable_in_row/controls@per-atom#A": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "fixtures:witness_observable_in_row/defective-swapped@per-atom#N": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "fixtures:witness_observable_in_row/defective-swapped@per-atom#A": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      }
+    }
+  }
+}

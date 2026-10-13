@@ -1,0 +1,43 @@
+# Kernel-trials round 12, arm A (address) for the M track: doc-verify:module-model at the
+# build with current_not_history given the section's path [title, heading] as context:.
+# Generated mechanically from doc-verify/lib/module-model.yaml; nothing else differs.
+# doc-verify:module-model - a package's model: the concepts and state it rests on, as current
+# law. Extends doc-verify:references.
+# Dated or progress prose (a date, "round N", "we tried" / "then changed") is a structural NO-GO;
+# a literal date or phrase inside a code span or fenced block is a format example and is skipped.
+# A worked example lives at doc-verify/lib/examples/module-model.md.
+schema_version: 2
+kind: verification-module
+module: doc-verify.module-model
+# request_shape: these oracles were calibrated batched (kernel-trials round 3, the corpus) and
+# per-atom is unmeasured for them (round 6 measured goal and design oracles only; under
+# per-atom one module page drops below its threshold), so the shape is pinned until measured.
+# Round 8 (2026-10-13) measured this pin: labels equal under both shapes on the real pages and
+# the seeded ones, per-atom lowers P(expected) by 0.07 (0.21 near threshold) on the seeded pages,
+# and subtle history passes under both; the pin stays (round-8-verdict.md).
+request_shape: batched
+extends: [doc-verify:references]
+oracles:
+  current_not_history(D, P, S):
+    ask: This states the model as it is now, not how it came to be, not a round number, not "we tried", not a dated decision or a progress note.
+    evidence: core.body(D, S)
+    context: [P]
+    threshold: 0.5
+    max_bytes: 12000
+rules:
+  section_path(D, S, P): core.section(D, S, _), core.path(D, S, [title, heading], P)
+  sections(D, S): core.section(D, S, _)
+constraints:
+  module-model-has-content:
+    forall: core.meta(D, kind, 'module-model')
+    require: sections(D, S)
+    severity: error
+    message: "{D} has no content"
+    repair: "Describe the concepts and state the package rests on."
+  module-model-is-current:
+    forall: core.meta(D, kind, 'module-model'), sections(D, S)
+    require: section_path(D, S, P), current_not_history(D, P, S)
+    severity: error
+    profiles: [promotion]
+    message: "{S} in {D} narrates history instead of stating current law"
+    repair: "State what is true now; the decision trail belongs in a design or the worklog."

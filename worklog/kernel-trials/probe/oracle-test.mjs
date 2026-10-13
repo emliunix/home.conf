@@ -53,6 +53,16 @@
 // checked by the same invariant against `source` at the labels' `commit`, `from` read from its
 // row labels and checked against `rotation` when the labels file names one.
 //
+// Round 12 additions (round-12-preregistration.md §Candidates, §Predicate): `--variants N,A,D,C`
+// runs one module variant per arm. A set's `variants.yaml` (for --real-cells, real-cells/
+// variants.yaml) maps an arm to {module the rule names: variant module}; arm N is the modules as
+// named. Per document (a fixture, or one labelled document), the arms run in ABBA order over the
+// repeats (repeat 1 N,A,D,C; repeat 2 C,D,A,N), one shape only. The sidecar field `arm` (normal |
+// reversed) is now `order`, and `variant` names the arm; leaves carry `contextBytes` and
+// `keyLength`. `--cap` bounds each arm's live questions. `--write-deranged` (with --labels) writes
+// the generated documents a labels file names (`source`, `column`, rows' `from`) from `source` at
+// its `commit`, the column's cells moved and nothing else, then exits.
+//
 // DOC_VERIFY_MOCK_JUDGE=1 wires the SDK's mock judge (it answers the first option, so every oracle
 // says its first label): good for wiring and for the exact question count, meaningless as a
 // measurement. Without it the checker builds the production backend from TYPESAFE_API_KEY or the
@@ -112,10 +122,17 @@ if (SHAPE_ARG !== undefined && !["batched", "per-atom", "both"].includes(SHAPE_A
 }
 /** The shapes this invocation runs; `undefined` leaves every module as written. */
 const SHAPES = SHAPE_ARG === undefined ? [undefined] : SHAPE_ARG === "both" ? ["batched", "per-atom"] : [SHAPE_ARG];
+/** Round 12: the arms of this invocation (`undefined`: no arm dimension, the modules as named). */
+const VARIANTS = value("--variants", undefined)?.split(",");
+if (VARIANTS !== undefined && (SHAPES.length !== 1 || VARIANTS.length === 0 || new Set(VARIANTS).size !== VARIANTS.length)) {
+  console.log("--variants takes distinct arm names and one request shape");
+  process.exit(2);
+}
 /** Span follow-ups are skipped by default whenever a shape is set (round 6); `--spans` keeps them. */
 const NO_SPANS = flag("--no-spans") || (SHAPE_ARG !== undefined && !flag("--spans"));
 const POSITIONS = flag("--positions");
 const REVERSED = flag("--reversed");
+if (REVERSED && VARIANTS !== undefined) { console.log("--reversed and --variants do not combine"); process.exit(2); }
 const REVERSED_ONLY = value("--reversed-only", undefined)?.split(",");
 const REVERSED_DEFAULT = { evidence_reasons: ["good", "defective-pointers", "controls", "mixed-one-pointer"] };
 const INVARIANT_BASE = value("--invariant-base", "HEAD");
@@ -143,7 +160,47 @@ function schedule(shapes, repeat) {
   }
   return steps;
 }
-const shapeKey = (runKey, shape) => (shape === undefined ? runKey : `${runKey}@${shape}`);
+const shapeKey = (runKey, shape, variant) => `${shape === undefined ? runKey : `${runKey}@${shape}`}${variant === undefined ? "" : `#${variant}`}`;
+/**
+ * Round 12: the steps of one document. Without --variants, the shape schedule. With it, the arms
+ * in ABBA order over the repeats (odd repeats as listed, even ones reversed), under the one shape.
+ */
+function steps(shapes) {
+  if (VARIANTS === undefined) return schedule(shapes, REPEAT);
+  const out = [];
+  for (let r = 1; r <= REPEAT; r += 1) {
+    for (const variant of r % 2 === 0 ? [...VARIANTS].reverse() : VARIANTS) out.push({ shape: shapes[0], repeat: r, variant });
+  }
+  return out;
+}
+/** A lane is one shape and, with --variants, one arm: its reports are compared together. */
+const laneLabel = (shape, variant) => `${shape ?? "default"}${variant === undefined ? "" : `/${variant}`}`;
+const LANE_LABELS = VARIANTS === undefined ? SHAPES.map((s) => laneLabel(s)) : VARIANTS.map((v) => laneLabel(SHAPES[0], v));
+/** A variants manifest: arm -> {module ref: variant repo path}; problems for every arm it lacks. */
+function loadVariants(file, problems, where) {
+  if (VARIANTS === undefined) return {};
+  let manifest = {};
+  try { manifest = YAML.parse(readFileSync(file, "utf8")) ?? {}; } catch { if (VARIANTS.some((v) => v !== "N")) problems.push(`${where}: no variants manifest ${path.relative(REPO, file)}`); }
+  for (const v of VARIANTS) if (v !== "N" && manifest[v] === undefined) problems.push(`${where}: arm ${v} has no variant in ${path.relative(REPO, file)}`);
+  return manifest;
+}
+/** The rule's modules under an arm: each module the arm's manifest names is replaced by its variant. */
+function variantModules(modules, manifest, variant) {
+  if (variant === undefined || variant === "N") return modules;
+  const map = manifest[variant] ?? {};
+  const used = modules.filter((ref) => map[ref] !== undefined);
+  if (used.length === 0) throw new Error(`arm ${variant} replaces none of ${modules.join(", ")}`);
+  return modules.map((ref) => map[ref] ?? ref);
+}
+/** Every variant module a manifest names, written from the working tree into the clone. */
+function writeVariants(repo, manifest) {
+  for (const map of Object.values(manifest)) {
+    for (const file of Object.values(map)) {
+      mkdirSync(path.dirname(path.join(repo, file)), { recursive: true });
+      writeFileSync(path.join(repo, file), readFileSync(path.join(REPO, file), "utf8"));
+    }
+  }
+}
 
 // ---------------------------------------------------------------- question ledger
 
@@ -167,6 +224,9 @@ function saveLedger(name) {
 }
 /** Live questions spent over every ledger this invocation touches: --cap bounds the invocation. */
 const liveSpent = () => [...ledgers.values()].reduce((a, l) => a + l.live.questions + l.live.followups, 0);
+
+/** Live questions one arm has spent over every ledger this invocation touches. */
+const liveSpentBy = (variant) => [...ledgers.values()].reduce((a, l) => a + l.live.runs.filter((r) => r.run.endsWith(`#${variant}`)).reduce((x, r) => x + r.main + r.followups, 0), 0);
 
 /** Costs of one checkDocuments report. */
 function costOf(report) {
@@ -198,7 +258,9 @@ function mayStart(runKeys, name = LEDGER_NAME) {
     const one = ledger.mock.projections[key]?.worst;
     if (one === undefined) unknown = true; else projected += one * runs;
   }
-  const spent = liveSpent();
+  // Round 12: with arms, --cap bounds each arm; the keys of one call share an arm.
+  const variant = /#([^#@]+)$/.exec(list[0]?.[0] ?? "")?.[1];
+  const spent = variant === undefined ? liveSpent() : liveSpentBy(variant);
   if (spent >= CAP || spent + projected > CAP) {
     console.log(`CAP  refusing ${list.map(([k]) => k).join(", ")}: spent ${spent} + projected ${projected}${unknown ? "+?" : ""} > cap ${CAP}`);
     return false;
@@ -442,7 +504,7 @@ function sidecarOf(name) {
  * a batch by key), the batch size, the request's stateBytes, a hash of the evidence text the judge
  * was sent. `split`: a batched run whose main round took more than one request for a document.
  */
-function recordRun({ runKey, mode, fixture, source, arm, repeat, shape, report, calls, model, wall, modules, labelsFile, expect, lead, origRow, ledgerName = LEDGER_NAME, set }) {
+function recordRun({ runKey, mode, fixture, source, order, variant, repeat, shape, report, calls, model, wall, modules, labelsFile, expect, lead, origRow, ledgerName = LEDGER_NAME, set }) {
   const requests = [];
   const leaves = [];
   const splits = [];
@@ -486,13 +548,13 @@ function recordRun({ runKey, mode, fixture, source, arm, repeat, shape, report, 
         if (!list.includes(oracleOf(leaf))) list.push(oracleOf(leaf));
       }
       leaves.push({
-        run: runKey, mode, fixture, source: source ?? fixture, arm: arm ?? "normal", repeat, shape: shape ?? "module-default",
+        run: runKey, mode, fixture, source: source ?? fixture, order: order ?? "normal", variant: variant ?? null, repeat, shape: shape ?? "module-default",
         document: artifact.path, verdict: artifact.verdict, oracle: oracleOf(leaf), atom: leaf.atom, row: rowOf(leaf), rowId, section,
         origRowId: origRow?.(rowId) ?? rowId,
         key: leaf.key, label: leaf.label, answered: leaf.answered, options: leaf.options, distribution: leaf.distribution, p: peak(leaf) ?? null,
         threshold: leaf.threshold, leafShape: shapeOf(leaf), finding: leaf.finding ?? null,
         request: at?.request ?? null, position: at?.position ?? null, requestSize: at?.size ?? null, requestStateBytes: at?.stateBytes ?? null,
-        followup: followed.has(leaf.key), bytes: leaf.bytes, cacheHit: leaf.cacheHit,
+        followup: followed.has(leaf.key), bytes: leaf.bytes, contextBytes: leaf.contextBytes, keyLength: leaf.atom.length, cacheHit: leaf.cacheHit,
         textHash: textOf.get(leaf.key) ?? null, questionHash: sha(leaf.question ?? ""),
         expect: expect?.(leaf) ?? null, lead: lead?.(artifact.path, rowId || section) ?? null,
       });
@@ -502,12 +564,12 @@ function recordRun({ runKey, mode, fixture, source, arm, repeat, shape, report, 
   for (const r of requests) r.mixed = r.oracles.length > 1;
   const cost = costOf(report);
   const split = shape === "batched" && splits.length > 0;
-  const entry = { run: runKey, mode, fixture, source: source ?? fixture, set: set ?? null, ledger: ledgerName ?? null, arm: arm ?? "normal", repeat, shape: shape ?? "module-default", tag: TAG,
+  const entry = { run: runKey, mode, fixture, source: source ?? fixture, set: set ?? null, ledger: ledgerName ?? null, order: order ?? "normal", variant: variant ?? null, repeat, shape: shape ?? "module-default", tag: TAG,
     model, sdk: SDK_VERSION, spans: NO_SPANS ? "skipped" : "asked", labelsFile: labelsFile ?? null, modules,
     wall_ms: wall, cost, split, splits, atomic: shape === "per-atom" ? atomic : null,
     verdicts: Object.fromEntries(report.artifacts.map((a) => [a.path, a.verdict])), requests, leaves, at: new Date().toISOString() };
   const sidecar = sidecarOf(ledgerName);
-  sidecar.runs = sidecar.runs.filter((r) => !(r.run === runKey && r.repeat === repeat && r.shape === entry.shape));
+  sidecar.runs = sidecar.runs.filter((r) => !(r.run === runKey && r.repeat === repeat && r.shape === entry.shape && r.variant === entry.variant));
   sidecar.runs.push(entry);
   mkdirSync(FIXTURES, { recursive: true });
   writeFileSync(leavesFileOf(ledgerName), `${JSON.stringify(sidecar, null, 1)}\n`);
@@ -520,8 +582,8 @@ function printPositions(entries) {
   const list = entries.filter((e) => e.shape === "batched" || SHAPE_ARG === undefined);
   console.log("");
   console.log("positions (batched; request = main request index in the run, pos = actual 0-based place / batch size; the engine orders a batch by key)");
-  table(["run", "arm", "rep", "atom", "orig", "label", "p", "request", "pos/size", "oracles in request"],
-    list.flatMap((e) => e.leaves.filter((l) => l.request !== null).map((l) => [e.fixture, e.arm, e.repeat, l.rowId || l.atom.slice(0, 50), l.origRowId || "-", l.label, fmt(l.p),
+  table(["run", "order", "variant", "rep", "atom", "orig", "label", "p", "request", "pos/size", "oracles in request"],
+    list.flatMap((e) => e.leaves.filter((l) => l.request !== null).map((l) => [e.fixture, e.order, e.variant ?? "-", e.repeat, l.rowId || l.atom.slice(0, 50), l.origRowId || "-", l.label, fmt(l.p),
       l.request, `${l.position}/${l.requestSize}`, e.requests[l.request].oracles.join("+")])));
 }
 /** Request counts per shape, the split check, and the live projection (for one ledger's entries). */
@@ -530,10 +592,17 @@ function printRequests(entries, ledgerName = entries[0]?.ledger ?? LEDGER_NAME) 
   console.log(`${ledgerName === undefined || ledgerName === null ? "" : `ledger ${ledgerName}: `}requests per shape (spans ${NO_SPANS ? "skipped (--no-spans)" : "asked"}; model ${entries[0]?.model ?? "-"}, deepclause-sdk ${SDK_VERSION})`);
   const shapes = [...new Set(entries.map((e) => e.shape))];
   const rows = [];
+  const groups = [];
   for (const shape of shapes) {
-    for (const arm of [...new Set(entries.map((e) => e.arm))]) {
-      const list = entries.filter((e) => e.shape === shape && e.arm === arm);
+    for (const order of [...new Set(entries.map((e) => e.order))]) {
+      for (const variant of [...new Set(entries.map((e) => e.variant))]) groups.push({ shape, order, variant });
+    }
+  }
+  for (const { shape, order, variant } of groups) {
+    {
+      const list = entries.filter((e) => e.shape === shape && e.order === order && e.variant === variant);
       if (list.length === 0) continue;
+      const arm = variant === null ? order : `${order}/${variant}`;
       const reqs = list.flatMap((e) => e.requests);
       const main = reqs.filter((r) => r.kind === "main");
       const timed = reqs.filter((r) => r.ms !== null);
@@ -547,10 +616,26 @@ function printRequests(entries, ledgerName = entries[0]?.ledger ?? LEDGER_NAME) 
         list.filter((e) => e.split).length, mainQ, repeats, mainQ * repeats, worst * repeats]);
     }
   }
-  table(["shape", "arm", "runs", "main req", "main q", "follow-up req", "main req/run (distinct)", "stateBytes", "judge s", "split runs",
+  table(["shape", "order/variant", "runs", "main req", "main q", "follow-up req", "main req/run (distinct)", "stateBytes", "judge s", "split runs",
     "main q/repeat", "repeats", "projected main", "projected worst"], rows);
   const totalWorst = rows.reduce((a, r) => a + r[13], 0);
   console.log(`projection (live, ${ledgerName === undefined || ledgerName === null ? "this invocation" : `ledger ${ledgerName}`}): main ${rows.reduce((a, r) => a + r[12], 0)}, worst ${totalWorst}; cap at 1.5x worst = ${Math.ceil(totalWorst * 1.5)}; sidecar ${path.relative(REPO, leavesFileOf(ledgerName ?? undefined))}`);
+}
+
+/**
+ * Round 12: questions per arm over every ledger of the invocation, against --cap (which bounds
+ * each arm): every repeat's main questions as run, and the live worst case.
+ */
+function printArmCosts(entries) {
+  if (VARIANTS === undefined) return;
+  console.log("");
+  console.log(`questions per arm (all repeats; --cap ${CAP} bounds each arm)`);
+  table(["arm", "runs", "main q", "worst q", "cap", "within cap"], VARIANTS.map((variant) => {
+    const list = entries.filter((e) => e.variant === variant);
+    const main = list.reduce((a, e) => a + e.cost.main, 0);
+    const worst = list.reduce((a, e) => a + e.cost.worst, 0);
+    return [variant, list.length, main, worst, CAP, worst <= CAP ? "yes" : "NO"];
+  }));
 }
 
 // ---------------------------------------------------------------- --fixtures
@@ -832,11 +917,19 @@ async function runFixtures() {
       // The repository's config with one rule: the fixture's own, narrowed to its governed path, so
       // the run checks this document alone (no dependent artifact is pulled into the closure).
       const config = YAML.parse(readFileSync(path.join(repo, ".doc-verify.yaml"), "utf8"));
-      config.documents = [{ ...set.spec.rule, modules: shapedModules(set.spec.rule.modules), pattern: set.spec.document }];
       config.invalidation_patterns = [];
       // Seeded defect for the split check only: a byte budget small enough to force sub-batching.
       if (SEED_SPLIT_BYTES !== undefined) config.policy = { ...config.policy, max_evidence_bytes: SEED_SPLIT_BYTES };
-      writeFileSync(path.join(repo, ".doc-verify.yaml"), YAML.stringify(config));
+      // Round 12: the rule's modules under an arm (the modules as named without --variants).
+      const manifest = loadVariants(path.join(set.dir, "variants.yaml"), problems, set.label);
+      writeVariants(repo, manifest);
+      const modulesOf = (variant) => variantModules(set.spec.rule.modules, manifest, variant);
+      /** Points the rule at an arm's modules and writes the shape into them; returns the declared shapes. */
+      const configure = (shape, variant) => {
+        config.documents = [{ ...set.spec.rule, modules: shapedModules(modulesOf(variant)), pattern: set.spec.document }];
+        writeFileSync(path.join(repo, ".doc-verify.yaml"), YAML.stringify(config));
+        return applyShape(repo, modulesOf(variant), shape);
+      };
       const fixtures = [...set.spec.fixtures, ...reversedFixtures(set, problems)].filter((f) => ONLY_FIXTURE === undefined || f.name === ONLY_FIXTURE);
       for (const fixture of fixtures) {
         const runKey = `fixtures:${set.label}/${fixture.name}`;
@@ -866,9 +959,11 @@ async function runFixtures() {
         }
         // The reversed arm is batched only.
         const shapes = fixture.arm === "reversed" ? (SHAPE_ARG === undefined ? [undefined] : ["batched"]) : SHAPES;
-        const steps = schedule(shapes, REPEAT);
-        let current = steps[0].shape;
-        let modules = applyShape(repo, set.spec.rule.modules, current);
+        const plan = steps(shapes);
+        const lanes = [...new Map(plan.map((s) => [laneLabel(s.shape, s.variant), s])).keys()];
+        let current = laneLabel(plan[0].shape, plan[0].variant);
+        let modules;
+        try { modules = configure(plan[0].shape, plan[0].variant); } catch (error) { complete = false; problems.push(`${runKey}: ${error.message}`); continue; }
         if (SHOW_EVIDENCE && set.spec.atom.per_row) showEvidence(set, fixture, markdown);
         commitAll(repo, fixture.name);
         const mode = { kind: "paths", paths: [set.spec.document] };
@@ -889,18 +984,22 @@ async function runFixtures() {
           draft = `ERROR ${error.message}`;
           complete = false;
         }
-        if (!mayStart(shapes.map((s) => [shapeKey(runKey, s), REPEAT]), set.ledgerName)) {
+        // One check per arm (each arm's cap is its own); without arms, one for every shape.
+        const capGroups = VARIANTS === undefined ? [shapes.map((s) => [shapeKey(runKey, s), REPEAT])]
+          : VARIANTS.map((v) => [[shapeKey(runKey, shapes[0], v), REPEAT]]);
+        if (!capGroups.every((group) => mayStart(group, set.ledgerName))) {
           complete = false;
           stopped = true;
           break;
         }
-        const reportsBy = new Map(shapes.map((s) => [s, []]));
-        const wallBy = new Map(shapes.map((s) => [s, 0]));
+        const reportsBy = new Map(lanes.map((s) => [s, []]));
+        const wallBy = new Map(lanes.map((s) => [s, 0]));
         let threw = false;
-        for (const step of steps) {
-          if (step.shape !== current) {
-            current = step.shape;
-            modules = applyShape(repo, set.spec.rule.modules, current);
+        for (const step of plan) {
+          const lane = laneLabel(step.shape, step.variant);
+          if (lane !== current) {
+            current = lane;
+            modules = configure(step.shape, step.variant);
             commitAll(repo, `${fixture.name} ${current}`);
           }
           try {
@@ -908,14 +1007,14 @@ async function runFixtures() {
             const t0 = performance.now();
             const report = await checkDocuments({ root: repo, mode, profile: "promotion", cache: "off", backend });
             const wall = performance.now() - t0;
-            reportsBy.get(step.shape).push(report);
-            wallBy.set(step.shape, wallBy.get(step.shape) + wall);
+            reportsBy.get(lane).push(report);
+            wallBy.set(lane, wallBy.get(lane) + wall);
             const cost = costOf(report);
-            charge(shapeKey(runKey, step.shape), cost, set.ledgerName);
+            charge(shapeKey(runKey, step.shape, step.variant), cost, set.ledgerName);
             for (const key of Object.keys(totals)) totals[key] += cost[key];
             const entry = recordRun({ runKey, mode: "fixtures", fixture: `${set.label}/${fixture.name}`, source: `${set.label}/${fixture.source ?? fixture.name}`,
               ledgerName: set.ledgerName, set: set.label,
-              arm: fixture.arm ?? "normal", repeat: step.repeat, shape: step.shape, report, calls, model, wall, modules,
+              order: fixture.arm ?? "normal", variant: step.variant, repeat: step.repeat, shape: step.shape, report, calls, model, wall, modules,
               expect: (leaf) => (oracleOf(leaf) === set.spec.oracle ? expectedOf(fixture, leaf) : null),
               origRow: fixture.mapRow === undefined ? undefined : (rowId) => {
                 const [section, row] = rowId.split("#");
@@ -935,7 +1034,7 @@ async function runFixtures() {
         const page = perSection(set) ? { set: set.label, ledger: set.ledgerName ?? "-", fixture: fixture.name, sections: sectionsOf(set, markdown).map((sec) => sec.id),
           leaves: {}, edit: integrity, expectRule, draft, draftWant: fixture.draft ?? "-" } : undefined;
         if (page !== undefined) pageRows.push(page);
-        for (const shape of shapes) {
+        for (const shape of lanes) {
           const reports = reportsBy.get(shape);
           if (reports.length === 0) continue;
           const wall = wallBy.get(shape) / reports.length;
@@ -960,7 +1059,7 @@ async function runFixtures() {
             const wantHits = perRow ? (set.spec.atom.rows ?? hits.length) : 1;
             if (hits.length !== wantHits || hits.length === 0) {
               complete = false;
-              problems.push(`${runKey}: ${hits.length} leaves match ${set.spec.oracle}[${(fixture.sections ?? set.spec.atom.sections).join(",")}]; asked: ${asked.join("; ") || "none"}`);
+              problems.push(`${runKey}@${shape}: ${hits.length} leaves match ${set.spec.oracle}[${(fixture.sections ?? set.spec.atom.sections).join(",")}]; asked: ${asked.join("; ") || "none"}`);
             }
           }
           const warnings = artifact?.findings.filter((f) => f.ruleId.endsWith("paths-resolve")).length ?? 0;
@@ -1012,7 +1111,7 @@ async function runFixtures() {
   if (pageRows.length > 0) {
     console.log("");
     console.log("per-section sets, per page: leaves of the set's oracle / the page's sections (engine slugger), per shape (repeat 1); edit and expect-rule integrity; draft as pre-registered");
-    const shapeNames = SHAPES.map((x) => x ?? "default");
+    const shapeNames = LANE_LABELS;
     table(["set", "ledger", "fixture", "sections", ...shapeNames.map((x) => `leaves@${x}`), "edit", "expect-rule", "draft", "draft pre-reg", "draft ok"],
       pageRows.map((r) => [r.set, r.ledger, r.fixture, r.sections.join(" "), ...shapeNames.map((x) => r.leaves[x] ?? "-"), r.edit, r.expectRule === "ok" ? "ok" : "MISMATCH", r.draft, r.draftWant,
         r.draftWant === "-" ? "-" : r.draft === r.draftWant ? "ok" : "MISMATCH"]));
@@ -1023,6 +1122,7 @@ async function runFixtures() {
   // One projection per ledger (round 8: per-kind sets keep distinct ledgers), then the invocation's.
   const byLedger = [...new Set(entries.map((e) => e.ledger))];
   for (const name of byLedger) printRequests(entries.filter((e) => e.ledger === name), name ?? undefined);
+  printArmCosts(entries);
   if (byLedger.length > 1) {
     const worst = byLedger.reduce((a, name) => a + entries.filter((e) => e.ledger === name && e.repeat === 1).reduce((x, e) => x + e.cost.worst, 0), 0) * REPEAT;
     console.log("");
@@ -1127,7 +1227,7 @@ async function runRealCells() {
   const labelsFile = value("--labels", "labels.yaml");
   console.log(`oracle-test --real-cells --labels ${labelsFile} (${TAG}; shapes ${SHAPES.map((s) => s ?? "module-default").join(",")}; repeat ${REPEAT}; spans ${NO_SPANS ? "skipped" : "asked"})`);
   const dir = path.join(FIXTURES, "real-cells");
-  const labels = YAML.parse(readFileSync(path.resolve(dir, labelsFile), "utf8"));
+  const labels = loadLabels(path.resolve(dir, labelsFile));
   // Round 8: a labels file naming `commit` is checked in a clone at that commit (live and mock
   // alike), so a page edited mid-programme does not move under its labels.
   let repo;
@@ -1174,39 +1274,60 @@ async function runRealCells() {
     const defaultRule = labels.rule ?? { artifact_kind: "goal", modules: ["doc-verify:goal", Object.keys(files)[0]], status_from: "title" };
     // Round 8: a document may carry its own `rule` (the module pages are four kinds, four libraries).
     const ruleOf = (p) => { const { pattern: _drop, ...r } = labels.documents[p]?.rule ?? defaultRule; return r; };
-    config.documents = paths.map((p) => ({ ...ruleOf(p), modules: shapedModules(ruleOf(p).modules), pattern: p }));
     config.invalidation_patterns = [];
-    writeFileSync(path.join(repo, ".doc-verify.yaml"), YAML.stringify(config));
-    const allModules = [...new Set(paths.flatMap((p) => ruleOf(p).modules))];
-    const steps = schedule(SHAPES, REPEAT);
-    let current = steps[0].shape;
-    let modules = applyShape(repo, allModules, current);
-    commitAll(repo, "real-cells");
+    // Round 12: the arms' variant modules (real-cells/variants.yaml), written into the clone.
+    const manifest = loadVariants(path.join(dir, "variants.yaml"), problems, labelsFile);
+    writeVariants(repo, manifest);
+    const modulesOf = (p, variant) => variantModules(ruleOf(p).modules, manifest, variant);
+    const configure = (shape, variant, only = paths) => {
+      config.documents = only.map((p) => ({ ...ruleOf(p), modules: shapedModules(modulesOf(p, variant)), pattern: p }));
+      writeFileSync(path.join(repo, ".doc-verify.yaml"), YAML.stringify(config));
+      return applyShape(repo, [...new Set(only.flatMap((p) => modulesOf(p, variant)))], shape);
+    };
     const runKey = `real-cells:${labelsFile}`;
-    if (!mayStart(SHAPES.map((s) => [shapeKey(runKey, s), REPEAT]))) { console.log("complete: false"); return false; }
+    // With arms, each document is its own ABBA sequence (and its own run key); without, one check
+    // covers every document, as before.
+    const batches = VARIANTS === undefined ? [{ key: runKey, paths }] : paths.map((p) => ({ key: `${runKey}:${p}`, paths: [p] }));
+    const capGroups = VARIANTS === undefined ? [SHAPES.map((s) => [shapeKey(runKey, s), REPEAT])]
+      : VARIANTS.map((v) => batches.map((b) => [shapeKey(b.key, SHAPES[0], v), REPEAT]));
+    if (!capGroups.every((group) => mayStart(group))) { console.log("complete: false"); return false; }
     const entries = [];
-    const firstReport = new Map();
+    /** Repeat 1's artifact per lane and document. */
+    const firstArtifacts = new Map();
+    const firstCost = new Map();
     const lead = (docPath, rowId) => labels.documents[docPath]?.rows?.[rowId]?.label ?? null;
-    for (const step of steps) {
-      if (step.shape !== current) {
-        current = step.shape;
-        modules = applyShape(repo, allModules, current);
-        commitAll(repo, `real-cells ${current}`);
+    for (const batch of batches) {
+      const plan = steps(SHAPES);
+      let current;
+      let modules;
+      for (const step of plan) {
+        const lane = laneLabel(step.shape, step.variant);
+        if (lane !== current) {
+          current = lane;
+          try { modules = configure(step.shape, step.variant, batch.paths); } catch (error) { complete = false; problems.push(`${batch.key}@${lane}: ${error.message}`); break; }
+          commitAll(repo, `real-cells ${current}`);
+        }
+        const { backend, calls, model } = await timedBackend(repo);
+        const t0 = performance.now();
+        const report = await checkDocuments({ root: repo, mode: { kind: "paths", paths: batch.paths }, profile: "promotion", cache: "off", backend });
+        const wall = performance.now() - t0;
+        charge(shapeKey(batch.key, step.shape, step.variant), costOf(report));
+        if (step.repeat === 1) {
+          const byDoc = firstArtifacts.get(lane) ?? new Map();
+          for (const artifact of report.artifacts) byDoc.set(artifact.path, artifact);
+          firstArtifacts.set(lane, byDoc);
+          const c = costOf(report), prev = firstCost.get(lane);
+          firstCost.set(lane, prev === undefined ? c : Object.fromEntries(Object.keys(c).map((k) => [k, c[k] + prev[k]])));
+        }
+        const entry = recordRun({ runKey: batch.key, mode: "real-cells", fixture: labelsFile, variant: step.variant, repeat: step.repeat, shape: step.shape, report, calls, model, wall, modules, labelsFile, lead });
+        entries.push(entry);
+        if (entry.split) { complete = false; problems.push(`${batch.key}@batched rep ${step.repeat}: split`); }
+        if (entry.atomic === false) { complete = false; problems.push(`${batch.key}@per-atom rep ${step.repeat}: a main request carried more than one question`); }
       }
-      const { backend, calls, model } = await timedBackend(repo);
-      const t0 = performance.now();
-      const report = await checkDocuments({ root: repo, mode: { kind: "paths", paths }, profile: "promotion", cache: "off", backend });
-      const wall = performance.now() - t0;
-      charge(shapeKey(runKey, step.shape), costOf(report));
-      if (!firstReport.has(step.shape)) firstReport.set(step.shape, report);
-      const entry = recordRun({ runKey, mode: "real-cells", fixture: labelsFile, repeat: step.repeat, shape: step.shape, report, calls, model, wall, modules, labelsFile, lead });
-      entries.push(entry);
-      if (entry.split) { complete = false; problems.push(`${runKey}@batched rep ${step.repeat}: split`); }
-      if (entry.atomic === false) { complete = false; problems.push(`${runKey}@per-atom rep ${step.repeat}: a main request carried more than one question`); }
     }
-    for (const [shape, report] of firstReport) {
+    for (const shape of LANE_LABELS) {
       for (const [docPath, spec] of Object.entries(labels.documents)) {
-        const artifact = report.artifacts.find((a) => a.path === docPath);
+        const artifact = firstArtifacts.get(shape)?.get(docPath);
         if (artifact !== undefined && artifact.verdict === "BLOCKED") problems.push(`${docPath}@${shape ?? "default"}: BLOCKED ${(artifact.findings ?? []).filter((f) => f.verdict === "BLOCKED").map((f) => f.reason ?? f.message ?? "").join("; ")}`);
         if (artifact === undefined || artifact.verdict === "BLOCKED") { complete = false; rows.push([shape ?? "default", docPath, "-", "-", "-", artifact?.verdict ?? "missing", "-", "-"]); continue; }
         const prefix = labels.oracle ?? "evidence_reasons";
@@ -1235,15 +1356,16 @@ async function runRealCells() {
       ? `run 1 per shape; agreement with the lead's blind labels (${labelsFile}, pages at ${labels.commit})`
       : "run 1 per shape; agreement with the lead's labels is informational only (the labelled cells were rewritten after the labels)");
     table(["shape", "document", "row", "lead", "judge", "VERDICT", "p", "agreement"], rows);
-    for (const shape of firstReport.keys()) {
-      const all = rows.filter((r) => r[0] === (shape ?? "default"));
-      console.log(`${shape ?? "default"}: ${all.filter((r) => r[4] !== "NOT-FOUND").length}/${all.length} labelled atoms found over ${Object.keys(labels.documents).length} documents`);
-      const judged = rows.filter((r) => r[0] === (shape ?? "default") && r[7] !== "-");
-      const cost = costOf(firstReport.get(shape));
-      console.log(`${shape ?? "default"}: agreement (informational) ${judged.filter((r) => r[7] === "agree").length}/${judged.length}; per run: main ${cost.main}, follow-ups ${cost.followups}, requests ${cost.requests}, worst ${cost.worst}`);
+    for (const shape of LANE_LABELS) {
+      const all = rows.filter((r) => r[0] === shape);
+      console.log(`${shape}: ${all.filter((r) => r[4] !== "NOT-FOUND").length}/${all.length} labelled atoms found over ${Object.keys(labels.documents).length} documents`);
+      const judged = rows.filter((r) => r[0] === shape && r[7] !== "-");
+      const cost = firstCost.get(shape) ?? { main: 0, followups: 0, requests: 0, worst: 0 };
+      console.log(`${shape}: agreement (informational) ${judged.filter((r) => r[7] === "agree").length}/${judged.length}; repeat 1: main ${cost.main}, follow-ups ${cost.followups}, requests ${cost.requests}, worst ${cost.worst}`);
     }
     if (POSITIONS) printPositions(entries);
     printRequests(entries);
+    printArmCosts(entries);
     if (!MOCK) console.log(`ledger: live spent ${liveSpent()} / cap ${CAP}`);
   } finally {
     rmSync(repo, { recursive: true, force: true });
@@ -1253,9 +1375,76 @@ async function runRealCells() {
   return complete;
 }
 
+/**
+ * A labels file, with `commit` kept as written: YAML reads an all-digit revision such as 0408473
+ * as the number 408473, which names no commit.
+ */
+function loadLabels(file) {
+  const text = readFileSync(file, "utf8");
+  const labels = YAML.parse(text);
+  const commit = /^commit:\s*['"]?([0-9a-f]+)['"]?\s*$/m.exec(text)?.[1];
+  return commit === undefined ? labels : { ...labels, commit };
+}
+
+// ---------------------------------------------------------------- --write-deranged (round 12)
+
+/** The raw [start, end) of each cell of a pipe-table line, split as splitCells splits it. */
+function cellSpans(line) {
+  let start = line.indexOf("|") + 1;
+  const spans = [];
+  let inCode = false;
+  for (let i = start; i < line.length; i += 1) {
+    const ch = line[i];
+    if (ch === "`") inCode = !inCode;
+    else if (ch === "\\" && line[i + 1] === "|") i += 1;
+    else if (ch === "|" && !inCode) { spans.push([start, i]); start = i + 1; }
+  }
+  if (line.slice(start).trim().length > 0) spans.push([start, line.length]);
+  return spans;
+}
+/**
+ * Writes every generated document a labels file names: `source` at the labels' `commit`, the data
+ * rows of the one table naming `column` carrying, row i, base row `from[i]`'s raw cell, nothing
+ * else changed; then the column-permutation invariant (and `rotation`) is checked on the result.
+ */
+function writeDeranged() {
+  const labelsFile = value("--labels", undefined);
+  if (labelsFile === undefined) { console.log("--write-deranged needs --labels"); return false; }
+  const labels = loadLabels(path.resolve(FIXTURES, "real-cells", labelsFile));
+  let ok = true;
+  for (const [docPath, spec] of Object.entries(labels.documents)) {
+    if (spec.source === undefined) continue;
+    const base = git(REPO, ["show", `${labels.commit ?? "HEAD"}:${spec.source}`], "utf8");
+    const lines = base.split("\n");
+    const { header, rows } = columnTable(lines, spec.column);
+    const col = splitCells(lines[header]).indexOf(spec.column);
+    const from = rows.map((_, k) => Object.entries(spec.rows ?? {}).find(([id]) => id.endsWith(`#row${k + 1}`))?.[1]?.from);
+    if (from.some((f) => f === undefined)) { console.log(`${docPath}: a row has no 'from'`); ok = false; continue; }
+    const raw = rows.map((i) => { const [s, e] = cellSpans(lines[i])[col]; return lines[i].slice(s, e); });
+    const out = [...lines];
+    rows.forEach((i, k) => {
+      const [s, e] = cellSpans(lines[i])[col];
+      out[i] = lines[i].slice(0, s) + raw[from[k] - 1] + lines[i].slice(e);
+    });
+    const text = out.join("\n");
+    let integrity = columnPermutationIntegrity(base, text, spec.column, from);
+    if (integrity === "ok" && labels.rotation !== undefined) {
+      const bad = from.findIndex((f, k) => f !== ((k + labels.rotation) % rows.length) + 1);
+      if (bad >= 0) integrity = `MISMATCH row${bad + 1} from ${from[bad]}, rotation ${labels.rotation}`;
+    }
+    if (integrity !== "ok") { console.log(`${docPath}: ${integrity}`); ok = false; continue; }
+    mkdirSync(path.dirname(path.join(REPO, docPath)), { recursive: true });
+    writeFileSync(path.join(REPO, docPath), text);
+    console.log(`wrote ${docPath} ('${spec.column}' of ${labels.commit ?? "HEAD"}:${spec.source}, from [${from.join(", ")}]): column-permutation ok`);
+  }
+  return ok;
+}
+
 // ---------------------------------------------------------------- main
 
-if (flag("--fixtures")) {
+if (flag("--write-deranged")) {
+  process.exitCode = writeDeranged() ? 0 : 1;
+} else if (flag("--fixtures")) {
   process.exitCode = (await runFixtures()) ? 0 : 1;
 } else if (flag("--corpus")) {
   process.exitCode = (await runCorpus()) ? 0 : 1;

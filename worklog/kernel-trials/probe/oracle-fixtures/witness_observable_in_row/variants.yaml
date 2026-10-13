@@ -1,0 +1,4 @@
+# Round 12 module variants per arm (oracle-test.mjs --variants): arm -> {module the rule names: variant}.
+# Arm N is the module as the set names it.
+A:
+  worklog/kernel-trials/probe/oracle-fixtures/witness_observable_in_row/module.yaml: worklog/kernel-trials/probe/oracle-fixtures/witness_observable_in_row/variants/A.yaml

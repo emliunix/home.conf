@@ -1,0 +1,49 @@
+{
+  "cap": 78,
+  "live": {
+    "questions": 0,
+    "followups": 0,
+    "requests": 0,
+    "runs": []
+  },
+  "mock": {
+    "projections": {
+      "real-cells:deranged-r12.yaml:worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/04-trusted-kernel.md@per-atom#N": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "real-cells:deranged-r12.yaml:worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/04-trusted-kernel.md@per-atom#A": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "real-cells:deranged-r12.yaml:worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/04-trusted-kernel.md@per-atom#C": {
+        "main": 6,
+        "asked": 6,
+        "worst": 6,
+        "requests": 6
+      },
+      "real-cells:deranged-r12.yaml:worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/01-document-verification-and-skill-transfer.md@per-atom#N": {
+        "main": 9,
+        "asked": 9,
+        "worst": 9,
+        "requests": 9
+      },
+      "real-cells:deranged-r12.yaml:worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/01-document-verification-and-skill-transfer.md@per-atom#A": {
+        "main": 9,
+        "asked": 9,
+        "worst": 9,
+        "requests": 9
+      },
+      "real-cells:deranged-r12.yaml:worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/01-document-verification-and-skill-transfer.md@per-atom#C": {
+        "main": 9,
+        "asked": 9,
+        "worst": 9,
+        "requests": 9
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+# Kernel-trials round 12, arm A (address) for the W tracks: the round 4c module with the cell's path
+# [title, heading, column] as context: (its evidence already holds the Property cell). Generated from
+# ../module.yaml; nothing else differs.
+# Round 4c candidate set C2 (cell with its property). Fixture-local; the selected one ships into
+# doc-verify/modules/design.yaml.
+schema_version: 2
+kind: verification-module
+module: round4c.witness_observable_in_row
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [draft, reviewed, pending-retro, landed]
+oracles:
+  witness_observable_in_row(D, R, P, L):
+    ask: >-
+      This is one row of a design's verification table: the property and its failure-witness
+      cell. The cell holds only if it names an observable condition:
+      something a test, a command or a measurement would show, stated as what would be seen if the
+      claim it witnesses were false. It fails if it only restates or negates that claim in other
+      words, asserts that the claim holds or is verified, names only that a check, test or command
+      exists, passes or fails without saying what would be seen, or is too vague to observe. A cell
+      may cite another document, a round or an item by name; that alone neither helps nor hurts.
+      The witness must be a failure of this row's property; an observable failure of some other
+      property fails.
+    evidence: core.cells(D, R, L)
+    context: [P]
+    threshold: 0.5
+    max_bytes: 4000
+rules:
+  verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
+  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+  witness_path(D, R, C, P): core.row(D, T, R), witness_header(D, T, C), core.cell_path(D, R, C, [title, heading, column], P)
+constraints:
+  round4c-witness-observable-in-row:
+    forall: verification_design_section(D, S), core.table(D, S, T), witness_header(D, T, C), core.row(D, T, R)
+    require: core.cell(D, R, C), witness_path(D, R, C, P), witness_observable_in_row(D, R, P, ['Property', C])
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the failure witness restates the property or names no observable condition"

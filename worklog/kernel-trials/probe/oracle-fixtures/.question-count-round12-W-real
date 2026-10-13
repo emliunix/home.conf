@@ -1,0 +1,73 @@
+{
+  "cap": 135,
+  "live": {
+    "questions": 0,
+    "followups": 0,
+    "requests": 0,
+    "runs": []
+  },
+  "mock": {
+    "projections": {
+      "real-cells:witness-labels-r10.yaml:design/02-programmatic-document-contract-verification.md@per-atom#N": {
+        "main": 11,
+        "asked": 11,
+        "worst": 11,
+        "requests": 11
+      },
+      "real-cells:witness-labels-r10.yaml:design/02-programmatic-document-contract-verification.md@per-atom#A": {
+        "main": 11,
+        "asked": 11,
+        "worst": 11,
+        "requests": 11
+      },
+      "real-cells:witness-labels-r10.yaml:design/03-companion-driven-document-verification.md@per-atom#N": {
+        "main": 9,
+        "asked": 9,
+        "worst": 9,
+        "requests": 9
+      },
+      "real-cells:witness-labels-r10.yaml:design/03-companion-driven-document-verification.md@per-atom#A": {
+        "main": 9,
+        "asked": 9,
+        "worst": 9,
+        "requests": 9
+      },
+      "real-cells:witness-labels-r10.yaml:design/04-modular-verification-language.md@per-atom#N": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "real-cells:witness-labels-r10.yaml:design/04-modular-verification-language.md@per-atom#A": {
+        "main": 14,
+        "asked": 14,
+        "worst": 14,
+        "requests": 14
+      },
+      "real-cells:witness-labels-r10.yaml:design/05-trusted-kernel-redesign.md@per-atom#N": {
+        "main": 10,
+        "asked": 10,
+        "worst": 10,
+        "requests": 10
+      },
+      "real-cells:witness-labels-r10.yaml:design/05-trusted-kernel-redesign.md@per-atom#A": {
+        "main": 10,
+        "asked": 10,
+        "worst": 10,
+        "requests": 10
+      },
+      "real-cells:witness-labels-r10.yaml:design/06-kernel-migration.md@per-atom#N": {
+        "main": 8,
+        "asked": 8,
+        "worst": 8,
+        "requests": 8
+      },
+      "real-cells:witness-labels-r10.yaml:design/06-kernel-migration.md@per-atom#A": {
+        "main": 8,
+        "asked": 8,
+        "worst": 8,
+        "requests": 8
+      }
+    }
+  }
+}
