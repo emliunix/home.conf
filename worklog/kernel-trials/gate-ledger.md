@@ -74,11 +74,15 @@ defect that has been seen to flip it (`seeded-defect-gate`), and its honest `com
     per-sentence or per-paragraph ask, or an explicit former-value clause) with
     `probe/oracle-fixtures/module_*_pages/` as its fixtures; until then the module-page history
     check is the regex plus a judge that misses the subtle form.
-11. **Witness relevance needs extraction, not a question** (round 9): asked only whether a cell is
-    a failure of this row's property, the judge answers `holds` for nearly any plausible failure
-    description (0.5–0.93), the table's property list beside the row moves at most two rows, and
-    a paraphrase changes nothing; the real derangement of designs 03 and 05 is caught 1 of 15.
-    Open: the extraction form (name the property the cell is a failure of, compare the name to
-    the row's structurally) against round 9's bar, with its sets and labels as the fixtures;
-    `core.row_with_column` is in the engine for it. Supersedes item 4's wrong-row half.
+11. **Witness relevance: neither a question nor a one-shot extraction decides it** (round 9,
+    five candidates): a relevance-only question reads any plausible failure as this row's
+    (0.5–0.93); a `choose` over the table's properties with the row's own Property cell in the
+    evidence echoes that cell (E1: every wrong row named its own property at 0.8–1.0); the same
+    choose over the witness alone extracts correctly when it decides (E2: precise source-row
+    names, `none` on neutral text, no echo) but a 15-way answer leaves half the rows below 0.6.
+    Open: a binary-per-candidate or rule-read ranked extraction over witness-only evidence,
+    against round 9's bar (≥ 8/10 swapped, ≥ 11 of 12 and 13 deranged, ≥ 4/5 decoys, ≥ 11/15
+    real deranged; held ≥ 13/14 and ≥ 28/30), with round 9's sets and labels as fixtures;
+    `core.row_with_column` and the E1/E2 sets are in the tree for it. Supersedes item 4's
+    wrong-row half.
 

@@ -176,6 +176,60 @@ The extraction form; verification sections written as lists; judge variation; re
 observability asked together (the shipped constraint sequences them, so the verdict cannot claim
 they compose).
 
+**Pre-run amendment, 2026-10-13 12:50 (lead, after the round's first run refuted R1, R2 and R1'
+and before any E1 call): the extraction form is measured in this round as candidate E1,
+against the bar the first run set.** E1 (`witness_property_choose(D, R, L)`) is a `choose`
+oracle over the same rows: the judge is shown the row's Property and Failure witness cells and
+the table's property list (`core.row_with_column`, the R2 rendering) and asked, verbatim: "This
+is one row of a design's verification table and the list of every property in that table. Name
+the one property in the list whose failure the Failure witness cell describes. Answer with that
+property's label exactly as listed; answer `none` if the cell describes no listed property's
+failure." Labels: the table's property names in table order (for design/04's fixtures: the
+fourteen of `design/04 §Verification design`, shortened to one token each as the set's
+`module.yaml` lists them) plus `none`. The row's expected label is its own property on genuine
+rows and the source row's property (`from[i]`) on wrong-row rows (ambiguous rows reported,
+`neutral` controls expected `none`, decoys expected the pasted witness's source row). A row is
+*caught* when the chosen label is not the row's own property (any other label or `none`) at
+p ≥ 0.6 on both repeats, and *held* when the chosen label is the row's own at p ≥ 0.6; a
+precise catch names the source row. Bars (from `round-9-verdict.md`): caught ≥ 8 of 10
+`defective-swapped`, ≥ 11 of 12 and 13 on the derangements, ≥ 4 of 5 decoys, ≥ 11 of 15 on the
+real derangement; held ≥ 13 of 14 on `good` and `shared-1-11`, ≥ 28 of 30 real rows. Expected
+(recorded before the run): swapped 7–9, derangements 9–11, decoys 3–4, real derangement 10–12;
+`good` 13–14; confidence medium-low (a 15-way choose is the first of its size in the
+programme). Decision: E1 meets every bar → ships as the relevance check (a host comparison of
+the chosen label to the row's property, a `core.cell_text` fact or a structured answer, in the
+same commit, round 9c); E1 meets the wrong-row bars but not the held bars → a precision round
+on the ask; neither → relevance is left to a differently shaped instrument and the record says
+so. Predicate (per-atom, two repeats, cache off): `--fixtures --oracle witness_property_choose
+--ledger round9-E1 --cap 336`; `--real-cells --labels relevance-labels-e1.yaml --ledger
+round9-E1-real --cap 90`; `--real-cells --labels relevance-deranged-e1.yaml --ledger
+round9-E1-real-deranged --cap 57` (the real designs' property lists as their own fixture-local
+modules). Projection as the first run: 224 + 60 + 38. Builder decisions taken before the run (12:58): the
+head is `witness_property_choose(D, R, C, L)` (the checker binds `C` from the set's
+`witness_header` rule; the rendering is R2's); one line follows the verbatim question, a key
+from each label to its full property name, because the judge receives label ids; the constraint
+exists only to ask the question (caught and held are read from the sidecar); the real designs
+02, 03 and 05 get their own fixture-local modules with their tables' names as labels.
+
+**Pre-run amendment, 2026-10-13 13:15 (lead, after E1's run and before any E2 call): E2, the
+extraction form with the row's own property hidden.** E1's run (`results/round-9-E1*.txt`) shows
+the judge naming the row's *own* Property cell for every wrong-row witness at 0.8–1.0 (the
+cell is in the evidence beside the witness, and a 15-way choose echoes it), so E1 measures
+echo, not extraction. E2 (`witness_property_blind(D, R, L)`) keeps E1's labels, key line and
+expectations but shows the judge only the Failure witness cell (`core.cells(D, R, ['Failure
+witness'])`, or the design's witness header) and the property list in the question's key line;
+the row's own property is not in the evidence. Question, verbatim: "This is the failure-witness
+cell of one row of a design's verification table. The table's properties are listed below as
+labels. Name the one property whose failure this cell describes; answer `none` if it describes
+no listed property's failure." Same bars, same catch/held reading, same three predicate commands
+with ledgers `round9-E2`, `round9-E2-real`, `round9-E2-real-deranged`, same caps (the builder used `core.cell(D, R, C)`, the checker refusing a literal list; the cell text alone is the evidence). Expected
+(recorded before the run): wrong-row rows caught 7–10 of 10 and 9–12 of 12/13 (the witness
+alone names its property in most rows), `good` held 11–13 of 14 (rows whose witnesses share
+vocabulary, 1 and 11, 6 and 7, 12 and 13, may cross), real rows held 25–28 of 30; confidence
+medium. Decision as E1's: every bar met → ships (round 9c); wrong-row bars met but held bars
+missed → a precision round; neither → the record says relevance is left to a differently shaped
+instrument.
+
 ## Review
 
 `results/round-9-review.md`, twelve findings, "run after amendments". Taken before the run: 1

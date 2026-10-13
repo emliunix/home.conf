@@ -1,0 +1,33 @@
+{
+  "cap": 90,
+  "live": {
+    "questions": 60,
+    "followups": 0,
+    "requests": 60,
+    "runs": [
+      {
+        "run": "real-cells:relevance-labels-e1.yaml@per-atom",
+        "main": 30,
+        "followups": 0,
+        "requests": 30,
+        "asked": 30,
+        "worst": 30,
+        "bytes": 17971,
+        "at": "2026-10-13T03:28:00.793Z"
+      },
+      {
+        "run": "real-cells:relevance-labels-e1.yaml@per-atom",
+        "main": 30,
+        "followups": 0,
+        "requests": 30,
+        "asked": 30,
+        "worst": 30,
+        "bytes": 17971,
+        "at": "2026-10-13T03:28:20.010Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {}
+  }
+}

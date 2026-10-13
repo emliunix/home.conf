@@ -1,0 +1,55 @@
+# Round 9 candidate E2 (pre-run amendment 2026-10-13 13:15; E1's file with the oracle
+# witness_property_blind, evidence the witness cell alone). E1's header follows: candidate E1, real-design derangement arm: the
+# generated documents real-cells/deranged/{03,05}-*.md (designs 03 and 05 at fe6f007, the witness
+# column rotated by 3: row i carries row i+3's witness, mod the row count; property column
+# unchanged), the same files relevance-deranged.yaml checks. Derived mechanically by the builder
+# from the lead's relevance-deranged.yaml (field `lead_r1`, `from` and `why` kept): a `fails` row's
+# expected `label` is the SOURCE row's property (`from`), from its design's fixture-local module
+# (witness_property_blind/real-{03,05}.yaml); `ambiguous` rows keep `ambiguous` (reported). Caught:
+# the chosen label is not the row's own property (another label or `none`) at p >= 0.6 on both
+# repeats; a precise catch equals `label`. Bar >= 11 of the 15 counted (round-9-verdict.md).
+oracle: witness_property_blind
+commit: fe6f007
+rotation: 3
+extra_files:
+  worklog/kernel-trials/probe/oracle-fixtures/witness_property_blind/real-03.yaml: ../witness_property_blind/real-03.yaml
+  worklog/kernel-trials/probe/oracle-fixtures/witness_property_blind/real-05.yaml: ../witness_property_blind/real-05.yaml
+documents:
+  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md:
+    source: design/03-companion-driven-document-verification.md
+    column: Failure witness
+    rule:
+      artifact_kind: design
+      modules:
+        - doc-verify:artifact
+        - worklog/kernel-trials/probe/oracle-fixtures/witness_property_blind/real-03.yaml
+    rows:
+      verification-design#row1: { label: rubric_consumers, lead_r1: fails, confidence: high, from: 4, why: "selection of consumers on 'missing companion is advisory'" }
+      verification-design#row2: { label: prek_trigger, lead_r1: fails, confidence: high, from: 5, why: "hook trigger on 'invalid companion is not ignored'" }
+      verification-design#row3: { label: feedback, lead_r1: fails, confidence: high, from: 6, why: "feedback inspectability on precedence" }
+      verification-design#row4: { label: staged_path, lead_r1: fails, confidence: high, from: 7, why: "the staged semantic path on rubric consumer selection" }
+      verification-design#row5: { label: trust_boundary, lead_r1: fails, confidence: high, from: 8, why: "trust boundary on the prek trigger" }
+      verification-design#row6: { label: ambiguous, lead_r1: ambiguous, from: 9, why: "'leaves the selection unchanged in the verbose trace' is inspectability vocabulary" }
+      verification-design#row7: { label: missing_companion, lead_r1: fails, confidence: high, from: 1, why: "missing-companion exit on the staged path" }
+      verification-design#row8: { label: ambiguous, lead_r1: ambiguous, from: 2, why: "'silently falls back' reads as the boundary's fallback-LLM clause" }
+      verification-design#row9: { label: precedence, lead_r1: fails, confidence: high, from: 3, why: "precedence order on 'current artifacts pass'" }
+  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md:
+    source: design/05-trusted-kernel-redesign.md
+    column: Failure witness
+    rule:
+      artifact_kind: design
+      modules:
+        - doc-verify:artifact
+        - worklog/kernel-trials/probe/oracle-fixtures/witness_property_blind/real-05.yaml
+    rows:
+      verification-design#row1: { label: soundness, lead_r1: fails, confidence: high, from: 4, why: "a PASS with an undefined leaf on feasibility" }
+      verification-design#row2: { label: ambiguous, lead_r1: ambiguous, from: 5, why: "demand is a §9 gate; a wrong demand set is a conformance failure too" }
+      verification-design#row3: { label: ambiguous, lead_r1: ambiguous, from: 6, why: "'a boundary gate that cannot be made to fail' is gate-suite-form vocabulary" }
+      verification-design#row4: { label: open_vocabulary, lead_r1: fails, confidence: high, from: 7, why: "a host grep on soundness by construction" }
+      verification-design#row5: { label: constitution, lead_r1: fails, confidence: high, from: 8, why: "constitution edits on demand" }
+      verification-design#row6: { label: oracle_split, lead_r1: fails, confidence: medium, from: 9, why: "oracle split on the trust boundary" }
+      verification-design#row7: { label: calibration, lead_r1: fails, confidence: high, from: 10, why: "oracle calibration on open vocabulary" }
+      verification-design#row8: { label: feasibility, lead_r1: fails, confidence: high, from: 1, why: "the probe runner's output on constitution governance" }
+      verification-design#row9: { label: conformance, lead_r1: fails, confidence: high, from: 2, why: "MISMATCH lines on oracle split" }
+      verification-design#row10: { label: gate_suite, lead_r1: fails, confidence: high, from: 3, why: "gate suite form on oracle calibration" }
+counts: { counted: 15, ambiguous: 4, bar: 11 }

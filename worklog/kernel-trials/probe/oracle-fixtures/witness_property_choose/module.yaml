@@ -1,0 +1,68 @@
+# Round 9 candidate E1 (the extraction form; pre-run amendment 2026-10-13 12:50 in
+# round-9-preregistration.md): a `choose` oracle over design/04's verification rows. The judge is
+# shown the row's Property and Failure witness cells and the table's property list
+# (core.row_with_column, R2's rendering) and names the one listed property whose failure the
+# witness describes, or `none`. Fixture-local; nothing ships from here (round 9c would ship the host
+# comparison of the chosen label to the row's property).
+#
+# Head arity: the amendment writes witness_property_choose(D, R, L) with the column fixed to
+# 'Failure witness'; the checker accepts only input variables as evidence arguments
+# (checker.ts, row_with_column branch), so the column is an input C bound by witness_header, as
+# R2's. Same evidence, same rendering; the label is the last argument.
+#
+# Labels, design/04 §Verification design in table order (the option ids the engine sends; one
+# token each, as the engine's label grammar requires):
+#   binding                 = Binding by construction                (row 1)
+#   threshold               = Threshold only demotes                 (row 2)
+#   three_valued            = Three-valued soundness                 (row 3)
+#   static_checks           = Static checks                          (row 4)
+#   compose                 = Modules compose                        (row 5)
+#   rounds                  = Rounds bounded                         (row 6)
+#   request_shape           = Requests shaped as declared            (row 7)
+#   extends                 = Extends law                            (row 8)
+#   diagnostics             = Diagnostics complete                   (row 9)
+#   nesting_baseline        = Nesting baseline                       (row 10)
+#   nested_classification   = Nested classification (scripted)       (row 11)
+#   migration_parity        = Migration parity                       (row 12)
+#   separation              = Migrated-constraint separation         (row 13)
+#   trust_boundary          = Trust boundary holds                   (row 14)
+#   none                    = the cell describes no listed property's failure
+# The question is the amendment's, verbatim; the `Labels:` key after it names each label's
+# property, because the engine sends the judge the label ids only and the evidence lists the
+# properties by their full names.
+schema_version: 2
+kind: verification-module
+module: round9.witness_property_choose
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [draft, reviewed, pending-retro, landed]
+oracles:
+  witness_property_choose(D, R, C, L):
+    choose: [binding, threshold, three_valued, static_checks, compose, rounds, request_shape, extends, diagnostics, nesting_baseline, nested_classification, migration_parity, separation, trust_boundary, none]
+    ask: >-
+      This is one row of a design's verification table and the list of every property in that
+      table. Name the one property in the list whose failure the Failure witness cell describes.
+      Answer with that property's label exactly as listed; answer `none` if the cell describes no
+      listed property's failure.
+      Labels: binding = Binding by construction; threshold = Threshold only demotes; three_valued =
+      Three-valued soundness; static_checks = Static checks; compose = Modules compose; rounds =
+      Rounds bounded; request_shape = Requests shaped as declared; extends = Extends law;
+      diagnostics = Diagnostics complete; nesting_baseline = Nesting baseline;
+      nested_classification = Nested classification (scripted); migration_parity = Migration
+      parity; separation = Migrated-constraint separation; trust_boundary = Trust boundary holds.
+    evidence: core.row_with_column(D, R, C)
+    threshold: 0.5
+    max_bytes: 6000
+rules:
+  verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
+  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+constraints:
+  # Measurement only: the atom is demanded for every witness row; `none` fails it. The row-own
+  # comparison (caught/held) is read from the sidecars against expect_cells, not from this verdict.
+  round9-witness-property-choose:
+    forall: verification_design_section(D, S), core.table(D, S, T), witness_header(D, T, C), core.row(D, T, R)
+    require: core.cell(D, R, C), witness_property_choose(D, R, C, P), P in [binding, threshold, three_valued, static_checks, compose, rounds, request_shape, extends, diagnostics, nesting_baseline, nested_classification, migration_parity, separation, trust_boundary]
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the failure witness describes no listed property's failure"

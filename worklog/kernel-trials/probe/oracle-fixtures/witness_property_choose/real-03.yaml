@@ -1,0 +1,49 @@
+# Round 9 candidate E1, real-design track: the extraction-form oracle over design/03-companion-driven-document-verification.md's
+# verification table at commit fe6f007 (labels read from that table, in table order). Same question,
+# evidence, threshold and constraint shape as ./module.yaml (design/04's set); only the label list
+# and its key differ. Used by real-cells/relevance-labels-e1.yaml and relevance-deranged-e1.yaml (the deranged copy keeps the property column).
+# Labels, table order:
+#   missing_companion = Missing companion is advisory  (row 1)
+#   invalid_companion = Invalid companion is not ignored  (row 2)
+#   precedence        = Precedence and safety  (row 3)
+#   rubric_consumers  = Shared rubric changes select consumers  (row 4)
+#   prek_trigger      = Prek is only a coarse trigger  (row 5)
+#   feedback          = Commit feedback is inspectable  (row 6)
+#   staged_path       = Staged semantic path composes end to end  (row 7)
+#   trust_boundary    = Existing trust boundary holds  (row 8)
+#   current_pass      = Current artifacts pass  (row 9)
+#   none              = the cell describes no listed property's failure
+schema_version: 2
+kind: verification-module
+module: round9.witness_property_choose_d03
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [draft, reviewed, pending-retro, landed]
+oracles:
+  witness_property_choose(D, R, C, L):
+    choose: [missing_companion, invalid_companion, precedence, rubric_consumers, prek_trigger, feedback, staged_path, trust_boundary, current_pass, none]
+    ask: >-
+      This is one row of a design's verification table and the list of every property in that
+      table. Name the one property in the list whose failure the Failure witness cell describes.
+      Answer with that property's label exactly as listed; answer `none` if the cell describes
+      no listed property's failure.
+      Labels: missing_companion = Missing companion is advisory; invalid_companion = Invalid
+      companion is not ignored; precedence = Precedence and safety; rubric_consumers = Shared
+      rubric changes select consumers; prek_trigger = Prek is only a coarse trigger; feedback =
+      Commit feedback is inspectable; staged_path = Staged semantic path composes end to end;
+      trust_boundary = Existing trust boundary holds; current_pass = Current artifacts pass.
+    evidence: core.row_with_column(D, R, C)
+    threshold: 0.5
+    max_bytes: 6000
+rules:
+  verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
+  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+constraints:
+  # Measurement only, as ./module.yaml: the atom is demanded for every witness row; `none` fails it.
+  round9-witness-property-choose-d03:
+    forall: verification_design_section(D, S), core.table(D, S, T), witness_header(D, T, C), core.row(D, T, R)
+    require: core.cell(D, R, C), witness_property_choose(D, R, C, P), P in [missing_companion, invalid_companion, precedence, rubric_consumers, prek_trigger, feedback, staged_path, trust_boundary, current_pass]
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the failure witness describes no listed property's failure"

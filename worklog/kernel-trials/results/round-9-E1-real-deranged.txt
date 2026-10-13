@@ -1,0 +1,37 @@
+oracle-test --real-cells --labels relevance-deranged-e1.yaml (LIVE; shapes per-atom; repeat 2; spans skipped)
+clone at fe6f007 (fe6f007640d08b343bb1cf877e9e3360c21af596)
+column-permutation worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md: ok ('Failure witness' against fe6f007:design/03-companion-driven-document-verification.md, from [4, 5, 6, 7, 8, 9, 1, 2, 3], rotation 3)
+column-permutation worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md: ok ('Failure witness' against fe6f007:design/05-trusted-kernel-redesign.md, from [4, 5, 6, 7, 8, 9, 10, 1, 2, 3], rotation 3)
+
+run 1 per shape; agreement with the lead's blind labels (relevance-deranged-e1.yaml, pages at fe6f007)
+  shape     document                                                                                                      row                        lead               judge              VERDICT  p     agreement           
+  --------  ------------------------------------------------------------------------------------------------------------  -------------------------  -----------------  -----------------  -------  ----  --------------------
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row1   rubric_consumers   missing_companion  PASS     0.86  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row2   prek_trigger       invalid_companion  PASS     0.91  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row3   feedback           precedence         PASS     0.95  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row4   staged_path        rubric_consumers   PASS     0.87  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row5   trust_boundary     prek_trigger       PASS     1.00  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row6   ambiguous          feedback           PASS     0.99  DISAGREE (undefined)
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row7   missing_companion  staged_path        PASS     0.80  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row8   ambiguous          trust_boundary     PASS     0.70  DISAGREE (undefined)
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/03-companion-driven-document-verification.md  verification-design#row9   precedence         precedence         PASS     0.84  agree               
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row1   soundness          feasibility        PASS     0.98  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row2   ambiguous          demand             PASS     0.64  DISAGREE (undefined)
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row3   ambiguous          gate_suite         PASS     0.98  DISAGREE (undefined)
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row4   open_vocabulary    soundness          PASS     0.96  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row5   constitution       demand             PASS     0.67  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row6   oracle_split       trust_boundary     PASS     0.99  DISAGREE (medium)   
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row7   calibration        open_vocabulary    PASS     0.92  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row8   feasibility        constitution       PASS     0.93  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row9   conformance        oracle_split       PASS     0.98  DISAGREE (high)     
+  per-atom  worklog/kernel-trials/probe/oracle-fixtures/real-cells/deranged/05-trusted-kernel-redesign.md                 verification-design#row10  gate_suite         calibration        PASS     0.89  DISAGREE (high)     
+per-atom: 19/19 labelled atoms found over 2 documents
+per-atom: agreement (informational) 1/19; per run: main 19, follow-ups 0, requests 19, worst 19
+
+ledger round9-E1-real-deranged: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  per-atom  normal  2     38        38      0              [19]                     30722       22.88    0           19             2        38              38             
+projection (live, ledger round9-E1-real-deranged): main 38, worst 38; cap at 1.5x worst = 57; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round9-E1-real-deranged.json
+ledger: live spent 38 / cap 57
+complete: true

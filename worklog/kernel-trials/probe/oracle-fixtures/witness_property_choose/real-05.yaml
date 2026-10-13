@@ -1,0 +1,51 @@
+# Round 9 candidate E1, real-design track: the extraction-form oracle over design/05-trusted-kernel-redesign.md's
+# verification table at commit fe6f007 (labels read from that table, in table order). Same question,
+# evidence, threshold and constraint shape as ./module.yaml (design/04's set); only the label list
+# and its key differ. Used by real-cells/relevance-labels-e1.yaml and relevance-deranged-e1.yaml (the deranged copy keeps the property column).
+# Labels, table order:
+#   feasibility     = Feasibility (round 1)  (row 1)
+#   conformance     = Model conformance (round 2, **passed**)  (row 2)
+#   gate_suite      = Gate suite form  (row 3)
+#   soundness       = Soundness by construction  (row 4)
+#   demand          = Demand is the engine's  (row 5)
+#   trust_boundary  = Trust boundary (round 5, **in force**)  (row 6)
+#   open_vocabulary = Open vocabulary  (row 7)
+#   constitution    = Constitution governed  (row 8)
+#   oracle_split    = Oracle split  (row 9)
+#   calibration     = Oracle calibration (round 3, **run**; round 4c re-authored `verification_falsifies` on the cell grain)  (row 10)
+#   none            = the cell describes no listed property's failure
+schema_version: 2
+kind: verification-module
+module: round9.witness_property_choose_d05
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [draft, reviewed, pending-retro, landed]
+oracles:
+  witness_property_choose(D, R, C, L):
+    choose: [feasibility, conformance, gate_suite, soundness, demand, trust_boundary, open_vocabulary, constitution, oracle_split, calibration, none]
+    ask: >-
+      This is one row of a design's verification table and the list of every property in that
+      table. Name the one property in the list whose failure the Failure witness cell describes.
+      Answer with that property's label exactly as listed; answer `none` if the cell describes
+      no listed property's failure.
+      Labels: feasibility = Feasibility (round 1); conformance = Model conformance (round 2,
+      **passed**); gate_suite = Gate suite form; soundness = Soundness by construction; demand =
+      Demand is the engine's; trust_boundary = Trust boundary (round 5, **in force**);
+      open_vocabulary = Open vocabulary; constitution = Constitution governed; oracle_split =
+      Oracle split; calibration = Oracle calibration (round 3, **run**; round 4c re-authored
+      `verification_falsifies` on the cell grain).
+    evidence: core.row_with_column(D, R, C)
+    threshold: 0.5
+    max_bytes: 6000
+rules:
+  verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
+  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+constraints:
+  # Measurement only, as ./module.yaml: the atom is demanded for every witness row; `none` fails it.
+  round9-witness-property-choose-d05:
+    forall: verification_design_section(D, S), core.table(D, S, T), witness_header(D, T, C), core.row(D, T, R)
+    require: core.cell(D, R, C), witness_property_choose(D, R, C, P), P in [feasibility, conformance, gate_suite, soundness, demand, trust_boundary, open_vocabulary, constitution, oracle_split, calibration]
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the failure witness describes no listed property's failure"

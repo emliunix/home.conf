@@ -1,0 +1,53 @@
+# Round 9 candidate E1, real-design track: the extraction-form oracle over design/02-programmatic-document-contract-verification.md's
+# verification table at commit fe6f007 (labels read from that table, in table order). Same question,
+# evidence, threshold and constraint shape as ./module.yaml (design/04's set); only the label list
+# and its key differ. Used by real-cells/relevance-labels-e1.yaml.
+# Labels, table order:
+#   segments         = Markdown uses AST section boundaries  (row 1)
+#   composition      = Module composition is safe and deterministic  (row 2)
+#   closure          = Snapshots and affected closure are correct  (row 3)
+#   selection        = Ordered document selection is correct  (row 4)
+#   dml_clauses      = DML clauses are deterministic and restricted  (row 5)
+#   semantic_bounded = Semantic uncertainty and reuse are bounded  (row 6)
+#   private_sources  = Private sources stay private  (row 7)
+#   agree            = Hook, agent, and CI agree  (row 8)
+#   gates_fail       = Important gates can fail  (row 9)
+#   answers_recorded = Live judge answers are recorded  (row 10)
+#   contract_passes  = The actual repository contract passes  (row 11)
+#   none             = the cell describes no listed property's failure
+schema_version: 2
+kind: verification-module
+module: round9.witness_property_choose_d02
+extends: [doc-verify:artifact]
+rounds: 1
+params:
+  statuses: [draft, reviewed, pending-retro, landed]
+oracles:
+  witness_property_choose(D, R, C, L):
+    choose: [segments, composition, closure, selection, dml_clauses, semantic_bounded, private_sources, agree, gates_fail, answers_recorded, contract_passes, none]
+    ask: >-
+      This is one row of a design's verification table and the list of every property in that
+      table. Name the one property in the list whose failure the Failure witness cell describes.
+      Answer with that property's label exactly as listed; answer `none` if the cell describes
+      no listed property's failure.
+      Labels: segments = Markdown uses AST section boundaries; composition = Module composition
+      is safe and deterministic; closure = Snapshots and affected closure are correct; selection
+      = Ordered document selection is correct; dml_clauses = DML clauses are deterministic and
+      restricted; semantic_bounded = Semantic uncertainty and reuse are bounded; private_sources
+      = Private sources stay private; agree = Hook, agent, and CI agree; gates_fail = Important
+      gates can fail; answers_recorded = Live judge answers are recorded; contract_passes = The
+      actual repository contract passes.
+    evidence: core.row_with_column(D, R, C)
+    threshold: 0.5
+    max_bytes: 6000
+rules:
+  verification_design_section(D, S): top(D, S), core.heading(D, S, 'Verification design')
+  witness_header(D, T, C): core.header(D, T, C), C in ['Failure witness', 'Observable failure witness']
+constraints:
+  # Measurement only, as ./module.yaml: the atom is demanded for every witness row; `none` fails it.
+  round9-witness-property-choose-d02:
+    forall: verification_design_section(D, S), core.table(D, S, T), witness_header(D, T, C), core.row(D, T, R)
+    require: core.cell(D, R, C), witness_property_choose(D, R, C, P), P in [segments, composition, closure, selection, dml_clauses, semantic_bounded, private_sources, agree, gates_fail, answers_recorded, contract_passes]
+    severity: error
+    profiles: [promotion]
+    message: "{R} in {D}: the failure witness describes no listed property's failure"

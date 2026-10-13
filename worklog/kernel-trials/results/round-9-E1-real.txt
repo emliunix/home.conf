@@ -1,0 +1,46 @@
+oracle-test --real-cells --labels relevance-labels-e1.yaml (LIVE; shapes per-atom; repeat 2; spans skipped)
+clone at fe6f007 (fe6f007640d08b343bb1cf877e9e3360c21af596)
+
+run 1 per shape; agreement with the lead's blind labels (relevance-labels-e1.yaml, pages at fe6f007)
+  shape     document                                                  row                        lead               judge              VERDICT  p     agreement
+  --------  --------------------------------------------------------  -------------------------  -----------------  -----------------  -------  ----  ---------
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row1   segments           segments           PASS     0.97  agree    
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row2   composition        composition        PASS     0.97  agree    
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row3   closure            closure            PASS     1.00  agree    
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row4   selection          selection          PASS     1.00  agree    
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row5   dml_clauses        dml_clauses        PASS     1.00  agree    
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row6   semantic_bounded   semantic_bounded   PASS     1.00  agree    
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row7   private_sources    private_sources    PASS     0.97  agree    
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row8   agree              agree              PASS     0.95  agree    
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row9   gates_fail         gates_fail         PASS     0.99  agree    
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row10  answers_recorded   answers_recorded   PASS     1.00  agree    
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row11  contract_passes    contract_passes    PASS     0.99  agree    
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row1   missing_companion  missing_companion  PASS     0.95  agree    
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row2   invalid_companion  invalid_companion  PASS     0.97  agree    
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row3   precedence         precedence         PASS     1.00  agree    
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row4   rubric_consumers   rubric_consumers   PASS     0.99  agree    
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row5   prek_trigger       prek_trigger       PASS     1.00  agree    
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row6   feedback           feedback           PASS     1.00  agree    
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row7   staged_path        staged_path        PASS     1.00  agree    
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row8   trust_boundary     trust_boundary     PASS     0.99  agree    
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row9   current_pass       current_pass       PASS     0.98  agree    
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row1   feasibility        feasibility        PASS     0.99  agree    
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row2   conformance        conformance        PASS     0.96  agree    
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row3   gate_suite         gate_suite         PASS     0.99  agree    
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row4   soundness          soundness          PASS     0.97  agree    
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row5   demand             demand             PASS     0.99  agree    
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row6   trust_boundary     trust_boundary     PASS     1.00  agree    
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row7   open_vocabulary    open_vocabulary    PASS     0.98  agree    
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row8   constitution       constitution       PASS     1.00  agree    
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row9   oracle_split       oracle_split       PASS     1.00  agree    
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row10  calibration        calibration        PASS     0.99  agree    
+per-atom: 30/30 labelled atoms found over 3 documents
+per-atom: agreement (informational) 30/30; per run: main 30, follow-ups 0, requests 30, worst 30
+
+ledger round9-E1-real: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  per-atom  normal  2     60        60      0              [30]                     48236       31.15    0           30             2        60              60             
+projection (live, ledger round9-E1-real): main 60, worst 60; cap at 1.5x worst = 90; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round9-E1-real.json
+ledger: live spent 60 / cap 90
+complete: true

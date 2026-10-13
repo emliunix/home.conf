@@ -1,0 +1,46 @@
+oracle-test --real-cells --labels relevance-labels-e2.yaml (LIVE; shapes per-atom; repeat 2; spans skipped)
+clone at fe6f007 (fe6f007640d08b343bb1cf877e9e3360c21af596)
+
+run 1 per shape; agreement with the lead's blind labels (relevance-labels-e2.yaml, pages at fe6f007)
+  shape     document                                                  row                        lead               judge              VERDICT       p     agreement        
+  --------  --------------------------------------------------------  -------------------------  -----------------  -----------------  ------------  ----  -----------------
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row1   segments           segments           NEEDS-REVIEW  1.00  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row2   composition        composition        NEEDS-REVIEW  0.66  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row3   closure            closure            NEEDS-REVIEW  0.71  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row4   selection          selection          NEEDS-REVIEW  0.99  agree            
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row5   dml_clauses        unknown            NEEDS-REVIEW  0.36  DISAGREE (medium)
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row6   semantic_bounded   unknown            NEEDS-REVIEW  0.41  DISAGREE (high)  
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row7   private_sources    unknown            NEEDS-REVIEW  0.47  DISAGREE (high)  
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row8   agree              unknown            NEEDS-REVIEW  0.47  DISAGREE (high)  
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row9   gates_fail         unknown            NEEDS-REVIEW  0.27  DISAGREE (high)  
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row10  answers_recorded   unknown            NEEDS-REVIEW  0.27  DISAGREE (medium)
+  per-atom  design/02-programmatic-document-contract-verification.md  verification-design#row11  contract_passes    contract_passes    NEEDS-REVIEW  0.80  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row1   missing_companion  missing_companion  NEEDS-REVIEW  0.84  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row2   invalid_companion  unknown            NEEDS-REVIEW  0.44  DISAGREE (high)  
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row3   precedence         precedence         NEEDS-REVIEW  1.00  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row4   rubric_consumers   rubric_consumers   NEEDS-REVIEW  0.68  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row5   prek_trigger       unknown            NEEDS-REVIEW  0.22  DISAGREE (high)  
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row6   feedback           feedback           NEEDS-REVIEW  0.66  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row7   staged_path        staged_path        NEEDS-REVIEW  0.70  agree            
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row8   trust_boundary     unknown            NEEDS-REVIEW  0.25  DISAGREE (high)  
+  per-atom  design/03-companion-driven-document-verification.md       verification-design#row9   current_pass       current_pass       NEEDS-REVIEW  0.85  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row1   feasibility        unknown            NEEDS-REVIEW  0.25  DISAGREE (high)  
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row2   conformance        conformance        NEEDS-REVIEW  0.50  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row3   gate_suite         unknown            NEEDS-REVIEW  0.47  DISAGREE (high)  
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row4   soundness          feasibility        NEEDS-REVIEW  0.67  DISAGREE (high)  
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row5   demand             demand             NEEDS-REVIEW  0.89  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row6   trust_boundary     trust_boundary     NEEDS-REVIEW  0.74  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row7   open_vocabulary    unknown            NEEDS-REVIEW  0.39  DISAGREE (high)  
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row8   constitution       constitution       NEEDS-REVIEW  0.98  agree            
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row9   oracle_split       unknown            NEEDS-REVIEW  0.32  DISAGREE (high)  
+  per-atom  design/05-trusted-kernel-redesign.md                      verification-design#row10  calibration        calibration        NEEDS-REVIEW  0.53  agree            
+per-atom: 30/30 labelled atoms found over 3 documents
+per-atom: agreement (informational) 16/30; per run: main 30, follow-ups 0, requests 30, worst 30
+
+ledger round9-E2-real: requests per shape (spans skipped (--no-spans); model jev-1.13.0, deepclause-sdk 0.0.89)
+  shape     arm     runs  main req  main q  follow-up req  main req/run (distinct)  stateBytes  judge s  split runs  main q/repeat  repeats  projected main  projected worst
+  --------  ------  ----  --------  ------  -------------  -----------------------  ----------  -------  ----------  -------------  -------  --------------  ---------------
+  per-atom  normal  2     60        60      0              [30]                     19074       35.21    0           30             2        60              60             
+projection (live, ledger round9-E2-real): main 60, worst 60; cap at 1.5x worst = 90; sidecar worklog/kernel-trials/probe/oracle-fixtures/.leaves-round9-E2-real.json
+ledger: live spent 60 / cap 90
+complete: true

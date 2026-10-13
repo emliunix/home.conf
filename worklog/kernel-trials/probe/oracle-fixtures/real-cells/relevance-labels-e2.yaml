@@ -1,0 +1,71 @@
+# Round 9 candidate E2 (pre-run amendment 2026-10-13 13:15; E1's file with the oracle
+# witness_property_blind, evidence the witness cell alone). E1's header follows: candidate E1, real-design track: every
+# failure-witness row of designs 02, 03 and 05 at commit fe6f007 against the extraction question
+# (name the listed property whose failure the cell describes). Derived mechanically by the builder
+# from the lead's relevance-labels.yaml (every row `holds` there, field `lead_r1`): each row's
+# expected `label` is its OWN property's label, from its design's fixture-local module
+# (witness_property_blind/real-{02,03,05}.yaml, labels read from the table at fe6f007 in table
+# order). Each document carries its own `rule` naming its design's module. The lead's confidence,
+# `shares_with`, `rewritten` and `why` fields are kept unchanged. Held: the chosen label is the
+# row's own at p >= 0.6 on both repeats; bar >= 28 of 30 (round-9-verdict.md).
+oracle: witness_property_blind
+commit: fe6f007
+extra_files:
+  worklog/kernel-trials/probe/oracle-fixtures/witness_property_blind/real-02.yaml: ../witness_property_blind/real-02.yaml
+  worklog/kernel-trials/probe/oracle-fixtures/witness_property_blind/real-03.yaml: ../witness_property_blind/real-03.yaml
+  worklog/kernel-trials/probe/oracle-fixtures/witness_property_blind/real-05.yaml: ../witness_property_blind/real-05.yaml
+documents:
+  design/02-programmatic-document-contract-verification.md:
+    column: Observable failure witness
+    rule:
+      artifact_kind: design
+      modules:
+        - doc-verify:artifact
+        - worklog/kernel-trials/probe/oracle-fixtures/witness_property_blind/real-02.yaml
+    rows:
+      verification-design#row1: { label: segments, lead_r1: holds, confidence: high }
+      verification-design#row2: { label: composition, lead_r1: holds, confidence: high }
+      verification-design#row3: { label: closure, lead_r1: holds, confidence: high }
+      verification-design#row4: { label: selection, lead_r1: holds, confidence: high }
+      verification-design#row5: { label: dml_clauses, lead_r1: holds, confidence: medium, why: "a fact set changing the verdict without the trace: the property is the program's determinism" }
+      verification-design#row6: { label: semantic_bounded, lead_r1: holds, confidence: high }
+      verification-design#row7: { label: private_sources, lead_r1: holds, confidence: high }
+      verification-design#row8: { label: agree, lead_r1: holds, confidence: high }
+      verification-design#row9: { label: gates_fail, lead_r1: holds, confidence: high }
+      verification-design#row10: { label: answers_recorded, lead_r1: holds, confidence: medium, rewritten: round-6, shares_with: row6, why: "the seeded-document PASS clause reads like row 6's unknown-passes" }
+      verification-design#row11: { label: contract_passes, lead_r1: holds, confidence: medium, rewritten: round-6, why: "a check verdict on the repository: the property is that the repository's own contracts pass" }
+  design/03-companion-driven-document-verification.md:
+    column: Failure witness
+    rule:
+      artifact_kind: design
+      modules:
+        - doc-verify:artifact
+        - worklog/kernel-trials/probe/oracle-fixtures/witness_property_blind/real-03.yaml
+    rows:
+      verification-design#row1: { label: missing_companion, lead_r1: holds, confidence: high }
+      verification-design#row2: { label: invalid_companion, lead_r1: holds, confidence: high }
+      verification-design#row3: { label: precedence, lead_r1: holds, confidence: high }
+      verification-design#row4: { label: rubric_consumers, lead_r1: holds, confidence: high }
+      verification-design#row5: { label: prek_trigger, lead_r1: holds, confidence: high }
+      verification-design#row6: { label: feedback, lead_r1: holds, confidence: medium, shares_with: row7, why: "'omits the Prolog decision after promotion' uses row 7's vocabulary" }
+      verification-design#row7: { label: staged_path, lead_r1: holds, confidence: high }
+      verification-design#row8: { label: trust_boundary, lead_r1: holds, confidence: high }
+      verification-design#row9: { label: current_pass, lead_r1: holds, confidence: medium, rewritten: round-4c, shares_with: row3, why: "the verbose-trace clause is about precedence as much as about current artifacts" }
+  design/05-trusted-kernel-redesign.md:
+    column: Failure witness
+    rule:
+      artifact_kind: design
+      modules:
+        - doc-verify:artifact
+        - worklog/kernel-trials/probe/oracle-fixtures/witness_property_blind/real-05.yaml
+    rows:
+      verification-design#row1: { label: feasibility, lead_r1: holds, confidence: high }
+      verification-design#row2: { label: conformance, lead_r1: holds, confidence: high }
+      verification-design#row3: { label: gate_suite, lead_r1: holds, confidence: high }
+      verification-design#row4: { label: soundness, lead_r1: holds, confidence: high }
+      verification-design#row5: { label: demand, lead_r1: holds, confidence: high }
+      verification-design#row6: { label: trust_boundary, lead_r1: holds, confidence: medium, shares_with: row3, why: "'a boundary gate that cannot be made to fail' is gate-suite-form vocabulary" }
+      verification-design#row7: { label: open_vocabulary, lead_r1: holds, confidence: high }
+      verification-design#row8: { label: constitution, lead_r1: holds, confidence: high }
+      verification-design#row9: { label: oracle_split, lead_r1: holds, confidence: high }
+      verification-design#row10: { label: calibration, lead_r1: holds, confidence: high }

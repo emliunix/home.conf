@@ -1,0 +1,173 @@
+{
+  "cap": 336,
+  "live": {
+    "questions": 224,
+    "followups": 0,
+    "requests": 224,
+    "runs": [
+      {
+        "run": "fixtures:witness_property_blind/good@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2069,
+        "at": "2026-10-13T03:37:32.319Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/good@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2069,
+        "at": "2026-10-13T03:37:44.110Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/defective-swapped@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2069,
+        "at": "2026-10-13T03:37:59.393Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/defective-swapped@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2069,
+        "at": "2026-10-13T03:38:11.701Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/derangement-s1@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2212,
+        "at": "2026-10-13T03:38:27.054Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/derangement-s1@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2212,
+        "at": "2026-10-13T03:38:38.860Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/derangement-s2@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2212,
+        "at": "2026-10-13T03:38:53.951Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/derangement-s2@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2212,
+        "at": "2026-10-13T03:39:07.201Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/adjacent-swap@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2212,
+        "at": "2026-10-13T03:39:22.046Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/adjacent-swap@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2212,
+        "at": "2026-10-13T03:39:33.298Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/near-miss-2-3@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2207,
+        "at": "2026-10-13T03:39:47.893Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/near-miss-2-3@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2207,
+        "at": "2026-10-13T03:39:58.954Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/shared-1-11@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2212,
+        "at": "2026-10-13T03:40:14.556Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/shared-1-11@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 2212,
+        "at": "2026-10-13T03:40:26.006Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/relevance-controls@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1491,
+        "at": "2026-10-13T03:40:40.267Z"
+      },
+      {
+        "run": "fixtures:witness_property_blind/relevance-controls@per-atom",
+        "main": 14,
+        "followups": 0,
+        "requests": 14,
+        "asked": 14,
+        "worst": 14,
+        "bytes": 1491,
+        "at": "2026-10-13T03:40:51.500Z"
+      }
+    ]
+  },
+  "mock": {
+    "projections": {}
+  }
+}
