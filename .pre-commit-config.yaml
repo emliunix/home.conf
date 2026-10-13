@@ -96,3 +96,17 @@ repos:
         pass_filenames: false
         files: '^skills/flow-|^flow-skills-eval/'
         require_serial: true
+      - id: tskill-pytest
+        name: tskill pytest (uv --frozen)
+        language: system
+        # #283: tskill's pytest suite (16 collected tests) ran in no gate — #268's
+        # verification was manual. Drive it with uv; `--frozen` is load-bearing so
+        # the hook cannot rewrite the tracked tskill/uv.lock when this machine's
+        # uv index differs from the lock's registry. The wrapper prints the
+        # collected population (do not grep `def test_`: conftest fixtures match).
+        # Do not add a tskill/.venv gitignore rule — uv's own `.venv/.gitignore`
+        # already ignores children.
+        entry: node scripts/check-tskill-pytest.mjs
+        pass_filenames: false
+        files: '^tskill/|^scripts/check-tskill-pytest\.mjs$|^\.pre-commit-config\.yaml$'
+        require_serial: true
