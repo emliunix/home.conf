@@ -47,6 +47,31 @@ For a plugin or generic use of this skill where no constitution exists, name tha
 substitute the nearest standing statement of purpose; the step is satisfied by naming the frame,
 not by finding a file with that exact name.
 
+## Repo and remote status, every pass
+
+Work items describe intent; the repository describes what is actually true. **A pass that does not
+read the repos is grading the board against itself.** For every repo the sprint touches, report
+these five facts before composing the table:
+
+1. **Remote tip per claimed ref** — `git ls-remote <remote> <ref>`, never a local branch name and
+   never a status message. This is the only authority on whether work landed.
+2. **Worktrees** — `git worktree list`, one line each: path, branch or `detached`, and tip. A
+   worktree is checkout state, not storage; a branch whose only copy is a worktree has not landed.
+3. **Shared-checkout state** — the canonical checkout's branch, how far it is behind its remote, and
+   its uncommitted path count. A stale or dirty shared checkout is a source of plausible wrong
+   reads, so the pass states it rather than assuming it is current.
+4. **Local tips not reachable from any remote ref** — the commits that exist only on this host. This
+   is the list the next reader cannot see, so it is the one that most needs naming.
+5. **Gate state** — whether a heavy gate or held lock is running. A gate in flight changes what a
+   concurrent push can do, and a red produced while one is held is not yet evidence about the code.
+
+**Report the read, not the expectation.** When a ref cannot be read — the remote hangs, the
+network is down, the credential is absent — say which ref went unread. Silence about a failed read
+is indistinguishable from "unchanged", and "unchanged" is a claim.
+
+| repo | claimed ref | remote tip | worktrees (path @ branch) | shared checkout | local-only tips |
+| --- | --- | --- | --- | --- | --- |
+
 ## On-track table
 
 Every active work item gets one row. A row is not complete until all five fields are filled:
@@ -130,6 +155,11 @@ pass:
 | **Finished work stays parked.** A reviewed branch is neither merged nor explicitly held. | Merge it to `main`, or record the measured reason it cannot land and the owner of the lift condition. A release line is temporary transit for named commits awaiting replay, not a second permanent home. Remove the worktree once merged. |
 | **Ad-hoc probe has no claim.** A live service, database, credential, or machine-level surface is touched to answer a question nobody recorded. | Claim or post a one-line notice before the probe. Name the owning work item or thread, the surface, and what the read can change. A probe that may produce a new locator is still a claim; only waiting is exempt when the intended read would merely confirm the live owner's already-running hypothesis. |
 | **Communication substitutes for disposition.** A long thread is mistaken for progress. | The tracker's deliverable is a changed board, tip, or explicit blocker; channel posts stay short and point to the owning artifact. |
+| **A worktree is read as landed work.** The branch exists, the tip looks right, and nobody checks whether a remote ref reaches it. | Name the remote ref that reaches the tip. If none does, the work item is not landed however green its gate was. |
+| **The hook judged a different commit than the push.** A pre-push hook runs in the worktree, so its verdict covers the worktree's HEAD, which need not be the ref being pushed. | For every "the gate passed" claim, name the SHA the gate ran at and the SHA the push sent; when they differ, re-run at the pushed SHA or scope the claim to the superset. |
+| **The shared checkout is read as current.** The canonical checkout sits behind its remote, or carries uncommitted paths, so a read from it returns bytes that are not the ref under discussion. | Report the shared checkout's branch, behind-count, and dirty-count in the pass. Quote a commit ref with any line number or path read. |
+| **Host state is read as code failure.** A check reddens on this host for a reason a clean clone would not reproduce — an untracked file in a gate's population, a host-only binary, a local credential. | Before grading a red, ask whether a fresh clone of the exact commit would produce it. Name the host-only input when one exists; it is a precondition, not a product defect. |
+| **A gate result is quoted before the gate finished.** A push or CI run in flight has no verdict yet, and reading its log early reports an absence that is really a "not yet". | Take the artifact's size or mtime twice, or confirm the owning process is gone, before quoting a result. |
 
 ## Failure-pattern capture
 
@@ -166,6 +196,8 @@ a museum.
   unless a work item is the lane's blocking gate.
 - **Reachability is tested by tip, not by branch name.** A same-named stale remote branch is how a
   single-machine sprint looks healthy from every other row.
+- **The repo read is part of the pass, not a preamble.** Remote tips, worktree inventory,
+  shared-checkout state, and local-only tips go in every pass, with the unread refs named.
 - **Dispositions, not silence.** A work item that stopped moving gets closed with a reason or re-reasoned;
   abandonment by omission is invisible on a board that only shows open work.
 - **The label must be traceable to the measurement** — or the measurement replaces it. A word that

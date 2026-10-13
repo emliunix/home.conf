@@ -37,6 +37,10 @@ Run these checks in order and keep notes brief:
    that would close it. Distinguish landed behavior from proposed work.
 4. **Work-item progress.** Mark each active item `on track`, `stale`, `blocked`,
    or `done`. Name the owner and the next observable result.
+   Read the repositories, not only the board: remote tip for every claimed ref
+   (`git ls-remote`), the worktree inventory, the shared checkout's branch and
+   dirty count, and the local tips no remote ref reaches. A work item's state is
+   a claim about the tree, and the tree is what decides it.
 5. **Process defect review.** Look for drift, duplicated authority, unsupported
    status claims, unverifiable work, hidden compatibility, or a check that does
    not fail on the defect it claims to catch. Record the smallest corrective
@@ -122,6 +126,12 @@ These are standing lead checks, not a second methodology:
   resting state. **Claim or notify before acting on a shared or live surface** —
   a service probe, live database read, credential use, or machine-level operation
   is work, and a one-line claim or notice goes out before it starts.
+
+  **Reachability is tested by remote ref, not by branch name, and a worktree is
+  checkout state, not landed work.** Every pass names each repo's remote tip, the
+  worktrees and their tips, the shared checkout's branch/behind/dirty state, and
+  the commits that exist only on this host. A ref that could not be read is
+  reported as unread, never as unchanged.
 
   A branch is transit, not storage: `main` is the return point for finished
   work, while a named release line holds only the commits awaiting its committed

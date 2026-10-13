@@ -15,6 +15,14 @@ member request whenever a member is named on a row.
 Goal: <the outcome currently being pursued>
 Evidence that closes it: <observable result, command, or artifact>
 
+**Repo status** (read this pass, `git ls-remote` for every ref)
+```
+<repo>  <claimed ref> = <remote tip>   <or NOT READ: why>
+        worktrees: <path @ branch> · shared checkout: <branch, behind N, dirty N>
+        local-only: <SHA and what it is, or none>
+gate:   <running: which gate and whose push | idle>
+```
+
 | lane | owner | state | next observable result | gate / blocker |
 | --- | --- | --- | --- | --- |
 | <lane> | @<member> | <on track | unconfirmed | stale | blocked | done> | <result> | <gate> |
