@@ -12,6 +12,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { quoteAtom } from "../engine/terms.js";
+import { forallBindingVars } from "../engine/checker.js";
 import type { TranslateProgram } from "./translate.js";
 
 const require = createRequire(import.meta.url);
@@ -319,39 +320,8 @@ export function atomTerm(key: string): string {
 }
 
 function constraintVarNames(program: TranslateProgram): Map<string, string[]> {
-  const names = new Map<string, string[]>();
-  for (const c of program.constraints) {
-    const ns: string[] = [];
-    const visit = (t: import("../engine/terms.js").Term) => {
-      if (t.kind === "var" && t.name !== "_" && !ns.includes(t.name)) ns.push(t.name);
-      if (t.kind === "compound") t.args.forEach(visit);
-    };
-    for (const l of c.forall) {
-      if (l.kind === "pos" || l.kind === "neg") l.args.forEach(visit);
-      else if (l.kind === "in") {
-        visit(l.item);
-        visit(l.list);
-      } else if (l.kind === "matches") visit(l.item);
-      else if (l.kind === "cmp") {
-        visit(l.left);
-        visit(l.right);
-      } else if (l.kind === "present") {
-        visit(l.document);
-        visit(l.candidates);
-        visit(l.present);
-      } else if (l.kind === "path" || l.kind === "cell_path" || l.kind === "section_keyed") {
-        l.args.forEach(visit);
-      } else {
-        visit(l.variable);
-        for (const g of l.goal) {
-          if (g.kind === "pos" || g.kind === "neg") g.args.forEach(visit);
-        }
-        visit(l.result);
-      }
-    }
-    names.set(c.id, ns);
-  }
-  return names;
+  // The translator's binding list (forallBindingVars), so names and printed values always align.
+  return new Map(program.constraints.map((c) => [c.id, forallBindingVars(c.forall)]));
 }
 
 function emptyReport(extra: Partial<KernelReport> = {}): KernelReport {

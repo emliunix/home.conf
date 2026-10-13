@@ -137,7 +137,7 @@ constraints:
     await kernel.load(tr.text);
     kernel.setAnswers({});
     const result = kernel.evaluate(tr.program);
-    expect(result.statuses.c1).toEqual([{ D: "d", S: "b", status: "undetermined" }]);
+    expect(result.statuses.c1).toStrictEqual([{ D: "d", S: "b", status: "undetermined" }]);
     expect(result.demand?.prefix).toEqual(["w::o1(d,b)"]);
     expect(result.unfounded ?? {}).toEqual({});
   }, 60_000);
