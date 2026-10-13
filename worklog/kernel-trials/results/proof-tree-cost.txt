@@ -1,0 +1,12 @@
+Proof-tree cost under the inference budget (task F3, 2026-10-14, after design/06 landed)
+
+Instrument: every Kernel.evaluate during `doc-verify check --all` preceded by inferencesOf()
+(statistics/2 around one core_report/1, which now includes the proof lines).
+
+profile    evaluations  max inferences
+draft      28           28264
+promotion  56           71515
+
+Budget: 876,940 (doc-verify/src/engine/index.ts; round 5: 20 x the pre-proof corpus maximum,
+43,847). With proofs the corpus maximum is 71,515 (1.6x the pre-proof maximum): 12x headroom.
+No evaluation was BLOCKED; both runs PASS (28 artifacts). The budget stays.
