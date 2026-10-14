@@ -22,6 +22,9 @@ A list collected this way can be wrong, and saying so is part of using it. The k
 - **A result file older than the fix it is cited for.**
 - **A hand-maintained page that looks generated**, or a generated page left one edit stale.
 - **An index that lags** the commits.
+- **A derived header count that no generator and no test owns** — the append updated the content and left
+the count. It survives even a pass whose whole purpose is to re-count, because "2 instances" is true of
+*some* set and the reader cannot tell which.
 
 ## Add a record — four steps, in order
 
@@ -29,6 +32,19 @@ A list collected this way can be wrong, and saying so is part of using it. The k
 2. append its row to the programme's index;
 3. regenerate anything generated, **in the same commit** as the evidence it reads;
 4. hand-edit the counts a test pins.
+
+**Appending to a record is the same four steps, and step 3's hole is where appends break.** When you add
+an instance, a subsection or a case to a file that already exists, you are editing **two** records: the
+growing one and the **derived values about it** — a header's `Instances: N`, a table's row count, a
+summary's total. Steps 3 and 4 assume those derived values are *generated* or *pinned*; where a header is
+**hand-maintained and unpinned, neither step fires and the count silently goes stale.**
+
+So before an append is done, name every derived value in the file, and re-read each one against the new
+content. **A count must name its set** — `Instances: 2` and "instance 7 of the parent taxonomy" are both
+true statements about different denominators, and an unnamed denominator cannot be checked. The same act
+creates the second defect: appending `INSTANCE 7` to a file whose header already numbers it in a parent
+set's sequence puts **two 7s over two sets in one file.** Mark the internal one explicitly rather than
+renumbering, because renumbering silently moves a number another record may cite.
 
 ## Decision rows
 
@@ -51,6 +67,9 @@ The dated layer a reader enumerates before any programme carries a convention to
 - The experiment manifest had two stale cells within a day of being written — why it is a convenience and not the contract.
 - Three review rounds over the same seats collided on bare `{seat}.md` names (`seat-a.md` beside `seat-a-r2.md`), which is why the round number belongs in the name.
 - The extend-a-record procedure was written down only after a reader reconstructed it from the code and reported it missing.
+- A library entry's header read `Instances: 2`; appending a third instance left it stale, and the same
+  append put an `INSTANCE 7` beside a header that already called the *entry* "instance 7" of a parent set —
+  **one act, two derived values, neither generated nor pinned.**
 
 ## Project binding
 
