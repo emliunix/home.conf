@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "tsc -p doc-verify/tsconfig.build.json",
-    "prepare": "npm run build && if [ \"$(git rev-parse --show-toplevel 2>/dev/null)\" = \"$(pwd -P)\" ] && command -v prek >/dev/null 2>&1; then prek install --git-dir \"$(git rev-parse --path-format=absolute --git-common-dir)\" -t pre-commit; fi",
+    "prepare": "npm run build && if [ \"$(git rev-parse --path-format=absolute --git-dir 2>/dev/null)\" = \"$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)\" ] && command -v prek >/dev/null 2>&1; then prek install --git-dir \"$(git rev-parse --path-format=absolute --git-common-dir)\" -t pre-commit; fi",
     "test": "npm run build && vitest run",
     "typecheck": "tsc -p doc-verify/tsconfig.json --noEmit",
     "lint": "node scripts/oxlint-gate.mjs --self-test",
