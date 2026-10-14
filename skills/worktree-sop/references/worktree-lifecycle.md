@@ -36,38 +36,30 @@ Run the card's named acceptance gate against the worktree revision. For a
 shared-host heavy gate, use the gate lock in [`gate-lock.md`](gate-lock.md).
 A gate report names the revision, population, command, and exit code it read.
 
-### home.conf: install before hooks
+### home.conf: fresh linked worktree (#310 / #312)
 
-Two gitignored setup artifacts are required in every fresh linked worktree:
+Two gitignored artifacts matter: `doc-verify/dist/` (built CLI) and
+`.env.doc-verify` (credential file, usually a symlink on the canonical
+checkout).
 
-1. **`doc-verify/dist/`** — the built CLI (`package.json` bin). Absent ⇒ the
-   old `npm exec` path failed with an opaque `_npx` ENOENT.
-2. **`.env.doc-verify`** — usually a symlink to
-   `~/Documents/notes/common/creds/env-jev` (present only on the canonical
-   checkout). Absent ⇒ a later semantic round reported
-   `TYPESAFE_API_KEY is unavailable` even though the defect was a missing file.
+**Normal path (no manual setup):** with hooks installed once on the shared
+git dir, a fresh worktree's **prek** `document-contracts` entry runs
+`node scripts/run-document-contracts.mjs --auto-setup`. That flag installs
+dependencies (`npm ci --ignore-scripts`) and builds `dist` when missing.
+Credential resolution falls back to the **canonical checkout's**
+`.env.doc-verify` when the linked tree has none (local file still wins).
 
-After `git worktree add`, run:
+**Direct wrapper call** (no `--auto-setup`) still refuses with an `npm install`
+hint — scripts/CI must not mutate the tree by surprise.
+
+**First-time hook install** on the shared git dir (once per clone machine):
 
 ```bash
-npm install
-ln -s ~/Documents/notes/common/creds/env-jev .env.doc-verify   # if not already present
 prek install --git-dir "$(git rev-parse --path-format=absolute --git-common-dir)" -t pre-commit
 ```
 
-`npm install` runs `prepare` → `npm run build` (the gitignored CLI). **Hook
-installation is a separate manual step** (`prek install` above) and is **not**
-an acceptance condition for the document-contracts setup path. The owner
-ruling that hooks must not live in npm scripts is on **sandbox-deploy**
-(`#295` / `gb/295-prek-guard`); it does not remove home.conf's build path.
-home.conf `prepare` may still call `prek` when the toplevel matches — this
-procedure still names hook install separately so authors do not depend on that.
-
-The hook entry (`scripts/run-document-contracts.mjs`) refuses with **exit 2**
-and an `npm install` hint when the build is missing — that refuse is **not**
-a document finding (exit 1). The same wrapper sets `NODE_USE_ENV_PROXY=1` so
-Node's fetch honors `HTTPS_PROXY` from `.env.doc-verify`. Do not use
-`--no-verify` to paper over missing setup.
+Optional explicit local install remains valid: `npm install` (prepare → build).
+Do not use `--no-verify` to paper over missing setup.
 
 ## Merge or replay
 

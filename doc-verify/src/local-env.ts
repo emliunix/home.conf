@@ -1,4 +1,5 @@
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import * as http from "node:http";
 import path from "node:path";
 
@@ -15,6 +16,54 @@ const proxyNames = ["HTTPS_PROXY", "HTTP_PROXY"] as const;
 
 /** Node's proxy resolver, which the shipped types do not declare yet. */
 type ProxyFromEnv = (env?: NodeJS.ProcessEnv) => (() => void) | undefined;
+
+/**
+ * Resolve which `.env.doc-verify` file to read (#312).
+ * 1. `<root>/.env.doc-verify` wins when present.
+ * 2. Otherwise the canonical checkout for this shared repository (first
+ *    `git worktree list --porcelain` path), when it has the file.
+ * 3. Otherwise `undefined` — caller refuses.
+ *
+ * Reads only; never copies secret bytes into another worktree.
+ */
+export function resolveDocVerifyEnvPath(root: string): string | undefined {
+  const local = path.join(root, fileName);
+  if (existsSync(local)) {
+    return local;
+  }
+  const canonical = canonicalCheckoutRoot(root);
+  if (canonical === undefined) {
+    return undefined;
+  }
+  const resolvedRoot = path.resolve(root);
+  const resolvedCanonical = path.resolve(canonical);
+  if (resolvedCanonical === resolvedRoot) {
+    return undefined;
+  }
+  const fallback = path.join(resolvedCanonical, fileName);
+  return existsSync(fallback) ? fallback : undefined;
+}
+
+/** Absolute path of the repository's main worktree, or `undefined` if Git cannot say. */
+export function canonicalCheckoutRoot(root: string): string | undefined {
+  try {
+    const out = execFileSync("git", ["-C", root, "worktree", "list", "--porcelain"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    for (const line of out.split(/\r?\n/)) {
+      if (line.startsWith("worktree ")) {
+        const candidate = line.slice("worktree ".length).trim();
+        if (candidate.length > 0) {
+          return candidate;
+        }
+      }
+    }
+    return undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 /** Read the gitignored repo dotenv file. An existing TYPESAFE_API_KEY wins. */
 export function loadDocVerifyEnv(root: string): void {
@@ -97,10 +146,14 @@ function fileProxy(text: string): string | undefined {
   return undefined;
 }
 
-/** The credential file's text, or `undefined` when it is simply absent. */
+/** The credential file's text, or `undefined` when local and canonical are both absent. */
 function credentialText(root: string): string | undefined {
+  const filePath = resolveDocVerifyEnvPath(root);
+  if (filePath === undefined) {
+    return undefined;
+  }
   try {
-    return readFileSync(path.join(root, fileName), "utf8");
+    return readFileSync(filePath, "utf8");
   } catch (error) {
     if (errorCode(error) === "ENOENT") {
       return undefined;

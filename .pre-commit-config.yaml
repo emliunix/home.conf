@@ -4,12 +4,11 @@ repos:
       - id: document-contracts
         name: document contracts
         language: system
-        # #310: do not use `npm exec doc-verify` — a fresh linked worktree has no
-        # gitignored dist, and npm exec fails with an opaque _npx ENOENT that
-        # looks like a document-gate crash. The wrapper refuses missing setup
-        # with exit 2 + an `npm install` hint, auto-builds when node_modules is
-        # present but dist is absent, then runs node doc-verify/dist/cli.js.
-        entry: node scripts/run-document-contracts.mjs
+        # #310/#312: wrapper replaces opaque npm-exec ENOENT. --auto-setup is
+        # opt-in HERE (prek) so a fresh worktree installs+builds without a
+        # manual step; a direct wrapper call without the flag still refuses.
+        # Credential fallback to the canonical checkout is in doc-verify itself.
+        entry: node scripts/run-document-contracts.mjs --auto-setup
         pass_filenames: false
         files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$|^scripts/run-document-contracts\.mjs$'
         require_serial: true

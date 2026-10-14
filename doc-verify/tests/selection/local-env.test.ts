@@ -1,5 +1,5 @@
 import { execFile, execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
@@ -11,7 +11,10 @@ import { describe, expect, it } from "vitest";
 const execFileAsync = promisify(execFile);
 
 import { checkDocuments } from "../../src/checker.js";
-import { loadDocVerifyEnv } from "../../src/local-env.js";
+import {
+  loadDocVerifyEnv,
+  resolveDocVerifyEnvPath,
+} from "../../src/local-env.js";
 import { BlockedError } from "../../src/types.js";
 
 describe("local credential file", () => {
@@ -183,6 +186,117 @@ describe("local credential file", () => {
       expect(JSON.stringify(report)).not.toContain(canary);
     } finally {
       restore("TYPESAFE_API_KEY", previous);
+    }
+  });
+});
+
+describe("canonical credential fallback (#312)", () => {
+  function git(cwd: string, args: string[]): void {
+    execFileSync("git", args, {
+      cwd,
+      stdio: "ignore",
+      env: {
+        ...process.env,
+        GIT_CONFIG_GLOBAL: "/dev/null",
+        GIT_CONFIG_SYSTEM: "/dev/null",
+      },
+    });
+  }
+
+  it("prefers a worktree-local .env.doc-verify over the canonical file", () => {
+    const main = mkdtempSync(path.join(tmpdir(), "doc-verify-main-"));
+    const linked = path.join(tmpdir(), `doc-verify-linked-${Date.now()}`);
+    try {
+      git(main, ["init", "-q"]);
+      git(main, ["config", "user.email", "test@example.invalid"]);
+      git(main, ["config", "user.name", "fallback-test"]);
+      writeFileSync(path.join(main, "README"), "x\n");
+      git(main, ["add", "README"]);
+      git(main, ["commit", "-qm", "seed"]);
+      writeFileSync(path.join(main, ".env.doc-verify"), "API_KEY=from-canonical\n");
+      git(main, ["worktree", "add", "--detach", linked, "HEAD"]);
+      writeFileSync(path.join(linked, ".env.doc-verify"), "API_KEY=from-local\n");
+      expect(resolveDocVerifyEnvPath(linked)).toBe(path.join(linked, ".env.doc-verify"));
+      const previous = process.env.TYPESAFE_API_KEY;
+      delete process.env.TYPESAFE_API_KEY;
+      try {
+        loadDocVerifyEnv(linked);
+        expect(process.env.TYPESAFE_API_KEY).toBe("from-local");
+      } finally {
+        restore("TYPESAFE_API_KEY", previous);
+      }
+    } finally {
+      try {
+        git(main, ["worktree", "remove", "--force", linked]);
+      } catch {
+        rmSync(linked, { recursive: true, force: true });
+      }
+      rmSync(main, { recursive: true, force: true });
+    }
+  });
+
+  it("falls back to the canonical checkout's .env.doc-verify when local is absent", () => {
+    const main = mkdtempSync(path.join(tmpdir(), "doc-verify-main-"));
+    const linked = path.join(tmpdir(), `doc-verify-linked-${Date.now()}`);
+    try {
+      git(main, ["init", "-q"]);
+      git(main, ["config", "user.email", "test@example.invalid"]);
+      git(main, ["config", "user.name", "fallback-test"]);
+      writeFileSync(path.join(main, "README"), "x\n");
+      git(main, ["add", "README"]);
+      git(main, ["commit", "-qm", "seed"]);
+      writeFileSync(path.join(main, ".env.doc-verify"), "API_KEY=from-canonical\n");
+      git(main, ["worktree", "add", "--detach", linked, "HEAD"]);
+      expect(realpathSync(resolveDocVerifyEnvPath(linked) ?? "")).toBe(
+        realpathSync(path.join(main, ".env.doc-verify")),
+      );
+      const previous = process.env.TYPESAFE_API_KEY;
+      delete process.env.TYPESAFE_API_KEY;
+      try {
+        loadDocVerifyEnv(linked);
+        expect(process.env.TYPESAFE_API_KEY).toBe("from-canonical");
+      } finally {
+        restore("TYPESAFE_API_KEY", previous);
+      }
+    } finally {
+      try {
+        git(main, ["worktree", "remove", "--force", linked]);
+      } catch {
+        rmSync(linked, { recursive: true, force: true });
+      }
+      rmSync(main, { recursive: true, force: true });
+    }
+  });
+
+  it("returns undefined when neither local nor canonical has the file", () => {
+    const main = mkdtempSync(path.join(tmpdir(), "doc-verify-main-"));
+    const linked = path.join(tmpdir(), `doc-verify-linked-${Date.now()}`);
+    try {
+      git(main, ["init", "-q"]);
+      git(main, ["config", "user.email", "test@example.invalid"]);
+      git(main, ["config", "user.name", "fallback-test"]);
+      writeFileSync(path.join(main, "README"), "x\n");
+      git(main, ["add", "README"]);
+      git(main, ["commit", "-qm", "seed"]);
+      git(main, ["worktree", "add", "--detach", linked, "HEAD"]);
+      expect(resolveDocVerifyEnvPath(linked)).toBeUndefined();
+      expect(resolveDocVerifyEnvPath(main)).toBeUndefined();
+    } finally {
+      try {
+        git(main, ["worktree", "remove", "--force", linked]);
+      } catch {
+        rmSync(linked, { recursive: true, force: true });
+      }
+      rmSync(main, { recursive: true, force: true });
+    }
+  });
+
+  it("returns undefined when the root is not a git worktree (unresolvable canonical)", () => {
+    const orphan = mkdtempSync(path.join(tmpdir(), "doc-verify-orphan-"));
+    try {
+      expect(resolveDocVerifyEnvPath(orphan)).toBeUndefined();
+    } finally {
+      rmSync(orphan, { recursive: true, force: true });
     }
   });
 });

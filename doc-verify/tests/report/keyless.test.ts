@@ -87,12 +87,12 @@ describe("keyless structural checks", () => {
     expect(result.stdout).toMatch(/constraint has-goal \[error, require\][^]*?status satisfied/);
     expect(result.stdout).toMatch(/constraint verification-falsifies \[error, require\][^]*?status undetermined/);
     const text = keyless(root);
-    // #310: missing .env.doc-verify is a setup gap, not "TYPESAFE_API_KEY is unavailable".
+    // #310/#312: missing .env.doc-verify (local and canonical) is a setup gap.
     expect(text.stdout).toContain(
-      "semantic.prerequisite BLOCKED setup: .env.doc-verify is absent in this worktree",
+      "semantic.prerequisite BLOCKED setup: .env.doc-verify is absent in this worktree and in the canonical checkout",
     );
     expect(text.stdout).toMatch(
-      /module\.verification-falsifies BLOCKED undetermined: verification names no failing check \(sections: verification\)\n {2}reason: setup: \.env\.doc-verify is absent in this worktree[^\n]*\n {2}unasked keyless\.falsifies\(design\/a\.md, verification\)\n/,
+      /module\.verification-falsifies BLOCKED undetermined: verification names no failing check \(sections: verification\)\n {2}reason: setup: \.env\.doc-verify is absent in this worktree and in the canonical checkout[^\n]*\n {2}unasked keyless\.falsifies\(design\/a\.md, verification\)\n/,
     );
   });
 

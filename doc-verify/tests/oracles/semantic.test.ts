@@ -39,7 +39,9 @@ describe("semantic boundary", () => {
     const { join } = await import("node:path");
     const root = mkdtempSync(join(tmpdir(), "doc-verify-no-env-"));
     try {
-      expect(() => productionBackend("jev-1.13.0", root)).toThrow(/setup: \.env\.doc-verify is absent/);
+      expect(() => productionBackend("jev-1.13.0", root)).toThrow(
+        /setup: \.env\.doc-verify is absent in this worktree and in the canonical checkout/,
+      );
     } finally {
       rmSync(root, { recursive: true, force: true });
       if (previous !== undefined) {
