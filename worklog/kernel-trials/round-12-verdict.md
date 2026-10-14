@@ -11,9 +11,11 @@ node worklog/kernel-trials/probe/compare-arms.mjs round12-E-fix round12-E-real r
 
 Run by the lead on the builder's code (an Opus seat in its own worktree; 9d0ab3d, 224c632, cedf24e),
 live judge (jev-1.13.0), per-atom, cache off, two repeats, ABBA over arms per document; every
-labelled cell found under every arm on every track. The M line's own `complete: false` is the
-pre-run amendment's case (its 12 subtle pages are refused structurally before any question since
-item 10 closed); the comparer, counting M's judged units, reports `complete: true`. Output:
+labelled cell found under every arm on every track. The M line first ran with its own
+`complete: false`: its 12 subtle pages are refused structurally before any question since item 10
+closed, the pre-run amendment's case. The amendment was then encoded in the fixture specs (the 12
+subtle pages `draft: NO-GO`, `judged: false`, as round 8's gross control is; labels unchanged) and
+the M line re-run as written: `complete: true`, exit 0, the same 12 judged units, no harm. Output:
 `results/round-12-compare.txt`.
 
 ## What measured

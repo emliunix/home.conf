@@ -28,7 +28,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5592.801875,
+   "wall_ms": 6028.625249999999,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -57,7 +57,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 439,
-     "ms": 437.5164999999997,
+     "ms": 431.0744169999998,
      "keys": [
       "current_not_history-d804570b3878"
      ],
@@ -73,7 +73,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 402,
-     "ms": 300.9974999999995,
+     "ms": 271.7173329999987,
      "keys": [
       "current_not_history-0c26b33ca37b"
      ],
@@ -110,11 +110,11 @@
       "unknown"
      ],
      "distribution": [
-      0.97,
-      0.02,
-      0.01
+      0.99,
+      0.01,
+      0
      ],
-     "p": 0.97,
+     "p": 0.99,
      "threshold": 0.5,
      "leafShape": "decides",
      "finding": null,
@@ -181,7 +181,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:48:03.575Z"
+   "at": "2026-10-13T22:03:53.929Z"
   },
   {
    "run": "fixtures:module_contract_pages/good",
@@ -210,7 +210,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5551.003791000001,
+   "wall_ms": 5912.275792,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -239,7 +239,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 485,
-     "ms": 384.91704200000095,
+     "ms": 377.1425420000014,
      "keys": [
       "current_not_history-c0ff3ca408d9"
      ],
@@ -255,7 +255,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 493,
-     "ms": 384.20300000000134,
+     "ms": 277.10241600000154,
      "keys": [
       "current_not_history-debda8a3e03b"
      ],
@@ -340,11 +340,11 @@
       "unknown"
      ],
      "distribution": [
-      0.98,
+      0.97,
       0.02,
-      0
+      0.01
      ],
-     "p": 0.98,
+     "p": 0.97,
      "threshold": 0.5,
      "leafShape": "decides",
      "finding": null,
@@ -363,7 +363,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:48:09.377Z"
+   "at": "2026-10-13T22:03:59.895Z"
   },
   {
    "run": "fixtures:module_contract_pages/good",
@@ -392,7 +392,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5451.262916,
+   "wall_ms": 5922.010083000001,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -421,7 +421,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 485,
-     "ms": 422.7260419999984,
+     "ms": 396.5058749999989,
      "keys": [
       "current_not_history-c0ff3ca408d9"
      ],
@@ -437,7 +437,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 493,
-     "ms": 290.3477079999975,
+     "ms": 273.7234160000007,
      "keys": [
       "current_not_history-debda8a3e03b"
      ],
@@ -545,7 +545,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:48:14.830Z"
+   "at": "2026-10-13T22:04:05.818Z"
   },
   {
    "run": "fixtures:module_contract_pages/good",
@@ -574,7 +574,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5438.730208000001,
+   "wall_ms": 5952.062042000001,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -603,7 +603,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 439,
-     "ms": 366.130250000002,
+     "ms": 375.580833,
      "keys": [
       "current_not_history-d804570b3878"
      ],
@@ -619,7 +619,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 402,
-     "ms": 273.4808329999978,
+     "ms": 281.6054159999985,
      "keys": [
       "current_not_history-0c26b33ca37b"
      ],
@@ -704,11 +704,11 @@
       "unknown"
      ],
      "distribution": [
-      0.97,
+      0.98,
       0.02,
-      0.01
+      0
      ],
-     "p": 0.97,
+     "p": 0.98,
      "threshold": 0.5,
      "leafShape": "decides",
      "finding": null,
@@ -727,7 +727,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:48:20.316Z"
+   "at": "2026-10-13T22:04:11.820Z"
   },
   {
    "run": "fixtures:module_contract_pages/good-near",
@@ -756,7 +756,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5468.634540999999,
+   "wall_ms": 5928.416417,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -785,7 +785,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 585,
-     "ms": 399.07758399999875,
+     "ms": 388.34508300000016,
      "keys": [
       "current_not_history-d804570b3878"
      ],
@@ -801,7 +801,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 548,
-     "ms": 297.90312500000437,
+     "ms": 353.7197920000035,
      "keys": [
       "current_not_history-0c26b33ca37b"
      ],
@@ -909,7 +909,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:48:30.496Z"
+   "at": "2026-10-13T22:04:22.970Z"
   },
   {
    "run": "fixtures:module_contract_pages/good-near",
@@ -938,7 +938,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5431.837917000004,
+   "wall_ms": 6146.0220409999965,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -967,7 +967,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 631,
-     "ms": 382.6502079999991,
+     "ms": 399.5582079999949,
      "keys": [
       "current_not_history-c0ff3ca408d9"
      ],
@@ -983,7 +983,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 639,
-     "ms": 291.84220800000185,
+     "ms": 295.03337499999907,
      "keys": [
       "current_not_history-debda8a3e03b"
      ],
@@ -1020,11 +1020,11 @@
       "unknown"
      ],
      "distribution": [
-      0.98,
+      0.99,
       0.01,
-      0.01
+      0
      ],
-     "p": 0.98,
+     "p": 0.99,
      "threshold": 0.5,
      "leafShape": "decides",
      "finding": null,
@@ -1091,7 +1091,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:48:35.979Z"
+   "at": "2026-10-13T22:04:29.166Z"
   },
   {
    "run": "fixtures:module_contract_pages/good-near",
@@ -1120,7 +1120,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5415.423582999996,
+   "wall_ms": 5601.2722920000015,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -1149,7 +1149,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 631,
-     "ms": 407.5167089999959,
+     "ms": 408.8767499999958,
      "keys": [
       "current_not_history-c0ff3ca408d9"
      ],
@@ -1165,7 +1165,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 639,
-     "ms": 274.8582499999975,
+     "ms": 284.67470900000626,
      "keys": [
       "current_not_history-debda8a3e03b"
      ],
@@ -1273,7 +1273,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:48:41.396Z"
+   "at": "2026-10-13T22:04:34.769Z"
   },
   {
    "run": "fixtures:module_contract_pages/good-near",
@@ -1302,7 +1302,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5430.877499999995,
+   "wall_ms": 5722.777624999995,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -1331,7 +1331,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 585,
-     "ms": 404.1298749999987,
+     "ms": 375.0986669999984,
      "keys": [
       "current_not_history-d804570b3878"
      ],
@@ -1347,7 +1347,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 548,
-     "ms": 284.70812500000466,
+     "ms": 284.6656660000008,
      "keys": [
       "current_not_history-0c26b33ca37b"
      ],
@@ -1384,11 +1384,11 @@
       "unknown"
      ],
      "distribution": [
-      0.98,
-      0.01,
+      0.97,
+      0.02,
       0.01
      ],
-     "p": 0.98,
+     "p": 0.97,
      "threshold": 0.5,
      "leafShape": "decides",
      "finding": null,
@@ -1455,7 +1455,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:48:46.875Z"
+   "at": "2026-10-13T22:04:40.537Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-1",
@@ -1484,7 +1484,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4626.3270829999965,
+   "wall_ms": 5226.835041999999,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1501,7 +1501,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:48:56.213Z"
+   "at": "2026-10-13T22:04:51.115Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-1",
@@ -1530,7 +1530,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4607.985332999997,
+   "wall_ms": 5217.720583000002,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1547,7 +1547,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:49:00.867Z"
+   "at": "2026-10-13T22:04:56.392Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-1",
@@ -1576,7 +1576,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4632.265874999997,
+   "wall_ms": 5307.980708000003,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1593,7 +1593,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:49:05.500Z"
+   "at": "2026-10-13T22:05:01.701Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-1",
@@ -1622,7 +1622,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4646.320666,
+   "wall_ms": 5205.55462499999,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1639,7 +1639,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:49:10.190Z"
+   "at": "2026-10-13T22:05:06.962Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-2",
@@ -1668,7 +1668,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4587.880040999997,
+   "wall_ms": 5170.137917,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1685,7 +1685,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:49:19.442Z"
+   "at": "2026-10-13T22:05:17.384Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-2",
@@ -1714,7 +1714,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4603.107749999996,
+   "wall_ms": 5237.008375000005,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1731,7 +1731,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:49:24.095Z"
+   "at": "2026-10-13T22:05:22.674Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-2",
@@ -1760,7 +1760,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4602.536125000013,
+   "wall_ms": 5138.896083,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1777,7 +1777,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:49:28.699Z"
+   "at": "2026-10-13T22:05:27.815Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-2",
@@ -1806,7 +1806,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4622.502790999992,
+   "wall_ms": 5204.141291000007,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1823,7 +1823,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:49:33.365Z"
+   "at": "2026-10-13T22:05:33.066Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-3",
@@ -1852,7 +1852,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4629.199915999998,
+   "wall_ms": 5248.414583000005,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1869,7 +1869,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:49:42.640Z"
+   "at": "2026-10-13T22:05:43.597Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-3",
@@ -1898,7 +1898,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4590.035250000001,
+   "wall_ms": 5320.117125000004,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1915,7 +1915,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:49:47.275Z"
+   "at": "2026-10-13T22:05:48.967Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-3",
@@ -1944,7 +1944,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4580.974291999999,
+   "wall_ms": 5411.181582999998,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1961,7 +1961,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:49:51.858Z"
+   "at": "2026-10-13T22:05:54.379Z"
   },
   {
    "run": "fixtures:module_contract_pages/subtle-3",
@@ -1990,7 +1990,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4567.501375000007,
+   "wall_ms": 5127.359125000017,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2007,7 +2007,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:49:56.469Z"
+   "at": "2026-10-13T22:05:59.558Z"
   },
   {
    "run": "fixtures:module_contract_pages/gross",
@@ -2036,7 +2036,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4579.199749999985,
+   "wall_ms": 5131.006124999985,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2053,7 +2053,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:50:05.704Z"
+   "at": "2026-10-13T22:06:10.021Z"
   },
   {
    "run": "fixtures:module_contract_pages/gross",
@@ -2082,7 +2082,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4597.573583999998,
+   "wall_ms": 5173.7255000000005,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2099,7 +2099,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:50:10.350Z"
+   "at": "2026-10-13T22:06:15.248Z"
   },
   {
    "run": "fixtures:module_contract_pages/gross",
@@ -2128,7 +2128,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4583.284125000006,
+   "wall_ms": 5074.062375000009,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2145,7 +2145,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:50:14.934Z"
+   "at": "2026-10-13T22:06:20.323Z"
   },
   {
    "run": "fixtures:module_contract_pages/gross",
@@ -2174,7 +2174,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4580.371625,
+   "wall_ms": 5017.965750000003,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2191,7 +2191,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:50:19.564Z"
+   "at": "2026-10-13T22:06:25.391Z"
   }
  ]
 }

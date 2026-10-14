@@ -28,7 +28,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5430.158042000025,
+   "wall_ms": 6002.345291999984,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -57,7 +57,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 416,
-     "ms": 417.8234999999986,
+     "ms": 394.1630829999922,
      "keys": [
       "current_not_history-a99bb2a9a2b8"
      ],
@@ -73,7 +73,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 376,
-     "ms": 295.90299999999115,
+     "ms": 297.36416699999245,
      "keys": [
       "current_not_history-1118610535d0"
      ],
@@ -110,11 +110,11 @@
       "unknown"
      ],
      "distribution": [
-      0.99,
+      0.98,
       0.01,
-      0
+      0.01
      ],
-     "p": 0.99,
+     "p": 0.98,
      "threshold": 0.5,
      "leafShape": "decides",
      "finding": null,
@@ -181,7 +181,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:50:30.234Z"
+   "at": "2026-10-13T22:06:37.326Z"
   },
   {
    "run": "fixtures:module_model_pages/good",
@@ -210,7 +210,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5624.284374999988,
+   "wall_ms": 5980.260791000008,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -239,7 +239,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 447,
-     "ms": 385.28220899999724,
+     "ms": 389.1041660000046,
      "keys": [
       "current_not_history-60ac0a1f16ad"
      ],
@@ -255,7 +255,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 467,
-     "ms": 516.646207999991,
+     "ms": 283.68291699999827,
      "keys": [
       "current_not_history-bc5a0665ec25"
      ],
@@ -363,7 +363,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:50:35.908Z"
+   "at": "2026-10-13T22:06:43.365Z"
   },
   {
    "run": "fixtures:module_model_pages/good",
@@ -392,7 +392,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5436.719917000009,
+   "wall_ms": 5930.481667000015,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -421,7 +421,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 447,
-     "ms": 393.0841669999936,
+     "ms": 376.38583300000755,
      "keys": [
       "current_not_history-60ac0a1f16ad"
      ],
@@ -437,7 +437,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 467,
-     "ms": 292.376958000008,
+     "ms": 323.0845419999969,
      "keys": [
       "current_not_history-bc5a0665ec25"
      ],
@@ -545,7 +545,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:50:41.346Z"
+   "at": "2026-10-13T22:06:49.297Z"
   },
   {
    "run": "fixtures:module_model_pages/good",
@@ -574,7 +574,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5400.461541999975,
+   "wall_ms": 5900.809165999992,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -603,7 +603,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 416,
-     "ms": 416.44425000000047,
+     "ms": 383.24266700001317,
      "keys": [
       "current_not_history-a99bb2a9a2b8"
      ],
@@ -619,7 +619,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 376,
-     "ms": 285.865415999986,
+     "ms": 268.78416599999764,
      "keys": [
       "current_not_history-1118610535d0"
      ],
@@ -704,11 +704,11 @@
       "unknown"
      ],
      "distribution": [
-      0.97,
-      0.02,
+      0.98,
+      0.01,
       0.01
      ],
-     "p": 0.97,
+     "p": 0.98,
      "threshold": 0.5,
      "leafShape": "decides",
      "finding": null,
@@ -727,7 +727,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:50:46.794Z"
+   "at": "2026-10-13T22:06:55.247Z"
   },
   {
    "run": "fixtures:module_model_pages/good-near",
@@ -756,7 +756,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5522.184000000008,
+   "wall_ms": 6123.830332999991,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -785,7 +785,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 535,
-     "ms": 397.56441699998686,
+     "ms": 398.31762499999604,
      "keys": [
       "current_not_history-a99bb2a9a2b8"
      ],
@@ -801,7 +801,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 495,
-     "ms": 299.4310830000031,
+     "ms": 416.19724999999744,
      "keys": [
       "current_not_history-1118610535d0"
      ],
@@ -909,7 +909,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:50:57.148Z"
+   "at": "2026-10-13T22:07:06.657Z"
   },
   {
    "run": "fixtures:module_model_pages/good-near",
@@ -938,7 +938,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5422.120875000022,
+   "wall_ms": 5966.178916999983,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -967,7 +967,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 566,
-     "ms": 382.99520899998606,
+     "ms": 367.3609170000127,
      "keys": [
       "current_not_history-60ac0a1f16ad"
      ],
@@ -983,7 +983,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 586,
-     "ms": 283.8984160000109,
+     "ms": 270.2123750000028,
      "keys": [
       "current_not_history-bc5a0665ec25"
      ],
@@ -1091,7 +1091,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:51:02.624Z"
+   "at": "2026-10-13T22:07:12.670Z"
   },
   {
    "run": "fixtures:module_model_pages/good-near",
@@ -1120,7 +1120,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5459.063958000013,
+   "wall_ms": 5933.376250000001,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -1149,7 +1149,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 566,
-     "ms": 447.9214159999974,
+     "ms": 375.94337500000256,
      "keys": [
       "current_not_history-60ac0a1f16ad"
      ],
@@ -1165,7 +1165,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 586,
-     "ms": 282.5700829999987,
+     "ms": 282.83270800000173,
      "keys": [
       "current_not_history-bc5a0665ec25"
      ],
@@ -1273,7 +1273,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:51:08.085Z"
+   "at": "2026-10-13T22:07:18.604Z"
   },
   {
    "run": "fixtures:module_model_pages/good-near",
@@ -1302,7 +1302,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5668.253583000012,
+   "wall_ms": 5992.034625,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -1331,7 +1331,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 535,
-     "ms": 421.3091659999918,
+     "ms": 397.8877499999944,
      "keys": [
       "current_not_history-a99bb2a9a2b8"
      ],
@@ -1347,7 +1347,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 495,
-     "ms": 390.9724580000038,
+     "ms": 287.72637499999837,
      "keys": [
       "current_not_history-1118610535d0"
      ],
@@ -1455,7 +1455,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:51:13.798Z"
+   "at": "2026-10-13T22:07:24.644Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-1",
@@ -1484,7 +1484,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4578.159667,
+   "wall_ms": 5195.202625000005,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1501,7 +1501,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:51:23.024Z"
+   "at": "2026-10-13T22:07:35.089Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-1",
@@ -1530,7 +1530,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4565.8129589999735,
+   "wall_ms": 5126.2473329999775,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1547,7 +1547,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:51:27.636Z"
+   "at": "2026-10-13T22:07:40.265Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-1",
@@ -1576,7 +1576,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4586.358750000014,
+   "wall_ms": 5218.400750000001,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1593,7 +1593,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:51:32.224Z"
+   "at": "2026-10-13T22:07:45.484Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-1",
@@ -1622,7 +1622,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4548.998207999975,
+   "wall_ms": 5207.182042,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1639,7 +1639,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:51:36.817Z"
+   "at": "2026-10-13T22:07:50.737Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-2",
@@ -1668,7 +1668,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4590.052874999994,
+   "wall_ms": 5139.731083999999,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1685,7 +1685,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:51:46.017Z"
+   "at": "2026-10-13T22:08:01.124Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-2",
@@ -1714,7 +1714,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4563.6687499999825,
+   "wall_ms": 5221.093458999996,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1731,7 +1731,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:51:50.629Z"
+   "at": "2026-10-13T22:08:06.398Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-2",
@@ -1760,7 +1760,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4573.361958000023,
+   "wall_ms": 5229.115791000018,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1777,7 +1777,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:51:55.204Z"
+   "at": "2026-10-13T22:08:11.628Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-2",
@@ -1806,7 +1806,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4559.9493749999965,
+   "wall_ms": 5378.114457999996,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1823,7 +1823,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:51:59.810Z"
+   "at": "2026-10-13T22:08:17.060Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-3",
@@ -1852,7 +1852,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4566.923792000016,
+   "wall_ms": 5205.527500000026,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1869,7 +1869,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:52:09.008Z"
+   "at": "2026-10-13T22:08:27.522Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-3",
@@ -1898,7 +1898,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4577.791666999983,
+   "wall_ms": 5222.251292000001,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1915,7 +1915,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:52:13.634Z"
+   "at": "2026-10-13T22:08:32.800Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-3",
@@ -1944,7 +1944,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4574.324459000025,
+   "wall_ms": 5155.6625420000055,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1961,7 +1961,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:52:18.209Z"
+   "at": "2026-10-13T22:08:37.958Z"
   },
   {
    "run": "fixtures:module_model_pages/subtle-3",
@@ -1990,7 +1990,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4580.824250000005,
+   "wall_ms": 5119.958457999979,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2007,7 +2007,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:52:22.834Z"
+   "at": "2026-10-13T22:08:43.123Z"
   },
   {
    "run": "fixtures:module_model_pages/gross",
@@ -2036,7 +2036,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4866.847833000007,
+   "wall_ms": 5262.56704200001,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2053,7 +2053,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:52:32.337Z"
+   "at": "2026-10-13T22:08:53.660Z"
   },
   {
    "run": "fixtures:module_model_pages/gross",
@@ -2082,7 +2082,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4574.036000000022,
+   "wall_ms": 5077.455666999973,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2099,7 +2099,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:52:36.967Z"
+   "at": "2026-10-13T22:08:58.791Z"
   },
   {
    "run": "fixtures:module_model_pages/gross",
@@ -2128,7 +2128,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4549.413541000045,
+   "wall_ms": 4889.001958000008,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2145,7 +2145,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:52:41.517Z"
+   "at": "2026-10-13T22:09:03.681Z"
   },
   {
    "run": "fixtures:module_model_pages/gross",
@@ -2174,7 +2174,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4551.462208000012,
+   "wall_ms": 5034.899833000032,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2191,7 +2191,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:52:46.117Z"
+   "at": "2026-10-13T22:09:08.761Z"
   }
  ]
 }

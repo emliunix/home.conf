@@ -1,9 +1,9 @@
 {
   "cap": 221,
   "live": {
-    "questions": 16,
+    "questions": 32,
     "followups": 0,
-    "requests": 16,
+    "requests": 32,
     "runs": [
       {
         "run": "fixtures:module_model_pages/good@per-atom#N",
@@ -244,6 +244,246 @@
         "worst": 0,
         "bytes": 0,
         "at": "2026-10-13T21:52:46.116Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good@per-atom#N",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 455,
+        "at": "2026-10-13T22:06:37.325Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good@per-atom#A",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 548,
+        "at": "2026-10-13T22:06:43.364Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good@per-atom#A",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 548,
+        "at": "2026-10-13T22:06:49.296Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good@per-atom#N",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 455,
+        "at": "2026-10-13T22:06:55.246Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good-near@per-atom#N",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 689,
+        "at": "2026-10-13T22:07:06.656Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good-near@per-atom#A",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 782,
+        "at": "2026-10-13T22:07:12.669Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good-near@per-atom#A",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 782,
+        "at": "2026-10-13T22:07:18.604Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/good-near@per-atom#N",
+        "main": 2,
+        "followups": 0,
+        "requests": 2,
+        "asked": 2,
+        "worst": 2,
+        "bytes": 689,
+        "at": "2026-10-13T22:07:24.644Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-1@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:07:35.088Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-1@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:07:40.264Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-1@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:07:45.484Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-1@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:07:50.737Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-2@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:08:01.123Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-2@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:08:06.397Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-2@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:08:11.627Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-2@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:08:17.060Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-3@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:08:27.521Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-3@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:08:32.800Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-3@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:08:37.957Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/subtle-3@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:08:43.123Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/gross@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:08:53.660Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/gross@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:08:58.790Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/gross@per-atom#A",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:09:03.680Z"
+      },
+      {
+        "run": "fixtures:module_model_pages/gross@per-atom#N",
+        "main": 0,
+        "followups": 0,
+        "requests": 0,
+        "asked": 0,
+        "worst": 0,
+        "bytes": 0,
+        "at": "2026-10-13T22:09:08.761Z"
       }
     ]
   },

@@ -60,7 +60,8 @@ fixtures:
     note: "the margin case: regex-clean, reads like a narration but states current law."
   - name: subtle-1
     file: subtle-1.md
-    draft: PASS
+    draft: NO-GO
+    judged: false   # round 12 pre-run amendment: refused by structure.dated-prose since item 10 closed (61e84db)
     expect_sections:
       acme-widget--model: fails
       state: holds
@@ -78,7 +79,8 @@ fixtures:
     note: subtle history the dated-prose regex does not catch; expected fails iff the section's body contains the edit.
   - name: subtle-2
     file: subtle-2.md
-    draft: PASS
+    draft: NO-GO
+    judged: false   # round 12 pre-run amendment: refused by structure.dated-prose since item 10 closed (61e84db)
     expect_sections:
       acme-widget--model: fails
       state: fails
@@ -92,7 +94,8 @@ fixtures:
     note: subtle history the dated-prose regex does not catch; expected fails iff the section's body contains the edit.
   - name: subtle-3
     file: subtle-3.md
-    draft: PASS
+    draft: NO-GO
+    judged: false   # round 12 pre-run amendment: refused by structure.dated-prose since item 10 closed (61e84db)
     expect_sections:
       acme-widget--model: fails
       state: fails

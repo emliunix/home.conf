@@ -155,8 +155,8 @@ oracle current_not_history: base rate 1 (N repeats on different sides: 0, + 1)
   ---  -----  -------  ------------  ------------  ------------  -----  ------  ---------  ----  -----------------  ---------------  ----------  --------
   N    12     12       0             0             0             0      -       -          -     0/0                102/117          -           -       
   A    12     12       0             0             0             0      -       -          no    43/68              144/162          43          -       
-  near-threshold (N repeat-1 P in [0.4, 0.8], n=1; reported, not a bar): null N rep2 - rep1 0.05 [0.05, 0.05]
-    A rep2 - N rep2: -0.01 [-0.01, -0.01] over 1, 0 up
+  near-threshold (N repeat-1 P in [0.4, 0.8], n=1; reported, not a bar): null N rep2 - rep1 0.03 [0.03, 0.03]
+    A rep2 - N rep2: 0.03 [0.03, 0.03] over 1, 1 up
 
 bars
   oracle               bar                                                          value  met

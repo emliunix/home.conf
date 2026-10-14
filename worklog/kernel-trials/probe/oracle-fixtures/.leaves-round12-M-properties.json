@@ -28,7 +28,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5439.2586670000455,
+   "wall_ms": 5974.019499999995,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -57,7 +57,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 462,
-     "ms": 467.2581670000218,
+     "ms": 399.2809170000255,
      "keys": [
       "current_not_history-70464f5b8725"
      ],
@@ -73,7 +73,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 464,
-     "ms": 276.7369170000311,
+     "ms": 277.1484580000397,
      "keys": [
       "properties_are_claims-0cc97b1f578e"
      ],
@@ -110,11 +110,11 @@
       "unknown"
      ],
      "distribution": [
-      0.93,
+      0.9299999999999999,
       0.02,
       0.05
      ],
-     "p": 0.93,
+     "p": 0.9299999999999999,
      "threshold": 0.5,
      "leafShape": "decides",
      "finding": null,
@@ -181,7 +181,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:52:56.854Z"
+   "at": "2026-10-13T22:09:20.810Z"
   },
   {
    "run": "fixtures:module_properties_pages/good",
@@ -210,7 +210,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5434.816791000019,
+   "wall_ms": 5960.425832999987,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -239,7 +239,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 518,
-     "ms": 373.9857920000213,
+     "ms": 368.8236249999609,
      "keys": [
       "current_not_history-fc7a66204499"
      ],
@@ -255,7 +255,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 464,
-     "ms": 276.4853749999893,
+     "ms": 272.28275000001304,
      "keys": [
       "properties_are_claims-0cc97b1f578e"
      ],
@@ -274,188 +274,6 @@
      "order": "normal",
      "variant": "A",
      "repeat": 1,
-     "shape": "per-atom",
-     "document": "docs/modules/_fixtures/properties.md",
-     "verdict": "PASS",
-     "oracle": "current_not_history",
-     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, [title('acme-widget — properties')], acme-widget--properties)",
-     "row": "",
-     "rowId": "",
-     "section": "acme-widget--properties",
-     "origRowId": "",
-     "key": "current_not_history-fc7a66204499",
-     "label": "holds",
-     "answered": "holds",
-     "options": [
-      "holds",
-      "fails",
-      "unknown"
-     ],
-     "distribution": [
-      0.96,
-      0.02,
-      0.02
-     ],
-     "p": 0.96,
-     "threshold": 0.5,
-     "leafShape": "decides",
-     "finding": null,
-     "request": 0,
-     "position": 0,
-     "requestSize": 1,
-     "requestStateBytes": 518,
-     "followup": false,
-     "bytes": 319,
-     "contextBytes": 42,
-     "keyLength": 148,
-     "cacheHit": false,
-     "textHash": "3e1b7064b877302a",
-     "questionHash": "77309178242f989d",
-     "expect": "holds",
-     "lead": null
-    },
-    {
-     "run": "fixtures:module_properties_pages/good",
-     "mode": "fixtures",
-     "fixture": "module_properties_pages/good",
-     "source": "module_properties_pages/good",
-     "order": "normal",
-     "variant": "A",
-     "repeat": 1,
-     "shape": "per-atom",
-     "document": "docs/modules/_fixtures/properties.md",
-     "verdict": "PASS",
-     "oracle": "properties_are_claims",
-     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
-     "row": "",
-     "rowId": "",
-     "section": "acme-widget--properties",
-     "origRowId": "",
-     "key": "properties_are_claims-0cc97b1f578e",
-     "label": "holds",
-     "answered": "holds",
-     "options": [
-      "holds",
-      "fails",
-      "unknown"
-     ],
-     "distribution": [
-      1,
-      0,
-      0
-     ],
-     "p": 1,
-     "threshold": 0.5,
-     "leafShape": "decides",
-     "finding": null,
-     "request": 1,
-     "position": 0,
-     "requestSize": 1,
-     "requestStateBytes": 464,
-     "followup": false,
-     "bytes": 277,
-     "contextBytes": 0,
-     "keyLength": 113,
-     "cacheHit": false,
-     "textHash": "3e1b7064b877302a",
-     "questionHash": "6ebd85126cad8d04",
-     "expect": null,
-     "lead": null
-    }
-   ],
-   "at": "2026-10-13T21:53:02.445Z"
-  },
-  {
-   "run": "fixtures:module_properties_pages/good",
-   "mode": "fixtures",
-   "fixture": "module_properties_pages/good",
-   "source": "module_properties_pages/good",
-   "set": "module_properties_pages",
-   "ledger": "round12-M-properties",
-   "order": "normal",
-   "variant": "A",
-   "repeat": 2,
-   "shape": "per-atom",
-   "tag": "LIVE",
-   "model": "jev-1.13.0",
-   "sdk": "0.0.89",
-   "spans": "skipped",
-   "labelsFile": null,
-   "modules": [
-    {
-     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
-     "request_shape": "per-atom"
-    },
-    {
-     "module": "doc-verify:references",
-     "request_shape": "(none: batched)",
-     "via": "extends (shipped)"
-    }
-   ],
-   "wall_ms": 5600.293000000005,
-   "cost": {
-    "main": 2,
-    "followups": 0,
-    "requests": 2,
-    "asked": 2,
-    "worst": 2,
-    "bytes": 596
-   },
-   "split": false,
-   "splits": [
-    {
-     "document": "docs/modules/_fixtures/properties.md",
-     "round": 1,
-     "requests": 2
-    }
-   ],
-   "atomic": true,
-   "verdicts": {
-    "docs/modules/_fixtures/properties.md": "PASS"
-   },
-   "requests": [
-    {
-     "index": 0,
-     "document": "docs/modules/_fixtures/properties.md",
-     "round": 1,
-     "kind": "main",
-     "questions": 1,
-     "stateBytes": 518,
-     "ms": 403.4532079999917,
-     "keys": [
-      "current_not_history-fc7a66204499"
-     ],
-     "oracles": [
-      "current_not_history"
-     ],
-     "mixed": false
-    },
-    {
-     "index": 1,
-     "document": "docs/modules/_fixtures/properties.md",
-     "round": 1,
-     "kind": "main",
-     "questions": 1,
-     "stateBytes": 464,
-     "ms": 385.38120799994795,
-     "keys": [
-      "properties_are_claims-0cc97b1f578e"
-     ],
-     "oracles": [
-      "properties_are_claims"
-     ],
-     "mixed": false
-    }
-   ],
-   "leaves": [
-    {
-     "run": "fixtures:module_properties_pages/good",
-     "mode": "fixtures",
-     "fixture": "module_properties_pages/good",
-     "source": "module_properties_pages/good",
-     "order": "normal",
-     "variant": "A",
-     "repeat": 2,
      "shape": "per-atom",
      "document": "docs/modules/_fixtures/properties.md",
      "verdict": "PASS",
@@ -503,6 +321,188 @@
      "source": "module_properties_pages/good",
      "order": "normal",
      "variant": "A",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "properties_are_claims",
+     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "properties_are_claims-0cc97b1f578e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      1,
+      0,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 464,
+     "followup": false,
+     "bytes": 277,
+     "contextBytes": 0,
+     "keyLength": 113,
+     "cacheHit": false,
+     "textHash": "3e1b7064b877302a",
+     "questionHash": "6ebd85126cad8d04",
+     "expect": null,
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T22:09:27.030Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/good",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/good",
+   "source": "module_properties_pages/good",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5975.424249999982,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 596
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 518,
+     "ms": 374.27820799994515,
+     "keys": [
+      "current_not_history-fc7a66204499"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 464,
+     "ms": 277.67095800000243,
+     "keys": [
+      "properties_are_claims-0cc97b1f578e"
+     ],
+     "oracles": [
+      "properties_are_claims"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_properties_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good",
+     "source": "module_properties_pages/good",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 2,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, [title('acme-widget — properties')], acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "current_not_history-fc7a66204499",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.95,
+      0.02,
+      0.03
+     ],
+     "p": 0.95,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 518,
+     "followup": false,
+     "bytes": 319,
+     "contextBytes": 42,
+     "keyLength": 148,
+     "cacheHit": false,
+     "textHash": "3e1b7064b877302a",
+     "questionHash": "77309178242f989d",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_properties_pages/good",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good",
+     "source": "module_properties_pages/good",
+     "order": "normal",
+     "variant": "A",
      "repeat": 2,
      "shape": "per-atom",
      "document": "docs/modules/_fixtures/properties.md",
@@ -545,7 +545,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:53:08.046Z"
+   "at": "2026-10-13T22:09:33.007Z"
   },
   {
    "run": "fixtures:module_properties_pages/good",
@@ -574,7 +574,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5421.698290999979,
+   "wall_ms": 5985.544084000052,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -603,7 +603,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 462,
-     "ms": 392.03724999999395,
+     "ms": 364.962583000015,
      "keys": [
       "current_not_history-70464f5b8725"
      ],
@@ -619,7 +619,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 464,
-     "ms": 280.4940840000054,
+     "ms": 287.8440410000039,
      "keys": [
       "properties_are_claims-0cc97b1f578e"
      ],
@@ -656,11 +656,11 @@
       "unknown"
      ],
      "distribution": [
-      0.93,
+      0.94,
       0.02,
-      0.05
+      0.04
      ],
-     "p": 0.93,
+     "p": 0.94,
      "threshold": 0.5,
      "leafShape": "decides",
      "finding": null,
@@ -727,7 +727,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:53:13.515Z"
+   "at": "2026-10-13T22:09:39.039Z"
   },
   {
    "run": "fixtures:module_properties_pages/good-near",
@@ -756,7 +756,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5357.931833000039,
+   "wall_ms": 6006.630458,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -785,7 +785,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 589,
-     "ms": 384.4399170000106,
+     "ms": 448.61154199996963,
      "keys": [
       "current_not_history-70464f5b8725"
      ],
@@ -801,7 +801,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 591,
-     "ms": 277.7199580000015,
+     "ms": 281.5360000000219,
      "keys": [
       "properties_are_claims-0cc97b1f578e"
      ],
@@ -838,11 +838,11 @@
       "unknown"
      ],
      "distribution": [
-      0.63,
+      0.66,
       0.02,
-      0.35
+      0.32
      ],
-     "p": 0.63,
+     "p": 0.66,
      "threshold": 0.5,
      "leafShape": "decides",
      "finding": null,
@@ -909,7 +909,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:53:23.569Z"
+   "at": "2026-10-13T22:09:50.373Z"
   },
   {
    "run": "fixtures:module_properties_pages/good-near",
@@ -938,7 +938,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5414.4347919999855,
+   "wall_ms": 6002.359416000021,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -967,7 +967,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 645,
-     "ms": 392.9517910000286,
+     "ms": 388.76833300001454,
      "keys": [
       "current_not_history-fc7a66204499"
      ],
@@ -983,7 +983,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 591,
-     "ms": 294.6408330000122,
+     "ms": 275.0754999999772,
      "keys": [
       "properties_are_claims-0cc97b1f578e"
      ],
@@ -1002,6 +1002,188 @@
      "order": "normal",
      "variant": "A",
      "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "current_not_history",
+     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, [title('acme-widget — properties')], acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "current_not_history-fc7a66204499",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      0.76,
+      0.02,
+      0.22
+     ],
+     "p": 0.76,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 0,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 645,
+     "followup": false,
+     "bytes": 444,
+     "contextBytes": 42,
+     "keyLength": 148,
+     "cacheHit": false,
+     "textHash": "2d5e73fd613cdcc1",
+     "questionHash": "77309178242f989d",
+     "expect": "holds",
+     "lead": null
+    },
+    {
+     "run": "fixtures:module_properties_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good-near",
+     "source": "module_properties_pages/good-near",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 1,
+     "shape": "per-atom",
+     "document": "docs/modules/_fixtures/properties.md",
+     "verdict": "PASS",
+     "oracle": "properties_are_claims",
+     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
+     "row": "",
+     "rowId": "",
+     "section": "acme-widget--properties",
+     "origRowId": "",
+     "key": "properties_are_claims-0cc97b1f578e",
+     "label": "holds",
+     "answered": "holds",
+     "options": [
+      "holds",
+      "fails",
+      "unknown"
+     ],
+     "distribution": [
+      1,
+      0,
+      0
+     ],
+     "p": 1,
+     "threshold": 0.5,
+     "leafShape": "decides",
+     "finding": null,
+     "request": 1,
+     "position": 0,
+     "requestSize": 1,
+     "requestStateBytes": 591,
+     "followup": false,
+     "bytes": 402,
+     "contextBytes": 0,
+     "keyLength": 113,
+     "cacheHit": false,
+     "textHash": "2d5e73fd613cdcc1",
+     "questionHash": "6ebd85126cad8d04",
+     "expect": null,
+     "lead": null
+    }
+   ],
+   "at": "2026-10-13T22:09:56.424Z"
+  },
+  {
+   "run": "fixtures:module_properties_pages/good-near",
+   "mode": "fixtures",
+   "fixture": "module_properties_pages/good-near",
+   "source": "module_properties_pages/good-near",
+   "set": "module_properties_pages",
+   "ledger": "round12-M-properties",
+   "order": "normal",
+   "variant": "A",
+   "repeat": 2,
+   "shape": "per-atom",
+   "tag": "LIVE",
+   "model": "jev-1.13.0",
+   "sdk": "0.0.89",
+   "spans": "skipped",
+   "labelsFile": null,
+   "modules": [
+    {
+     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
+     "request_shape": "per-atom"
+    },
+    {
+     "module": "doc-verify:references",
+     "request_shape": "(none: batched)",
+     "via": "extends (shipped)"
+    }
+   ],
+   "wall_ms": 5976.306249999965,
+   "cost": {
+    "main": 2,
+    "followups": 0,
+    "requests": 2,
+    "asked": 2,
+    "worst": 2,
+    "bytes": 846
+   },
+   "split": false,
+   "splits": [
+    {
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "requests": 2
+    }
+   ],
+   "atomic": true,
+   "verdicts": {
+    "docs/modules/_fixtures/properties.md": "PASS"
+   },
+   "requests": [
+    {
+     "index": 0,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 645,
+     "ms": 382.3890830000164,
+     "keys": [
+      "current_not_history-fc7a66204499"
+     ],
+     "oracles": [
+      "current_not_history"
+     ],
+     "mixed": false
+    },
+    {
+     "index": 1,
+     "document": "docs/modules/_fixtures/properties.md",
+     "round": 1,
+     "kind": "main",
+     "questions": 1,
+     "stateBytes": 591,
+     "ms": 272.86424999998417,
+     "keys": [
+      "properties_are_claims-0cc97b1f578e"
+     ],
+     "oracles": [
+      "properties_are_claims"
+     ],
+     "mixed": false
+    }
+   ],
+   "leaves": [
+    {
+     "run": "fixtures:module_properties_pages/good-near",
+     "mode": "fixtures",
+     "fixture": "module_properties_pages/good-near",
+     "source": "module_properties_pages/good-near",
+     "order": "normal",
+     "variant": "A",
+     "repeat": 2,
      "shape": "per-atom",
      "document": "docs/modules/_fixtures/properties.md",
      "verdict": "PASS",
@@ -1049,188 +1231,6 @@
      "source": "module_properties_pages/good-near",
      "order": "normal",
      "variant": "A",
-     "repeat": 1,
-     "shape": "per-atom",
-     "document": "docs/modules/_fixtures/properties.md",
-     "verdict": "PASS",
-     "oracle": "properties_are_claims",
-     "atom": "doc-verify.module-properties.properties_are_claims(docs/modules/_fixtures/properties.md, acme-widget--properties)",
-     "row": "",
-     "rowId": "",
-     "section": "acme-widget--properties",
-     "origRowId": "",
-     "key": "properties_are_claims-0cc97b1f578e",
-     "label": "holds",
-     "answered": "holds",
-     "options": [
-      "holds",
-      "fails",
-      "unknown"
-     ],
-     "distribution": [
-      1,
-      0,
-      0
-     ],
-     "p": 1,
-     "threshold": 0.5,
-     "leafShape": "decides",
-     "finding": null,
-     "request": 1,
-     "position": 0,
-     "requestSize": 1,
-     "requestStateBytes": 591,
-     "followup": false,
-     "bytes": 402,
-     "contextBytes": 0,
-     "keyLength": 113,
-     "cacheHit": false,
-     "textHash": "2d5e73fd613cdcc1",
-     "questionHash": "6ebd85126cad8d04",
-     "expect": null,
-     "lead": null
-    }
-   ],
-   "at": "2026-10-13T21:53:29.030Z"
-  },
-  {
-   "run": "fixtures:module_properties_pages/good-near",
-   "mode": "fixtures",
-   "fixture": "module_properties_pages/good-near",
-   "source": "module_properties_pages/good-near",
-   "set": "module_properties_pages",
-   "ledger": "round12-M-properties",
-   "order": "normal",
-   "variant": "A",
-   "repeat": 2,
-   "shape": "per-atom",
-   "tag": "LIVE",
-   "model": "jev-1.13.0",
-   "sdk": "0.0.89",
-   "spans": "skipped",
-   "labelsFile": null,
-   "modules": [
-    {
-     "module": "worklog/kernel-trials/probe/oracle-fixtures/module_properties_pages/variants/A.yaml",
-     "request_shape": "per-atom"
-    },
-    {
-     "module": "doc-verify:references",
-     "request_shape": "(none: batched)",
-     "via": "extends (shipped)"
-    }
-   ],
-   "wall_ms": 5380.289833999996,
-   "cost": {
-    "main": 2,
-    "followups": 0,
-    "requests": 2,
-    "asked": 2,
-    "worst": 2,
-    "bytes": 846
-   },
-   "split": false,
-   "splits": [
-    {
-     "document": "docs/modules/_fixtures/properties.md",
-     "round": 1,
-     "requests": 2
-    }
-   ],
-   "atomic": true,
-   "verdicts": {
-    "docs/modules/_fixtures/properties.md": "PASS"
-   },
-   "requests": [
-    {
-     "index": 0,
-     "document": "docs/modules/_fixtures/properties.md",
-     "round": 1,
-     "kind": "main",
-     "questions": 1,
-     "stateBytes": 645,
-     "ms": 369.32137499999953,
-     "keys": [
-      "current_not_history-fc7a66204499"
-     ],
-     "oracles": [
-      "current_not_history"
-     ],
-     "mixed": false
-    },
-    {
-     "index": 1,
-     "document": "docs/modules/_fixtures/properties.md",
-     "round": 1,
-     "kind": "main",
-     "questions": 1,
-     "stateBytes": 591,
-     "ms": 277.87283300003037,
-     "keys": [
-      "properties_are_claims-0cc97b1f578e"
-     ],
-     "oracles": [
-      "properties_are_claims"
-     ],
-     "mixed": false
-    }
-   ],
-   "leaves": [
-    {
-     "run": "fixtures:module_properties_pages/good-near",
-     "mode": "fixtures",
-     "fixture": "module_properties_pages/good-near",
-     "source": "module_properties_pages/good-near",
-     "order": "normal",
-     "variant": "A",
-     "repeat": 2,
-     "shape": "per-atom",
-     "document": "docs/modules/_fixtures/properties.md",
-     "verdict": "PASS",
-     "oracle": "current_not_history",
-     "atom": "doc-verify.module-properties.current_not_history(docs/modules/_fixtures/properties.md, [title('acme-widget — properties')], acme-widget--properties)",
-     "row": "",
-     "rowId": "",
-     "section": "acme-widget--properties",
-     "origRowId": "",
-     "key": "current_not_history-fc7a66204499",
-     "label": "holds",
-     "answered": "holds",
-     "options": [
-      "holds",
-      "fails",
-      "unknown"
-     ],
-     "distribution": [
-      0.67,
-      0.02,
-      0.31
-     ],
-     "p": 0.67,
-     "threshold": 0.5,
-     "leafShape": "decides",
-     "finding": null,
-     "request": 0,
-     "position": 0,
-     "requestSize": 1,
-     "requestStateBytes": 645,
-     "followup": false,
-     "bytes": 444,
-     "contextBytes": 42,
-     "keyLength": 148,
-     "cacheHit": false,
-     "textHash": "2d5e73fd613cdcc1",
-     "questionHash": "77309178242f989d",
-     "expect": "holds",
-     "lead": null
-    },
-    {
-     "run": "fixtures:module_properties_pages/good-near",
-     "mode": "fixtures",
-     "fixture": "module_properties_pages/good-near",
-     "source": "module_properties_pages/good-near",
-     "order": "normal",
-     "variant": "A",
      "repeat": 2,
      "shape": "per-atom",
      "document": "docs/modules/_fixtures/properties.md",
@@ -1273,7 +1273,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:53:34.411Z"
+   "at": "2026-10-13T22:10:02.401Z"
   },
   {
    "run": "fixtures:module_properties_pages/good-near",
@@ -1302,7 +1302,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 5391.53570800001,
+   "wall_ms": 6124.242790999997,
    "cost": {
     "main": 2,
     "followups": 0,
@@ -1331,7 +1331,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 589,
-     "ms": 376.1722080000327,
+     "ms": 387.37320900004124,
      "keys": [
       "current_not_history-70464f5b8725"
      ],
@@ -1347,7 +1347,7 @@
      "kind": "main",
      "questions": 1,
      "stateBytes": 591,
-     "ms": 294.608292000019,
+     "ms": 309.73587500001304,
      "keys": [
       "properties_are_claims-0cc97b1f578e"
      ],
@@ -1384,11 +1384,11 @@
       "unknown"
      ],
      "distribution": [
-      0.68,
+      0.69,
       0.02,
-      0.3
+      0.29
      ],
-     "p": 0.68,
+     "p": 0.69,
      "threshold": 0.5,
      "leafShape": "decides",
      "finding": null,
@@ -1455,7 +1455,7 @@
      "lead": null
     }
    ],
-   "at": "2026-10-13T21:53:39.848Z"
+   "at": "2026-10-13T22:10:08.576Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-1",
@@ -1484,7 +1484,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4577.647958000016,
+   "wall_ms": 5189.061250000028,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1501,7 +1501,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:53:49.058Z"
+   "at": "2026-10-13T22:10:19.047Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-1",
@@ -1530,7 +1530,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4586.49883300002,
+   "wall_ms": 5218.287083000003,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1547,7 +1547,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:53:53.689Z"
+   "at": "2026-10-13T22:10:24.328Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-1",
@@ -1576,7 +1576,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4566.697207999998,
+   "wall_ms": 5187.407666000014,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1593,7 +1593,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:53:58.256Z"
+   "at": "2026-10-13T22:10:29.517Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-1",
@@ -1622,7 +1622,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4593.754124999978,
+   "wall_ms": 5232.717833000002,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1639,7 +1639,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:54:02.898Z"
+   "at": "2026-10-13T22:10:34.798Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-2",
@@ -1668,7 +1668,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4611.843499999959,
+   "wall_ms": 5279.053165999998,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1685,7 +1685,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:54:12.153Z"
+   "at": "2026-10-13T22:10:45.333Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-2",
@@ -1714,7 +1714,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4593.292249999999,
+   "wall_ms": 5538.221709000005,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1731,7 +1731,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:54:16.791Z"
+   "at": "2026-10-13T22:10:50.920Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-2",
@@ -1760,7 +1760,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4582.099457999982,
+   "wall_ms": 5255.871042000013,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1777,7 +1777,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:54:21.374Z"
+   "at": "2026-10-13T22:10:56.177Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-2",
@@ -1806,7 +1806,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4600.087416999973,
+   "wall_ms": 5241.655167000019,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1823,7 +1823,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:54:26.018Z"
+   "at": "2026-10-13T22:11:01.467Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-3",
@@ -1852,7 +1852,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4624.01770799997,
+   "wall_ms": 5181.953208999999,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1869,7 +1869,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:54:35.279Z"
+   "at": "2026-10-13T22:11:11.908Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-3",
@@ -1898,7 +1898,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4561.567457999976,
+   "wall_ms": 5208.477249999996,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1915,7 +1915,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:54:39.885Z"
+   "at": "2026-10-13T22:11:17.172Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-3",
@@ -1944,7 +1944,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4592.52112499997,
+   "wall_ms": 5187.513708000013,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -1961,7 +1961,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:54:44.479Z"
+   "at": "2026-10-13T22:11:22.360Z"
   },
   {
    "run": "fixtures:module_properties_pages/subtle-3",
@@ -1990,7 +1990,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4552.298582999967,
+   "wall_ms": 5231.521791000036,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2007,7 +2007,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:54:49.075Z"
+   "at": "2026-10-13T22:11:27.642Z"
   },
   {
    "run": "fixtures:module_properties_pages/gross",
@@ -2036,7 +2036,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4575.014000000025,
+   "wall_ms": 5214.534207999997,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2053,7 +2053,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:54:58.278Z"
+   "at": "2026-10-13T22:11:38.121Z"
   },
   {
    "run": "fixtures:module_properties_pages/gross",
@@ -2082,7 +2082,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4569.861540999962,
+   "wall_ms": 5184.372250000015,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2099,7 +2099,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:55:02.898Z"
+   "at": "2026-10-13T22:11:43.359Z"
   },
   {
    "run": "fixtures:module_properties_pages/gross",
@@ -2128,7 +2128,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4551.251457999984,
+   "wall_ms": 5233.851084000024,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2145,7 +2145,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:55:07.450Z"
+   "at": "2026-10-13T22:11:48.594Z"
   },
   {
    "run": "fixtures:module_properties_pages/gross",
@@ -2174,7 +2174,7 @@
      "via": "extends (shipped)"
     }
    ],
-   "wall_ms": 4584.536625000008,
+   "wall_ms": 5106.491042000009,
    "cost": {
     "main": 0,
     "followups": 0,
@@ -2191,7 +2191,7 @@
    },
    "requests": [],
    "leaves": [],
-   "at": "2026-10-13T21:55:12.082Z"
+   "at": "2026-10-13T22:11:53.753Z"
   }
  ]
 }
