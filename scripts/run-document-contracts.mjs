@@ -91,10 +91,17 @@ function runCheck(root, checkArgs) {
     console.error(ensured.message);
     return ensured.code;
   }
+  // Node's fetch ignores HTTPS_PROXY unless NODE_USE_ENV_PROXY is set. Without
+  // it the judge fails as a bare TypeError/Error after the key loaded — a false
+  // "environment looks fine" signature (AstraBoy / LAW 719).
+  const env = { ...process.env };
+  if (!env.NODE_USE_ENV_PROXY?.trim()) {
+    env.NODE_USE_ENV_PROXY = "1";
+  }
   const result = spawnSync(process.execPath, [ensured.cli, ...checkArgs], {
     cwd: root,
     encoding: "utf8",
-    env: process.env,
+    env,
     stdio: "inherit",
   });
   if (result.error) {

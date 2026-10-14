@@ -38,18 +38,28 @@ A gate report names the revision, population, command, and exit code it read.
 
 ### home.conf: install before hooks
 
-`doc-verify/dist/` is gitignored. A fresh linked worktree therefore cannot run
-the `document-contracts` hook until the engine is built. After
-`git worktree add`, run:
+Two gitignored setup artifacts are required in every fresh linked worktree:
+
+1. **`doc-verify/dist/`** — the built CLI (`package.json` bin). Absent ⇒ the
+   old `npm exec` path failed with an opaque `_npx` ENOENT.
+2. **`.env.doc-verify`** — usually a symlink to
+   `~/Documents/notes/common/creds/env-jev` (present only on the canonical
+   checkout). Absent ⇒ a later semantic round reported
+   `TYPESAFE_API_KEY is unavailable` even though the defect was a missing file.
+
+After `git worktree add`, run:
 
 ```bash
 npm install
+ln -s ~/Documents/notes/common/creds/env-jev .env.doc-verify   # if not already present
 ```
 
-That runs `prepare` → `npm run build` and installs the repo hooks. The hook
-entry (`scripts/run-document-contracts.mjs`) refuses with **exit 2** and an
-`npm install` hint when setup is missing — that refuse is **not** a document
-finding (exit 1). Do not use `--no-verify` to paper over a missing build.
+`npm install` runs `prepare` → `npm run build` and installs the repo hooks.
+The hook entry (`scripts/run-document-contracts.mjs`) refuses with **exit 2**
+and an `npm install` hint when the build is missing — that refuse is **not**
+a document finding (exit 1). The same wrapper sets `NODE_USE_ENV_PROXY=1` so
+Node's fetch honors `HTTPS_PROXY` from `.env.doc-verify`. Do not use
+`--no-verify` to paper over missing setup.
 
 ## Merge or replay
 

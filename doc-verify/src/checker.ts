@@ -299,7 +299,7 @@ async function checkWithModules(input: {
   let unavailable: string | undefined;
   if (backend === undefined) {
     try {
-      backend = productionBackend(input.config.judge.model);
+      backend = productionBackend(input.config.judge.model, input.root);
     } catch (error) {
       if (!(error instanceof BlockedError)) {
         throw error;

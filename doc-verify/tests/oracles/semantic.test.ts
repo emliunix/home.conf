@@ -31,6 +31,23 @@ describe("semantic boundary", () => {
     }
   });
 
+  it("names the missing .env.doc-verify file when the worktree root has none (#310)", async () => {
+    const previous = process.env.TYPESAFE_API_KEY;
+    delete process.env.TYPESAFE_API_KEY;
+    const { mkdtempSync, rmSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const root = mkdtempSync(join(tmpdir(), "doc-verify-no-env-"));
+    try {
+      expect(() => productionBackend("jev-1.13.0", root)).toThrow(/setup: \.env\.doc-verify is absent/);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+      if (previous !== undefined) {
+        process.env.TYPESAFE_API_KEY = previous;
+      }
+    }
+  });
+
   it("blocks a failing judge request without echoing the provider's response", async () => {
     const backend = createMockJevJudgeBackend({ answers: () => Promise.reject(new Error("secret response body")) });
     const report = await run(ASKS, backend);
