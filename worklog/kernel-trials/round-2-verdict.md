@@ -21,7 +21,7 @@ over every total extension of the answers.
 
 | Subject | Gate witnesses | Corpus | Random (C4) |
 | --- | --- | --- | --- |
-| S1, WFS kernel (swipl-wasm, round-1 encoding, residual walk, `prefix`/`full`) | 24 / 24 pass, 0 unexpected, 0 unexpected-pass | pass | 200 + 1500 programs, 0 counterexamples |
+| S1, WFS kernel (swipl-wasm, round-1 encoding, residual walk, `prefix`/`full`) | 24 / 24 pass, 0 unexpected, 0 unexpected-pass | pass | 200 programs, 0 counterexamples (the 1,500 brute-force programs checked the reference, not S1; corrected 2026-10-15) |
 | S2, TypeScript evaluator of design 04 | 10 / 24 pass; 14 fail | pass | not run (its checker refuses the generator's programs) |
 | Reference (naive, stratified fragment) | 24 / 24 (loop witness unsupported by design) | produces the corpus expectations | self-checked against brute force |
 

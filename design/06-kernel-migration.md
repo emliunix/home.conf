@@ -13,7 +13,7 @@ level codebase?" — and, on the plan to do so, "go as your plan".
 ## Problem statement
 
 Two evaluators exist and only one is trusted. The kernel (`worklog/kernel-trials/probe/kernel2/
-core.pl`) passes every model §9 gate (round 2: 24 of 24 witnesses, 1700 random programs), the
+core.pl`) passes every model §9 gate (round 2: 24 of 24 witnesses, 200 random programs; the later property track: 1,500 programs, 0 refuting), the
 26-document corpus and the clingo differential (round 4b), the boundary round (round 5) and the
 property track (round 7, with one defect: gate-ledger item 7). The TypeScript evaluator
 (doc-verify/src/engine/evaluate.ts, deleted by this design) fails 14 of the same 24 witnesses (round 2: 11 where the
