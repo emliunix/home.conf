@@ -57,6 +57,16 @@ const MUTATIONS = [
     expects: "an AGENT-LOCAL path outside any repo is ALLOWED",
   },
   {
+    id: "M7",
+    name: "fold a BARE repo into agent-local (the fail-open defect this script had)",
+    apply: (s) =>
+      s.replace(
+        'return { kind: bare === "true" ? "bare" : "unknown", root: null, gitDir };',
+        'return { kind: "local", root: null, gitDir };',
+      ),
+    expects: "a BARE repository REFUSES",
+  },
+  {
     id: "M5",
     name: "a usage error becomes a silent pass",
     apply: (s) => s.replace("  process.exit(2);", "  process.exit(0);"),

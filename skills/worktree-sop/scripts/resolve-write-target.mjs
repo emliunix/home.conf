@@ -101,9 +101,18 @@ function classify(target) {
   // resolving it against `--show-toplevel` yields `/Users/ppio/Documents/.git` -- a DIFFERENT string
   // from `--git-dir`'s `.git`, which classified the SHARED MAIN checkout as a "worktree" and told
   // the caller it was safe to write. Measured on git 2.50.1: the flag needs git >= 2.31.
-  const root = git(["rev-parse", "--show-toplevel"], dir);
   const gitDir = git(["rev-parse", "--path-format=absolute", "--git-dir"], dir);
-  if (gitDir === null || root === null) return { kind: "local", root: null, gitDir: null };
+  if (gitDir === null) return { kind: "local", root: null, gitDir: null };
+  // ⚠ A BARE REPOSITORY HAS NO TOPLEVEL, AND THAT MUST NOT READ AS "LOCAL".
+  // Measured 2026-10-14: `home.conf` sat with `core.bare=true` (card #308), so `--show-toplevel`
+  // failed; folding that null into the same branch as "no repository" made the check print
+  // "AGENT-LOCAL -- OK to write" for a path inside a shared checkout -- A FAIL-OPEN VERDICT, which
+  // is worse than no check. Ask for `--is-bare-repository` separately and refuse on bare too.
+  const root = git(["rev-parse", "--show-toplevel"], dir);
+  if (root === null) {
+    const bare = git(["rev-parse", "--is-bare-repository"], dir);
+    return { kind: bare === "true" ? "bare" : "unknown", root: null, gitDir };
+  }
   const common = git(["rev-parse", "--path-format=absolute", "--git-common-dir"], dir);
   // The PRIMARY worktree reports the same directory for both; a LINKED worktree's git dir is a
   // per-worktree subdirectory under the common one.
@@ -129,7 +138,24 @@ for (const input of paths) {
     for (const l of links) console.log(`  via symlink  ${l.from} -> ${l.to}`);
   }
 
-  if (kind === "local") {
+  if (kind === "bare") {
+    if (!QUIET) {
+      console.log(`  target       ⚠ BARE REPOSITORY (core.bare=true) -- it has no work tree at all.`);
+      console.log(
+        "               REFUSE: this is not a safe place to write, and the flag affects every\n" +
+          "               worktree sharing this .git. Repair: `git config --unset core.bare`.",
+      );
+    }
+    failures += 1;
+    continue;
+  } else if (kind === "unknown") {
+    if (!QUIET) {
+      console.log("  target       ⚠ UNRESOLVED -- a repository is present but its work tree cannot be named.");
+      console.log("               REFUSE: an unresolved target must not read as safe to write.");
+    }
+    failures += 1;
+    continue;
+  } else if (kind === "local") {
     if (!QUIET) console.log("  target       AGENT-LOCAL -- not inside any repository. OK to write.");
   } else if (kind === "worktree") {
     if (!QUIET) console.log(`  target       LINKED WORKTREE of ${root} -- a seat's own tree. OK to write.`);

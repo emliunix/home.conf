@@ -154,6 +154,23 @@ try {
     assert(r.out.trim() === "", `--quiet must be silent; got: ${r.out}`);
   });
 
+  case_("a BARE repository REFUSES rather than reading as agent-local", () => {
+    // ⚠ THIS ARM EXISTS BECAUSE THE DEFECT HAPPENED, not because it is imaginable. On 2026-10-14 the
+    // real home.conf sat with `core.bare=true` (card #308) and `--show-toplevel` began failing; the
+    // check folded that failure into "no repository" and printed "AGENT-LOCAL -- OK to write" for a
+    // path inside the shared checkout. The fixture suite was GREEN through it -- every fixture repo is
+    // non-bare -- so this arm builds the bare state deliberately.
+    const bare = mkdtempSync(join(tmpdir(), "rw-bare-"));
+    try {
+      git(["init", "-q", "--bare", bare], SCRATCH);
+      const r = run([bare]);
+      assert(r.status === 1, `a bare repo must refuse; got exit ${r.status}: ${r.out}`);
+      assert(/BARE REPOSITORY/.test(r.out), `expected the bare verdict; got: ${r.out}`);
+    } finally {
+      rmSync(bare, { recursive: true, force: true });
+    }
+  });
+
   case_("no arguments is a usage error (exit 2), not a silent pass", () => {
     const r = run([]);
     assert(r.status === 2, `expected usage exit 2, got ${r.status}`);
