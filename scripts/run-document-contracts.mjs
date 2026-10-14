@@ -201,6 +201,24 @@ function selfTest() {
     }
   }
 
+  // Arm D: stub CLI exits 2 → runCheck propagates 2 (NEEDS-REVIEW / overloaded
+  // code). Pins pass-through for the ambiguous exit; setup refuse is Arm A.
+  {
+    const dir = mkdtempSync(join(tmpdir(), "doc-contracts-review-"));
+    try {
+      writeFileSync(
+        join(dir, "package.json"),
+        JSON.stringify({ name: "fixture", private: true }, null, 2),
+      );
+      writeStubCli(dir, 2);
+      mkdirSync(join(dir, "node_modules"), { recursive: true });
+      const code = runCheck(dir, ["check", "--staged", "--profile", "auto", "--format", "text"]);
+      if (code !== 2) failures.push(`arm D: expected exit 2 from stub, got ${code}`);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
   if (failures.length > 0) {
     for (const line of failures) console.error(line);
     console.error(
@@ -208,7 +226,9 @@ function selfTest() {
     );
     return 2;
   }
-  console.log("document-contracts: --self-test PASS (setup refuse / RED / GREEN)");
+  console.log(
+    "document-contracts: --self-test PASS (setup refuse / RED / GREEN / exit-2 passthrough)",
+  );
   return 0;
 }
 
