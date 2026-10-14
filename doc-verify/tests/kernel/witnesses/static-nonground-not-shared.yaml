@@ -1,0 +1,20 @@
+id: static-nonground-not-shared
+gate: Static checks
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  rules:
+    # Y is shared with a later literal yet unbound at the negation: unsafe / nonground.
+    bad(D, X): core.section(D, X, _), \+ core.child(D, X, Y), core.heading(D, Y, _)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "bad(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # Design-04 checker refuses the shared form; the syntax-only translate still reaches the
+  # kernel, which rejects nonground negation (Y is not lifted because it is not local).
+  - answers: {}
+    expect: {rejected: true}

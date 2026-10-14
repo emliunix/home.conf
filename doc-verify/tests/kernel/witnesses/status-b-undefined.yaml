@@ -1,0 +1,29 @@
+id: status-b-undefined
+gate: status-table
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    g(D, S): core.section(D, S, _)
+  constraints:
+    req-sat: {forall: "core.section(D, S, _), o(D, S)", require: "g(D, S)", severity: error}
+    forb-sat: {forall: "core.section(D, S, _), o(D, S)", forbid: "core.selected(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # Bθ = u (o unanswered). §4 amended: require is satisfied when Gθ = t whatever Bθ (g(d,a) is t);
+  # forbid is satisfied when Gθ = f (no selected fact). No undetermined binding -> Dem = ∅ (§6); PASS.
+  - answers: {}
+    expect:
+      statuses:
+        req-sat: [{D: d, S: a, status: satisfied}]
+        forb-sat: [{D: d, S: a, status: satisfied}]
+      demand: {full: [], prefix: []}
+      verdict: PASS

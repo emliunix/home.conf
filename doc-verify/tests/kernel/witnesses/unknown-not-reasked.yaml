@@ -1,0 +1,49 @@
+id: unknown-not-reasked
+gate: D1
+# Tests model §1 asked(ans) (re-amended 2026-10-12 after the second review): an `unknown` answer is a
+# u leaf for valuation but counts as asked for demand, so §6 never demands it again. Filed under D1
+# because it bounds what Dem may contain; written by the kernel author at the coordinator's request,
+# expects derived by hand from the model before the run.
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    ok(D, S): core.section(D, S, _), o(D, S)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "ok(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # ans = ∅: o(d,a) is unanswered, λ = u (§2); ok(d,a) = t ∧ u = u; B = t, G = u -> undetermined (§4).
+  # Its residual derivation has the leaf o(d,a), which is not in asked(∅) -> Dem = {o(d,a)} under
+  # full and prefix (§6). An error constraint undetermined -> NEEDS-REVIEW (§5).
+  - answers: {}
+    expect:
+      statuses:
+        c1: [{D: d, S: a, status: undetermined}]
+      demand: {full: ["w::o(d,a)"], prefix: ["w::o(d,a)"]}
+      verdict: NEEDS-REVIEW
+  # ans(o(d,a)) = unknown: for valuation unknown ≡ absent, so λ = u and the binding is still
+  # undetermined (§1, §2, §4). For demand o(d,a) ∈ asked(ans): Dem = {o(d,a)} minus asked = ∅ under
+  # both policies (§1, §6). Undetermined error binding -> NEEDS-REVIEW, not re-asked.
+  - answers: {"w::o(d,a)": unknown}
+    expect:
+      statuses:
+        c1: [{D: d, S: a, status: undetermined}]
+      demand: {full: [], prefix: []}
+      verdict: NEEDS-REVIEW
+  # ans(o(d,a)) = holds: λ = t, ok(d,a) = t -> satisfied (§4); no undetermined binding -> Dem = ∅;
+  # PASS (§5).
+  - answers: {"w::o(d,a)": holds}
+    expect:
+      statuses:
+        c1: [{D: d, S: a, status: satisfied}]
+      demand: {full: [], prefix: []}
+      verdict: PASS

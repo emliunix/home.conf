@@ -1,0 +1,48 @@
+id: d1-complete
+gate: D1
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    r(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    k(D, S, L):
+      ask: q
+      evidence: core.own(D, S)
+      choose: [x, y]
+  rules:
+    ok(D, S): core.section(D, S, _), o(D, S), r(D, S)
+    tagged(D, S): core.section(D, S, _), k(D, S, L), L in [y]
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "ok(D, S)", severity: error}
+    c2: {forall: "core.section(D, S, _)", forbid: "tagged(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # Nothing answered: c1 rests on o and r (one residual derivation: full {o, r}, prefix its first leaf o);
+  # c2 rests on k (residual derivation with L = y). NEEDS-REVIEW.
+  - answers: {}
+    expect:
+      statuses:
+        c1: [{D: d, S: a, status: undetermined}]
+        c2: [{D: d, S: a, status: undetermined}]
+      demand: {full: ["w::k(d,a)", "w::o(d,a)", "w::r(d,a)"], prefix: ["w::k(d,a)", "w::o(d,a)"]}
+      verdict: NEEDS-REVIEW
+  # Every atom of the full Dem answered (D1): every binding is decided. c1: r fails -> violated, the
+  # descent ok/1 stops at r(d,a); c2: k = x -> tagged f -> forbid satisfied.
+  - answers: {"w::o(d,a)": holds, "w::r(d,a)": fails, "w::k(d,a)": x}
+    expect:
+      statuses:
+        c1: [{D: d, S: a, status: violated}]
+        c2: [{D: d, S: a, status: satisfied}]
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        c1: [{D: d, S: a, literal: "w::r(d,a)", path: ["w::ok(d,a)#1"]}]

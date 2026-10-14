@@ -1,0 +1,64 @@
+id: d2-minimal
+gate: D2
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    r(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    s(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    v(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    w(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    ok(D, S): core.section(D, S, _), o(D, S)
+    ok(D, T): core.section(D, T, _), r(D, T)
+    bad(D, S): core.section(D, S, _), s(D, S), v(D, S)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "ok(D, S)", severity: error}
+    c2: {forall: "core.section(D, S, _)", forbid: "bad(D, S)", severity: error}
+    c3: {forall: "core.section(D, S, _)", require: "w(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # r(d,a) is reachable but its disjunct is irrelevant (ok is already t via o): c1 satisfied, no demand.
+  # v(d,a) sits behind s(d,a) = f: bad is f, the forbid is satisfied, no residual derivation reaches v.
+  # Only c3 is undetermined: Dem = {w(d,a)} under both policies; NEEDS-REVIEW.
+  - answers: {"w::o(d,a)": holds, "w::s(d,a)": fails}
+    expect:
+      statuses:
+        c1: [{D: d, S: a, status: satisfied}]
+        c2: [{D: d, S: a, status: satisfied}]
+        c3: [{D: d, S: a, status: undetermined}]
+      demand: {full: ["w::w(d,a)"], prefix: ["w::w(d,a)"]}
+      verdict: NEEDS-REVIEW
+  # Atoms outside Dem answered one way: no status changes (D2).
+  - answers: {"w::o(d,a)": holds, "w::s(d,a)": fails, "w::r(d,a)": fails, "w::v(d,a)": holds}
+    expect:
+      statuses:
+        c1: [{D: d, S: a, status: satisfied}]
+        c2: [{D: d, S: a, status: satisfied}]
+        c3: [{D: d, S: a, status: undetermined}]
+      demand: {full: ["w::w(d,a)"], prefix: ["w::w(d,a)"]}
+      verdict: NEEDS-REVIEW
+  # ... and the other way: still no status changes (D2).
+  - answers: {"w::o(d,a)": holds, "w::s(d,a)": fails, "w::r(d,a)": holds, "w::v(d,a)": fails}
+    expect:
+      statuses:
+        c1: [{D: d, S: a, status: satisfied}]
+        c2: [{D: d, S: a, status: satisfied}]
+        c3: [{D: d, S: a, status: undetermined}]
+      demand: {full: ["w::w(d,a)"], prefix: ["w::w(d,a)"]}
+      verdict: NEEDS-REVIEW
