@@ -58,7 +58,7 @@ snippets:
     title: Registries and mirrors
   - id: containers
     path: containers.md
-    title: Containers (Apple `container` + `container-compose`)
+    title: Containers (podman + podman-compose)
   - id: owned-resources
     path: owned-resources.md
     title: Owned resources

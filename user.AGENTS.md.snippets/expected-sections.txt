@@ -1,6 +1,6 @@
 Reporting style
 Registries and mirrors
-Containers (Apple `container` + `container-compose`)
+Containers (podman + podman-compose)
 Owned resources
 Credentials
 Working habits that have paid off here
