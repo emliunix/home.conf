@@ -77,6 +77,20 @@ into the shared checkout. Measured then: **80 of the 88 entries under `~/.agents
 and 79 resolve into a SHARED PRIMARY worktree** (`pstack` 53, `home.conf` 25, `sandbox-deploy` 1).
 Nothing in the path says which repository it lands in.
 
+**This is not one root.** Measured 2026-10-14, all four skill roots, every symlink resolved to the repository
+it lands in (**160 symlinks total** — the hazard is not `~/.agents`'s):
+
+| root | symlinks | into `home.conf` | into `pstack` | into `sandbox-deploy` | into `langfuse` | non-repo |
+|---|---|---|---|---|---|---|
+| `~/.agents/skills` | 80 | 25 | 53 | 1 | — | 1 |
+| `~/.claude/skills` | 72 | 23 | 47 | — | 1 | 1 |
+| `~/.pi/agent/skills` | 4 | — | — | — | — | 4 |
+| `~/.codex/skills` | 4 | 2 | — | — | 1 | 1 |
+
+**151 of the 160 resolve into a shared PRIMARY checkout** (`pstack` 100 · `home.conf` 50 · `sandbox-deploy` 1);
+**2** resolve into the third-party `langfuse` clone; **7** are activation targets that are not repositories.
+So **any skill root can reach a shared tree** — check the path, not the root's reputation.
+
 **Resolve a write target to its real location before writing, and treat a shared main worktree as
 repository work** however you got there:
 
