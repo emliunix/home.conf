@@ -4,9 +4,14 @@ repos:
       - id: document-contracts
         name: document contracts
         language: system
-        entry: npm exec doc-verify -- check --staged --profile auto --format text
+        # #310: do not use `npm exec doc-verify` — a fresh linked worktree has no
+        # gitignored dist, and npm exec fails with an opaque _npx ENOENT that
+        # looks like a document-gate crash. The wrapper refuses missing setup
+        # with exit 2 + an `npm install` hint, auto-builds when node_modules is
+        # present but dist is absent, then runs node doc-verify/dist/cli.js.
+        entry: node scripts/run-document-contracts.mjs
         pass_filenames: false
-        files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$'
+        files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$|^scripts/run-document-contracts\.mjs$'
         require_serial: true
       - id: oxlint
         name: oxc lint gate

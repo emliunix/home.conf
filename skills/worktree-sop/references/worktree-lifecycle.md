@@ -36,6 +36,21 @@ Run the card's named acceptance gate against the worktree revision. For a
 shared-host heavy gate, use the gate lock in [`gate-lock.md`](gate-lock.md).
 A gate report names the revision, population, command, and exit code it read.
 
+### home.conf: install before hooks
+
+`doc-verify/dist/` is gitignored. A fresh linked worktree therefore cannot run
+the `document-contracts` hook until the engine is built. After
+`git worktree add`, run:
+
+```bash
+npm install
+```
+
+That runs `prepare` → `npm run build` and installs the repo hooks. The hook
+entry (`scripts/run-document-contracts.mjs`) refuses with **exit 2** and an
+`npm install` hint when setup is missing — that refuse is **not** a document
+finding (exit 1). Do not use `--no-verify` to paper over a missing build.
+
 ## Merge or replay
 
 Merge or replay the reviewed object to the card's target ref. Re-derive the

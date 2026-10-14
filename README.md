@@ -8,7 +8,7 @@ document's section tree, judge-backed oracles, rules and constraints; the engine
 three-valued logic and reports each constraint's population, bindings, proof and repair hint.
 
 ```sh
-npm ci && npm run build
+npm ci && npm run build   # required in every fresh linked worktree (#310)
 node doc-verify/dist/cli.js segments FILE              # stable section ids
 node doc-verify/dist/cli.js check --paths FILE --profile draft
 node doc-verify/dist/cli.js check --all                # every configured document
