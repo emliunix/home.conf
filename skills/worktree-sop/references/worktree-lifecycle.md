@@ -52,9 +52,16 @@ After `git worktree add`, run:
 ```bash
 npm install
 ln -s ~/Documents/notes/common/creds/env-jev .env.doc-verify   # if not already present
+prek install --git-dir "$(git rev-parse --path-format=absolute --git-common-dir)" -t pre-commit
 ```
 
-`npm install` runs `prepare` → `npm run build` and installs the repo hooks.
+`npm install` runs `prepare` → `npm run build` (the gitignored CLI). **Hook
+installation is a separate step** (`prek install` above) — do not treat it as
+an npm-script obligation. Owner ruling (QA / sandbox-deploy `#295`,
+`gb/295-prek-guard`): hooks must not live in npm scripts; home.conf
+`prepare` may still call `prek` today when the toplevel matches, but this
+procedure names the durable path that survives that removal.
+
 The hook entry (`scripts/run-document-contracts.mjs`) refuses with **exit 2**
 and an `npm install` hint when the build is missing — that refuse is **not**
 a document finding (exit 1). The same wrapper sets `NODE_USE_ENV_PROXY=1` so

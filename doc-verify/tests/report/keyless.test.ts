@@ -87,8 +87,13 @@ describe("keyless structural checks", () => {
     expect(result.stdout).toMatch(/constraint has-goal \[error, require\][^]*?status satisfied/);
     expect(result.stdout).toMatch(/constraint verification-falsifies \[error, require\][^]*?status undetermined/);
     const text = keyless(root);
-    expect(text.stdout).toContain("semantic.prerequisite BLOCKED TYPESAFE_API_KEY is unavailable");
-    expect(text.stdout).toMatch(/module\.verification-falsifies BLOCKED undetermined: verification names no failing check \(sections: verification\)\n {2}reason: TYPESAFE_API_KEY is unavailable\n {2}unasked keyless\.falsifies\(design\/a\.md, verification\)\n/);
+    // #310: missing .env.doc-verify is a setup gap, not "TYPESAFE_API_KEY is unavailable".
+    expect(text.stdout).toContain(
+      "semantic.prerequisite BLOCKED setup: .env.doc-verify is absent in this worktree",
+    );
+    expect(text.stdout).toMatch(
+      /module\.verification-falsifies BLOCKED undetermined: verification names no failing check \(sections: verification\)\n {2}reason: setup: \.env\.doc-verify is absent in this worktree[^\n]*\n {2}unasked keyless\.falsifies\(design\/a\.md, verification\)\n/,
+    );
   });
 
   it("passes a document whose module asks no oracle, with no key", () => {
