@@ -69,6 +69,45 @@ guarantee.
 Read [`references/gate-lock.md`](references/gate-lock.md) for the contract and
 recovery rules.
 
+## Reaching a shared tree by a path that does not name it
+
+**A symlink makes a shared path look personal.** On 2026-10-14 an ordinary-looking edit through
+`~/.agents/skills/record-conventions` dirtied `home.conf`'s main worktree: that path is a **symlink**
+into the shared checkout. Measured then: **80 of the 88 entries under `~/.agents/skills` are symlinks,
+and 79 resolve into a SHARED PRIMARY worktree** (`pstack` 53, `home.conf` 25, `sandbox-deploy` 1).
+Nothing in the path says which repository it lands in.
+
+**Resolve a write target to its real location before writing, and treat a shared main worktree as
+repository work** however you got there:
+
+```bash
+node "$HOME/Documents/home.conf/skills/worktree-sop/scripts/resolve-write-target.mjs" <path>...
+```
+
+It prints the real target, any symlink it passed through, and one of three verdicts — **shared main
+checkout** (refuse; use card → linked worktree → branch → land), **linked worktree** (a seat's own
+tree), **agent-local** (outside any repository). A refusal exits 1, so it composes with `&&`.
+
+⚠ **This is a PATH check, not a landing check, and it is NOT the canonical-checkout guard.** That
+guard's subject is the **ref**, and its venue is the lander's pre-flight: it refuses a *detached*
+shared checkout because a landing from one prints `Fast-forward`, exits 0, and moves no ref. **An
+in-place edit moves no ref and never reaches it** — so the guard's subject covers a dirty shared tree
+when it runs, but nothing runs it on an edit that never lands. Do not wire this case into
+`cb/home-conf-guards`; the two share a directory, not a subject.
+
+⚠ **A PROJECT SKILL MUST STAY A PROJECT SKILL.** When two roots both carry a skill of the same name,
+the one under the PROJECT (`.agents/skills/` inside the project) is the project's, and exposing it through
+a global skills root is wrong regardless of who owns the repository — owner directive, 2026-10-14
+(msg `67a2b45b`): *"project skills should stay as project skills only."* The live instance is
+`project-reviewer-seat`, a **tracked** file in `sandbox-deploy` (`.agents/skills/project-reviewer-seat/`)
+that `~/.agents/skills/project-reviewer-seat` symlinks to. **Edit the project copy in the project; do
+not treat the global alias as the editable one, and do not add a global alias for a project skill.**
+
+⚠ **Third-party links are a different case again.** The 53 `pstack` targets are not this project's to
+edit at all; treat them as read-only unless a fork/ownership decision says otherwise. **The three
+classes are distinct: third-party read-only · project-local (edit in the project) · home.conf's own
+(repository flow).**
+
 ## The canonical checkout
 
 The repository's MAIN worktree is shared, so every seat measures there and a
