@@ -8,10 +8,11 @@
  */
 
 import type { Verdict } from "../types.js";
-import type { Constraint, Program } from "./checker.js";
-import { atomText, type BindingStatus, type ConstraintEvaluation, type Evaluation, type Mode, type Premise } from "./evaluate.js";
-import type { OracleLeaf, OracleSpan, OracleStore, RequestRecord } from "./oracles.js";
-import { termText, type Term } from "./terms.js";
+import type { BindingStatus, Mode } from "./demand.js";
+import type { OracleLeaf, OracleSpan, RequestRecord } from "./oracles.js";
+import { constraintReportsFromKernel } from "./kernel-bridge.js";
+
+export { constraintReportsFromKernel as constraintReports };
 
 export interface ProofOracle {
   key: string;
@@ -86,122 +87,6 @@ export interface EngineReport {
   failure: EngineFailure | undefined;
 }
 
-export function constraintReports(program: Program, evaluation: Evaluation, store: OracleStore): ConstraintReport[] {
-  return evaluation.constraints.map((result) => constraintReport(program, evaluation, store, result));
-}
-
-function constraintReport(program: Program, evaluation: Evaluation, store: OracleStore, result: ConstraintEvaluation): ConstraintReport {
-  const constraint = result.constraint;
-  const bindings = result.bindings.map((binding): BindingReport => {
-    const values = Object.fromEntries([...binding.env].map(([name, value]) => [name, termText(value)]));
-    const children: ProofNode[] = [
-      { kind: "forall", atom: literalsText(constraint, "forall"), mode: binding.forallMode, children: premiseNodes(program, evaluation, store, binding.forall, binding.forallMode) },
-    ];
-    if (binding.goal !== undefined) {
-      children.push({
-        kind: "goal", atom: literalsText(constraint, "goal"), mode: binding.goalMode,
-        children: premiseNodes(program, evaluation, store, binding.goal, binding.goalMode),
-      });
-    }
-    for (const missing of binding.missing) {
-      children.push({
-        kind: "missing", atom: `${missing.literal} is not possible`, mode: "possible",
-        children: premiseNodes(program, evaluation, store, missing.after, "possible"),
-      });
-    }
-    const templateValues = { ...paramTexts(program.params), ...values };
-    return {
-      status: binding.status,
-      certain: binding.certain,
-      values,
-      message: constraint.message === undefined
-        ? `${constraint.id} is ${binding.status} for ${Object.entries(values).map(([name, value]) => `${name}=${value}`).join(", ")}`
-        : fill(constraint.message, templateValues),
-      repair: constraint.repair === undefined ? undefined : fill(constraint.repair, templateValues),
-      missing: binding.missing.map((missing) => missing.literal),
-      proof: { kind: "binding", atom: `${constraint.id}: ${binding.status}`, children },
-    };
-  });
-  // An empty population is vacuously satisfied unless the author asked for `population: nonempty`.
-  if (constraint.nonempty && bindings.length === 0) {
-    bindings.push({
-      status: "violated",
-      certain: true,
-      values: {},
-      message: `${constraint.id}: the population is empty (population: nonempty)`,
-      repair: constraint.repair === undefined ? undefined : fill(constraint.repair, paramTexts(program.params)),
-      missing: [],
-      proof: { kind: "binding", atom: `${constraint.id}: violated`, children: [
-        { kind: "missing", atom: `${literalsText(constraint, "forall")} binds nothing`, mode: "possible" },
-      ] },
-    });
-  }
-  const status: BindingStatus = bindings.some((binding) => binding.status === "violated") ? "violated"
-    : bindings.some((binding) => binding.status === "undetermined") ? "undetermined" : "satisfied";
-  return {
-    id: constraint.id,
-    status,
-    severity: constraint.severity,
-    weight: constraint.weight,
-    mode: constraint.mode,
-    population: result.bindings.length,
-    certainPopulation: result.bindings.filter((binding) => binding.certain).length,
-    bindings,
-  };
-}
-
-function premiseNodes(program: Program, evaluation: Evaluation, store: OracleStore, premises: Premise[], mode: Mode, seen: Set<string> = new Set()): ProofNode[] {
-  return premises.map((premise) => premiseNode(program, evaluation, store, premise, mode, seen));
-}
-
-function premiseNode(program: Program, evaluation: Evaluation, store: OracleStore, premise: Premise, mode: Mode, seen: Set<string>): ProofNode {
-  switch (premise.kind) {
-    case "builtin":
-      return { kind: "builtin", atom: premise.text };
-    case "not":
-      return { kind: "not", atom: `not ${premise.atom}`, mode };
-    case "oracle": {
-      const leaf = store.leaves.get(premise.key);
-      const node: ProofNode = leaf === undefined
-        ? { kind: "unasked", atom: premise.atom }
-        : { kind: "oracle", atom: premise.atom, oracle: proofOracle(leaf) };
-      return premise.negated ? { kind: "not", atom: `not ${premise.atom}`, mode, children: [node] } : node;
-    }
-    case "atom": {
-      const relation = evaluation.relations.get(premise.predicate);
-      const entry = (mode === "certain" ? relation?.certain : relation?.possible)?.get(premise.key)
-        ?? relation?.possible.get(premise.key);
-      if (entry === undefined) {
-        return { kind: "fact", atom: `${premise.predicate}(${premise.key})` };
-      }
-      const text = atomText(premise.predicate, entry.args);
-      const rule = entry.derivation.rule === undefined ? undefined : program.rules[entry.derivation.rule];
-      if (rule === undefined) {
-        return { kind: "fact", atom: text };
-      }
-      const visit = `${mode}:${premise.predicate}(${premise.key})`;
-      if (seen.has(visit)) {
-        return { kind: "rule", atom: text, mode, rule: rule.text };
-      }
-      const inner = new Set(seen).add(visit);
-      return {
-        kind: "rule", atom: text, mode, rule: rule.text,
-        children: premiseNodes(program, evaluation, store, entry.derivation.premises, mode, inner),
-      };
-    }
-  }
-}
-
-function proofOracle(leaf: OracleLeaf): ProofOracle {
-  return {
-    key: leaf.key, atom: leaf.atom, question: leaf.question, sections: leaf.sections, bytes: leaf.bytes,
-    label: leaf.label, answered: leaf.answered, options: leaf.options, distribution: leaf.distribution,
-    threshold: leaf.threshold, round: leaf.round, cacheHit: leaf.cacheHit,
-    ...(leaf.finding === undefined ? {} : { finding: leaf.finding }),
-    ...(leaf.span === undefined ? {} : { span: leaf.span }),
-  };
-}
-
 /** The first span a binding's oracles carry, in proof order (option B, else the C fallback). */
 export function bindingSpan(binding: BindingReport): OracleSpan | undefined {
   let found: OracleSpan | undefined;
@@ -213,20 +98,6 @@ export function bindingSpan(binding: BindingReport): OracleSpan | undefined {
   };
   visit(binding.proof);
   return found;
-}
-
-function literalsText(constraint: Constraint, which: "forall" | "goal"): string {
-  const text = which === "forall" ? constraint.source.forall : constraint.source.require ?? constraint.source.forbid ?? "";
-  return which === "goal" && constraint.mode === "forbid" ? `not (${text})` : text;
-}
-
-function paramTexts(params: Record<string, Term>): Record<string, string> {
-  return Object.fromEntries(Object.entries(params).map(([name, value]) => [name, termText(value)]));
-}
-
-/** `{Name}` becomes a binding value or a param; an unknown name stays as written. */
-function fill(template: string, values: Record<string, string>): string {
-  return template.replace(/\{([A-Za-z_][A-Za-z0-9_]*)\}/g, (match, name: string) => values[name] ?? match);
 }
 
 /**
@@ -245,6 +116,14 @@ export function decideVerdict(constraints: ConstraintReport[], failure: EngineFa
   }
   if (failure !== undefined && failure.verdict === "NO-GO") {
     return { verdict: failure.verdict, decidedBy: "engine" };
+  }
+  // Kernel budget/resource (and other BLOCKED failures): never treat empty/satisfied constraints as PASS.
+  if (failure !== undefined && failure.verdict === "BLOCKED") {
+    const by =
+      /kernel inference budget/i.test(failure.message) ? "budget"
+      : /kernel resource error/i.test(failure.message) ? "resource"
+      : "engine";
+    return { verdict: "BLOCKED", decidedBy: by };
   }
   if (failure !== undefined && constraints.some((constraint) => constraint.status === "undetermined")) {
     return { verdict: failure.verdict, decidedBy: "engine" };

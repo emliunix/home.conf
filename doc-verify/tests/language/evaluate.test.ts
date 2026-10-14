@@ -92,6 +92,18 @@ constraints:
     expect(statuses(report, "top-level-is-leaf")).toEqual({ "problem-statement": "satisfied", scope: "violated", rationale: "satisfied" });
   });
 
+  it("refuses unsafe negation where an unbound variable is shared with other literals", async () => {
+    const program = moduleText(`rules:
+  bad(D, S, Y): core.section(D, S, _), not core.child(D, S, Y), core.heading(D, Y, _)
+constraints:
+  c1:
+    forall: core.section(D, S, _)
+    require: bad(D, S, Y)
+    severity: error
+`);
+    await expect(run(program, scriptedJudge(() => ({ value: "unknown" })).backend)).rejects.toThrow(/shared with other literals|unsafe/);
+  });
+
   it("computes a recursive closure and counts it", async () => {
     const program = moduleText(`rules:
   under(D, A, C): core.child(D, A, C)
@@ -151,7 +163,9 @@ describe("rounds", () => {
       ? { value: question.text.includes("Owner") ? "inclusion" : "other" }
       : byHeading(PURPOSES)(question));
     const report = await run(DEPTH_TWO, backend);
-    expect(requests.map((request) => request.questions.length)).toEqual([6, 2]);
+    // Prefix demand (round-2 over-demand: d2-minimal / pass-is-final / missing-literal):
+    // round 1 asks 2 purpose atoms, not design 04's 6.
+    expect(requests.map((request) => request.questions.length)).toEqual([2, 2]);
     expect(report.requests.map((request) => request.round)).toEqual([1, 2]);
     const kinds = report.oracles.filter((entry) => entry.atom.startsWith("t.kind"));
     expect(kinds.map((entry) => entry.sections[0])).toEqual(["scope/lunch-menu", "scope/owner-index"]);

@@ -75,7 +75,7 @@ export const DOC = [
 
 export const DOC_PATH = "design/07-fixture.md";
 
-export function run(moduleYaml: string, backend: JudgeBackend, extra: { markdown?: string; cache?: OracleCache; policy?: RunProgramInput["policy"]; profile?: string } = {}) {
+export function run(moduleYaml: string, backend: JudgeBackend, extra: { markdown?: string; cache?: OracleCache; policy?: RunProgramInput["policy"]; profile?: string; inferenceBudget?: number } = {}) {
   return runProgram({
     moduleYaml,
     documents: [{ path: DOC_PATH, markdown: extra.markdown ?? DOC }],
@@ -84,6 +84,7 @@ export function run(moduleYaml: string, backend: JudgeBackend, extra: { markdown
     policy: extra.policy ?? { maxEvidenceBytes: 20_000, forbiddenLiterals: [] },
     ...(extra.cache === undefined ? {} : { cache: extra.cache }),
     ...(extra.profile === undefined ? {} : { profile: extra.profile }),
+    ...(extra.inferenceBudget === undefined ? {} : { inferenceBudget: extra.inferenceBudget }),
   });
 }
 
