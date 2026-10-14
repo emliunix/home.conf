@@ -56,11 +56,12 @@ prek install --git-dir "$(git rev-parse --path-format=absolute --git-common-dir)
 ```
 
 `npm install` runs `prepare` → `npm run build` (the gitignored CLI). **Hook
-installation is a separate step** (`prek install` above) — do not treat it as
-an npm-script obligation. Owner ruling (QA / sandbox-deploy `#295`,
-`gb/295-prek-guard`): hooks must not live in npm scripts; home.conf
-`prepare` may still call `prek` today when the toplevel matches, but this
-procedure names the durable path that survives that removal.
+installation is a separate manual step** (`prek install` above) and is **not**
+an acceptance condition for the document-contracts setup path. The owner
+ruling that hooks must not live in npm scripts is on **sandbox-deploy**
+(`#295` / `gb/295-prek-guard`); it does not remove home.conf's build path.
+home.conf `prepare` may still call `prek` when the toplevel matches — this
+procedure still names hook install separately so authors do not depend on that.
 
 The hook entry (`scripts/run-document-contracts.mjs`) refuses with **exit 2**
 and an `npm install` hint when the build is missing — that refuse is **not**

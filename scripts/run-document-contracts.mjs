@@ -7,14 +7,21 @@
 // `~/.npm/_npx/…/package.json`, which looks like a broken gate and pushes
 // authors toward `--no-verify`.
 //
-// Contract:
-//   exit 0  document check passed
-//   exit 1  document finding (real RED)
-//   exit 2  missing setup / cannot run the instrument (not a document finding)
+// Exit codes (doc-verify owns the public vocabulary — README / report.ts):
+//   0 PASS | 1 NO-GO | 2 NEEDS-REVIEW | 3 BLOCKED | 64+ usage/config
+//
+// Exit 2 is overloaded on purpose (house pattern = oxlint: discriminate on the
+// stream when codes collide). This wrapper may also return 2 for:
+//   - setup refusal (no dist / no node_modules) — prefixed on stderr
+//   - abnormal child termination (non-numeric status / signal) — prefixed on stderr
+//   - the tool's own NEEDS-REVIEW — no setup prefix; tool stdout is the authority
+// Setup and abnormal cases are therefore distinguished by stderr, not by inventing
+// a new exit code outside {0,1,2,3,64,…}.
 //
 // Setup path: `npm install` in the worktree (runs `prepare` → build). If
 // `node_modules` is present but `dist` is absent (e.g. `--ignore-scripts`),
-// this wrapper builds once and continues.
+// this wrapper builds once and continues. Hook install is a separate `prek`
+// step (see worktree-sop); do not treat it as an npm-script obligation.
 //
 // `--self-test` runs only the setup / exit-class probes. Default is the real
 // staged check (same args the hook used to pass to `npm exec`).
@@ -111,7 +118,15 @@ function runCheck(root, checkArgs) {
     );
     return 2;
   }
-  return typeof result.status === "number" ? result.status : 2;
+  if (typeof result.status !== "number") {
+    console.error(
+      `document-contracts: CLI terminated without an exit status` +
+        `${result.signal ? ` (${result.signal})` : ""}. ` +
+        "This is not a document finding.",
+    );
+    return 2;
+  }
+  return result.status;
 }
 
 function writeStubCli(dir, exitCode) {
