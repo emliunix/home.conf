@@ -76,7 +76,7 @@ directly, so the first question was which mature semantics it coincides with. Th
 well-founded semantics: on stratified author rules over undefined leaves it is the Kleene reading
 design 04 implements, and SWI-Prolog's tabling implements it, exposes the residual program an
 undefined answer depends on. Incremental tabling is *not* relied on: round 2 found stale delays
-after `assertz` (visflow design 20 F15); the kernel re-evaluates per step, about 1 ms on the corpus. Round 1 measured all of this in the
+after `assertz` (`worklog/kernel-trials/friction-swipl-wasm.md` F15); the kernel re-evaluates per step, about 1 ms on the corpus. Round 1 measured all of this in the
 WebAssembly build (`worklog/kernel-trials/round-1-verdict.md`).
 
 **Why not the other candidates as the kernel.** Answer set programming gives both bounds as
@@ -107,7 +107,7 @@ an ordinary oracle whose labels are sentence ids.
   total 46–105 ms including startup (K4).
 - `call_delays/2` returns the goal or `tnot(G)`, not the leaves; delays are listed most-recent-first
   (undocumented); a tabled incremental wrapper leaves a stale delay after assert (possible engine
-  defect); `tnot/1` accepts non-ground goals. Tracked as visflow design 20.
+  defect); `tnot/1` accepts non-ground goals. Tracked in `worklog/kernel-trials/friction-swipl-wasm.md`.
 
 **Assumed before round 2, since tested (round 2 passed; round 3 measured the oracles):**
 - The kernel passes the model's gates (`docs/doc-verify-model.md` §9) on seeded witnesses derived

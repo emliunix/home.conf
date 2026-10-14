@@ -77,8 +77,8 @@ which is what round 2 wanted from the TypeScript evaluator and never got (S2 fai
 The hybrid (S3 for statuses, S1 for findings) is not designed here: with 0 corpus refinements
 there is nothing for it to decide that S1 does not.
 
-The hand-made unknown encoding remains S1's and remains the source of the friction in visflow
-design 20; this round shows the alternative is sound but, on real documents, not more decisive.
+The hand-made unknown encoding remains S1's and remains the source of the friction in
+`friction-swipl-wasm.md`; this round shows the alternative is sound but, on real documents, not more decisive.
 The friction that matters is therefore to be closed in S1 (F12/F15 incremental tabling, F9 delay
 order), not by a kernel change.
 
@@ -92,7 +92,7 @@ order), not by a kernel change.
    open item for the D1-incomplete demand and the generator's gaps (`choose`, UNSAT, `unknown`).
 3. Decision rows: kernel unchanged; S3 a differential reference; the three refuting cells that
    did not fire and the one that did.
-4. visflow design 21: nine friction items with clingo-wasm (no multi-shot API, forced JSON
+4. `friction-clingo-wasm.md`: nine friction items with clingo-wasm (no multi-shot API, forced JSON
    output, no symbol API, async-only worker entry, and so on).
 5. Design 05 §Kernel: a sentence citing this round; constitution unchanged (no invariant touched).
 

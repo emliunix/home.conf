@@ -4,7 +4,7 @@ Written 2026-10-13 before any run; amended the same day after the independent re
 (`results/round-4b-review.md`, verbatim) and before the run. Round 2 selected the SWI
 well-founded-semantics kernel (S1) against the model. Its encoding of an unasked oracle atom (a
 negative loop giving `u`, then a residual-program walk for demand) is hand-made, is the source
-of every friction item in visflow design 20, and leaves 240 of 500 random bindings undetermined
+of every friction item in `friction-swipl-wasm.md`, and leaves 240 of 500 random bindings undetermined
 that enumeration over every total answer decides (round 2 verdict, "Kleene conservatism"). The
 owner's direction widens the candidate set beyond Prolog (goal 04 R3). This round adds clingo
 (answer set programming, free `#external` atoms) as subject S3 in the existing conformance

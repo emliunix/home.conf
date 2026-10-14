@@ -49,7 +49,7 @@ The witness format every subject reads is `probe/witnesses/FORMAT.md`.
 | Missing literal | pass | pass | medium |
 | Boundary | not measured this round | not measured | — |
 | Corpus, draft | agrees with the reference | agrees with the reference | high |
-| Corpus, scripted two rounds | agrees | agrees; demand sets equal under `prefix` | medium (delay order, visflow design 20 F9) |
+| Corpus, scripted two rounds | agrees | agrees; demand sets equal under `prefix` | medium (delay order, `friction-swipl-wasm.md` F9) |
 
 Where S1 and S2 disagree and both differ from the reference, the reference's derivation is
 re-read first; a reference defect is corrected in place and said so.

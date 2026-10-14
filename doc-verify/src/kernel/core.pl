@@ -56,7 +56,7 @@ core_has_label(A) :- core_answered(A, L), L \== unknown.
 % core_label(+A, +L): the leaf valuation λ_ans of the label atom (A, L), model §2:
 %   t if ans(A) = L; f if ans(A) = L' with L' ≠ L; u if A is unanswered or answered unknown.
 % For a two-label oracle o(i) stands for o(i, holds). The wrapper is UNTABLED (round 1 K2,
-% visflow design 20 F12). The groundness check is the boundary of model §8: an oracle atom is
+% worklog/kernel-trials/friction-swipl-wasm.md F12). The groundness check is the boundary of model §8: an oracle atom is
 % a ground term; a non-ground one would silently become existential under tnot (F13).
 core_label(A, L) :-
     core_ground_or_throw(A, nonground_oracle),

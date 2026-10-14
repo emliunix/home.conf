@@ -52,7 +52,7 @@ the gates now measure, and it fails three of them under its own rules.
   the descent rule were amended; it was wrong for the amended model and is corrected here.
 - `matches-bound-interval` was not listed as an expected failure in naive-count mode; it is one.
 - Incremental tabling is not used. With it, six witnesses fail (stale `call_delays/2` after
-  `assertz`, visflow design 20 F15). The kernel abolishes tables at every step, about 1 ms on the
+  `assertz`, `friction-swipl-wasm.md` F15). The kernel abolishes tables at every step, about 1 ms on the
   corpus. Design 05's "incremental re-evaluation" becomes "re-evaluation per step".
 
 ## Findings about the model (all amended in place, marked)

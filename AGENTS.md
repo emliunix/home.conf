@@ -55,5 +55,8 @@ instance is `worklog/kernel-trials/`). By role:
 
 The loop: a verdict that selects a change produces a numbered design superseding the affected
 sections of earlier designs, and amends the line of `docs/doc-verify-constitution.md` it touches,
-citing that design. Inconveniences met with external tools are filed as a visflow design record.
+citing that design. Inconveniences met with external tools (an engine, a runtime, a library) are
+kept in the programme as one standing record per tool (`worklog/<topic>-trials/friction-<tool>.md`,
+first instance `worklog/kernel-trials/friction-swipl-wasm.md`); upstream defects among them are
+also reported upstream and linked from the record.
 The loop repeats; no round is final.
