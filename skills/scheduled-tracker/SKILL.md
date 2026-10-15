@@ -127,6 +127,18 @@ These are standing lead checks, not a second methodology:
   a service probe, live database read, credential use, or machine-level operation
   is work, and a one-line claim or notice goes out before it starts.
 
+  **Identify a process before signalling it.** On a shared host, before sending
+  any signal, resolve the **PID** and inspect its **parent, working directory, and
+  age**. A command-line pattern is a **candidate set, not an ownership proof** — a
+  fragment that matches your own intent can belong to a peer, and the more
+  recognizable it looks, the easier that mistake is. If identity stays uncertain,
+  do not signal: ask the accountable owner, or leave the process running. A
+  notifying claim does not substitute for identification; the claim says you are
+  about to act, not that the target is yours. (Capture:
+  `process-failure-patterns/agent-substrate/2026-10-15-pkill-by-unverified-command-pattern`
+  — a peer's `grep` was killed on a false attribution, and the cost of that reflex
+  aimed at a gate run is someone else's measurement.)
+
   **Reachability is tested by remote ref, not by branch name, and a worktree is
   checkout state, not landed work.** Every pass names each repo's remote tip, the
   worktrees and their tips, the shared checkout's branch/behind/dirty state, and
