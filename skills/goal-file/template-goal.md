@@ -116,7 +116,7 @@ resource edge** (cap 2–3 concurrent for supervisor depth).
 stays the source of truth for status). Nodes: Prep (action) → Grill (decision) →
 Defend (decision) → Rematch? (action) → Implement (decision) → Verify (action) →
 Retro (action). Edge labels: `PASS` / `NEEDS-FIX` / `FAIL` / `ESCALATE` /
-`ROUTE: BREAKOUT` / `ROUTE: SUPERSEDE` / `ROUTE: DEFER` / `SKIP`. FAIL never sets
+`ROUTE: BREAKOUT` / `ROUTE: BACK` / `ROUTE: SUPERSEDE` / `ROUTE: DEFER` / `SKIP`. FAIL never sets
 a status; BREAKOUT may revert `draft`; SUPERSEDE keeps last status + `Superseded
 by:`. Hooks are typed slots on an edge (`[+step]` / `[-step]`). **Legend
 mandatory.** The edge-label vocabulary and this flowchart are defined in
