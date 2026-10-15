@@ -15,7 +15,7 @@ import {
 } from "./config.js";
 import { fileOracleCache } from "./cache.js";
 import { loadDocVerifyEnv } from "./local-env.js";
-import { productionBackend } from "./judge.js";
+import { judgePrerequisiteGap, productionBackend } from "./judge.js";
 import {
   bindingBasis,
   bindingReason,
@@ -157,10 +157,15 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
     changedRoots: pair.changedRoots,
     affectedArtifacts: pair.candidatePaths,
     artifacts,
-    warningCount: artifacts.reduce((sum, artifact) => sum + artifact.warnings.length, 0),
-    semanticCalls: artifacts.reduce((sum, artifact) => sum + artifact.semanticCalls, 0),
-    cacheHits: artifacts.reduce((sum, artifact) => sum + artifact.cacheHits, 0),
-    verdict,
+      warningCount: artifacts.reduce((sum, artifact) => sum + artifact.warnings.length, 0),
+      semanticCalls: artifacts.reduce((sum, artifact) => sum + artifact.semanticCalls, 0),
+      cacheHits: artifacts.reduce((sum, artifact) => sum + artifact.cacheHits, 0),
+      coverage: {
+        unasked: artifacts.flatMap((artifact) => (artifact.engine?.report.coverage.unasked ?? []).map((atom) => `${atom}: ${artifact.path}`)),
+        asked: artifacts.reduce((sum, artifact) => sum + (artifact.engine?.report.coverage.asked ?? 0), 0),
+        complete: artifacts.every((artifact) => artifact.engine === undefined || artifact.engine.report.coverage.complete),
+      },
+      verdict,
     timingMs: Math.round(performance.now() - started),
   };
 }
@@ -357,8 +362,15 @@ async function checkWithModules(input: {
   // An engine failure that decided nothing (every constraint was decided without the judge)
   // does not turn a PASS into a finding.
   if (report.failure !== undefined && report.verdict !== "PASS") {
+    // #317: when the judge was reached but could not answer, the engine's message names the failed
+    // request. Append the prerequisite that is actually absent, so the reader is told what to fix
+    // rather than which call failed.
+    const gap = unavailable === undefined && /judge request/i.test(report.failure.message)
+      ? judgePrerequisiteGap(input.root)
+      : undefined;
+    const message = gap === undefined ? report.failure.message : `${report.failure.message} ${gap}`;
     findings.push(finding(input.file, input.sections[0], unavailable !== undefined && report.failure.message === unavailable
-      ? "semantic.prerequisite" : "module.engine", report.failure.verdict, report.failure.message));
+      ? "semantic.prerequisite" : "module.engine", report.failure.verdict, message));
   }
   for (const note of report.findings) {
     findings.push(finding(input.file, input.sections[0], "module.engine", "NEEDS-REVIEW", note));

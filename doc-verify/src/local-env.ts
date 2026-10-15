@@ -26,8 +26,7 @@ type ProxyFromEnv = (env?: NodeJS.ProcessEnv) => (() => void) | undefined;
  *
  * Reads only; never copies secret bytes into another worktree.
  */
-export function resolveDocVerifyEnvPath(root: string): string | undefined {
-  const local = path.join(root, fileName);
+export function resolveDocVerifyEnvPath(root: string): string | undefined {  const local = path.join(root, fileName);
   if (existsSync(local)) {
     return local;
   }
@@ -133,6 +132,22 @@ function processProxy(): string | undefined {
     }
   }
   return undefined;
+}
+
+/**
+ * Whether a proxy is available to the judge, from the process or from the credential file.
+ *
+ * `productionBackend` names a missing credential *file*, and the credential file carries **two**
+ * settings: the API key and a proxy. The key alone is not sufficient -- a run with the key and no
+ * proxy fails at the judge request, which names the failed request rather than the absent setting.
+ * This is exported so the failure can name the second prerequisite the way #310/#312 name the first.
+ */
+export function hasJudgeProxy(root: string): boolean {
+  if (processProxy() !== undefined) {
+    return true;
+  }
+  const text = credentialText(root);
+  return text !== undefined && fileProxy(text) !== undefined;
 }
 
 /** The proxy named by the credential file, if any. */

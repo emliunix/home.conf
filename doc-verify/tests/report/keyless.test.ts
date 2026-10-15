@@ -103,4 +103,49 @@ describe("keyless structural checks", () => {
     expect(result.status, result.stdout + result.stderr).toBe(0);
     expect(result.stdout).toMatch(/^PASS: 1 artifact\(s\)/m);
   });
+
+  // #317. Coverage is reported beside the verdict, because the two are different facts: a document
+  // can fail *and* part of it remain unjudged, and a `PASS` is only honest when every constraint was
+  // evaluated. These two arms are the discriminator -- same missing key, opposite verdicts, told
+  // apart by whether a conclusive failure exists.
+  describe("coverage is reported separately from the verdict (#317)", () => {
+    it("keeps NO-GO exit 1 for a conclusive failure, and still reports the gap", () => {
+      // design/a.md has no '## Goal', so `has-goal` is violated without the judge. Ruling: exit 1
+      // is the accurate statement about the document, and the coverage field carries the rest.
+      const root = fixture(GOOD.replace("## Goal\n\nShip it.\n\n", ""));
+      const result = keyless(root);
+      expect(result.status, result.stdout + result.stderr).toBe(1);
+      expect(result.stdout).toMatch(/^NO-GO: 1 artifact\(s\)/m);
+      expect(result.stdout).toMatch(/coverage: 1 oracle atom\(s\) never asked/);
+      expect(result.stdout).toMatch(/unasked keyless\.falsifies\(design\/a\.md, verification\)/);
+    });
+
+    it("does not let a document that fails mask the fact that it was never judged", () => {
+      // The same run as above, read through --format json: the machine-readable field must carry
+      // the unasked atom, not only the human-readable line.
+      const root = fixture(GOOD.replace("## Goal\n\nShip it.\n\n", ""));
+      const result = keyless(root, "--format", "json");
+      const report = JSON.parse(result.stdout) as {
+        coverage: { unasked: string[]; asked: number; complete: boolean };
+        verdict: string;
+      };
+      expect(report.verdict).toBe("NO-GO");
+      expect(report.coverage.complete).toBe(false);
+      expect(report.coverage.unasked).toHaveLength(1);
+      expect(report.coverage.asked).toBe(0);
+    });
+
+    it("BLOCKS an incomplete run with no conclusive failure, so PASS keeps meaning evaluated", () => {
+      // ⚠ THIS FIXTURE IS NOT PROOF OF THE GATE. Every structural constraint holds, but
+      // `decideVerdict`'s own "failure + an undetermined constraint" branch already returns
+      // BLOCKED here, so the run is BLOCKED with the gate removed. It pins the OUTCOME, not the
+      // mechanism; the mechanism is proved in `semantic.test.ts` ("BLOCKS an incomplete run whose
+      // every decidable constraint holds"), where removing the gate turns BLOCKED into PASS.
+      const root = fixture(GOOD);
+      const result = keyless(root);
+      expect(result.status, result.stdout + result.stderr).toBe(3);
+      expect(result.stdout).toMatch(/^BLOCKED: 1 artifact\(s\)/m);
+      expect(result.stdout).toMatch(/coverage: 1 oracle atom\(s\) never asked/);
+    });
+  });
 });

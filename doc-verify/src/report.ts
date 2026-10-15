@@ -24,6 +24,7 @@ export function renderText(report: VerificationReport, options: { verbose?: bool
       lines.push(...findingLines(finding, false));
     }
   }
+  lines.push(...coverageLines(report));
   lines.push(summary(report));
   return `${lines.join("\n")}\n`;
 }
@@ -59,6 +60,7 @@ function renderVerboseText(report: VerificationReport): string {
       lines.push(`  finding: ${head ?? ""}`, ...rest.map((line) => `  ${line}`));
     }
   }
+  lines.push(...coverageLines(report));
   lines.push(summary(report));
   return `${lines.join("\n")}\n`;
 }
@@ -100,9 +102,21 @@ function listPaths(paths: string[]): string[] {
   return paths.length === 0 ? ["  - none"] : paths.map((file) => `  - ${file}`);
 }
 
-function summary(report: VerificationReport): string {
-  return `${report.verdict}: ${String(report.artifacts.length)} artifact(s), ` +
-    `${String(report.artifacts.reduce((sum, artifact) => sum + artifact.sections.length, 0))} section(s), ` +
-    `${String(report.warningCount)} warning(s), ` +
-    `${String(report.semanticCalls)} semantic call(s), ${String(report.cacheHits)} cache hit(s)`;
-}
+  function summary(report: VerificationReport): string {
+    const coverage = report.coverage.complete
+      ? "coverage: complete"
+      : `coverage: ${String(report.coverage.unasked.length)} oracle atom(s) never asked`;
+    return `${report.verdict}: ${String(report.artifacts.length)} artifact(s), ` +
+      `${String(report.artifacts.reduce((sum, artifact) => sum + artifact.sections.length, 0))} section(s), ` +
+      `${String(report.warningCount)} warning(s), ` +
+      `${String(report.semanticCalls)} semantic call(s), ${String(report.cacheHits)} cache hit(s), ` +
+      coverage;
+  }
+
+  /**
+   * The unasked atoms, one per line, so a reader can tell a conclusive failure from an unevaluable
+   * run without parsing the engine's diagnostics.
+   */
+  function coverageLines(report: VerificationReport): string[] {
+    return report.coverage.unasked.map((atom) => `  unasked ${atom}`);
+  }

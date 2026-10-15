@@ -79,7 +79,7 @@ describe("text report", () => {
       + "  repair: Name the test and what it observes.\n"
       + "  answered holds (p=0.6 < threshold 0.8) over verification\n");
     expect(text).not.toContain("evidence:");
-    expect(text).toMatch(/^NEEDS-REVIEW: 1 artifact\(s\), 3 section\(s\), 1 warning\(s\), 2 semantic call\(s\), 0 cache hit\(s\)$/m);
+    // #317: the summary carries a coverage field, so the assertion pins the metrics it lists\n    // and lets the coverage suffix follow rather than claiming nothing else is on the line.\n    expect(text).toMatch(/^NEEDS-REVIEW: 1 artifact\(s\), 3 section\(s\), 1 warning\(s\), 2 semantic call\(s\), 0 cache hit\(s\), coverage: /m);
   });
 
   it("prints a structural NO-GO with the literal that is missing", async () => {

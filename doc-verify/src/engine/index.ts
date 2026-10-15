@@ -117,6 +117,14 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
     findings.push(`${String(lastReport.demand.prefix.length)} oracle atoms were still unasked after ${String(program.rounds)} rounds: ${lastReport.demand.prefix.slice().sort().join(", ")}`);
   }
   const oracles = [...store.leaves.values()].sort((a, b) => a.round - b.round || a.atom.localeCompare(b.atom));
+  // Which oracle atoms never reached the judge: `key` is `-` when the atom was never sent, because
+  // its evidence did not resolve or the engine failed before the round that would ask it.
+  const unasked = oracles.filter((leaf) => leaf.key === "-").map((leaf) => leaf.atom);
+  const coverage = {
+    unasked,
+    asked: oracles.length - unasked.length,
+    complete: unasked.length === 0,
+  };
   for (const leaf of oracles) {
     if (leaf.finding !== undefined) {
       findings.push(`${leaf.atom}: ${leaf.finding}`);
@@ -142,13 +150,20 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
       }))
     : constraintReports(program, lastReport, store);
   const { verdict, decidedBy } = decideVerdict(constraints, failure, program.warningThreshold);
+  // `doc-verify:verdict/coverage`: a `PASS` asserts that every constraint was evaluated, so it
+  // cannot survive an atom that was never asked. An incomplete run with no conclusive failure is
+  // BLOCKED -- the same class as a failed round -- instead of a quiet PASS.
+  const decided = coverage.complete || verdict !== "PASS"
+    ? { verdict, decidedBy }
+    : { verdict: "BLOCKED" as const, decidedBy: "coverage" };
   return {
     module: program.module,
     hash: program.hash,
     rounds: program.rounds,
     profile: input.profile,
-    verdict,
-    decidedBy,
+    verdict: decided.verdict,
+    decidedBy: decided.decidedBy,
+    coverage,
     requests,
     constraints,
     skipped,

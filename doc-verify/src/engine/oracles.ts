@@ -191,11 +191,16 @@ export async function askRound(input: {
         round: input.round,
         evidence: Object.fromEntries(batch.map((entry) => [entry.key, { sections: entry.evidence.sections, text: entry.evidence.text }])),
       };
-      const stateJson = canonicalJson(state);
-      enforceOutboundPolicy(stateJson, input.policy);
-      if (input.backend === undefined) {
-        throw new BlockedError(input.unavailable ?? "no judge is available");
-      }
+        const stateJson = canonicalJson(state);
+        enforceOutboundPolicy(stateJson, input.policy);
+        if (input.backend === undefined) {
+          // Record the atoms this run could not ask BEFORE failing, so the caller can report which
+          // constraints went unevaluated rather than only that the round failed.
+          for (const entry of batch) {
+            input.store.leaves.set(entry.key, unaskedLeaf(entry.demand, entry.question, entry.options, input.round, input.unavailable ?? "no judge is available"));
+          }
+          throw new BlockedError(input.unavailable ?? "no judge is available");
+        }
       enforceCapabilities(input.backend, batch, Buffer.byteLength(stateJson));
       const questions: JudgeQuestion[] = batch.map((entry) => ({
         id: entry.key,
@@ -206,6 +211,14 @@ export async function askRound(input: {
       try {
         answers.push(...(await input.backend.complete({ state, questions, model: input.model })).answers);
       } catch (error) {
+        // A judge that was reached but errored leaves the same gap as a judge that was never
+        // available: record the atoms before failing so coverage survives either halt.
+        // ⚠ The failing provider's message is NOT copied into the leaf. It can carry the provider's
+        // response body, and the report is serialized for callers -- the message belongs in
+        // `failure`, which is the field a reader already treats as the error channel.
+        for (const entry of batch) {
+          input.store.leaves.set(entry.key, unaskedLeaf(entry.demand, entry.question, entry.options, input.round, "the judge request failed"));
+        }
         throw new BlockedError(`judge request for round ${String(input.round)} failed: ${error instanceof Error ? error.name : "unknown error"}`);
       }
       records.push({

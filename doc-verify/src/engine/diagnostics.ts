@@ -70,6 +70,20 @@ export interface EngineFailure {
   message: string;
 }
 
+/**
+ * Which oracle atoms the run could not evaluate. Coverage is reported separately from the verdict
+ * because the two are different facts: a document can fail *and* part of it remain unjudged, and a
+ * caller that only sees the verdict cannot tell that apart from a document that was fully judged.
+ */
+export interface CoverageReport {
+  /** Oracle atoms whose evidence never resolved, so the judge was never asked. */
+  unasked: string[];
+  /** Oracle atoms the judge answered. */
+  asked: number;
+  /** `unasked.length === 0`; a `PASS` requires this. */
+  complete: boolean;
+}
+
 export interface EngineReport {
   module: string;
   hash: string;
@@ -77,6 +91,7 @@ export interface EngineReport {
   profile: string | undefined;
   verdict: Verdict;
   decidedBy: string;
+  coverage: CoverageReport;
   requests: RequestRecord[];
   constraints: ConstraintReport[];
   /** Constraints outside the selected profile. */

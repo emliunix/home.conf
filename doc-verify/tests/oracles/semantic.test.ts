@@ -17,6 +17,24 @@ ${PURPOSE_ORACLE}constraints:
     require: purpose(D, S, P), P in [problem, scope, rationale]
     severity: error
 `);
+// #317: one warning-severity constraint over a union whose evidence cannot resolve. Used to prove
+// the coverage gate, which is the only thing that stops a PASS on this shape.
+const UNION_ONLY = moduleText(`oracles:
+  names_missing(D, L):
+    ask: Do the named sections {L} name a failing check?
+    evidence: core.union(D, L)
+    threshold: 0.5
+rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  goal_section(D, S): top(D, S), core.heading(D, S, 'Goal')
+constraints:
+  warns-union:
+    forall: goal_section(D, S)
+    require: names_missing(D, ['Goal', 'Absent'])
+    severity: warning
+    message: "{S} union does not resolve"
+`);
+
 
 describe("semantic boundary", () => {
   it("blocks an unavailable required judge instead of faking one", () => {
@@ -91,6 +109,26 @@ constraints:
     expect(report.constraints.find((entry) => entry.id === "known")?.status).toBe("undetermined");
     expect(report.failure).toEqual({ verdict: "BLOCKED", message: "TYPESAFE_API_KEY is unavailable" });
     expect(report.verdict).toBe("NO-GO");
+  });
+
+  it("BLOCKS an incomplete run whose every decidable constraint holds (#317)", async () => {
+    // The gate #317 adds, on the ONE route where nothing else stops it. `UNION_ONLY` has a single
+    // WARNING-severity constraint whose oracle reads a UNION of named sections, and one name is
+    // absent -- so the evidence never resolves, the leaf is `unasked`, and the binding is
+    // undetermined. decideVerdict's own branches do not catch this: there is no violated error, no
+    // failure (the judge was never needed), no undetermined ERROR, and the warning ratio defaults
+    // to 0 so it never fires. Removing the gate turns this BLOCKED into a PASS -- measured.
+    const report = await runProgram({
+      moduleYaml: UNION_ONLY, documents: [{ path: "d.md", markdown: "# D\n\n## Goal\n\nG.\n" }],
+      backend: createMockJevJudgeBackend({ choice: "first" }), model: "jev-test",
+      policy: { maxEvidenceBytes: 20_000, forbiddenLiterals: [] },
+    });
+    expect(report.constraints.find((entry) => entry.id === "warns-union")?.status).toBe("undetermined");
+    expect(report.failure).toBeUndefined();
+    expect(report.coverage.complete).toBe(false);
+    expect(report.coverage.unasked).toHaveLength(1);
+    expect(report.verdict).toBe("BLOCKED");
+    expect(report.decidedBy).toBe("coverage");
   });
 
   it("is BLOCKED, not NO-GO, when every structural constraint holds and an oracle is needed", async () => {

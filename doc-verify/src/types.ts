@@ -105,8 +105,22 @@ export interface VerificationReport {
   warningCount: number;
   semanticCalls: number;
   cacheHits: number;
+  /**
+   * Which oracle atoms the run never asked. Reported beside the verdict because the two are
+   * different facts: a document can fail *and* part of it remain unjudged, and a `PASS` is only
+   * honest when every constraint was actually evaluated.
+   */
+  coverage: ReportCoverage;
   verdict: Verdict;
   timingMs: number;
+}
+
+export interface ReportCoverage {
+  /** Oracle atoms whose evidence never resolved, so the judge was never asked. */
+  unasked: string[];
+  asked: number;
+  /** `unasked.length === 0`; a `PASS` requires this. */
+  complete: boolean;
 }
 
 export class UsageError extends Error {
