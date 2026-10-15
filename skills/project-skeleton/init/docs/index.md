@@ -10,6 +10,7 @@ One hop from question to owning file.
 | What is the system? | `docs/architecture.md` |
 | What does package X export? | `docs/modules/<pkg>/contract.md` |
 | What properties does X claim? | `docs/modules/<pkg>/properties.md` + `verification.md` |
+| How do module docs move with code? | project-skeleton skill § Module docs: design → module docs → code |
 | Why does something exist? | `design/NN-*.md` |
 | What is in flight? | `goals/NN-*.md` |
 | What happened on a day? | `worklog/` (never law) |

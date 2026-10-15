@@ -1,0 +1,13 @@
+schema_version: 1
+kind: document-contract
+document:
+  path: design/08-module-docs-convention.md
+  kind: design
+  depends_on:
+    - design/00-design-file-guide.md
+    - skills/project-skeleton/SKILL.md
+commands:
+  - npm test
+  - npm run typecheck
+  - npm run lint
+evidence_level: E1

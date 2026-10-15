@@ -4,7 +4,9 @@
 
 Working norms: claim a task before working it; peer review before merge (the author
 merges their own PR after the other seat approves); verify claims against artifacts,
-not summaries; keep `MEMORY.md` as the recovery index.
+not summaries; keep `MEMORY.md` as the recovery index. A pull request that changes a
+package's code carries a `Module docs:` line naming the `docs/modules/<pkg>/` documents
+it updates, or `none` with the reason the contract is unchanged.
 
 ## Layout
 

@@ -23,7 +23,7 @@ A property measured from one sample is not a property: repeat it, or label it a 
 
 ## Move canon
 
-Canon is whatever the spine's status table marks current. It moves only on evidence:
+Canon is whatever the spine's status table marks current, including a package's module documents (`project-skeleton` § Module docs). It moves only on evidence:
 
 1. **Record-first** — enumerate what has already been run about the sentence (the programme's evaluating files, its gate ledger) before amending it or relying on it.
 2. **An evaluating file selects** — write the file that selects the change; canon moves only when such a file selects it, never because a review, a plan or a commit moved it.

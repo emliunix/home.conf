@@ -23,8 +23,9 @@ This guide and the design files. Not the goals, not the worklog.
 A design is a forward decision record: the problem, the scope, the chosen shape and the
 verification plan, fixed before implementation. It carries the three heads — problem
 statement, scope, rationale — and a Status section whose first line is one word of the
-lifecycle vocabulary. After landing, its decision folds into `docs/` and the design stays
-frozen.
+lifecycle vocabulary. Its Scope names the module documents it changes; the decision
+updates `docs/modules` before the code that implements it lands, and the design stays
+frozen after landing.
 
 ## Verification
 

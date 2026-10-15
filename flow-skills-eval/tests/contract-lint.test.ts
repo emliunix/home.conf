@@ -127,3 +127,38 @@ describe("L0 contract lint: dispatch phrases and skill mentions", () => {
     }
   });
 });
+
+/** The stage check each flow skill carries for module documents (design/08). */
+const MODULE_DOCS_STAGES = [
+  { skill: grill, section: "## Draft contract" },
+  { skill: common, section: "## Implementation gate" },
+  { skill: retro, section: "### 5. Close the loop" },
+] as const;
+
+function sectionText(content: string, heading: string): string {
+  const start = content.indexOf(heading);
+  if (start < 0) throw new Error(`missing section ${heading}`);
+  const level = /^#+/.exec(heading)![0].length;
+  const rest = content.slice(start + heading.length);
+  const next = new RegExp(`\\n#{1,${String(level)}} `).exec(rest);
+  return next ? rest.slice(0, next.index) : rest;
+}
+
+describe("L0 contract lint: module documents", () => {
+  it("each stage names the module documents and points at project-skeleton", () => {
+    for (const { skill, section } of MODULE_DOCS_STAGES) {
+      const text = sectionText(skill.content, section);
+      expect(/module doc/i.test(text), `${skill.name} ${section}`).toBe(true);
+      expect(text, `${skill.name} ${section}`).toContain("`project-skeleton` § Module docs");
+    }
+  });
+
+  it("no flow skill restates the quad's definitions", () => {
+    for (const skill of skills) {
+      const defines = ["contract.md", "model.md", "properties.md", "verification.md"].filter((file) =>
+        new RegExp(`\`${file.replace(".", "\\.")}\`\\s*\\|`).test(skill.content),
+      );
+      expect(defines, skill.name).toEqual([]);
+    }
+  });
+});
