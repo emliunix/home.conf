@@ -2,16 +2,16 @@
 
 ## Links with fragments
 
-Good: [model](../../../../docs/doc-verify-model.md#3-semantics), [constraints](../../../../docs/doc-verify-model.md#4-constraints-and-status),
-[design 05 kernel](../../../../design/05-trusted-kernel-redesign.md#kernel), [design 03 companion](../../../../design/03-companion-driven-document-verification.md#companion-contract),
-[this doc](#links-with-fragments), [backtick heading](../../../../docs/doc-verify-model.md#where-u-comes-from),
+Good: [model](../docs/doc-verify-model.md#3-semantics), [constraints](../docs/doc-verify-model.md#4-constraints-and-status),
+[design 05 kernel](../design/05-trusted-kernel-redesign.md#kernel), [design 03 companion](../design/03-companion-driven-document-verification.md#companion-contract),
+[this doc](#links-with-fragments), [backtick heading](../docs/doc-verify-model.md#where-u-comes-from),
 [second notes](dup-target.md#notes-1).
 
-Dangling: [no section](../../../../design/06-kernel-migration.md#no-such-section), [old slug](../../../../docs/doc-verify-model.md#semantics),
-[typo](../../../../design/05-trusted-kernel-redesign.md#kernal), [missing here](#not-a-heading), [wrong doc](../../../../design/03-companion-driven-document-verification.md#language),
+Dangling: [no section](../design/06-kernel-migration.md#no-such-section), [old slug](../docs/doc-verify-model.md#semantics),
+[typo](../design/05-trusted-kernel-redesign.md#kernal), [missing here](#not-a-heading), [wrong doc](../design/03-companion-driven-document-verification.md#language),
 [third notes](dup-target.md#notes-2).
 
-Skipped: [line anchor](../../../../design/06-kernel-migration.md#L12), [range](../../../../design/06-kernel-migration.md#L10-L20).
+Skipped: [line anchor](../design/06-kernel-migration.md#L12), [range](../design/06-kernel-migration.md#L10-L20).
 
 ## Section references
 

@@ -19,10 +19,10 @@ import { segmentMarkdown } from "../../src/segments.js";
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 // The fixture and frozen, headings-only copies of the documents it cites, so the labels do not move
-// when a live heading does. Inside the temporary repository the fixture keeps the path it was
-// labelled at (its links climb four directories to the repository root).
+// when a live heading does. Inside the temporary repository the fixture sits one directory below
+// the root (its links climb one directory), and the cited documents sit at their repository paths.
 const SOURCE = "doc-verify/tests/references/fragment-fixture";
-const FIXTURES = "worklog/kernel-trials/probe/fragment-fixtures";
+const FIXTURES = "fragment-fixture";
 const FIXTURE = `${FIXTURES}/fixture.md`;
 
 type Label = [number, string];
