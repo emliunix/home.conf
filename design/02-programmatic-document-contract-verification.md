@@ -462,7 +462,8 @@ internal error. Hooks and CI block on every nonzero code.
 
 ## Project setup and consumers
 
-The root `.pre-commit-config.yaml` has one local `prek` hook:
+The root `.pre-commit-config.yaml` has two local `prek` hooks for documents. The first
+checks the staged change and its closure:
 
 ```yaml
 - id: document-contracts
@@ -476,6 +477,14 @@ The root `.pre-commit-config.yaml` has one local `prek` hook:
 The wrapper runs `doc-verify check --staged --profile auto --format text` when
 it is given no arguments, builds a missing `dist/`, and with `--auto-setup`
 installs dependencies in a fresh worktree (#310, #312).
+
+The second, `document-structure`, runs the same wrapper with
+`check --all --profile draft --format text`. The closure follows a changed file
+to the documents that link to it, not to those that name it in prose
+(`design/04 §Heading`, a path in backticks), so a renamed heading or a moved file
+can break a document nobody staged; this pass re-checks every configured
+document structurally, without the judge. CI runs the same whole-repository
+check, and `.pre-commit-hooks.yaml` publishes it for consumers to opt into.
 
 Root `.pre-commit-hooks.yaml` publishes `document-contracts` as a Node hook from
 this repository package. An adopting project pins an immutable `home.conf`
