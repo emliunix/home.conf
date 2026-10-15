@@ -46,6 +46,10 @@ Run these checks in order and keep notes brief:
    not fail on the defect it claims to catch. Record the smallest corrective
    action. Run the lead template's over-engineering and over-review stop checks
    before proposing more work, more review, or another check.
+6. **Compose the pass.** When posting a tracker update, use
+   [`templates/project-tracker-message.md`](templates/project-tracker-message.md)
+   as the message shape and name that template in the pass. The reader must be
+   able to trace which tracker-message template produced the update.
 
 **Hourly team-aware graph echo.** Once per hour, post the current workstream graph
 in the owning channel or thread: active lanes, each lane's owner, its next
@@ -213,6 +217,7 @@ Post one short update in the owning channel or thread only when there is a
 material change, decision, blocker, or required review. Lead with the exit
 state, then the next owner and action. Include the concrete task-track
 disposition when a work item moved, stalled, landed, or became blocked. Do not paste
-routine command logs. Use
+routine command logs. Use and name
 [`templates/project-tracker-message.md`](templates/project-tracker-message.md)
-when the pass needs member-written progress or a silent member needs follow-up.
+as the template for the pass, especially when it needs member-written progress
+or a silent member needs follow-up.
