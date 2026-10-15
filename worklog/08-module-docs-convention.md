@@ -77,3 +77,15 @@ A keyless `check --all --profile draft` on a fresh skeleton is BLOCKED on `main`
 of this change.
 
 Status: `pending-retro`.
+
+## C5 - Implementation review (2026-10-16)
+
+The Claude seat passed the implementation at `6e7517e` with nothing blocking
+(https://github.com/emliunix/home.conf/pull/14#issuecomment-6201395507).
+
+| # | Finding | Disposition |
+| --- | --- | --- |
+| 1 | should-fix: P-core-01 is paired with `assert True`, and the template ships no `one_function` | Taken, the reviewer's second option. Marking the limit as a placeholder kept failing the judge's `current_not_history` (p=0.56, then 0.47), so the template now ships `src/example.py::one_function` and a test that calls it. Seeded red: a stateful `one_function` fails the test. Scratch pytest 12 passed; keyed `check --all` PASS |
+| 2 | note: the restatement test catches table rows, not lists | Recorded; it stays a table-only check |
+| 3 | note: L1 triplets and rule_quality not run | The L1 gap blocks `landed`, not the merge; design 08 stays `pending-retro` until they run with the eval key, each seen red first. rule_quality's mutations do not cover the changed rules |
+| 4 | note: the status went from draft to pending-retro without `reviewed` | The design passed review at `6e248bd` (C4); the status word recorded there was not committed separately |
