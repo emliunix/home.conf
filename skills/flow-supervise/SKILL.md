@@ -62,7 +62,7 @@ Set a recurring reminder so the project can never silently stall:
 
 - **Progress instruments:** track progress with the task tools at hand — never from memory alone.
   - **raft tasks** — the shared board: one task per work item, statuses kept honest (`todo` → `in_progress` → `in_review` → `done`), claims before work starts. Convert owner requests into tasks; don't create duplicates of existing ones.
-  - **Design file inventory** — keep a list of the project's `design/NN-*.md` files with each one's **status marker** (`draft` / `reviewed` / `pending-retro` / `landed`). The inventory is just the list + markers; the detailed content of each design is out of scope for this skill (that's `flow-grill-review` / `flow-common` territory).
+  - **Design file inventory** — keep a list of the project's `design/NN-*.md` files with each one's **status marker** (`draft` / `reviewed` / `pending-retro` / `landed`, plus `draft-followup` sweep files from reviews and retros). The inventory is just the list + markers; the detailed content of each design is out of scope for this skill (that's `flow-grill-review` / `flow-common` territory).
   - **Your own task tracker** (e.g. TodoList) — for your supervision loop itself: what's under review, what's blocked, what you're waiting on.
   - Report from these instruments in your cycle updates, so the owner can cross-check your picture against the board at a glance.
 

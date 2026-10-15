@@ -61,12 +61,12 @@ The design file's `## Status` line is one word, set by exactly one owner:
 | `draft` | written, not yet grilled | drafter; **or** breakout adjudication (status revert) |
 | `reviewed` | passed grill; every accepted P1 solved; P2/P3 swept; design body is current speech | `flow-grill-review` (review gate) |
 | `pending-retro` | implementation complete; fresh evidence proves the user outcome; no blocking mismatch; the closing retro has not run | the implementation gate (this skill) |
-| `landed` | the whole loop finished: design + implementation + retro closed | `flow-retro` (closing pass) |
+| `landed` | the whole loop finished: design + implementation + retro closed; the retro may land it with one `draft-followup` file | `flow-retro` (closing pass) |
 
 - A `reviewed` / `pending-retro` / `landed` design that is the **wrong machine** is superseded by a new `design/NN` — never un-reviewed, un-pended, or un-landed on that path.
 - A superseded file keeps its last status and gains the `Superseded by:` line; a file superseded before its loop completed never lands.
 - Sweep files (`Status: draft-followup`) are not lifecycle states.
-- **`flow-retro` is the only route back out of `pending-retro` for impl defects and light closes.** An implementer never silently restarts implementation, and never invents a second status setter.
+- **`flow-retro` is the only route back out of `pending-retro` for impl defects and light closes.** Its verdicts name the two routes back: implementation (verdict 3, counts a round) and breakout (verdict 4). An implementer never silently restarts implementation, and never invents a second status setter.
 - **Wrong-machine outer loop:** stop. Obsolete the failed design (`Superseded by:`). Discard the source it introduced. Open a new `design/NN` from the goal file (anchored root + live additions). Lessons in the worklog. Do not revert status on the failed file.
 - **Breakout adjudication** (architecture redesign): the other exit of a failed inner impl loop — when/how below. This path **may revert** impacted designs to `draft`. Inner-loop AC checks still align to **Covers** → anchored root.
 
@@ -145,7 +145,7 @@ Architecture is design-time only (`goal-file` scope analysis). It is **not** a w
 
 Run this process — and only this process — when **all** of:
 
-1. An inner impl loop has **halted** (round-5 structural ceiling, or impl/retro classified **design mismatch / architecture failure**).
+1. An inner impl loop has **halted** (round-5 structural ceiling, or impl/retro classified **design mismatch / architecture failure**, including a retro's verdict 4 for a design defect).
 2. The failure is **not** an implementation-only defect (that remediates in place; status stays).
 3. The failure is **not** yet proved a wrong machine (that is the supersession outer loop).
 
@@ -258,7 +258,7 @@ A concise `Design holds` note is optional evidence, never a required stage or no
 
 ### Commits
 
-Commits follow explicit user authorization and meaningful artifact boundaries—not a fixed count or message template. A reviewed design and its implementation may be separate commits when useful; retro changes merit a commit only when they materially change an artifact. Never create no-op commits.
+Commits follow explicit user authorization and meaningful artifact boundaries—not a fixed count or message template. A reviewed design and its implementation may be separate commits when useful; a retro's commit holds its worklog entry and any follow-up file (`flow-retro` §4). Never create no-op commits.
 
 ### Stop condition
 

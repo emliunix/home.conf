@@ -1,0 +1,11 @@
+schema_version: 1
+kind: document-contract
+document:
+  path: design/09-retro-outcomes.md
+  kind: design
+  depends_on:
+    - design/08-module-docs-convention.md
+    - skills/flow-retro/SKILL.md
+commands:
+  - npm test
+evidence_level: E1

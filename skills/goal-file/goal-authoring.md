@@ -178,12 +178,13 @@ Spine: `Prep → Grill → Defend → (Rematch?) → Implement → Verify → Re
 | `NEEDS-FIX` | Grill | Defend |
 | `FAIL` | Grill (blocker) / Defend (wrong-scope) / Implement (design mismatch) | Defend / adjudication / appropriate loop |
 | `ESCALATE` | Defend / Verify / Implement | supervisor gate (re-warm + dispatch decision) |
-| `ROUTE: BREAKOUT` | Implement | `flow-common` breakout adjudication |
+| `ROUTE: BREAKOUT` | Implement / Retro (verdict 4) | `flow-common` breakout adjudication |
+| `ROUTE: BACK` | Retro (verdict 3) | Implement; counts one round; Retro re-closes |
 | `ROUTE: SUPERSEDE` | Implement / retro | new `design/NN`; old file notes `Superseded by:` |
 | `ROUTE: DEFER` | Defend | named-missing-evidence decision; a P1 defer blocks the gate |
 | `SKIP` | any | step omitted; one-line reason in worklog |
 
-**Status mapping** (flow exits → lifecycle table): Grill pass → `reviewed`; Implement pass → `pending-retro`; Retro pass → `landed`; BREAKOUT revert → `draft`; SUPERSEDE keeps last status + `Superseded by:`. **`FAIL` never sets a status** — it routes to adjudication, still inside `draft`.
+**Status mapping** (flow exits → lifecycle table): Grill pass → `reviewed`; Implement pass → `pending-retro`; Retro pass (verdict 1 or 2) → `landed`; Retro `ROUTE: BACK` keeps `pending-retro`; BREAKOUT revert → `draft`; SUPERSEDE keeps last status + `Superseded by:`. **`FAIL` never sets a status** — it routes to adjudication, still inside `draft`.
 
 **Hooks** are typed slots on an edge: `[+step]` injection or `[-step]` skip, annotated with the goal/scope reason. This is where "process is recommendation" becomes structural.
 

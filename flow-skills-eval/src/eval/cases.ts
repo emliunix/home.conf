@@ -182,7 +182,7 @@ export const decisionCases: readonly DecisionCase[] = [
 
   // ── Gate transition: pending-retro → landed ──────────────────────────────
   {
-    // Cite: flow-retro/SKILL.md:71 — "Land when the closing pass is complete: … then set `Status: landed`."
+    // Cite: flow-retro/SKILL.md:85 — "Land on verdict 1 or 2: … then set `Status: landed`."
     // Catches: leaving a clean closed loop at pending-retro.
     id: "gate-pending-landed-canonical",
     kind: "canonical",
@@ -205,7 +205,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("set_status", "landed", "design_body", false),
   },
   {
-    // Cite: flow-common/SKILL.md:28 — "`flow-retro` is the only route back out of `pending-retro`"; flow-retro/SKILL.md:29 — closing stage of every execution, not a no-op ritual.
+    // Cite: flow-common/SKILL.md:69 — "`flow-retro` is the only route back out of `pending-retro`"; flow-retro/SKILL.md:32 — closing stage of every execution, not a no-op ritual.
     // Catches: landing directly from implementation, skipping the closing retro.
     id: "gate-pending-landed-trap",
     kind: "trap",
@@ -227,7 +227,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("run_retro", "unchanged", "worklog", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:71 — same land condition, no flow vocabulary.
+    // Cite: flow-retro/SKILL.md:85 — same land condition, no flow vocabulary.
     // Catches: not recognizing a completed closing pass.
     id: "gate-pending-landed-paraphrase",
     kind: "paraphrase",
@@ -251,7 +251,7 @@ export const decisionCases: readonly DecisionCase[] = [
 
   // ── Routing fork: implementation-only defect ─────────────────────────────
   {
-    // Cite: flow-retro/SKILL.md:67 — "Implementation-only defect: do not rewrite the design to describe a bug; return it to implementation remediation (status stays `pending-retro`)."
+    // Cite: flow-retro/SKILL.md:78 — verdict 3: "a blocking finding is an implementation defect … Do not rewrite the design to describe a bug. Status stays `pending-retro`".
     // Catches: treating a code bug as a design error (new design) or landing with a known mismatch.
     id: "fork-impl-defect-canonical",
     kind: "canonical",
@@ -273,7 +273,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("remediate", "unchanged", "none", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:67 — "do not rewrite the design to describe a bug".
+    // Cite: flow-retro/SKILL.md:78 — "Do not rewrite the design to describe a bug."
     // Catches: rewriting the design to describe the bug, then landing it.
     id: "fork-impl-defect-trap",
     kind: "trap",
@@ -296,7 +296,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("remediate", "unchanged", "none", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:67 — same route, no flow vocabulary.
+    // Cite: flow-retro/SKILL.md:78 — same route, no flow vocabulary.
     // Catches: misrouting an implementation bug when the wording hides it.
     id: "fork-impl-defect-paraphrase",
     kind: "paraphrase",
@@ -318,11 +318,11 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("remediate", "unchanged", "none", false),
   },
 
-  // ── Routing fork: bounded correction ─────────────────────────────────────
+  // ── Routing fork: retro finding beyond the design's rows → follow-up file ─
   {
-    // Cite: flow-retro/SKILL.md:61 — "Bounded corrections rewrite the design body as current speech"; :65 — no architecture failure: bounded corrections, status stays pending-retro.
-    // Catches: landing with an uncorrected assumption or routing a small fix to a new design.
-    id: "fork-bounded-correction-canonical",
+    // Cite: flow-retro/SKILL.md:72 — the row test; :77 — verdict 2, one draft-followup file per retro.
+    // Catches: rewriting a landed-ready design's body for a finding none of its rows depends on.
+    id: "fork-retro-followup-canonical",
     kind: "canonical",
     fixture: [
       "design/05-parquet-export.md (excerpt):",
@@ -332,19 +332,23 @@ export const decisionCases: readonly DecisionCase[] = [
       "Export pipeline only; no UI changes; no new formats.",
       "## Rationale",
       "Streaming rows instead of buffering removes the timeout at the observed sizes.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Large exports finish | a 2 GB export exceeds 60 s | `pytest tests/test_export_timing.py` |",
       "## Status",
       "pending-retro",
       "",
-      "Retro evidence: the design assumed UTF-8 input only, but real partner exports include Latin-1. A one-paragraph",
-      "design correction (encoding detection) covers it; the streaming architecture is otherwise sound.",
+      "Retro evidence: the timing row passes on fresh runs. Separately, real partner exports include Latin-1, and the",
+      "design assumed UTF-8 only. No verification row depends on the encoding.",
     ].join("\n"),
-    question: "How is this routed?",
-    expected: decision("remediate", "unchanged", "design_body", false),
+    question: "How is this finding routed?",
+    expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:65-66 — bounded corrections stay in the design; only genuine architecture failure opens a new design.
-    // Catches: opening a new design file for a bounded correction ("cleaner history").
-    id: "fork-bounded-correction-trap",
+    // Cite: flow-retro/SKILL.md:68 — the retro makes no direct edits; :77 — verdict 2.
+    // Catches: patching the design body in the retro "since it is only one paragraph".
+    id: "fork-retro-followup-trap",
     kind: "trap",
     fixture: [
       "design/05-parquet-export.md (excerpt):",
@@ -354,19 +358,23 @@ export const decisionCases: readonly DecisionCase[] = [
       "Export pipeline only; no UI changes; no new formats.",
       "## Rationale",
       "Streaming rows instead of buffering removes the timeout at the observed sizes.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Large exports finish | a 2 GB export exceeds 60 s | `pytest tests/test_export_timing.py` |",
       "## Status",
       "pending-retro",
       "",
-      "Retro evidence: a one-paragraph encoding correction to the design is needed. A teammate suggests: \"open a",
-      "fresh design file for the encoding fix so the history stays clean, and leave design/05 as-is\".",
+      "Retro evidence: the timing row passes. A teammate says: \"the UTF-8-only assumption is wrong for Latin-1 partner",
+      "files; just fix that paragraph in design/05 now during the retro, it's one paragraph\". No row depends on encoding.",
     ].join("\n"),
-    question: "How is this routed?",
-    expected: decision("remediate", "unchanged", "design_body", false),
+    question: "How is this finding routed?",
+    expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:61 — bounded corrections rewrite the design body as current speech, no flow vocabulary.
-    // Catches: writing the correction into the log only, leaving the spec stale.
-    id: "fork-bounded-correction-paraphrase",
+    // Cite: flow-retro/SKILL.md:72, :77 — same route, no flow vocabulary.
+    // Catches: treating a nice-to-have observation as a reason to reopen finished work.
+    id: "fork-retro-followup-paraphrase",
     kind: "paraphrase",
     fixture: [
       "design/09-import-wizard.md (excerpt):",
@@ -376,19 +384,263 @@ export const decisionCases: readonly DecisionCase[] = [
       "Self-serve CSV import path only; no changes to pricing logic.",
       "## Rationale",
       "A validated upload matches how every observed partner file already looks.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Uploads validate | a malformed row is accepted | `pytest tests/test_import_validation.py` |",
       "## Status",
       "pending-retro",
       "",
-      "The look-back shows one assumption in the spec was slightly off — delimiter sniffing needs a small rewrite of",
-      "one paragraph. Everything else about the approach holds.",
+      "Looking back: everything the spec promised checks out. We also noticed delimiter sniffing could be smarter for",
+      "semicolon files; nothing the spec checks depends on that.",
     ].join("\n"),
-    question: "Where does that correction go, and does the spec's status move?",
-    expected: decision("remediate", "unchanged", "design_body", false),
+    question: "Where does that observation go?",
+    expected: decision("set_status", "draft-followup", "followup_design_file", false),
+  },
+
+  // ── Routing fork: retro finds a design defect → breakout ────────────────
+  {
+    // Cite: flow-retro/SKILL.md:79 — verdict 4: a design defect goes to breakout adjudication now.
+    // Catches: sending a design defect back to implementation, or landing over a failing row.
+    id: "fork-retro-design-defect-canonical",
+    kind: "canonical",
+    fixture: [
+      "design/05-parquet-export.md (excerpt):",
+      "## Problem statement",
+      "Large table exports time out for ops users, forcing manual SQL dumps.",
+      "## Scope — what we touch",
+      "Export pipeline only; no UI changes; no new formats.",
+      "## Rationale",
+      "Streaming rows instead of buffering removes the timeout at the observed sizes.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Large exports finish | a 2 GB export exceeds 60 s | `pytest tests/test_export_timing.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Retro evidence: the timing row fails on real data. Streaming cannot help because the bottleneck is a",
+      "server-side sort the design requires before the first row is sent; the code implements the design as written.",
+    ].join("\n"),
+    question: "How is this routed?",
+    expected: decision("halt_structural", "unchanged", "worklog", false),
+  },
+  {
+    // Cite: flow-retro/SKILL.md:79 — breakout now, not at the round ceiling; flow-common breakout step 1 — halt, name the cause in the worklog.
+    // Catches: spending implementation rounds on a defect the design itself prescribes.
+    id: "fork-retro-design-defect-trap",
+    kind: "trap",
+    fixture: [
+      "design/05-parquet-export.md (excerpt):",
+      "## Problem statement",
+      "Large table exports time out for ops users, forcing manual SQL dumps.",
+      "## Scope — what we touch",
+      "Export pipeline only; no UI changes; no new formats.",
+      "## Rationale",
+      "Streaming rows instead of buffering removes the timeout at the observed sizes.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Large exports finish | a 2 GB export exceeds 60 s | `pytest tests/test_export_timing.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Retro evidence: the timing row fails because the design requires a full server-side sort first. The implementer",
+      "says: \"give me two more rounds, I'll tune the sort\"; the code already matches the design exactly.",
+    ].join("\n"),
+    question: "How is this routed?",
+    expected: decision("halt_structural", "unchanged", "worklog", false),
+  },
+  {
+    // Cite: flow-retro/SKILL.md:79 — same route, no flow vocabulary.
+    // Catches: quietly rewriting the spec during the look-back.
+    id: "fork-retro-design-defect-paraphrase",
+    kind: "paraphrase",
+    fixture: [
+      "design/09-import-wizard.md (excerpt):",
+      "## Problem statement",
+      "Partners import price lists by emailing spreadsheets that staff key in by hand.",
+      "## Scope — what we touch",
+      "Self-serve CSV import path only; no changes to pricing logic.",
+      "## Rationale",
+      "A validated upload matches how every observed partner file already looks.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Uploads validate | a malformed row is accepted | `pytest tests/test_import_validation.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Looking back: the validation check fails on real partner files, and the cause is the spec's own rule that",
+      "rows are validated only after the whole file is stored. The code does exactly what the spec says.",
+    ].join("\n"),
+    question: "What happens next?",
+    expected: decision("halt_structural", "unchanged", "worklog", false),
+  },
+
+  // ── Routing fork: retro finds a P0 violation in the code → route back ───
+  {
+    // Cite: flow-retro/SKILL.md:78 — verdict 3: a P0 violation carried by the code routes back to implementation, whatever the row test says.
+    // Catches: landing with a known P0 violation because no row depends on it.
+    id: "fork-retro-p0-canonical",
+    kind: "canonical",
+    fixture: [
+      "design/05-parquet-export.md (excerpt):",
+      "## Problem statement",
+      "Large table exports time out for ops users, forcing manual SQL dumps.",
+      "## Scope — what we touch",
+      "Export pipeline only; no UI changes; no new formats.",
+      "## Rationale",
+      "Streaming rows instead of buffering removes the timeout at the observed sizes.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Large exports finish | a 2 GB export exceeds 60 s | `pytest tests/test_export_timing.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Retro evidence: the timing row passes. The code also keeps a reader for the retired v1 export format \"just in",
+      "case\"; the design never mentions v1, and the project contract bans dual-world support.",
+    ].join("\n"),
+    question: "How is this routed?",
+    expected: decision("remediate", "unchanged", "none", false),
+  },
+  {
+    // Cite: flow-retro/SKILL.md:78 — a P0 hit is never a follow-up.
+    // Catches: sweeping a P0 hit into the follow-up file as optional clean-up.
+    id: "fork-retro-p0-trap",
+    kind: "trap",
+    fixture: [
+      "design/05-parquet-export.md (excerpt):",
+      "## Problem statement",
+      "Large table exports time out for ops users, forcing manual SQL dumps.",
+      "## Scope — what we touch",
+      "Export pipeline only; no UI changes; no new formats.",
+      "## Rationale",
+      "Streaming rows instead of buffering removes the timeout at the observed sizes.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Large exports finish | a 2 GB export exceeds 60 s | `pytest tests/test_export_timing.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Retro evidence: the timing row passes. The code keeps a temporary v1 compatibility reader the design does not",
+      "ask for (the project contract bans dual-world support). A teammate: \"put it in the follow-up file, land now\".",
+    ].join("\n"),
+    question: "How is this routed?",
+    expected: decision("remediate", "unchanged", "none", false),
+  },
+  {
+    // Cite: flow-retro/SKILL.md:78 — same route, no flow vocabulary.
+    // Catches: accepting a banned compatibility path because everything else passes.
+    id: "fork-retro-p0-paraphrase",
+    kind: "paraphrase",
+    fixture: [
+      "design/09-import-wizard.md (excerpt):",
+      "## Problem statement",
+      "Partners import price lists by emailing spreadsheets that staff key in by hand.",
+      "## Scope — what we touch",
+      "Self-serve CSV import path only; no changes to pricing logic.",
+      "## Rationale",
+      "A validated upload matches how every observed partner file already looks.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Uploads validate | a malformed row is accepted | `pytest tests/test_import_validation.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Looking back: every check passes, but the code still accepts the old pipe-separated format alongside CSV, which",
+      "the project's rules forbid. The spec itself only describes CSV.",
+    ].join("\n"),
+    question: "What happens next?",
+    expected: decision("remediate", "unchanged", "none", false),
+  },
+
+  // ── Routing fork: retro finds a P0 violation the design prescribes → breakout ─
+  {
+    // Cite: flow-retro/SKILL.md:79 — verdict 4: a P0 violation the design body itself prescribes goes to breakout.
+    // Catches: sending a design-prescribed P0 back to implementation, which cannot remove it without contradicting the reviewed design.
+    id: "fork-retro-p0-design-canonical",
+    kind: "canonical",
+    fixture: [
+      "design/05-parquet-export.md (excerpt):",
+      "## Problem statement",
+      "Large table exports time out for ops users, forcing manual SQL dumps.",
+      "## Scope — what we touch",
+      "Export pipeline only; no UI changes; no new formats; keep the v1 reader alongside v2 until partners migrate.",
+      "## Rationale",
+      "Streaming rows instead of buffering removes the timeout at the observed sizes.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Large exports finish | a 2 GB export exceeds 60 s | `pytest tests/test_export_timing.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Retro evidence: the timing row passes. The v1 reader the Scope requires is dual-world support, which the project",
+      "contract bans; the code implements the Scope as written.",
+    ].join("\n"),
+    question: "How is this routed?",
+    expected: decision("halt_structural", "unchanged", "worklog", false),
+  },
+  {
+    // Cite: flow-retro/SKILL.md:79 — the body prescribes it, so implementation cannot fix it; flow-common breakout step 1.
+    // Catches: asking the implementer to delete code the reviewed design requires.
+    id: "fork-retro-p0-design-trap",
+    kind: "trap",
+    fixture: [
+      "design/05-parquet-export.md (excerpt):",
+      "## Problem statement",
+      "Large table exports time out for ops users, forcing manual SQL dumps.",
+      "## Scope — what we touch",
+      "Export pipeline only; no UI changes; no new formats; keep the v1 reader alongside v2 until partners migrate.",
+      "## Rationale",
+      "Streaming rows instead of buffering removes the timeout at the observed sizes.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Large exports finish | a 2 GB export exceeds 60 s | `pytest tests/test_export_timing.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Retro evidence: the timing row passes. The Scope's \"keep the v1 reader\" is banned dual-world support. A teammate:",
+      "\"just have the implementer delete the v1 reader in one more round\".",
+    ].join("\n"),
+    question: "How is this routed?",
+    expected: decision("halt_structural", "unchanged", "worklog", false),
+  },
+  {
+    // Cite: flow-retro/SKILL.md:79 — same route, no flow vocabulary.
+    // Catches: treating a spec-mandated banned path as a code clean-up.
+    id: "fork-retro-p0-design-paraphrase",
+    kind: "paraphrase",
+    fixture: [
+      "design/09-import-wizard.md (excerpt):",
+      "## Problem statement",
+      "Partners import price lists by emailing spreadsheets that staff key in by hand.",
+      "## Scope — what we touch",
+      "Self-serve CSV import path only; accept both the legacy pipe format and CSV during the transition.",
+      "## Rationale",
+      "A validated upload matches how every observed partner file already looks.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Uploads validate | a malformed row is accepted | `pytest tests/test_import_validation.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Looking back: every check passes, but the spec itself requires accepting the legacy pipe format alongside CSV,",
+      "and the project's rules forbid running two formats side by side. The code does what the spec says.",
+    ].join("\n"),
+    question: "What happens next?",
+    expected: decision("halt_structural", "unchanged", "worklog", false),
   },
 
   // ── Routing fork: genuine architecture failure ───────────────────────────
   {
-    // Cite: flow-retro/SKILL.md:66 — wrong machine: open a new design/NN, grill it, supersede the old file; never set back to draft.
+    // Cite: flow-retro/SKILL.md:79 — "If the walk proves a **wrong machine**, `flow-common` supersession applies instead — do not revert that file"; flow-common/SKILL.md:66 — superseded by a new design/NN.
     // Catches: restarting implementation on a fundamentally wrong design.
     id: "fork-arch-failure-canonical",
     kind: "canonical",
@@ -410,7 +662,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("open_new_design", "unchanged", "new_design_file", true),
   },
   {
-    // Cite: flow-retro/SKILL.md:66 — "Do not rewrite the old body into the new machine"; flow-common/SKILL.md:25 — never un-reviewed, un-pended, or un-landed.
+    // Cite: flow-retro/SKILL.md:79 — "do not revert that file"; flow-common/SKILL.md:66 — "never un-reviewed, un-pended, or un-landed".
     // Catches: rewriting design/05 in place and resetting it to draft to keep the number.
     id: "fork-arch-failure-trap",
     kind: "trap",
