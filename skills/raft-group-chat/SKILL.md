@@ -34,9 +34,10 @@ in the paragraph it is supposed to precede.
 
 ## Task cards: name the design authority
 
-Start from [`templates/task-card.md`](templates/task-card.md). The template
-references the owning design, goal, worktree rule, receipt surface, and other
-guidance rather than copying their contents into the card.
+Start from the canonical card template at
+[`../raft-task-card/references/card-template.md`](../raft-task-card/references/card-template.md).
+The template references the owning design, goal, worktree rule, receipt
+surface, and other guidance rather than copying their contents into the card.
 
 Every task that can change behavior, a contract, schema, interface,
 architecture, or an operational policy must carry a `DESIGN.` line in its body.
