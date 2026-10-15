@@ -164,6 +164,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
         unasked: artifacts.flatMap((artifact) => (artifact.engine?.report.coverage.unasked ?? []).map((atom) => `${atom}: ${artifact.path}`)),
         unanswered: artifacts.flatMap((artifact) => (artifact.engine?.report.coverage.unanswered ?? []).map((atom) => `${atom}: ${artifact.path}`)),
         asked: artifacts.reduce((sum, artifact) => sum + (artifact.engine?.report.coverage.asked ?? 0), 0),
+        evaluated: artifacts.reduce((sum, artifact) => sum + (artifact.engine?.report.coverage.evaluated ?? 0), 0),
         complete: artifacts.every((artifact) => artifact.engine === undefined || artifact.engine.report.coverage.complete),
       },
       verdict,

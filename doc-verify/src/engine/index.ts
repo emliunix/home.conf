@@ -157,10 +157,16 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
   // `complete` has to mean "every constraint was evaluated", so a halt is incomplete by
   // construction, whatever the demand lists say.
   const halted = lastReport.blocked !== undefined || lastReport.resource !== undefined;
+  // Two axes, and they are not the same number: `asked` counts the atoms that were SENT to the
+  // judge, `evaluated` counts those that came back with a usable evaluation. An atom the judge was
+  // reached for and returned nothing usable on was asked and not evaluated. Collapsing them made
+  // `asked` a false name -- it said "the judge answered this" about atoms it never answered.
+  const asked = oracles.length - neverSent.length;
   const coverage = {
     unasked,
     unanswered,
-    asked: oracles.length - neverSent.length - noUsableAnswer.length,
+    asked,
+    evaluated: asked - noUsableAnswer.length,
     complete: unasked.length === 0 && unanswered.length === 0 && !halted,
   };
   for (const leaf of oracles) {

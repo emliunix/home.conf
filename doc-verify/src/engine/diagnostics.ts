@@ -90,8 +90,10 @@ export interface CoverageReport {
    * population can support a `PASS`.
    */
   unanswered: string[];
-  /** Oracle atoms the judge produced a usable evaluation for. */
+  /** Oracle atoms SENT to the judge. An atom in `unanswered` was asked but not evaluated. */
   asked: number;
+  /** Oracle atoms the judge produced a usable evaluation for: `asked - unanswered.length`. */
+  evaluated: number;
   /** Both incomplete populations are empty; a `PASS` requires this. */
   complete: boolean;
 }

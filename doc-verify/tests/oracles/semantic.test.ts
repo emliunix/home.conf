@@ -190,7 +190,11 @@ ${PURPOSE_ORACLE}constraints:
     // document has a root section and a `Problem` heading, so `forall core.section(D, S, _)`
     // demands two atoms and the judge answered neither.
     expect(report.coverage.complete).toBe(false);
-    expect(report.coverage.asked).toBe(0);
+    // The two axes are deliberately different on this fixture: the atoms WERE sent (asked=2), and
+    // the judge produced no usable evaluation for either (evaluated=0). Collapsing them into one
+    // number is what made `asked` a false name.
+    expect(report.coverage.asked).toBe(2);
+    expect(report.coverage.evaluated).toBe(0);
     expect(report.coverage.unasked).toHaveLength(0);
     expect(report.coverage.unanswered).toHaveLength(2);
     expect(report.verdict).toBe("BLOCKED");

@@ -120,8 +120,10 @@ export interface ReportCoverage {
   unasked: string[];
   /** Oracle atoms the judge was asked about and produced no usable evaluation for. */
   unanswered: string[];
-  /** Oracle atoms the judge produced a usable evaluation for. */
+  /** Oracle atoms sent to the judge; `unanswered` are asked but not evaluated. */
   asked: number;
+  /** Oracle atoms the judge produced a usable evaluation for. */
+  evaluated: number;
   /** Both incomplete populations are empty; a `PASS` requires this. */
   complete: boolean;
 }
