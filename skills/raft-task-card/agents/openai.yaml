@@ -1,0 +1,3 @@
+interface:
+  display_name: "Raft Task Card"
+  short_description: "Author and run goal-aligned Raft task cards"
