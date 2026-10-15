@@ -46,10 +46,12 @@ silently.
 - Updating a card after scope, evidence, or review state changes.
 - Closing a card or preparing a workstream for its single review.
 
-Use `raft-group-chat` for the wording and audience of the accompanying
-message. Use `goal-file` for the frozen-root and funnel rules. Use
-`worktree-sop` when the card can edit a repository or run a heavy gate. This
-skill connects those conventions to the Raft task surface.
+Use [`raft-group-chat`](../raft-group-chat/SKILL.md) for the wording and
+audience of the accompanying message. Use
+[`goal-file`](../goal-file/SKILL.md) for the frozen-root and funnel rules. Use
+[`worktree-sop`](../worktree-sop/SKILL.md) when the card can edit a repository
+or run a heavy gate. This skill connects those conventions to the Raft task
+surface.
 
 ## Authority and grouping
 
