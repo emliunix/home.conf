@@ -117,7 +117,8 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
   }
   const selectedIds = options.sections?.map(sectionId);
   const exists = candidateExists(root, pair.candidateInventory, pair.workingTree);
-  const repository = { exists, files: pair.candidateInventory, gitRefs: pair.gitRefs, resolveSpec: specResolver(root) };
+  const repository = { exists, files: pair.candidateInventory, gitRefs: pair.gitRefs, resolveSpec: specResolver(root),
+    readTarget: targetReader(exists, pair.readCandidateText) };
   const artifacts: ArtifactReport[] = [];
   for (const file of pair.candidatePaths) {
     const rule = findDocumentRule(config, file);
@@ -394,6 +395,22 @@ interface RepositoryView {
   gitRefs: readonly string[];
   /** Resolves `<rev>:<path>` against the repository's own objects; see `specResolver`. */
   resolveSpec: (spec: string) => "ok" | "revision" | "path";
+  /** A cited document's text, for its headings (round 11); see `targetReader`. */
+  readTarget: (repoPath: string) => string | undefined;
+}
+
+/**
+ * `readTarget` for section references: the candidate's text of a repository file, memoised for
+ * the run by path, and only for a path the candidate holds (so nothing outside the tree is read).
+ */
+function targetReader(exists: (repoPath: string) => boolean, read: (repoPath: string) => string | undefined): (repoPath: string) => string | undefined {
+  const cache = new Map<string, string | undefined>();
+  return (repoPath) => {
+    if (!cache.has(repoPath)) {
+      cache.set(repoPath, exists(repoPath) ? read(repoPath) : undefined);
+    }
+    return cache.get(repoPath);
+  };
 }
 
 /**
@@ -513,6 +530,8 @@ function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, ver
     (oracle.label === "fails" || oracle.label === "unknown") && oracle.sections.some((section) => ids.includes(section)));
   const oracle = proofSpan === undefined ? onSections.find((entry) => entry.span !== undefined) ?? onSections[0] : undefined;
   const span = proofSpan ?? oracle?.span;
+  // A binding that names a `Line` (a reference's own line, as `fragments-resolve` binds) sits at it.
+  const line = /^[1-9][0-9]*$/.test(binding.values.Line ?? "") ? Number(binding.values.Line) : undefined;
   if (oracle !== undefined && !basis.some((line) => line.startsWith("answered "))) {
     const distribution = oracle.distribution;
     const peak = distribution.length === 0 ? undefined : Math.max(...distribution);
@@ -527,6 +546,7 @@ function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, ver
   return {
     ...finding(file, anchor, ruleId, verdict, binding.message),
     status: binding.status,
+    ...(line === undefined ? {} : { line }),
     ...(binding.repair === undefined ? {} : { repair: binding.repair }),
     sections: ids,
     ...(span === undefined ? {} : { span }),

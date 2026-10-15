@@ -235,6 +235,14 @@ Reference facts (added 2026-10-05; path rules revised the same day). For each do
   (`line_cite(D, S, T): core.ref(D, S, T, line)`). Its stem must look like a file, so `node:18`,
   `12:30` and `utf-8:3` are not locators. `paths-resolve` reads only `path`, so a line is never a
   finding by itself.
+- `Kind = fragment` (kernel-trials round 11, design/07 phase 0): a section reference -- a Markdown
+  link's `#fragment` on a `.md` target (a bare `#fragment` is the document itself), resolved by a
+  document-global GitHub slug pass over the target's headings, or a `§Heading` bound to the nearest
+  document (a link, a `.md` path, `design/NN`) earlier in its sentence, resolved by a folded heading
+  prefix. Line anchors, non-`.md` targets, `§` in code and `§` ids or numbers (`§3`, `§C9`) are not
+  checked. A miss is `core.dangling(D, S, T, fragment)`; `core.section_ref(D, S, T, Line, Closest)`
+  gives each occurrence's line and the target's closest headings, and `fragments-resolve` reads both.
+  The host reads targets through `readTarget`; without it nothing is checked.
 
 A code span is a candidate only when it is made of `[A-Za-z0-9_./-]` and is not a predicate
 indicator (`child/3`, `design/02`) or a placeholder (`path/X.md`, `task/N`). Then, in order:
