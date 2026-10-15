@@ -23,12 +23,12 @@
 % Declared dynamic so that a dump without a predicate makes it false instead of raising.
 :- dynamic core_section/3, core_heading/3, core_depth/3, core_order/3, core_meta/3,
            core_selected/2, core_ref/4, core_resolves/2, core_child/3, core_descendant/3,
-           core_nests/3, core_dangling/4, core_spec_unresolved/4.
+           core_nests/3, core_dangling/4, core_spec_unresolved/4, core_section_ref/5.
 core_base(core_section/3). core_base(core_heading/3). core_base(core_depth/3).
 core_base(core_order/3).   core_base(core_meta/3).    core_base(core_selected/2).
 core_base(core_ref/4).     core_base(core_resolves/2). core_base(core_child/3).
 core_base(core_descendant/3). core_base(core_nests/3). core_base(core_dangling/4).
-core_base(core_spec_unresolved/4).
+core_base(core_spec_unresolved/4). core_base(core_section_ref/5).
 
 % Declarations written by translate.ts.
 %   core_oracle_decl(Functor, Arity, Labels, InputPositions, Kind)  Kind = ask | choose

@@ -37,3 +37,13 @@ constraints:
     severity: error
     message: "{D} §{S} names the revision-qualified reference {T}, whose path does not exist in that revision"
     repair: "Fix the path, or name the revision whose tree holds it"
+  # A section reference (kernel-trials round 11, design/07 phase 0): a link's `#fragment` on a `.md`
+  # target, or a `§Heading` bound to a document named earlier in its sentence, must name a heading
+  # of that document. `core.section_ref` carries the reference's line (the finding sits there) and
+  # the target's closest headings by string distance, computed host-side for the repair.
+  fragments-resolve:
+    forall: core.ref(D, S, T, fragment), core.section_ref(D, S, T, Line, Closest)
+    forbid: core.dangling(D, S, T, fragment)
+    severity: error
+    message: "{D}:{Line} cites {T}, which names no section of that document"
+    repair: "Point it at an existing heading (closest: {Closest}), or drop the section"

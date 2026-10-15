@@ -67,6 +67,9 @@ jobs:
       # Structural ranged check. draft does not call the judge. Live promotion
       # checks are .github/workflows/judge-advisory.yml (real fail, not required).
       - run: npm exec doc-verify -- check --range "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" --profile draft --format json --output doc-verify-report.json
+      # Whole repository, structural: a reference broken by a change elsewhere fails here even
+      # when the ranged closure above does not reach its document.
+      - run: npm exec doc-verify -- check --all --profile draft --format text
       - uses: actions/upload-artifact@v4
         if: always()
         with:

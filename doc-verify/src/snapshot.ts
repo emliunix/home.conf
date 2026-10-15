@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { readFileSync, realpathSync } from "node:fs";
 import { lstat, readFile, realpath } from "node:fs/promises";
 import path from "node:path";
 
@@ -26,6 +27,11 @@ export interface SnapshotPair {
   changedRoots: RepoPath[];
   impactPaths: ReadonlyMap<RepoPath, RepoPath[]>;
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
+  /**
+   * The candidate's text of any repository file, synchronously, or undefined when the candidate
+   * has no such file or it escapes the repository (round 11: a cited document's headings).
+   */
+  readCandidateText: (path: string) => string | undefined;
   candidatePaths: RepoPath[];
   /** Every file in the candidate's tree (tracked files, or the range head's tree). */
   candidateInventory: readonly string[];
@@ -84,6 +90,7 @@ export async function captureSnapshots(input: {
       documentRules: input.documentRules,
       readBaseline: (file) => readGitBlob(input.root, base, file),
       readCandidate: (file) => readGitBlob(input.root, head, file),
+      readCandidateText: (file) => readGitTextSync(input.root, head, file),
       candidateInventory,
       workingTree: false,
     });
@@ -114,6 +121,7 @@ export async function captureSnapshots(input: {
       documentRules: input.documentRules,
       readBaseline,
       readCandidate: (file) => readGitBlob(input.root, ":", file),
+      readCandidateText: (file) => readGitTextSync(input.root, ":", file),
       candidateInventory: allTracked,
       workingTree: true,
     });
@@ -137,6 +145,7 @@ export async function captureSnapshots(input: {
     documentRules: input.documentRules,
     readBaseline,
     readCandidate: (file) => readWorkingBlob(input.root, file),
+    readCandidateText: (file) => readWorkingTextSync(input.root, file),
     candidateInventory: workingInventory,
     workingTree: true,
   });
@@ -243,6 +252,7 @@ async function buildPair(input: {
   documentRules: DocumentReferenceRule[];
   readBaseline: (path: RepoPath) => Promise<TextBlob>;
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
+  readCandidateText: (path: string) => string | undefined;
   candidateInventory: readonly string[];
   workingTree: boolean;
 }): Promise<SnapshotPair> {
@@ -262,6 +272,7 @@ async function buildPair(input: {
     changedRoots,
     impactPaths: affected.impactPaths,
     readCandidate: input.readCandidate,
+    readCandidateText: input.readCandidateText,
     candidatePaths: affected.artifacts,
     candidateInventory: input.candidateInventory,
     workingTree: input.workingTree,
@@ -338,6 +349,41 @@ async function readWorkingBlob(root: string, file: RepoPath): Promise<TextBlob> 
     throw new Error(`working-tree file changed during capture: ${file}`);
   }
   return { path: file, content: before.toString("utf8"), hash: sha256(before) };
+}
+
+/** A repository path that cannot leave the tree: relative, normalised, no `..` segment. */
+function insideRepoPath(file: string): string | undefined {
+  const clean = path.posix.normalize(file);
+  return clean.length === 0 || clean === "." || clean.startsWith("/") || clean === ".." || clean.startsWith("../") ? undefined : clean;
+}
+
+/** The working tree's text of a file inside the repository (symlinks resolved and kept inside). */
+function readWorkingTextSync(root: string, file: string): string | undefined {
+  const clean = insideRepoPath(file);
+  if (clean === undefined) {
+    return undefined;
+  }
+  try {
+    const resolved = realpathSync(path.resolve(root, clean));
+    ensureInside(realpathSync(root), resolved);
+    return readFileSync(resolved, "utf8");
+  } catch {
+    return undefined;
+  }
+}
+
+/** A revision's (or the index's, `:`) text of a file, or undefined when it holds none. */
+function readGitTextSync(root: string, revision: string, file: string): string | undefined {
+  const clean = insideRepoPath(file);
+  if (clean === undefined) {
+    return undefined;
+  }
+  try {
+    const spec = revision === ":" ? `:${clean}` : `${revision}:${clean}`;
+    return execFileSync("git", ["show", spec], { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+  } catch {
+    return undefined;
+  }
 }
 
 function readGitBlob(root: string, revision: string, file: RepoPath): Promise<TextBlob> {
