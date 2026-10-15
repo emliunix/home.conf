@@ -25,7 +25,8 @@ A project card must be exactly one of these two forms:
 1. **Design-backed.** The card directly maps to a named design file or design
    section. The card says **Follow the design and goal workflow.** `DESIGN.`
    names the path and section, and says whether the card amends or implements
-   it. `GOAL.` names the workstream and design slot.
+   it, and names the module documents the design changes (`project-skeleton`
+   § Module docs). `GOAL.` names the workstream and design slot.
 2. **Small task.** The work is a bounded repair or evidence task that does not
    change behavior, a contract, schema, interface, architecture, or operational
    policy. `DESIGN. None.` states why no design is needed. Related small tasks

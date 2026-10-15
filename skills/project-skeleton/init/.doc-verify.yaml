@@ -21,19 +21,19 @@ documents:
     required_sections: []
   - pattern: docs/modules/*/properties.md
     artifact_kind: module-properties
-    modules: [doc-verify/modules/canon.yaml]
+    modules: [doc-verify:module-properties]
     required_sections: []
   - pattern: docs/modules/*/verification.md
     artifact_kind: module-verification
-    modules: [doc-verify/modules/canon.yaml]
+    modules: [doc-verify:module-verification]
     required_sections: []
   - pattern: docs/modules/*/contract.md
     artifact_kind: module-contract
-    modules: [doc-verify/modules/canon.yaml]
+    modules: [doc-verify:module-contract]
     required_sections: []
   - pattern: docs/modules/*/model.md
     artifact_kind: module-model
-    modules: [doc-verify/modules/canon.yaml]
+    modules: [doc-verify:module-model]
     required_sections: []
   - pattern: docs/architecture.md
     artifact_kind: architecture

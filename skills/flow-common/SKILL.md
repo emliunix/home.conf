@@ -172,6 +172,8 @@ The inner loop on one design is gated by the AC check along that design's **Cove
 
 The implementer reads, in order: the goal file's anchored root + live additions with their inline context and analysis, this design's **Covers** path, administrative requirements on the goal file, Prep skills, then the design body. With no goal file, read the design's heads and any annotated User inputs. They do not start the work until the manager resumes them onto this design.
 
+Before code is dispatched, the module documents the design's Scope names are updated from the design (`project-skeleton` § Module docs). Code follows the documents, not the reverse.
+
 When the manager (or another agent) edits the same checkout while the implementer runs, the dispatch brief partitions ownership by directory or file. The manager defers its edits inside the implementer's partition, such as design references to code the slice removes, until the implementer reports done.
 
 ### After the slice
@@ -305,6 +307,7 @@ flowchart LR
 - [ ] Smallest real-data-first vertical slice implemented without scope expansion
 - [ ] Implementer Prep-read + manager resume happened before work; post-slice self-review against covered AC / path-to-root exists
 - [ ] Fresh criteria prove every covered AC row (path to root) and required boundaries
+- [ ] Module documents named in the design's Scope were updated before the code (`project-skeleton` § Module docs)
 - [ ] Hazards found in sibling or shared repositories are open items in those repositories' worklogs
 - [ ] `Status: pending-retro` set; loop handed to `flow-retro`
 - [ ] Commits, if any, were authorized and match meaningful artifacts

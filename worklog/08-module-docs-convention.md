@@ -39,3 +39,41 @@ The owner made this peer review the merge gate.
 | 7 | note: the returned-draft rule belongs to the Draft contract, not item 0 | Taken |
 | 8 | note: no spine relations exist on `main` | Taken: the follow-up names `core.section_ref` now and the spine relations with designs 06 and 07 |
 | 9 | note: the grep witness catches one wording | Taken: replaced by the L0 test |
+
+## C4 - Implementation (2026-10-16)
+
+The Claude seat passed the design at `6e248bd`
+(https://github.com/emliunix/home.conf/pull/14#issuecomment-6201232836). Implemented on
+the same branch:
+
+- `skills/project-skeleton/SKILL.md`: the Module docs section, a Project docs row,
+  and three new seeds in the validation protocol.
+- Stage checks in flow-grill-review (Draft contract, Scope row), flow-common
+  (Before dispatch, done checklist) and flow-retro (Close the loop, done checklist),
+  each pointing at `project-skeleton` § Module docs. One line each in raft-task-card,
+  spine-orient and finding-triage.
+- Template: the design guide's order, `canon.yaml` reduced to the architecture and
+  index rules, the four module rules in `.doc-verify.yaml` on `doc-verify:module-*`,
+  the pull-request rule in `AGENTS.md`, a pointer in `docs/index.md`.
+- `flow-skills-eval`: two L0 assertions; the frozen-prefix lock re-approved.
+
+Witnesses, each seen red first:
+
+| Witness | Red | Green |
+| --- | --- | --- |
+| L0: each stage points at Module docs | flow-retro's sentence removed: 1 failed / 9 | 47/47 |
+| L0: no flow skill restates the quad | a `model.md` table row appended to flow-common: 1 failed / 9 | 47/47 |
+| Module rules from the libraries | scratch contract without `Public surface`: NO-GO by `module-contract-has-surface` | scratch clean |
+| Project rules survive | scratch architecture without `Boundary`, index without `Document index`: NO-GO each | scratch clean |
+| Scratch project, keyed `check --all` | first run NO-GO: the library's `module-properties-are-claims` and `-current` rejected the placeholder property, which `canon.yaml` never checked; then NEEDS-REVIEW on the model placeholder (p=0.46) | PASS after the `core` example's property and model became checkable statements |
+| Scratch project pytest | — | 12 passed |
+
+Not run: the L1 triplets per stage (`vp run eval:full`), because no eval model key
+is configured on this machine. They stay a named gap. `tools/rule_quality` was not
+run either.
+
+A keyless `check --all --profile draft` on a fresh skeleton is BLOCKED on `main` too
+(the spine module's oracles, under #317's coverage rule), so it is not a regression
+of this change.
+
+Status: `pending-retro`.

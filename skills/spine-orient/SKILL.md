@@ -19,7 +19,7 @@ Read in this order, and do not act on a diff before the owning document is read:
 
 ## When two documents disagree
 
-1. Apply the precedence order the method document (or the README) states. Where none is stated, the owning document named by the status table wins over any file that restates it.
+1. Apply the precedence order the method document (or the README) states. Where none is stated, the owning document named by the status table wins over any file that restates it. For a fact about a package, the owner is its module documents (`project-skeleton` § Module docs); a landed design is history.
 2. **One statement per fact** — a fact stated in two places is a defect even while the copies agree: name the owner and point the other copy at it.
 3. Record the disagreement as a finding (see `finding-triage`) rather than reconciling it silently.
 

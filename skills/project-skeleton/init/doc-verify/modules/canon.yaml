@@ -1,7 +1,8 @@
 # Canon type modules (design 10, task #11): the typed docs/ canon.
 # architecture.md and index.md are project-level types; each docs/modules/<pkg>/
-# directory holds contract / model / properties / verification. Shape rules are
-# deterministic (heading names); content-class questions are the two oracles.
+# directory holds contract / model / properties / verification, checked by the engine's
+# doc-verify:module-* libraries (project-skeleton § Module docs). Shape rules are
+# deterministic (heading names); the content-class question is the current_not_history oracle.
 schema_version: 2
 kind: verification-module
 module: project.canon
@@ -12,11 +13,6 @@ oracles:
     evidence: core.own(D, S)
     threshold: 0.5
     max_bytes: 12000
-  pairs_every_property(D, S):
-    ask: Every property id of the form P-<package>-NN that this package claims is either named here with the check that witnesses it and that check's limit, or the section honestly names the gap. No claimed property is silently missing its check.
-    evidence: core.body(D, S)
-    threshold: 0.5
-    max_bytes: 24000
 rules:
   top(D, S): core.section(D, S, _), core.depth(D, S, 2)
   heading(D, S, H): core.heading(D, S, H)
@@ -40,22 +36,3 @@ constraints:
     severity: error
     message: "{D} has no routing table"
     repair: "Add a table routing each question to its owning file."
-  module-contract-shape:
-    forall: core.meta(D, kind, 'module-contract')
-    require: heading(D, S, 'Public surface')
-    severity: error
-    message: "{D} states no Public surface section"
-    repair: "List the stable exports and the rules callers rely on."
-  module-model-shape:
-    forall: core.meta(D, kind, 'module-model')
-    require: top(D, S)
-    severity: error
-    message: "{D} has no content"
-    repair: "Describe the concepts and state the package rests on."
-  module-properties-are-paired:
-    forall: core.meta(D, kind, 'module-verification'), top(D, S)
-    require: pairs_every_property(D, S)
-    severity: error
-    profiles: [promotion]
-    message: "{D} leaves a claimed property without its witnessing check"
-    repair: "Pair every P-<pkg>-NN property with the check that witnesses it, and its limit."
