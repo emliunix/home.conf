@@ -1,12 +1,11 @@
 schema_version: 1
 kind: document-contract
 document:
-  path: design/08-module-docs-impacted-paths.md
+  path: design/08-module-docs-convention.md
   kind: design
   depends_on:
     - design/00-design-file-guide.md
-    - design/03-companion-driven-document-verification.md
-    - design/04-modular-verification-language.md
+    - skills/project-skeleton/SKILL.md
 commands:
   - npm test
   - npm run typecheck

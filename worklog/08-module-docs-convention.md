@@ -1,4 +1,4 @@
-# Worklog - module docs and impacted paths
+# Worklog - module docs convention
 
 ## C1 - Draft (2026-10-16)
 
@@ -12,4 +12,13 @@ doc-verify module documents against `main` at `1fd1bb6`:
 - `design/` on `main` stops at 04; 05 to 07 are on `dv/trusted-kernel-trials` only.
 - `src/snapshot.ts` already computes the change set for `--staged` and `--range`.
 
-Status: draft. Waiting for grill review.
+
+
+## C2 - Rescoped to the skills (2026-10-16)
+
+The C1 draft proposed an engine gate (`governs:` in companions, change-set facts,
+`module-docs-track-code`). It came from misreading the owner's "the impacted paths",
+which asked which skills the formalization touches. The owner then accepted a
+skills-and-template scope, with home.conf's own module documents as a follow-up.
+The engine gate is a non-goal. Rebased onto `main` at `c94f19e` (after PRs #12 and
+#13); PR #15 touches no skill or template file.
