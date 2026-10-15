@@ -20,10 +20,6 @@ The owner asked whether the convention should be formalized, and where its rules
 
 > and that skill itself provides template doc-verify rules to the module docs quad
 
-The owner named the link that ties the documents to the code:
-
-> the impacted paths
-
 ## Problem statement
 
 The module documents under `docs/modules/<pkg>/` are meant to be the current law of
