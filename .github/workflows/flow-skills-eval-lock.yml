@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 26
       - name: Install the Vite+ runner
         run: npm install --global vite-plus@0.2.9
       - name: Install flow-skills-eval dependencies

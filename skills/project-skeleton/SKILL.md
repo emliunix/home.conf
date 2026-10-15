@@ -21,7 +21,7 @@ to initialize a nested repository. Neither script commits or installs hooks.
 | Typed canon | `docs/modules/<pkg>/{contract,model,properties,verification}.md` + `canon.yaml` | shape rules + current-not-history oracle |
 | Untyped docs | `docs/**` remainder + `doc-verify/modules/docs.yaml` | current-not-history oracle + link/path resolution |
 | Worklog | `worklog/` + `doc-verify:references` (`worklog.yaml` for `type: record` companions) | links resolve; record-typed entries run evidence-not-law |
-| Docs gate | `.doc-verify.yaml` + optional Git hook config (pinned `de99d33`) | `doc-verify check --all` |
+| Docs gate | `.doc-verify.yaml` + optional Git hook config (pinned `b9e950d`) | `doc-verify check --all` |
 | Layering gate | `tests/test_layering.py` | import direction between packages |
 | Pairing gate | `tests/test_canon_docs.py` | every P-`<pkg>`-NN has a runnable check row |
 | Rule quality | `tools/rule_quality/` | seeded mutations prove the doc rules bite |
@@ -48,7 +48,7 @@ to initialize a nested repository. Neither script commits or installs hooks.
    Install the Git hook only when the key exists and the owner opts in:
    `uv tool install prek && prek install` at the Git repository root.
 5. Run `uv run --group test python -m pytest -q` from the initialized project.
-   Run `npm exec --yes --package=github:emliunix/home.conf#de99d33dd334c8602a9ccfa8dab7111f1942c8ea -- doc-verify check --all`
+   Run `npm exec --yes --package=github:emliunix/home.conf#b9e950d7b2e7dca392bd9f6091863f6d16aabe52 -- doc-verify check --all`
    from the Git root, which is the same directory for a standalone project.
 
 ## Validation protocol (how this skill was proven, and how to re-prove it)
@@ -91,5 +91,5 @@ Also initialize a child directory in an existing scratch Git repository with
 
 - Reference instance: the `init/` directory beside this file. Optional Git
   files are in `git/`.
-- Engine: home.conf `doc-verify-v2` at `de99d33`; bump deliberately and rerun the
+- Engine: home.conf `main` at `b9e950d` (the WFS kernel, PR #11); bump deliberately and rerun the
   baseline (`cfdf457` showed an engine change can silently shift verdicts).

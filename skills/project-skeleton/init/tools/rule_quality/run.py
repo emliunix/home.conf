@@ -36,7 +36,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
 MODULES = REPO / "doc-verify" / "modules"
-ENGINE_PKG = "github:emliunix/home.conf#de99d33dd334c8602a9ccfa8dab7111f1942c8ea"
+ENGINE_PKG = "github:emliunix/home.conf#b9e950d7b2e7dca392bd9f6091863f6d16aabe52"
 EVIDENCE = REPO / "worklog/evidence/rule-quality"
 
 CORPORA = {
