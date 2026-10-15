@@ -480,10 +480,10 @@ installs dependencies in a fresh worktree (#310, #312).
 
 The second, `document-structure`, runs the same wrapper with
 `check --all --profile draft --format text`. The closure follows a changed file
-to the documents that link to it, not to those that name it in prose
-(`design/04 §Heading`, a path in backticks), so a renamed heading or a moved file
-can break a document nobody staged; this pass re-checks every configured
-document structurally, without the judge. CI runs the same whole-repository
+to the documents that link to it, cite it with `§`, or name its path in a code
+span; a reference the closure does not model (a bare file name, a `design/NN`
+with no `§`) can still break a document nobody staged, so this pass re-checks
+every configured document structurally, without the judge. CI runs the same whole-repository
 check, and `.pre-commit-hooks.yaml` publishes it for consumers to opt into.
 
 Root `.pre-commit-hooks.yaml` publishes `document-contracts` as a Node hook from
