@@ -1,0 +1,28 @@
+id: example-status-table
+gate: status-table
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S): {ask: q, evidence: "core.own(D, S)"}
+  rules:
+    ok(D, S): core.section(D, S, _), o(D, S)
+  constraints:
+    req: {forall: "core.section(D, S, _)", require: "ok(D, S)", severity: error}
+    forb: {forall: "core.section(D, S, _)", forbid: "ok(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+  - section(d, b, root)
+  - section(d, c, root)
+steps:
+  - answers: {"w::o(d,a)": holds, "w::o(d,b)": fails}
+    expect:
+      statuses:
+        req: [{D: d, S: a, status: satisfied}, {D: d, S: b, status: violated}, {D: d, S: c, status: undetermined}]
+        forb: [{D: d, S: a, status: violated}, {D: d, S: b, status: satisfied}, {D: d, S: c, status: undetermined}]
+      demand: {full: ["w::o(d,c)"], prefix: ["w::o(d,c)"]}
+      verdict: NO-GO
+      missing:
+        req: [{D: d, S: b, literal: "w::o(d,b)", path: ["w::ok(d,b)#1"]}]

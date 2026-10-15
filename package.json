@@ -12,9 +12,10 @@
     ".pre-commit-hooks.yaml"
   ],
   "scripts": {
-    "build": "tsc -p doc-verify/tsconfig.build.json",
+    "build": "tsc -p doc-verify/tsconfig.build.json && cp doc-verify/src/kernel/core.pl doc-verify/dist/kernel/core.pl",
     "prepare": "npm run build && if [ \"$(git rev-parse --path-format=absolute --git-dir 2>/dev/null)\" = \"$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)\" ] && command -v prek >/dev/null 2>&1; then prek install --git-dir \"$(git rev-parse --path-format=absolute --git-common-dir)\" -t pre-commit; fi",
     "test": "npm run build && vitest run",
+    "test:kernel-slow": "npm run build && node doc-verify/tests/kernel-slow/run-kernel-slow.mjs",
     "typecheck": "tsc -p doc-verify/tsconfig.json --noEmit",
     "lint": "node scripts/oxlint-gate.mjs --self-test",
     "check": "npm run build && node doc-verify/dist/cli.js check --paths design/02-programmatic-document-contract-verification.md goals/01-document-verification-and-skill-transfer.md --profile draft --format text",
@@ -33,6 +34,7 @@
     "mdast-util-to-string": "4.0.0",
     "minimatch": "10.0.3",
     "remark-parse": "11.0.0",
+    "swipl-wasm": "8.2.2",
     "unified": "11.0.5",
     "yaml": "2.8.1",
     "zod": "4.1.11"
@@ -41,7 +43,9 @@
     "@eslint/js": "9.36.0",
     "@types/mdast": "4.0.4",
     "@types/node": "24.5.2",
+    "clingo-wasm": "0.6.0",
     "eslint": "9.36.0",
+    "fast-check": "4.10.2",
     "oxlint": "1.77.0",
     "oxlint-tsgolint": "7.0.2001",
     "typescript": "5.9.2",

@@ -1,0 +1,44 @@
+id: pass-is-final-open
+gate: PASS is final
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+    r(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    ok(D, S): core.section(D, S, _), o(D, S)
+    ok(D, T): core.section(D, T, _), r(D, T)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", require: "ok(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+steps:
+  # No answers: ok(d,a) = u∨u = u -> undetermined, NEEDS-REVIEW (not PASS). Two residual derivations
+  # (clause 1 with leaf o, clause 2 with leaf r): full = {o, r}; prefix = first leaf of each = {o, r}.
+  - answers: {}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: undetermined}]}
+      demand: {full: ["w::o(d,a)", "w::r(d,a)"], prefix: ["w::o(d,a)", "w::r(d,a)"]}
+      verdict: NEEDS-REVIEW
+  # One total extension: both fail -> ok f -> violated, NO-GO; descent enters ok's FIRST clause (§7).
+  - answers: {"w::o(d,a)": fails, "w::r(d,a)": fails}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: violated}]}
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        c1: [{D: d, S: a, literal: "w::o(d,a)", path: ["w::ok(d,a)#1"]}]
+  # Another extension: o holds -> ok t -> PASS. The undetermined state of step 1 went either way.
+  - answers: {"w::o(d,a)": holds, "w::r(d,a)": fails}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: satisfied}]}
+      demand: {full: [], prefix: []}
+      verdict: PASS

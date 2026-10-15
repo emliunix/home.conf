@@ -74,7 +74,9 @@ describe("violation report", () => {
     expect(text).toContain("repair: Rewrite scope/lunch-menu");
     expect(text).toContain("missing: other in [inclusion, exclusion] is not possible");
     expect(text).toContain("distribution [0.1, 0.1, 0.7, 0.1]");
-    expect(text).toContain("oracle questions 8");
+    // Prefix demand (model §6; round-2 over-demand witnesses d2-minimal / pass-is-final /
+    // missing-literal): 4 atoms, not the design-04 evaluator's 8.
+    expect(text).toContain("oracle questions 4");
   });
 
   it("shows an unanswered oracle leaf and a default message for an undetermined binding", async () => {

@@ -67,6 +67,15 @@ describe("static checks", () => {
 `)).toMatch(/core\.sections\/3 is neither declared/);
   });
 
+  it("rejects a goal that uses a forall count's result, which is not a binding variable", async () => {
+    expect(await issues(`constraints:
+  c:
+    forall: core.section(D, S, _), count(C, core.child(D, S, C), N), N >= 1
+    require: N >= 2
+    severity: error
+`)).toMatch(/N is bound only by a count or comparison in the forall/);
+  });
+
   it("rejects a wrong arity", async () => {
     expect(await issues(`rules:
   r(D, S): core.section(D, S)
@@ -95,8 +104,9 @@ ${PURPOSE_ORACLE}rules:
     expect(await issues(`rules:
   r(D, X): core.section(D, _, _)
 `)).toMatch(/X is unsafe/);
+    // Y local to the negation alone is lifted; shared with a later literal is unsafe.
     expect(await issues(`rules:
-  r(D): core.section(D, _, _), not core.child(D, Y, _)
+  r(D, Y): core.section(D, _, _), not core.child(D, Y, _), core.heading(D, Y, _)
 `)).toMatch(/Y is unsafe/);
     expect(await issues(`rules:
   r(D): core.section(D, _, _), N > 2

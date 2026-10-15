@@ -38,7 +38,12 @@ const POPULATION = ["doc-verify/src", "doc-verify/tests"];
 // reddens the gate for every lander. Measured: `evidence-budget.mutations.mjs` was
 // added after this gate landed and took the run from 2 diagnostics to 66, leaving
 // `main` red. The class is `*.mutations.mjs`.
-const EXCLUDED = ["--ignore-pattern=**/*.mutations.mjs"];
+// `*.mutations.mjs` and the kernel-slow probe port are outside the typed program
+// (`tsconfig.json` includes only `tests/**/*.ts`); typed rules cannot run over them.
+const EXCLUDED = [
+  "--ignore-pattern=**/*.mutations.mjs",
+  "--ignore-pattern=doc-verify/tests/kernel-slow/**",
+];
 
 // ⚠ The project is PINNED rather than auto-discovered, and that is load-bearing.
 // Measured: with no `--tsconfig`, oxlint walks up from each file and silently

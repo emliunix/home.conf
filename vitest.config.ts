@@ -13,7 +13,16 @@ const SUBPROCESS = [
 export default defineConfig({
   test: {
     projects: [
-      { test: { name: "unit", include: ["doc-verify/tests/**/*.test.ts"], exclude: SUBPROCESS } },
+      {
+        test: {
+          name: "unit",
+          include: ["doc-verify/tests/**/*.test.ts"],
+          exclude: [...SUBPROCESS, "doc-verify/tests/kernel-slow/**"],
+          // Every engine test now loads WebAssembly kernel instances (design/06): a mutation table
+          // runs ~1.5 s alone and exceeded 5 s under the full parallel suite (2026-10-14).
+          testTimeout: 30000,
+        },
+      },
       { test: { name: "subprocess", include: SUBPROCESS, testTimeout: 30000 } },
     ],
   },

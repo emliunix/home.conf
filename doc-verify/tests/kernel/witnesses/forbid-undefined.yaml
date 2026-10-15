@@ -1,0 +1,32 @@
+id: forbid-undefined
+gate: Status table
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    o(D, S):
+      ask: q
+      evidence: core.own(D, S)
+  rules:
+    bad(D, S): core.section(D, S, _), o(D, S)
+  constraints:
+    c1: {forall: "core.section(D, S, _)", forbid: "bad(D, S)", severity: error}
+facts:
+  - section(d, a, root)
+  - section(d, b, root)
+steps:
+  # bad(d,a) u -> a forbid on a u goal is undetermined, never violated (§4); bad(d,b) f -> satisfied.
+  - answers: {"w::o(d,b)": fails}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: undetermined}, {D: d, S: b, status: satisfied}]}
+      demand: {full: ["w::o(d,a)"], prefix: ["w::o(d,a)"]}
+      verdict: NEEDS-REVIEW
+  # o(d,a) holds -> bad t -> violated; no missing literal for a forbid; NO-GO.
+  - answers: {"w::o(d,a)": holds, "w::o(d,b)": fails}
+    expect:
+      statuses: {c1: [{D: d, S: a, status: violated}, {D: d, S: b, status: satisfied}]}
+      demand: {full: [], prefix: []}
+      verdict: NO-GO

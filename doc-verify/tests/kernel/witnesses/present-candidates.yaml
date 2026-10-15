@@ -1,0 +1,49 @@
+id: present-candidates
+gate: Status table
+module: |
+  schema_version: 2
+  kind: verification-module
+  module: w
+  rounds: 3
+  imports: {core: doc-verify:core}
+  oracles:
+    u(D, L):
+      ask: q
+      evidence: core.union(D, L)
+  constraints:
+    scoped:
+      forall: "core.meta(D, kind, _), present(D, [scope, problem, rationale], P)"
+      require: "u(D, P)"
+      severity: error
+      population: nonempty
+    absent:
+      forall: "core.meta(D, kind, _), present(D, [rationale, review], P)"
+      require: "u(D, P)"
+      severity: warning
+      population: nonempty
+facts:
+  - meta(d, kind, k)
+  - section(d, scope, root)
+  - order(d, scope, 2)
+  - section(d, problem, root)
+  - order(d, problem, 1)
+steps:
+  # present binds P to the candidates d has, in document order: [problem, scope] (scope is order 2).
+  # scoped: one binding, goal u -> undetermined; Dem = {u(d,[problem,scope])}. absent: no candidate is
+  # present, so present derives nothing, no binding -> population empty -> violated (warning). NEEDS-REVIEW.
+  - answers: {}
+    expect:
+      statuses:
+        scoped: [{D: d, P: "[problem,scope]", status: undetermined}]
+        absent: [{population: empty, status: violated}]
+      demand: {full: ["w::u(d,[problem,scope])"], prefix: ["w::u(d,[problem,scope])"]}
+      verdict: NEEDS-REVIEW
+  - answers: {"w::u(d,[problem,scope])": fails}
+    expect:
+      statuses:
+        scoped: [{D: d, P: "[problem,scope]", status: violated}]
+        absent: [{population: empty, status: violated}]
+      demand: {full: [], prefix: []}
+      verdict: NO-GO
+      missing:
+        scoped: [{D: d, P: "[problem,scope]", literal: "w::u(d,[problem,scope])"}]
