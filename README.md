@@ -22,6 +22,10 @@ fact), `--format text|json`, `--verbose`, `--no-cache` and `--output PATH`. Exit
 2 NEEDS-REVIEW, 3 BLOCKED, 64 usage or configuration error, 65 config not in the Git index
 (`--staged`), 66 config missing.
 
+The commit hook runs `--profile auto`: drafts get structural checks, anything later asks the
+judge. For a quick commit, `SKIP=document-contracts` and run `--profile draft` by hand (design 02,
+§Snapshots and affected closure).
+
 `mutate` takes one YAML mutation table. Exit 0 only when every scored row is RED, KEPT, or
 GAP-CONFIRMED (SKIPPED judge-leg rows are not scored). BROKEN, WRONG-CASE, GREEN, HARNESS,
 FALSE-ALARM, GAP-CLOSED, UNKNOWN-EXPECT, CONSTRAINT-DRIFT and NO-KILL fail the run. `--judge`

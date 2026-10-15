@@ -357,6 +357,12 @@ document kinds without lifecycle state it uses the required profile declared in
 `.doc-verify.yaml`. Otherwise it chooses draft. `flow-grill-review` and every
 promotion decision invoke `--profile promotion` explicitly while the design is
 still `draft`. A normal commit hook may use `auto`; it does not prove review.
+`auto` is the commit hooks' mode, local and published: a draft costs nothing
+and a document past draft asks the judge at commit. `draft` is the manual fast
+path for a commit that must not wait on the judge: skip the hook for that
+commit (`SKIP=document-contracts git commit`) and run
+`node scripts/run-document-contracts.mjs check --staged --profile draft --format text`
+by hand. Neither hook defaults to `draft`.
 
 ## Attestation and confidentiality
 
@@ -462,10 +468,14 @@ The root `.pre-commit-config.yaml` has one local `prek` hook:
 - id: document-contracts
   name: document contracts
   language: system
-  entry: npm exec doc-verify -- check --staged --profile auto --format text
+  entry: node scripts/run-document-contracts.mjs --auto-setup
   pass_filenames: false
   require_serial: true
 ```
+
+The wrapper runs `doc-verify check --staged --profile auto --format text` when
+it is given no arguments, builds a missing `dist/`, and with `--auto-setup`
+installs dependencies in a fresh worktree (#310, #312).
 
 Root `.pre-commit-hooks.yaml` publishes `document-contracts` as a Node hook from
 this repository package. An adopting project pins an immutable `home.conf`
