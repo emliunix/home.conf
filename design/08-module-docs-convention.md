@@ -29,16 +29,14 @@ and home.conf's own module documents as a follow-up task.
 ## Problem statement
 
 The module documents under `docs/modules/<pkg>/` are meant to be each package's
-current law, and the order is design → module docs → code. No skill says so. Only
+current law, and the order is design → module docs → code. No skill says so, and no
+rule applies to a change that never enters the design flow. Only
 `skills/project-skeleton` mentions the documents, as a template: a table row, a
-worked `core` example and a rule module. No flow skill asks a design to name the
-module documents it changes, asks the implementer to update them before the code,
-or asks the closing retro to check them against what was built. The template's own
-design guide says a decision "folds into `docs/`" after landing, which reverses the
-order.
+worked `core` example and a rule module. The template's design guide says a
+decision "folds into `docs/`" after landing, which reverses the order.
 
 The cost is visible in home.conf. Three merges in a row changed doc-verify's code
-with no change to `docs/` or `design/`:
+with no change to `docs/modules/`:
 - PR #11 deleted the old evaluator and made `doc-verify/src/kernel/` the only one.
   `docs/modules/language/contract.md` still lists an `evaluate` module, and no
   module document covers the kernel.
@@ -46,94 +44,117 @@ with no change to `docs/` or `design/`:
   `docs/modules/report/` does not mention coverage.
 - PR #13 added `core.section_ref`, which the language facts list does not name.
 
-Every flow gate passed, because none of them looks at the module documents.
+None of the three went through a flow gate: `main` has no design after 04, #13
+had no design file, and #11's designs are on another branch. So the convention
+has to hold at the pull request, not only inside the design flow.
 
 ## Scope - what we touch
 
-Skill texts:
-- `skills/project-skeleton/SKILL.md` owns the convention. It gains a module-docs
-  section that defines:
-  - the quad: contract (public surface and the rules callers rely on), model
-    (concepts and state), properties (the claimed `P-<pkg>-NN` ids), verification
-    (each id paired with the check that witnesses it, and its limit);
-  - additional documents beside the quad, such as `language`, which describe a
-    language or protocol rather than one package;
-  - when a package earns its own module;
-  - the order: a reviewed design names the module documents it changes, those
-    documents are updated from the design, and then the code follows.
-- `skills/flow-grill-review/SKILL.md`: a draft's Scope names the module documents
-  it changes. Item 0 returns a draft that changes a package's behaviour without
-  naming them.
+The convention, owned by `skills/project-skeleton/SKILL.md`. A module-docs section
+defines:
+- the quad: contract (public surface and the rules callers rely on), model
+  (concepts and state), properties (the claimed `P-<pkg>-NN` ids), verification
+  (each id paired with the check that witnesses it, and its limit);
+- additional documents beside the quad, such as `language`, which describe a
+  language or protocol rather than one package;
+- when a package earns its own module;
+- the order: a design names the module documents it changes, those documents are
+  updated from the design, and then the code follows;
+- the two routes a change takes:
+  - **design-backed:** the design names the module documents, and the flow gates
+    below check them;
+  - **no design:** the change does not alter a package's contract, model or
+    claimed properties, which is the raft-task-card small-task test. If it does,
+    it is not small and needs a design.
+- the pull-request rule, which applies on both routes: a pull request that
+  changes a package's code carries a `Module docs:` line in its description. The
+  line names the module documents it updates, or says `none` with the reason the
+  contract is unchanged.
+
+The stage checks, each in the skill that owns the stage, pointing at
+project-skeleton instead of restating it:
+- `skills/flow-grill-review/SKILL.md`, Draft contract: Scope names the module
+  documents the design changes. A draft that changes a package and names none is
+  returned to the drafter.
 - `skills/flow-common/SKILL.md`, implementation gate: before dispatch, the module
   documents named by the design are updated. The done checklist confirms it.
-- `skills/flow-retro/SKILL.md`, closing pass: before `landed`, the module documents
-  match what was built. A mismatch is a bounded correction, not a note.
-- One line each:
-  - `skills/raft-task-card/SKILL.md`: a card that changes a package's behaviour
-    names its module documents next to its design link.
-  - `skills/spine-orient/SKILL.md`: for a fact about a package, the module
-    documents are the owning document. A landed design is history.
-  - `skills/finding-triage/SKILL.md`: moving canon includes the module documents,
-    and the change cites the design that moved them.
+- `skills/flow-retro/SKILL.md`, closing pass: before `landed`, the module
+  documents match what was built. A mismatch is a bounded correction.
+- `flow-skills-eval/frozen-prefix.lock.json` is re-approved with
+  `vp run lock:update`, because the three flow skills change.
+
+One line each:
+- `skills/raft-task-card/SKILL.md`: a design-backed card names its module
+  documents next to its design link, and a small-task card states that no
+  contract changes, which is already its test.
+- `skills/spine-orient/SKILL.md`: for a fact about a package, the module documents
+  are the owning document. A landed design is history.
+- `skills/finding-triage/SKILL.md`: moving canon includes the module documents.
 
 Template files in `skills/project-skeleton/init/`:
 - `design/00-design-file-guide.md`: a design's decision updates `docs/modules`
   before the code that implements it lands.
-- `skills/project-skeleton/init/doc-verify/modules/canon.yaml` is retired. Its rules duplicate the engine's
-  `doc-verify:module-*` libraries. The four `docs/modules/*` rules in
-  `.doc-verify.yaml` point at those libraries instead.
-- `skills/project-skeleton/init/AGENTS.md` and `skills/project-skeleton/init/docs/index.md`: one line each pointing at the convention.
+- `skills/project-skeleton/init/doc-verify/modules/canon.yaml` keeps only its project-level rules, for
+  the architecture document and the document index. Its four module rules duplicate the
+  engine's `doc-verify:module-*` libraries and are removed. The four
+  `docs/modules/*` entries in `.doc-verify.yaml` point at those libraries.
+- `skills/project-skeleton/init/AGENTS.md`: the pull-request rule joins the working norms.
+  `skills/project-skeleton/init/docs/index.md` gets one line pointing at the convention.
 - `docs/modules/core/*`: the worked example follows the section definitions.
 
 Follow-up, not in this design: home.conf applies the convention to its own
-documents. That covers an `AGENTS.md` pointer, a `kernel` module, the `language`
-contract (no `evaluate` row; `core.section_ref` and the spine relations named), and
-the `report` coverage record. The kernel module is written from designs 06 and 07,
-so it waits for the owner's ruling on bringing designs 05 to 07 to `main`.
+documents. That covers an `AGENTS.md` pointer and the pull-request rule, the
+`language` contract (no `evaluate` row; `core.section_ref` named), the `report`
+coverage record, and a `kernel` module. The spine relations and the kernel module
+are written from designs 06 and 07, so they wait for the owner's ruling on
+bringing designs 05 to 07 to `main`.
 
 Non-goals:
 - Any change to doc-verify's code or its engine libraries.
-- A mechanical gate that ties module documents to code paths. It is a possible
-  follow-up once the written convention has been used.
+- A mechanical gate that ties module documents to code paths, or that checks the
+  `Module docs:` line. It is a possible follow-up once the written rule has been
+  used.
 - Checking that a document's prose matches the code's behaviour. That stays with
   the judge-backed `current_not_history` and `pairs_every_property` questions.
 
 ## Rationale
 
-The convention fails at the hand-offs between flow stages, so it is written at
-those hand-offs. A rule kept only in project-skeleton is read once, when a project
-is created. The flow skills are read at every design, implementation and retro,
-which is where the module documents were skipped.
+The three merges that drifted did not go through the design flow, so a rule
+placed only at the flow's stages would not have reached them. The pull request is
+the one point every change passes. The `Module docs:` line makes the author decide,
+in writing, whether the contract moved, and the reviewer sees that decision next
+to the diff. The design flow's stage checks then make sure that, when a design
+exists, the documents move before the code and still match after it.
 
-Each stage gets one check, in the skill that owns that stage:
-- review: the design names the documents (flow-grill-review);
-- implementation: the documents move before the code (flow-common);
-- closing: the documents match the build (flow-retro).
+The no-design route reuses raft-task-card's small-task test rather than adding a
+second one. A change that alters a contract is not small, so it needs a design.
+That puts a bug fix like #317, which changed what a report means, on the
+design-backed route.
 
-A check placed in only one stage leaves the others open. Review alone cannot catch
-a build that drifted from its design. Retro alone finds the drift after the code
-has merged, which is what happened with #11 and #317.
+Each stage check lives in the skill that owns the stage, and the definitions live
+once, in project-skeleton. The flow skills point there and do not restate them,
+following the one-statement-per-fact rule in spine-orient.
 
-The definitions live once, in project-skeleton. The flow skills point there and do
-not restate them, following the one-statement-per-fact rule in spine-orient.
-
-`canon.yaml` is retired rather than extended, because home.conf already checks its
-own module documents with `doc-verify:module-*`. Two copies of one rule set drift
-the same way the documents did.
+`canon.yaml` keeps its architecture and index rules, because the engine libraries
+have nothing equivalent. Only the module rules, which the libraries already
+carry, are removed. Two copies of one rule set drift the same way the documents
+did.
 
 ## Verification design
 
 | Property | Failure witness | Command |
 | --- | --- | --- |
-| The skeleton states the convention | A scratch project initialized from the skill has no module-docs definition, or `design/00-design-file-guide.md` still says the decision folds into `docs/` after landing | `skills/project-skeleton/scripts/init.sh` into a scratch directory, then `grep` the copied files |
-| One copy of the rules | The template still ships `canon.yaml`, or a scratch project's module documents are not checked by `doc-verify:module-*` | the skill's validation protocol, steps 1 and 3 |
-| The template still gates | A seeded module contract without `Public surface` passes `doc-verify check --all` in the scratch project | the skill's validation protocol, step 3 |
-| Review names the documents | A seeded draft that changes a package and names no module documents passes item 0 of flow-grill-review | a reviewer seat run on the seeded draft, recorded in the worklog |
-| The flows point, not restate | A flow skill defines the quad itself instead of pointing at project-skeleton | `grep -n "contract, model" skills/flow-*/SKILL.md` |
-| Skill packages stay valid | A changed skill fails its package lint or trigger cases | `prek run --all-files` (skill package lint, skill dispatch coverage) |
+| The skeleton states the convention | A scratch project initialized from the skill has no module-docs definition, no pull-request rule in `AGENTS.md`, or a design guide that still folds into `docs/` after landing | `skills/project-skeleton/scripts/init.sh` into a scratch directory, then `grep` the copied files |
+| Module rules come from the libraries | A scratch project's module contract without `Public surface` passes, or `canon.yaml` still defines a `module-*` constraint | the skill's validation protocol, steps 1 and 3 |
+| Project-level rules survive | A scratch project's architecture document without `Boundary`, or a document index without `Document index`, passes | the skill's validation protocol, step 3, with those two seeds added |
+| Each stage carries its check | flow-grill-review's Draft contract, flow-common's implementation gate or flow-retro's closing pass does not mention `docs/modules`, or mentions it without pointing at project-skeleton | a new L0 assertion in `flow-skills-eval/tests/contract-lint.test.ts`, run by `vp test` |
+| The flows point, not restate | A flow skill defines the quad itself | the same L0 test asserts no flow skill contains the four definitions |
+| Stage behaviour | For each stage, a seeded case (a draft naming no module documents, a dispatch before the documents moved, a retro over a build that drifted from its documents) gets the wrong decision | L1 triplets (canonical, trap, paraphrase) per stage in `flow-skills-eval`, `vp run eval:full`; needs the eval model key |
+| Skill packages stay valid | A changed skill fails its package lint, or the frozen-prefix lock is stale | `prek run --all-files` |
 
 Each witness is first observed failing on a seeded defect, as the skeleton's
-validation protocol requires.
+validation protocol requires. The pull-request rule has no mechanical witness: the
+reviewer is its gate, and a mechanical check is a named non-goal.
 
 ## Open questions
 
