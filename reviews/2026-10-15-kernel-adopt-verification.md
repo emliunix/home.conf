@@ -7,7 +7,7 @@ the trial archive are left for separate decisions.
 
 ## What the branch is
 
-The branch is `main` at `d91d92a` plus three commits. Together they make the well-founded-semantics
+The branch is `main` at `d91d92a` plus three code commits and this record. The three make the well-founded-semantics
 kernel (`doc-verify/src/kernel/`, SWI-Prolog under `swipl-wasm` 8.2.2) the only evaluator:
 
 - `runProgram` runs a fresh sandboxed instance for each evaluation, under the inference budget.
