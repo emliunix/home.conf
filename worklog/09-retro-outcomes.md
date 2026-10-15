@@ -31,3 +31,40 @@ reviewed `b85f7c6`: 1 blocking, 5 should-fix, 3 notes
 | 7 | note: flow-supervise's inventory | Taken: one line |
 | 8 | note: learning-loop correctly out of scope | Kept out |
 | 9 | note: design 08's retro-stage case | Recorded as a follow-up for design 08 |
+
+## C3 - Design passes (2026-10-16)
+
+The Claude seat re-reviewed `befc852`: design passes, nothing blocking. One new
+should-fix, taken into the design and the implementation:
+
+| # | Finding | Disposition |
+| --- | --- | --- |
+| 10 | should-fix: a P0 the design body prescribes cannot be fixed in implementation | Taken: a P0 carried only by the code is verdict 3; a P0 the body prescribes is verdict 4. The `fork-retro-p0-*` fixtures state the violation is in the code only |
+
+## C4 - Implementation (2026-10-16)
+
+- `skills/flow-retro/SKILL.md`: One job, §2 P0 and accretion routing, the no-direct-
+  edits rule in §3, §4 rewritten as the row test and four verdicts, §5's module-docs
+  check and landing rule, stop condition and done checklist.
+- `skills/flow-common/SKILL.md`: the `landed` row, the route-back rule naming
+  verdicts 3 and 4, breakout's trigger naming a retro verdict 4.
+- `skills/flow-grill-review/SKILL.md`, `skills/goal-file/SKILL.md`,
+  `skills/flow-supervise/SKILL.md`: one line each.
+- `flow-skills-eval`: `fork-bounded-correction-*` replaced by
+  `fork-retro-followup-*`; new `fork-retro-design-defect-*` and `fork-retro-p0-*`;
+  flow-retro citations moved to the new lines; three L0 assertions; the lock
+  re-approved.
+
+Witnesses, each seen red first:
+
+| Witness | Red | Green |
+| --- | --- | --- |
+| L0: no direct-edit wording | "rewrite the design body" appended to flow-retro: 1 failed / 13 | 13/13 |
+| L0: test and four verdicts | `**Breakout**` unbolded: 1 failed / 13 | 13/13 |
+| L0: flow-common routes | the verdict 4 trigger removed: 1 failed / 13 | 13/13 |
+| Case triplets complete | a paraphrase id renamed: 2 failed | `vp test` 50/50 |
+| Typecheck | — | `tsc --noEmit` clean |
+
+Not run: `vp run eval:full`, as no eval model key is configured here. The new
+cases' expected tuples are checked for schema and coherence only, and design 09
+stays `pending-retro` until they run.

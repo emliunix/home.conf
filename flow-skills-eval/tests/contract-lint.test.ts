@@ -162,3 +162,33 @@ describe("L0 contract lint: module documents", () => {
     }
   });
 });
+
+describe("L0 contract lint: retro outcomes (design/09)", () => {
+  const verdicts = sectionText(retro.content, "### 4. Route each finding");
+
+  it("flow-retro states the row test and the four verdicts", () => {
+    expect(verdicts).toContain("**The test.**");
+    expect(verdicts).toMatch(/\*\*Covers\*\*[\s\S]*\*\*Verification design\*\*/);
+    for (const verdict of ["**Land**", "**Land with follow-ups**", "**Route back to implementation**", "**Breakout**"]) {
+      expect(verdicts, verdict).toContain(verdict);
+    }
+    expect(verdicts).toContain("`draft-followup`");
+    expect(verdicts).toContain("round budget");
+  });
+
+  it("flow-retro makes no direct edits and keeps no direct-edit wording", () => {
+    expect(retro.content).toContain("**The retro makes no direct edits.**");
+    for (const stale of [
+      "rewrite the design body",
+      "complexity removals applied",
+      "bounded correction to the documents or the code",
+    ]) {
+      expect(retro.content.includes(stale), stale).toBe(false);
+    }
+  });
+
+  it("flow-common names both routes back and the retro breakout trigger", () => {
+    expect(common.content).toContain("implementation (verdict 3, counts a round) and breakout (verdict 4)");
+    expect(common.content).toContain("including a retro's verdict 4");
+  });
+});

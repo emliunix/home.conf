@@ -56,10 +56,11 @@ once the retro stops editing. Its changes skip the order design 08 sets, design 
     2. **land with follow-ups**: no finding blocks, and the further findings go to
        one follow-up file (below);
     3. **route back to implementation**: a blocking finding is an implementation
-       defect, or any finding is a P0 project-contract violation. The status
+       defect, or a P0 project-contract violation carried by the code. The status
        stays `pending-retro`, the design returns to implementation, and the cycle
        counts one round of `flow-common`'s round budget;
-    4. **breakout**: a blocking finding is a design defect. It is a `flow-common`
+    4. **breakout**: a blocking finding is a design defect, or a P0 violation the
+       design body itself prescribes. It is a `flow-common`
        breakout adjudication now, not at the round ceiling: halt, name the cause
        in the worklog, and let the manager revert the impacted designs to `draft`
        for re-review.
@@ -102,7 +103,8 @@ once the retro stops editing. Its changes skip the order design 08 sets, design 
   - new `fork-retro-design-defect-*`: a Verification-design row fails because the
     design's premise is wrong, expecting `decision("halt_structural",
     "unchanged", "worklog", false)`;
-  - new `fork-retro-p0-*`: a P0 hit found at retro that no row depends on,
+  - new `fork-retro-p0-*`: a P0 hit carried by the code only, found at retro, that
+    no row depends on,
     expecting `decision("remediate", "unchanged", "none", false)`;
   - `fork-impl-defect-*` and `gate-pending-landed-*` stay valid as they are.
 - `flow-skills-eval/tests/contract-lint.test.ts`: an L0 assertion that flow-retro
@@ -136,7 +138,8 @@ The two kinds of blocking finding go to the routes the lifecycle already has. An
 implementation defect is a round of implementation. A design defect is a breakout,
 which reverts the design to `draft` and re-reviews it; the status table has no row
 for a reviewed body sitting at `pending-retro`. A P0 violation routes back whatever
-the test says, as it is a blocker at review too.
+the test says, as it is a blocker at review too: to implementation when only the
+code carries it, to breakout when the design body prescribes it.
 
 The follow-up file reuses the review sweep's shape, so a light retro with three
 small findings writes one file, not three designs. The kinds are examples because
@@ -175,4 +178,4 @@ worklog/09-retro-outcomes.md
 
 ## Status
 
-draft
+pending-retro

@@ -78,7 +78,9 @@ Do not write anything before the root is anchored.
    their `covers` and admin source), then dependencies (scope analysis first,
    then edges), then workstreams + phases, then per-design workflow slots, then
    the AC coverage matrix, then dated rulings, review outcome, open threads, and
-   the worklog pointer.
+   the worklog pointer. A retro's `draft-followup` file (`flow-retro` §4 verdict 2)
+   is an open thread, or the seed of a new goal; it is not a design-files line, so
+   the goal's close does not wait on it.
 3. **Keep it compact** — sections stay small and factual. Detailed receipts,
    RCA narratives, rejected alternatives, and superseded plans go to the worklog
    ledger. If a resuming agent must read it to act correctly, it stays; if it
