@@ -130,6 +130,11 @@ A constraint whose `forall` binds nothing is vacuously satisfied and reports not
 with `population: nonempty` on the constraint: then a `forall` that binds nothing violates it,
 at the constraint's severity, with the message "<id>: the population is empty".
 
+A finding sits at its section's heading. A constraint whose `forall` binds the line it is about
+names that variable with `line:`, and its findings sit at that line instead
+(`fragments-resolve` uses `line: Line` over `core.section_ref/5`). The variable must be bound by
+the `forall`; any other name is refused when the module loads.
+
 ### Text filter: `matches/2`
 
 `matches(X, 'regex')` is a pure filter, like `X in List`. It never binds. `X` must

@@ -237,6 +237,8 @@ export function constraintReportsFromKernel(
         .map((m) => displayLiteral(m.literal));
       const proofRow = (report.proofs[id] ?? []).find((p) => valuesKey(p.values) === valuesKey(values));
       const templateValues = { ...paramTexts(program.params), ...values };
+      const lineValue = constraint.line === undefined ? undefined : values[constraint.line];
+      const line = lineValue !== undefined && /^[1-9][0-9]*$/.test(lineValue) ? Number(lineValue) : undefined;
       const proof = mapProofTree(proofRow?.tree ?? "", constraint, store, status);
       // Attach missing nodes if the tree omitted them
       if (miss.length > 0 && !(proof.children ?? []).some((c) => c.kind === "missing")) {
@@ -254,6 +256,7 @@ export function constraintReportsFromKernel(
             ? `${id} is ${status} for ${Object.entries(values).map(([n, v]) => `${n}=${v}`).join(", ")}`
             : fill(constraint.message, templateValues),
         repair: constraint.repair === undefined ? undefined : fill(constraint.repair, templateValues),
+        ...(line === undefined ? {} : { line }),
         missing: miss,
         proof,
       });

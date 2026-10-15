@@ -49,6 +49,8 @@ export interface BindingReport {
   values: Record<string, string>;
   message: string;
   repair: string | undefined;
+  /** The document line the binding sits at: its value of the constraint's `line:` variable. */
+  line?: number;
   missing: string[];
   proof: ProofNode;
 }
