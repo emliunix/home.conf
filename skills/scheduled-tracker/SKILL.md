@@ -220,4 +220,6 @@ disposition when a work item moved, stalled, landed, or became blocked. Do not p
 routine command logs. Use and name
 [`templates/project-tracker-message.md`](templates/project-tracker-message.md)
 as the template for the pass, especially when it needs member-written progress
-or a silent member needs follow-up.
+or a silent member needs follow-up. The pass's `Workstreams` section has one row
+per bounded outcome, not one row per card; name the owner, state, next observable
+result, evidence tip, and gate or blocker.

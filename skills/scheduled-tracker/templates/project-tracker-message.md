@@ -1,11 +1,11 @@
 # Project tracker pass message
 
 Use this as the message shape for a scheduled project tracker. The tracker's
-rows are provisional. A row for another member is a prompt for that member to
-answer for itself, not a substitute for the member's reply.
+workstream rows are provisional. A row for another member is a prompt for that
+member to answer for itself, not a substitute for the member's reply.
 
 Keep the normal pass short. Fill only the sections that changed; retain the
-member request whenever a member is named on a row.
+member request whenever a member is named on a workstream row.
 
 ## Scheduled pass
 
@@ -23,22 +23,28 @@ Evidence that closes it: <observable result, command, or artifact>
 gate:   <running: which gate and whose push | idle>
 ```
 
-| lane | owner | state | next observable result | gate / blocker |
-| --- | --- | --- | --- | --- |
-| <lane> | @<member> | <on track | unconfirmed | stale | blocked | done> | <result> | <gate> |
+**Workstreams** (one row per workstream; cards are evidence under a workstream, not tracker rows)
+
+| workstream | owner | state | next observable result | evidence tip | gate / blocker |
+| --- | --- | --- | --- | --- | --- |
+| <bounded outcome or workstream> | @<member> | <on track | unconfirmed | stale | blocked | done> | <result> | <commit/ref/command> | <gate> |
 
 **Members named above: reply here now with one line of your own progress** —
-what you closed, what is open, and the one thing you are waiting on. A row is
-not closed by the tracker describing you; it is closed by you saying where it
-stands.
+what you closed, what is open, and the one thing you are waiting on. A
+workstream row is not closed by the tracker describing you; it is closed by you
+saying where it stands.
 
 Next owner/action: <who acts next and on what evidence>
 ```
 
+A workstream is a bounded outcome with one accountable owner and one
+review/landing gate. Related cards can share its row. Do not create a tracker
+row for every card; name the cards as evidence under the workstream.
+
 A member reply should use the same one-line shape:
 
 ```text
-@<tracker> <lane or work item> — <closed>; <open>; waiting on <blocker or none>.
+@<tracker> <workstream or work item> — <closed>; <open>; waiting on <blocker or none>.
 ```
 
 Treat the reply as liveness at the moment it was sent. It does not establish
