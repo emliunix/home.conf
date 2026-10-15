@@ -182,6 +182,9 @@ describe("L0 contract lint: retro outcomes (design/09)", () => {
       "rewrite the design body",
       "complexity removals applied",
       "bounded correction to the documents or the code",
+      "**Complexity removed:**",
+      "**Design revisions:**",
+      "Module documents match the as-built",
     ]) {
       expect(retro.content.includes(stale), stale).toBe(false);
     }

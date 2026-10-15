@@ -68,3 +68,17 @@ Witnesses, each seen red first:
 Not run: `vp run eval:full`, as no eval model key is configured here. The new
 cases' expected tuples are checked for schema and coherence only, and design 09
 stays `pending-retro` until they run.
+
+## C5 - Implementation review (2026-10-16)
+
+The Claude seat passed `210a766`: no blocking findings; `eval:full` blocks `landed`,
+not the merge (https://github.com/emliunix/home.conf/pull/16).
+
+| # | Finding | Disposition |
+| --- | --- | --- |
+| 1 | should-fix: `goal-file/goal-authoring.md`'s edge table lacks the retro's routes back | Taken: `ROUTE: BREAKOUT` from Implement / Retro (verdict 4); new `ROUTE: BACK` Retro → Implement (verdict 3); status mapping updated |
+| 2 | should-fix: stale citations in the changed cases | Taken for this PR's cases (`gate-pending-landed-*`, `fork-impl-defect-*`, `fork-arch-failure-*`). Recorded, not fixed: `write-target-retro-*` cite `:52` (now `:59`), and every older `flow-common` citation drifted as that skill grew. Follow-up: an L0 check that each `Cite:` quote occurs in the cited skill by text |
+| 3 | should-fix: leftover wording has the retro making changes | Taken: §3 record headings are proposals routed by the verdict; the done checklist's module-docs line matches §5; flow-common's commit sentence names the retro's worklog entry and follow-up file. The three old strings join the L0 stale list (seeded red: 1 failed / 13) |
+| 4 | note: no case for a design-prescribed P0 | Taken: `fork-retro-p0-design-*`, expecting `halt_structural/unchanged/worklog` |
+
+`vp test` 50/50 after the lock re-approval; `tsc --noEmit` clean.

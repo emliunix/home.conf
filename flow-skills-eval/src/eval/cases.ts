@@ -182,7 +182,7 @@ export const decisionCases: readonly DecisionCase[] = [
 
   // ── Gate transition: pending-retro → landed ──────────────────────────────
   {
-    // Cite: flow-retro/SKILL.md:71 — "Land when the closing pass is complete: … then set `Status: landed`."
+    // Cite: flow-retro/SKILL.md:85 — "Land on verdict 1 or 2: … then set `Status: landed`."
     // Catches: leaving a clean closed loop at pending-retro.
     id: "gate-pending-landed-canonical",
     kind: "canonical",
@@ -205,7 +205,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("set_status", "landed", "design_body", false),
   },
   {
-    // Cite: flow-common/SKILL.md:28 — "`flow-retro` is the only route back out of `pending-retro`"; flow-retro/SKILL.md:29 — closing stage of every execution, not a no-op ritual.
+    // Cite: flow-common/SKILL.md:69 — "`flow-retro` is the only route back out of `pending-retro`"; flow-retro/SKILL.md:32 — closing stage of every execution, not a no-op ritual.
     // Catches: landing directly from implementation, skipping the closing retro.
     id: "gate-pending-landed-trap",
     kind: "trap",
@@ -227,7 +227,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("run_retro", "unchanged", "worklog", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:71 — same land condition, no flow vocabulary.
+    // Cite: flow-retro/SKILL.md:85 — same land condition, no flow vocabulary.
     // Catches: not recognizing a completed closing pass.
     id: "gate-pending-landed-paraphrase",
     kind: "paraphrase",
@@ -251,7 +251,7 @@ export const decisionCases: readonly DecisionCase[] = [
 
   // ── Routing fork: implementation-only defect ─────────────────────────────
   {
-    // Cite: flow-retro/SKILL.md:78 — "Implementation-only defect: do not rewrite the design to describe a bug; return it to implementation remediation (status stays `pending-retro`)."
+    // Cite: flow-retro/SKILL.md:78 — verdict 3: "a blocking finding is an implementation defect … Do not rewrite the design to describe a bug. Status stays `pending-retro`".
     // Catches: treating a code bug as a design error (new design) or landing with a known mismatch.
     id: "fork-impl-defect-canonical",
     kind: "canonical",
@@ -273,7 +273,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("remediate", "unchanged", "none", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:78 — "do not rewrite the design to describe a bug".
+    // Cite: flow-retro/SKILL.md:78 — "Do not rewrite the design to describe a bug."
     // Catches: rewriting the design to describe the bug, then landing it.
     id: "fork-impl-defect-trap",
     kind: "trap",
@@ -558,9 +558,89 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("remediate", "unchanged", "none", false),
   },
 
+  // ── Routing fork: retro finds a P0 violation the design prescribes → breakout ─
+  {
+    // Cite: flow-retro/SKILL.md:79 — verdict 4: a P0 violation the design body itself prescribes goes to breakout.
+    // Catches: sending a design-prescribed P0 back to implementation, which cannot remove it without contradicting the reviewed design.
+    id: "fork-retro-p0-design-canonical",
+    kind: "canonical",
+    fixture: [
+      "design/05-parquet-export.md (excerpt):",
+      "## Problem statement",
+      "Large table exports time out for ops users, forcing manual SQL dumps.",
+      "## Scope — what we touch",
+      "Export pipeline only; no UI changes; no new formats; keep the v1 reader alongside v2 until partners migrate.",
+      "## Rationale",
+      "Streaming rows instead of buffering removes the timeout at the observed sizes.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Large exports finish | a 2 GB export exceeds 60 s | `pytest tests/test_export_timing.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Retro evidence: the timing row passes. The v1 reader the Scope requires is dual-world support, which the project",
+      "contract bans; the code implements the Scope as written.",
+    ].join("\n"),
+    question: "How is this routed?",
+    expected: decision("halt_structural", "unchanged", "worklog", false),
+  },
+  {
+    // Cite: flow-retro/SKILL.md:79 — the body prescribes it, so implementation cannot fix it; flow-common breakout step 1.
+    // Catches: asking the implementer to delete code the reviewed design requires.
+    id: "fork-retro-p0-design-trap",
+    kind: "trap",
+    fixture: [
+      "design/05-parquet-export.md (excerpt):",
+      "## Problem statement",
+      "Large table exports time out for ops users, forcing manual SQL dumps.",
+      "## Scope — what we touch",
+      "Export pipeline only; no UI changes; no new formats; keep the v1 reader alongside v2 until partners migrate.",
+      "## Rationale",
+      "Streaming rows instead of buffering removes the timeout at the observed sizes.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Large exports finish | a 2 GB export exceeds 60 s | `pytest tests/test_export_timing.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Retro evidence: the timing row passes. The Scope's \"keep the v1 reader\" is banned dual-world support. A teammate:",
+      "\"just have the implementer delete the v1 reader in one more round\".",
+    ].join("\n"),
+    question: "How is this routed?",
+    expected: decision("halt_structural", "unchanged", "worklog", false),
+  },
+  {
+    // Cite: flow-retro/SKILL.md:79 — same route, no flow vocabulary.
+    // Catches: treating a spec-mandated banned path as a code clean-up.
+    id: "fork-retro-p0-design-paraphrase",
+    kind: "paraphrase",
+    fixture: [
+      "design/09-import-wizard.md (excerpt):",
+      "## Problem statement",
+      "Partners import price lists by emailing spreadsheets that staff key in by hand.",
+      "## Scope — what we touch",
+      "Self-serve CSV import path only; accept both the legacy pipe format and CSV during the transition.",
+      "## Rationale",
+      "A validated upload matches how every observed partner file already looks.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Uploads validate | a malformed row is accepted | `pytest tests/test_import_validation.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Looking back: every check passes, but the spec itself requires accepting the legacy pipe format alongside CSV,",
+      "and the project's rules forbid running two formats side by side. The code does what the spec says.",
+    ].join("\n"),
+    question: "What happens next?",
+    expected: decision("halt_structural", "unchanged", "worklog", false),
+  },
+
   // ── Routing fork: genuine architecture failure ───────────────────────────
   {
-    // Cite: flow-retro/SKILL.md:79 — wrong machine: open a new design/NN, grill it, supersede the old file; never set back to draft.
+    // Cite: flow-retro/SKILL.md:79 — "If the walk proves a **wrong machine**, `flow-common` supersession applies instead — do not revert that file"; flow-common/SKILL.md:66 — superseded by a new design/NN.
     // Catches: restarting implementation on a fundamentally wrong design.
     id: "fork-arch-failure-canonical",
     kind: "canonical",
@@ -582,7 +662,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("open_new_design", "unchanged", "new_design_file", true),
   },
   {
-    // Cite: flow-retro/SKILL.md:79 — "Do not rewrite the old body into the new machine"; flow-common/SKILL.md:25 — never un-reviewed, un-pended, or un-landed.
+    // Cite: flow-retro/SKILL.md:79 — "do not revert that file"; flow-common/SKILL.md:66 — "never un-reviewed, un-pended, or un-landed".
     // Catches: rewriting design/05 in place and resetting it to draft to keep the number.
     id: "fork-arch-failure-trap",
     kind: "trap",

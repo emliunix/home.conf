@@ -258,7 +258,7 @@ A concise `Design holds` note is optional evidence, never a required stage or no
 
 ### Commits
 
-Commits follow explicit user authorization and meaningful artifact boundaries—not a fixed count or message template. A reviewed design and its implementation may be separate commits when useful; retro changes merit a commit only when they materially change an artifact. Never create no-op commits.
+Commits follow explicit user authorization and meaningful artifact boundaries—not a fixed count or message template. A reviewed design and its implementation may be separate commits when useful; a retro's commit holds its worklog entry and any follow-up file (`flow-retro` §4). Never create no-op commits.
 
 ### Stop condition
 

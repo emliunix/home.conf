@@ -61,8 +61,8 @@ Append a dated `## Retrospective` entry to the design’s **corresponding worklo
 - **First-principles bottom line:** the derivation, the divergence classification, removal actions, head re-validation verdicts (mandatory even when everything passed — prove the match, don't assert it)
 - **Evidence:** what happened and where
 - **Design mismatch / rework:** root cause and user impact
-- **Complexity removed:** what can be deleted, narrowed, or reused
-- **Design revisions:** smallest edits, with supporting facts
+- **Complexity to remove:** what could be deleted, narrowed, or reused — proposed, routed by the verdict (§4)
+- **Design corrections proposed:** smallest edits, with supporting facts — proposed, routed by the verdict (§4)
 - **Design holds:** only for relevant decisions execution actually validated
 
 **The retro makes no direct edits.** It changes no code, no design body and no module document; every change goes through the route its verdict names (§4). Preserve explicit scope/non-goals and classify observed facts versus inference/TBD. Do not invent future compatibility, generalized abstractions, or promotion rules from one case.
@@ -101,6 +101,6 @@ Land on verdict 1 or 2: the worklog entry exists with the First-principles botto
 - [ ] Every finding routed by the row test; one verdict recorded (land / land with follow-ups / route back / breakout); no direct edits made
 - [ ] Follow-up file (verdict 2) in the `draft-followup` shape, pointing back to the worklog entry
 - [ ] Architecture failures run `flow-common` breakout adjudication (or supersession if wrong machine); retro ledger is the worklog
-- [ ] Module documents match the as-built (`project-skeleton` § Module docs)
+- [ ] Module documents checked against the as-built (`project-skeleton` § Module docs); contradictions routed (verdict 3/4), other mismatches in the follow-up file
 - [ ] `Status: landed` set on a clean closing pass; statuses preserved on routing back
 - [ ] Stop condition and next gate are explicit
