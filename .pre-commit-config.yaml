@@ -12,6 +12,17 @@ repos:
         pass_filenames: false
         files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$|^scripts/run-document-contracts\.mjs$'
         require_serial: true
+      - id: document-structure
+        name: document structure (whole repository, draft)
+        language: system
+        # The staged check above follows a changed file to the documents that LINK to it, not to
+        # those that name it in prose (`design/04 §Heading`, a path in backticks), so a renamed
+        # heading or a moved file can break a document nobody staged. This pass re-checks every
+        # configured document structurally: no judge, about 3 s.
+        entry: node scripts/run-document-contracts.mjs --auto-setup check --all --profile draft --format text
+        pass_filenames: false
+        files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$|^scripts/run-document-contracts\.mjs$'
+        require_serial: true
       - id: oxlint
         name: oxc lint gate
         language: system

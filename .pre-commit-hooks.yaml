@@ -5,3 +5,13 @@
   pass_filenames: false
   files: '(^|/).+\.(md|ya?ml)$'
   require_serial: true
+- id: document-structure
+  name: document structure (whole repository, draft)
+  language: node
+  # Opt-in companion to document-contracts: every configured document, structural checks only (no
+  # judge), so a reference broken by a change elsewhere is caught even when its document is not
+  # staged.
+  entry: doc-verify check --all --profile draft --format text
+  pass_filenames: false
+  files: '(^|/).+\.(md|ya?ml)$'
+  require_serial: true
