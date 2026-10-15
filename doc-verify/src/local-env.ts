@@ -26,7 +26,8 @@ type ProxyFromEnv = (env?: NodeJS.ProcessEnv) => (() => void) | undefined;
  *
  * Reads only; never copies secret bytes into another worktree.
  */
-export function resolveDocVerifyEnvPath(root: string): string | undefined {  const local = path.join(root, fileName);
+export function resolveDocVerifyEnvPath(root: string): string | undefined {
+  const local = path.join(root, fileName);
   if (existsSync(local)) {
     return local;
   }

@@ -111,6 +111,50 @@ constraints:
     expect(report.verdict).toBe("NO-GO");
   });
 
+  // #317 finding 1: evidence RESOLVES, so the atom IS sent to the judge -- and the judge answers
+  // nothing. A different population from `UNION_ONLY`: there the atom never left (its `key` is `-`);
+  // here it left and came back empty, so `thresholdLeaf` builds a leaf with a REAL evidence key and
+  // a key-only coverage test counts it as asked. Warning severity, so only coverage can stop a PASS.
+  const SENT_NOT_ANSWERED = moduleText(`oracles:
+${PURPOSE_ORACLE}constraints:
+    warns-purpose:
+      forall: core.section(D, S, _)
+      require: purpose(D, S, P), P in [problem, scope, rationale]
+      severity: warning
+  `);
+
+  it("BLOCKS a run whose single atom exceeded the outbound budget, with no leaf ever stored (#317 finding 2)", async () => {
+    // The over-budget throw happens in `partitionBatches`, BEFORE any leaf is stored -- so the
+    // demand survives to exit with `store.leaves` empty. Coverage derived from stored leaves alone
+    // therefore reported `complete: true` for a run that evaluated nothing. The atom is demanded and
+    // unevaluated, and that is population 1.
+    const report = await runProgram({
+      moduleYaml: SENT_NOT_ANSWERED, documents: [{ path: "d.md", markdown: "# D\n\n## Problem\n\nP.\n" }],
+      backend: createMockJevJudgeBackend({ choice: "first" }), model: "jev-test",
+      policy: { maxEvidenceBytes: 1, forbiddenLiterals: [] },
+    });
+    expect(report.oracles).toHaveLength(0);
+    expect(report.coverage.complete).toBe(false);
+    expect(report.coverage.unasked.length).toBeGreaterThan(0);
+    expect(report.verdict).toBe("BLOCKED");
+  });
+
+  it("reports incomplete for a kernel that halted on its inference budget (#317)", async () => {
+    // A kernel halt demanded nothing, so BOTH population lists are empty -- an empty-only completeness
+    // test calls that complete, for a run that evaluated nothing. `complete` has to mean "every
+    // constraint was evaluated", so the halt is folded in. Measured before this: unasked=[],
+    // unanswered=[], asked=0, complete=true, with zero leaves.
+    const report = await runProgram({
+      moduleYaml: SENT_NOT_ANSWERED, documents: [{ path: "d.md", markdown: "# D\n\n## Problem\n\nP.\n" }],
+      backend: createMockJevJudgeBackend({ choice: "first" }), model: "jev-test", inferenceBudget: 0,
+      policy: { maxEvidenceBytes: 20_000, forbiddenLiterals: [] },
+    });
+    expect(report.coverage.complete).toBe(false);
+    expect(report.coverage.unasked).toHaveLength(0);
+    expect(report.coverage.unanswered).toHaveLength(0);
+    expect(report.verdict).toBe("BLOCKED");
+  });
+
   it("BLOCKS an incomplete run whose every decidable constraint holds (#317)", async () => {
     // The gate #317 adds, on the ONE route where nothing else stops it. `UNION_ONLY` has a single
     // WARNING-severity constraint whose oracle reads a UNION of named sections, and one name is
@@ -127,6 +171,28 @@ constraints:
     expect(report.failure).toBeUndefined();
     expect(report.coverage.complete).toBe(false);
     expect(report.coverage.unasked).toHaveLength(1);
+    expect(report.verdict).toBe("BLOCKED");
+    expect(report.decidedBy).toBe("coverage");
+  });
+
+  it("counts an atom the judge was asked and returned nothing for (#317 finding 1)", async () => {
+    // The judge is REACHED and returns an empty answer list. The atom HAS resolved evidence, so it
+    // was really sent; `thresholdLeaf` gives its leaf a real evidence key. A key-only coverage test
+    // therefore counts it as asked and `complete` stays true -- the forbidden quiet print.
+    const backend = createMockJevJudgeBackend({ answers: () => Promise.resolve([]) });
+    const report = await runProgram({
+      moduleYaml: SENT_NOT_ANSWERED, documents: [{ path: "d.md", markdown: "# D\n\n## Problem\n\nP.\n" }],
+      backend, model: "jev-test",
+      policy: { maxEvidenceBytes: 20_000, forbiddenLiterals: [] },
+    });
+    // The judge WAS reached for both atoms, so they are `unanswered`, not `unasked` -- the
+    // separation between "nobody asked" and "asked and got nothing" that CowBoy required. The
+    // document has a root section and a `Problem` heading, so `forall core.section(D, S, _)`
+    // demands two atoms and the judge answered neither.
+    expect(report.coverage.complete).toBe(false);
+    expect(report.coverage.asked).toBe(0);
+    expect(report.coverage.unasked).toHaveLength(0);
+    expect(report.coverage.unanswered).toHaveLength(2);
     expect(report.verdict).toBe("BLOCKED");
     expect(report.decidedBy).toBe("coverage");
   });

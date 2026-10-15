@@ -1,4 +1,4 @@
-import { Finding, VerificationReport, Verdict } from "./types.js";
+import { Finding, ReportCoverage, VerificationReport, Verdict } from "./types.js";
 
 const exitCodes: Record<Verdict, number> = {
   PASS: 0,
@@ -105,7 +105,7 @@ function listPaths(paths: string[]): string[] {
   function summary(report: VerificationReport): string {
     const coverage = report.coverage.complete
       ? "coverage: complete"
-      : `coverage: ${String(report.coverage.unasked.length)} oracle atom(s) never asked`;
+      : coverageSummary(report.coverage);
     return `${report.verdict}: ${String(report.artifacts.length)} artifact(s), ` +
       `${String(report.artifacts.reduce((sum, artifact) => sum + artifact.sections.length, 0))} section(s), ` +
       `${String(report.warningCount)} warning(s), ` +
@@ -117,6 +117,27 @@ function listPaths(paths: string[]): string[] {
    * The unasked atoms, one per line, so a reader can tell a conclusive failure from an unevaluable
    * run without parsing the engine's diagnostics.
    */
+  /** Names both incomplete populations, because they need different responses. */
+  function coverageSummary(coverage: ReportCoverage): string {
+    const parts: string[] = [];
+    if (coverage.unasked.length > 0) {
+      parts.push(`${String(coverage.unasked.length)} oracle atom(s) never asked`);
+    }
+    if (coverage.unanswered.length > 0) {
+      parts.push(`${String(coverage.unanswered.length)} oracle atom(s) asked with no usable answer`);
+    }
+    // A kernel halt reports no atom in either list, because it never got as far as demanding one.
+    // Without this the summary renders as a bare `coverage: `, which reads as a formatting bug
+    // rather than as the incomplete run it is.
+    if (parts.length === 0) {
+      parts.push("incomplete (the run halted before every constraint was evaluated)");
+    }
+    return `coverage: ${parts.join("; ")}`;
+  }
+
   function coverageLines(report: VerificationReport): string[] {
-    return report.coverage.unasked.map((atom) => `  unasked ${atom}`);
+    return [
+      ...report.coverage.unasked.map((atom) => `  unasked ${atom}`),
+      ...report.coverage.unanswered.map((atom) => `  unanswered ${atom}`),
+    ];
   }

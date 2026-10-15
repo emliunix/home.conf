@@ -8,6 +8,7 @@ import type { JudgeBackend } from "deepclause-sdk";
 
 import { PolicyViolationError } from "../judge.js";
 import { Kernel, PrologError } from "../kernel/kernel.js";
+import { UNKNOWN } from "./demand.js";
 import { answersFromStore, demandsFromKeys } from "../kernel/keys.js";
 import { translateProgram, type FactTerm } from "../kernel/translate.js";
 import { BlockedError } from "../types.js";
@@ -117,13 +118,50 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
     findings.push(`${String(lastReport.demand.prefix.length)} oracle atoms were still unasked after ${String(program.rounds)} rounds: ${lastReport.demand.prefix.slice().sort().join(", ")}`);
   }
   const oracles = [...store.leaves.values()].sort((a, b) => a.round - b.round || a.atom.localeCompare(b.atom));
-  // Which oracle atoms never reached the judge: `key` is `-` when the atom was never sent, because
-  // its evidence did not resolve or the engine failed before the round that would ask it.
-  const unasked = oracles.filter((leaf) => leaf.key === "-").map((leaf) => leaf.atom);
+  // Coverage is the set of atoms that were DEMANDED and not evaluated, which is not the set of stored
+  // leaves. Three populations have to be counted, and leaving any one out lets an unevaluated
+  // constraint reach a `PASS`:
+  //
+  //   1. still demanded after the round limit (`lastReport.demand.prefix`) -- no leaf was ever
+  //      created, so a leaf-only walk cannot see them at all;
+  //   2. a leaf whose evidence never resolved (`key === "-"`, the `unaskedLeaf` marker);
+  //   3. a leaf that WAS sent but got no usable answer -- the judge returned nothing, answered a
+  //      different atom, or answered twice. `thresholdLeaf` gives these a real evidence key, so
+  //      testing the key alone counts them as asked. `answered === UNKNOWN` is the marker, and it is
+  //      the same sentinel a judge uses to say "unknown", which is the distinction that matters:
+  //      both are an absence of an answer, and neither can support a `PASS`.
+  const neverSent = oracles.filter((leaf) => leaf.key === "-");
+  // A leaf WITH a real key whose label came back `unknown` was sent and answered nothing usable --
+  // either the judge returned no answer, or it answered `unknown`, or the distribution could not
+  // decide. `asked` means "the judge produced a usable evaluation", so these are not asked either,
+  // but they are not `unasked` -- the judge was reached and asked.
+  const noUsableAnswer = oracles.filter((leaf) => leaf.key !== "-" && leaf.answered === UNKNOWN);
+  // ⚠ The prefix keys and the leaf atoms are the SAME atom in two spellings -- a raw key reads
+  // `m::p('d.md',s)` where the leaf's atom reads `m.p(d.md, s)`. Compare them in one form or the
+  // same atom is counted twice. `demandsFromKeys` is the canonicalizer: it yields the host key and
+  // `atomText`, which is exactly what a leaf carries.
+  //
+  // The exclusion is against EVERY leaf, not only the never-sent ones. An atom the judge was sent
+  // and returned nothing for keeps its demand (the kernel excludes only *answered* atoms from a
+  // demand list), so it appears in the prefix AND as a real-key leaf -- and it is already reported
+  // in `unanswered`. Excluding it here keeps one atom to one line.
+  const leafAtoms = new Set(oracles.map((leaf) => leaf.atom));
+  const prefixUnasked = demandsFromKeys(lastReport.demand.prefix, program)
+    .filter((demand) => !leafAtoms.has(demand.atom))
+    .map((demand) => demand.atom);
+  const unasked = [...prefixUnasked, ...neverSent.map((leaf) => leaf.atom)];
+  const unanswered = noUsableAnswer.map((leaf) => leaf.atom);
+  // ⚠ A kernel that HALTED (budget or resource) demanded nothing, so both populations are empty
+  // and an empty-only test reports `complete: true` for a run that evaluated NOTHING. Measured: a
+  // budget halt gave `{"unasked":[],"unanswered":[],"asked":0,"complete":true}` with zero leaves.
+  // `complete` has to mean "every constraint was evaluated", so a halt is incomplete by
+  // construction, whatever the demand lists say.
+  const halted = lastReport.blocked !== undefined || lastReport.resource !== undefined;
   const coverage = {
     unasked,
-    asked: oracles.length - unasked.length,
-    complete: unasked.length === 0,
+    unanswered,
+    asked: oracles.length - neverSent.length - noUsableAnswer.length,
+    complete: unasked.length === 0 && unanswered.length === 0 && !halted,
   };
   for (const leaf of oracles) {
     if (leaf.finding !== undefined) {
@@ -136,7 +174,6 @@ export async function runProgram(input: RunProgramInput): Promise<EngineReport> 
     }
   }
 
-  const halted = lastReport.blocked !== undefined || lastReport.resource !== undefined;
   const constraints = halted
     ? program.constraints.map((constraint) => ({
         id: constraint.id,

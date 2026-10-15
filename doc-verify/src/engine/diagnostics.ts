@@ -76,11 +76,23 @@ export interface EngineFailure {
  * caller that only sees the verdict cannot tell that apart from a document that was fully judged.
  */
 export interface CoverageReport {
-  /** Oracle atoms whose evidence never resolved, so the judge was never asked. */
+  /**
+   * Oracle atoms the judge was NEVER ASKED about: the engine stopped before their round, so no leaf
+   * exists, or their evidence never resolved and the leaf is marked `-`.
+   */
   unasked: string[];
-  /** Oracle atoms the judge answered. */
+  /**
+   * Oracle atoms the judge WAS ASKED about and produced no usable evaluation for: it returned no
+   * answer, answered a different atom, answered twice, or answered `unknown`.
+   *
+   * Separate from `unasked` because they are different facts -- the judge was reached here, and a
+   * reader deciding whether to re-run or to fix the module needs to know which happened. Neither
+   * population can support a `PASS`.
+   */
+  unanswered: string[];
+  /** Oracle atoms the judge produced a usable evaluation for. */
   asked: number;
-  /** `unasked.length === 0`; a `PASS` requires this. */
+  /** Both incomplete populations are empty; a `PASS` requires this. */
   complete: boolean;
 }
 

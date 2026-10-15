@@ -116,10 +116,13 @@ export interface VerificationReport {
 }
 
 export interface ReportCoverage {
-  /** Oracle atoms whose evidence never resolved, so the judge was never asked. */
+  /** Oracle atoms the judge was never asked about -- no leaf, or a leaf marked `-`. */
   unasked: string[];
+  /** Oracle atoms the judge was asked about and produced no usable evaluation for. */
+  unanswered: string[];
+  /** Oracle atoms the judge produced a usable evaluation for. */
   asked: number;
-  /** `unasked.length === 0`; a `PASS` requires this. */
+  /** Both incomplete populations are empty; a `PASS` requires this. */
   complete: boolean;
 }
 
