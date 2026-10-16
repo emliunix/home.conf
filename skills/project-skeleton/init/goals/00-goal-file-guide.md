@@ -5,6 +5,9 @@
 Goals are epics: they group related changes into workstreams, anchor the owner's
 requirements verbatim, and bookkeep coverage until the epic closes.
 
+Source: the project-skeleton skill in home.conf (skills/project-skeleton/SKILL.md), which
+this guide is installed from.
+
 ## User requirements — frozen root
 
 > Bootstrap the project so its documents and gates verify green out of the box. (Owner,

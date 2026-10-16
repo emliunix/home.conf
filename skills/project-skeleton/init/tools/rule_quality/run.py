@@ -102,7 +102,7 @@ def classify(constraint: str, verdict: str) -> str:
 
 
 MODULE_LINE = re.compile(
-    r"^(?P<path>\S+):\d+ \[(?P<section>[^\]]+)\] module\.(?P<constraint>[a-z0-9-]+) "
+    r"^(?P<path>\S+):\d+(?:-\d+)? \[(?P<section>[^\]]+)\] module\.(?P<constraint>[a-z0-9-]+) "
     r"(?P<verdict>NO-GO|WARN|NEEDS-REVIEW) (?:violated|undetermined)", re.M)
 
 
@@ -134,7 +134,12 @@ def stage(tree: Path, kind: str, text: str, companion_kind: str | None = None) -
     subprocess.run(["git", "init", "-q", "."], cwd=tree, check=True)
     subprocess.run(["git", "add", "-A"], cwd=tree, check=True)
     subprocess.run(["git", "-c", "user.email=h@x", "-c", "user.name=h", "commit", "-qm", "init"], cwd=tree, check=True)
-    (tree / ".env.doc-verify").symlink_to(Path.home() / ".config/doc-verify/credentials.env")
+    # The judge key is the repository's own `.env.doc-verify` (a gitignored symlink to the protected
+    # credential file). A scratch tree has no canonical checkout to fall back to, so link the same
+    # target here; a missing key makes every judged mutation BLOCK, which the record reports.
+    key = REPO / ".env.doc-verify"
+    if key.exists():
+        (tree / ".env.doc-verify").symlink_to(key.resolve())
 
 
 def run_check(tree: Path) -> tuple[int, list[dict], str, str]:

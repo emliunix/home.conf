@@ -6,6 +6,11 @@ module: project.design
 rounds: 2
 params:
   statuses: [draft, reviewed, pending-retro, landed]
+  # A heading that names the section decides it without the judge: the judge's purpose score for a
+  # literal 'Problem statement' heading has measured 0.37-0.46, so a compliant design was undetermined.
+  problem_headings: ['Problem', 'Problem statement', 'The problem']
+  scope_headings: ['Scope', 'Scope — what we touch', 'Not in scope', 'Out of scope', 'What does not change']
+  verification_headings: ['Verification', 'Acceptance', 'Evidence']
 oracles:
   falsifies(D, C):
     ask: This verification text names an observable check (a test, a command, or a measurement) that would fail if the claim it protects were false.
@@ -16,15 +21,32 @@ oracles:
     ask: This section mostly prescribes implementation steps (file-by-file edits, function bodies, code-level detail) rather than stating a decision, a model, a scope or a rationale.
     evidence: core.own(D, S)
     threshold: 0.5
+  claims_pinned(D, L):
+    ask: Every statement here about how a system or its code behaves TODAY names the commit, tag or version it was read at (in the statement or in the document's Status note), or explicitly marks itself as inferred. Planned behaviour and definitions need no pin.
+    evidence: core.union(D, L)
+    threshold: 0.5
+    max_bytes: 30000
 rules:
   status_section(D, S): top(D, S), core.heading(D, S, 'Status')
   one_word_status(D): has_status_word(D), core.meta(D, status_words, '1')
-  verification_section(D, S): top(D, S), purpose(D, S, P), P in [verification, evidence]
+  # A Verification/Acceptance/Evidence heading decides which sections are the verification. The judge
+  # classifies sections only when no such heading exists; otherwise a one-line pointer section (the
+  # guide's 'Goal file') was judged as a verification claim and came back undetermined.
+  has_verification_heading(D): top(D, H), core.heading(D, H, N), N in $verification_headings
+  verification_section(D, S): top(D, S), core.heading(D, S, N), N in $verification_headings
+  verification_section(D, T): top(D, T), not has_verification_heading(D), purpose(D, T, P), P in [verification, evidence]
   verification_item(D, C): verification_section(D, S), core.child(D, S, C)
   itemised(D, S): verification_section(D, S), core.child(D, S, _)
   verification_claim(D, C): verification_item(D, C)
   verification_claim(D, S): verification_section(D, S), not itemised(D, S)
   decision_section(D, S): top(D, S), purpose(D, S, P), P in [rationale, model, decision]
+  # Checks added after a design landed don't judge it: a landed design is a frozen record.
+  live_design(D): core.meta(D, kind, design), not core.meta(D, status, landed)
+  problem_section(D, S): top(D, S), core.heading(D, S, H), H in $problem_headings
+  problem_section(D, T): top(D, T), purpose(D, T, problem)
+  scope_section(D, S): top(D, S), core.heading(D, S, H), H in $scope_headings
+  scope_section(D, T): top(D, T), purpose(D, T, P), P in [scope, out_of_scope]
+  today_section(D, S): top(D, S), purpose(D, S, P), P in [model, evidence]
 constraints:
   design-has-status-section:
     forall: core.meta(D, kind, design)
@@ -52,6 +74,27 @@ constraints:
     profiles: [promotion]
     message: "{D} states no rationale, model or decision"
     repair: "Add the decision and why, or the model it rests on."
+  design-has-problem:
+    forall: live_design(D)
+    require: problem_section(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{D} states no problem"
+    repair: "Add the problem this design solves, and for whom."
+  design-has-scope:
+    forall: live_design(D)
+    require: scope_section(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "{D} states no scope"
+    repair: "Add what this design touches, or what it deliberately does not."
+  design-today-claims-pinned:
+    forall: live_design(D), today_section(D, S), status_section(D, T)
+    require: claims_pinned(D, [S, T])
+    severity: warning
+    profiles: [promotion]
+    message: "{S} in {D} describes today's code without naming the commit or version it was read at"
+    repair: "Name the commit (or tag, or version) each statement was read at, here or in the Status note, or mark the statement inferred."
   design-verification-falsifies:
     forall: verification_claim(D, C)
     require: falsifies(D, C)

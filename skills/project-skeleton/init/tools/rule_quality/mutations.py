@@ -29,11 +29,19 @@ def _empty_section_body(text: str, heading: str) -> str:
 
 # --- design-module mutations (base: the first design document in the project)
 
+def _set_status_line(text: str, new: str) -> str:
+    # Anchored on the section, not on one status word: the base design's status changes with its
+    # lifecycle, and a mutation pinned to one word stops applying the day the guide is reviewed.
+    out, n = re.subn(r"(^## Status\n\n)[^\n]+", lambda m: m.group(1) + new, text, count=1, flags=re.M)
+    if n != 1:
+        raise ValueError("no status line under '## Status'")
+    return out
+
 def mut_status_word_vocabulary(t):
-    return _replace_once(t, "## Status\n\nlanded", "## Status\n\nselected")
+    return _set_status_line(t, "selected")
 
 def mut_status_not_one_word(t):
-    return _replace_once(t, "## Status\n\nlanded", "## Status\n\nDraft — nearly done, pending one more look")
+    return _set_status_line(t, "Draft — nearly done, pending one more look")
 
 def mut_status_word_gone(t):
     # No status word at all: the section body is emptied, so the runner reads no status
@@ -66,6 +74,26 @@ def mut_verification_toothless(t):
         raise ValueError("no Verification section")
     toothless = section.group(1) + "\nWe will make sure this works well and test it thoroughly.\n\nEverything here is carefully verified.\n\n"
     return t[:section.start()] + toothless + t[section.end():]
+
+def mut_problem_section_gone(t):
+    return _drop_section(t, "Problem statement")
+
+def mut_scope_section_gone(t):
+    return _drop_section(t, "Scope — what we touch")
+
+def mut_goal_sourceless(t):
+    section = re.search(r"(^## Goal\n)(.*?)(?=^## |\Z)", t, re.M | re.S)
+    if not section:
+        raise ValueError("no Goal section")
+    sourceless = section.group(1) + "\nMake things better for everyone.\n\n"
+    return t[:section.start()] + sourceless + t[section.end():]
+
+def mut_today_claims_unpinned(t):
+    # A section describing running code today, with no commit, tag or version and no 'inferred'.
+    return _replace_once(
+        t, "## Verification\n",
+        "## What exists today\n\nThe daemon retries every failed webhook three times, then parks the box. "
+        "Its health server answers on port 8080 and the sweep runs every two seconds.\n\n## Verification\n")
 
 def mut_implementation_steps(t):
     return _replace_once(
@@ -123,6 +151,10 @@ CASES = [
     {"name": "design-has-decision", "kind": "design", "expect": "design-has-decision", "mutate": mut_decision_sections_gone},
     {"name": "design-verification-falsifies", "kind": "design", "expect": "design-verification-falsifies", "mutate": mut_verification_toothless},
     {"name": "design-altitude", "kind": "design", "expect": "design-altitude", "mutate": mut_implementation_steps},
+    {"name": "design-has-problem", "kind": "design", "expect": "design-has-problem", "mutate": mut_problem_section_gone},
+    {"name": "design-has-scope", "kind": "design", "expect": "design-has-scope", "mutate": mut_scope_section_gone},
+    {"name": "artifact-goal-cites-source", "kind": "design", "expect": "artifact-goal-cites-source", "mutate": mut_goal_sourceless},
+    {"name": "design-today-claims-pinned", "kind": "design", "expect": "design-today-claims-pinned", "mutate": mut_today_claims_unpinned},
     {"name": "goal-has-workstreams", "kind": "goal", "expect": "goal-has-workstreams", "mutate": mut_goal_workstreams_gone},
     {"name": "goal-has-coverage", "kind": "goal", "expect": "goal-has-coverage", "mutate": mut_goal_coverage_gone},
     {"name": "goal-has-anchored-root", "kind": "goal", "expect": "goal-has-anchored-root", "mutate": mut_goal_root_gone},

@@ -16,7 +16,7 @@ to initialize a nested repository. Neither script commits or installs hooks.
 | Piece | File | Gate it provides |
 |---|---|---|
 | Spine | `constitution.md`, `AGENTS.md`, `docs/architecture.md`, `docs/index.md` | orientation; spine module checks roots/falsifiers |
-| Decision records | `design/00-design-file-guide.md` + `doc-verify/modules/{artifact,design}.yaml` | status vocabulary, heads, claim-level falsification |
+| Decision records | `design/00-design-file-guide.md` + `doc-verify/modules/{artifact,design}.yaml` | status vocabulary, heads, goal source, claim-level falsification, today-claims pinned (warning) |
 | Epics | `goals/00-goal-file-guide.md` + `doc-verify/modules/goal.yaml` | anchored root, coverage, ledger rules |
 | Typed canon | `docs/modules/<pkg>/{contract,model,properties,verification}.md` (see Module docs) | `doc-verify:module-*` shape rules + current-not-history and pairing oracles |
 | Project docs | `docs/architecture.md`, `docs/index.md` + `canon.yaml` | boundary and routing-table rules + current-not-history oracle |

@@ -17,6 +17,10 @@ oracles:
       scope / out_of_scope = what is and is not touched; record = dated status or history.
     evidence: core.own(D, S)
     threshold: 0.5
+  cites_source(D, S):
+    ask: This Goal names where its requirement came from with a reference a reader could find, such as an owner message id, a card or task number, a document path, or a quoted requirement. A goal that is itself the root requirement may cite its own owner direction.
+    evidence: core.own(D, S)
+    threshold: 0.5
 rules:
   top(D, S): core.section(D, S, _), core.depth(D, S, 2)
   goal_section(D, S): top(D, S), core.heading(D, S, 'Goal')
@@ -34,6 +38,13 @@ constraints:
     severity: error
     message: "{D}: status '{W}' is not one of {statuses}"
     repair: "Use one of {statuses}; keep any nuance on a 'Note:' line below it."
+  artifact-goal-cites-source:
+    forall: goal_section(D, S)
+    require: cites_source(D, S)
+    severity: error
+    profiles: [promotion]
+    message: "The Goal in {D} does not say where its requirement came from"
+    repair: "Cite the source: the owner message id, the card or task number, or the document the requirement is in."
   artifact-has-goal:
     forall: core.meta(D, kind, _)
     require: goal_section(D, S)
