@@ -14,6 +14,7 @@ describe("project .env API configuration", () => {
       apiKey: "local-key",
       baseUrl: "https://provider.example/v1",
       model: "local-model",
+      extraBody: {},
     });
   });
 
@@ -28,6 +29,7 @@ describe("project .env API configuration", () => {
       apiKey: "anthropic-key",
       baseUrl: "https://anthropic.example/v1",
       model: "claude-opus-4-1",
+      extraBody: {},
     });
   });
 
@@ -39,6 +41,22 @@ describe("project .env API configuration", () => {
 
     expect(config.model).toBe(DEFAULT_EVAL_MODEL);
     expect(config.model).toContain("claude");
+  });
+
+  it("reads provider-specific request fields as a JSON object", () => {
+    const config = readApiConfig({
+      FLOW_SKILLS_EVAL_API_BASE_URL: "https://provider.example/v1",
+      FLOW_SKILLS_EVAL_API_KEY: "key",
+      FLOW_SKILLS_EVAL_EXTRA_BODY: '{"thinking":{"type":"disabled"}}',
+    });
+
+    expect(config.extraBody).toEqual({ thinking: { type: "disabled" } });
+  });
+
+  it("refuses extra request fields that are not a JSON object", () => {
+    const base = { FLOW_SKILLS_EVAL_API_BASE_URL: "https://provider.example/v1", FLOW_SKILLS_EVAL_API_KEY: "key" };
+    expect(() => readApiConfig({ ...base, FLOW_SKILLS_EVAL_EXTRA_BODY: "not json" })).toThrow("not valid JSON");
+    expect(() => readApiConfig({ ...base, FLOW_SKILLS_EVAL_EXTRA_BODY: "[1]" })).toThrow("JSON object");
   });
 
   it("fails with a project .env hint when the endpoint is absent", () => {

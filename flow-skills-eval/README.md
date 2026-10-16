@@ -163,7 +163,10 @@ vp build                       # type-check and bundle the Vite shell
 
 Live evaluation requires `FLOW_SKILLS_EVAL_API_BASE_URL` and
 `FLOW_SKILLS_EVAL_API_KEY` in `.env`; `FLOW_SKILLS_EVAL_MODEL` and
-`FLOW_SKILLS_EVAL_PROFILE` are optional. Results can be written with Vieval's
+`FLOW_SKILLS_EVAL_PROFILE` are optional. `FLOW_SKILLS_EVAL_EXTRA_BODY` (a JSON
+object) adds provider-specific request fields; for example deepseek's thinking
+mode rejects the forced `tool_choice`, so set
+`FLOW_SKILLS_EVAL_EXTRA_BODY={"thinking":{"type":"disabled"}}`. Results can be written with Vieval's
 `--report-out` option, for example:
 
 ```bash

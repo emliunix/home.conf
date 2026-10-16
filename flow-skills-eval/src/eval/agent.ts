@@ -75,6 +75,7 @@ export async function runDecisionCase(
       "content-type": "application/json",
     },
     body: JSON.stringify({
+      ...config.extraBody,
       model: config.model,
       temperature: 0,
       messages: [
