@@ -89,3 +89,68 @@ The Claude seat passed the implementation at `6e7517e` with nothing blocking
 | 2 | note: the restatement test catches table rows, not lists | Recorded; it stays a table-only check |
 | 3 | note: L1 triplets and rule_quality not run | The L1 gap blocks `landed`, not the merge; design 08 stays `pending-retro` until they run with the eval key, each seen red first. rule_quality's mutations do not cover the changed rules |
 | 4 | note: the status went from draft to pending-retro without `reviewed` | The design passed review at `6e248bd` (C4); the status word recorded there was not committed separately |
+
+## Retrospective (2026-10-16)
+
+Closing pass by Bob on `main` at `f9af433`. Trigger: closing stage; the L1 run is
+now possible (design 10).
+
+### First-principles bottom line
+
+**Derivation.** The problem: module documents are meant to be each package's
+current law, moved design → module docs → code, but no skill says so and drift
+happened on changes that never entered the design flow. The minimal machine: (1)
+the convention stated once; (2) a rule at the one point every change passes, the
+pull request; (3) a check at each flow stage that moves the documents, pointing at
+(1); (4) the template carrying the convention to new projects.
+
+**Diff against the as-built.** (1) `project-skeleton` § Module docs; (2) the
+`Module docs:` line in the template `AGENTS.md`; (3) the stage checks in
+flow-grill-review, flow-common and flow-retro, held by the L0 tests; (4) the
+template's design guide, `canon.yaml` and `.doc-verify.yaml`. The one-liners in
+raft-task-card, spine-orient and finding-triage sit on the paths agents read
+before a change, which keeps (1) reachable.
+- (P0) none.
+- (a) the template's `src/example.py::one_function` and its test (C5 finding 1):
+  the engine's `module-properties-*` libraries reject a placeholder property, so
+  the worked example needs real code to pair with. Constraint: the library rules
+  this design moved the template onto.
+- (a) `flow-retro` §5 no longer says "a mismatch is a bounded correction", as this
+  design's Scope states: design 09 replaced it with "contradiction blocks, other
+  mismatch is a follow-up unit". Constraint: design 09's no-direct-edits rule. The
+  stage check still exists and still points at project-skeleton, so the row holds.
+- (b) none. (c) none.
+
+**Heads.** The Problem statement holds. Scope held. The Rationale survives, with an
+observation: the pull-request rule depends on authors using it, and PR #15 (opened
+before #14 merged, still open) changes doc-verify's constraint language (`line:`)
+with no `Module docs:` line. A mechanical check stays a named non-goal; the
+observation goes to the re-close's follow-up file.
+
+### Evidence
+
+- `vp test --run` on `f9af433`: 66/66, including the two L0 assertions of C4.
+- `flow-skills-eval/src/eval/cases.ts` has no module-docs case: none of the 43
+  case ids covers a draft naming no module documents, a dispatch before the
+  documents moved, or a retro over a build that drifted from its documents.
+  Design 09 also named this ("its retro-stage L1 case ... is written against this
+  design's §5 wording"); it was not written there either.
+
+### Findings and routes
+
+1. **Blocking.** Row "Stage behaviour" is unprovable: its L1 triplets were never
+   written, so the command has nothing to run. C4 recorded the run as a gap for want
+   of a key; the cases themselves were missing too. Implementation defect.
+
+### Verdict
+
+**3 - route back to implementation.** Status stays `pending-retro`; round 2 of
+`flow-common`'s round budget. The round writes three triplets (canonical, trap,
+paraphrase) against the merged stage text, each with a quoted `// Cite:` that the
+citation check resolves and a tuple that has a `CONSISTENT_TUPLES` row:
+- review stage: a draft that changes a package and names no module documents;
+- dispatch: implementation about to start before the named documents moved;
+- retro: a build that contradicts one of its module documents' rows (blocking) and
+  one that mismatches without contradicting (follow-up);
+then runs them on both models and triages any miss by design 10's rule. This flow
+re-closes afterwards.

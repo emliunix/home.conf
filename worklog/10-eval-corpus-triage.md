@@ -193,3 +193,77 @@ The Claude seat reviewed `0f6e026`: 1 blocking, 1 should-fix, 2 notes
 | 2 | should-fix: S and M aren't guide dispositions; one case had two rows | Taken: mapped onto 1/2 ("2 (deferred)", "1 (one model)"); one row per case |
 | 3 | note: record the wording iterations | Taken: iter1–iter3 raw runs committed with what changed |
 | 4 | note: the remaining findings look right | Noted; the follow-up retro finding (2) is new with the neutral questions |
+
+## Retrospective (2026-10-16)
+
+Closing pass by Bob on `main` at `f9af433`. Trigger: the closing stage of the
+execution (design at `pending-retro` after PR #18).
+
+### First-principles bottom line
+
+**Derivation.** The problem: a red L1 case means one of three things, so a run is
+evidence for or against a skill only after each miss is sorted, and sorting must
+never move an expected answer toward a model. The minimal machine for that, given
+what the runs showed:
+1. a written rule that sorts each miss into skill / instrument / stale, with the
+   expected answer fixed;
+2. an instrument that says one thing: defined fields, a grader that ignores a
+   spelling the skills never specify, questions that name the scored act;
+3. a mechanical staleness signal for the cited skill text;
+4. a record per miss, and raw runs that can be traced to their configuration.
+
+**Diff against the as-built.** Each item exists: the guide's *Triaging a red case*
+(1); `FIELD_DEFINITIONS` / `VALUE_DEFINITIONS`, `normalizeDecision`, the neutral
+questions (2); the citation test (3); the C6 table, the raw TSVs and
+`runProvenance` (4). The lock over the tool schema and the request-field-order test
+are not on the derivation's path but guard (2) and (4) against silent drift; they
+are (a), constraint-justified by the frozen-prefix contract.
+- (P0) none: no compat arm, no dual world.
+- (a) the "2 (deferred)" and "1 (one model)" labels: the guide has three
+  dispositions; the two labels are sub-cases of 2 and 1 forced by an out-of-scope
+  schema change and by having only one model family. Constraint: design 10's
+  non-goal "changing the Decision schema".
+- (b) the per-case runner is not in the repository. The committed TSVs were made
+  by an uncommitted script (`bob-run.ts`); `vp run eval:full` prints totals, not
+  per-case rows. Removal path: a per-case report in the harness (follow-up unit 5).
+- (c) none. The iter1–iter3 wording edits that bent the instrument were reverted
+  or replaced at C7; nothing from them remains in `cases.ts` or the definitions.
+
+**Heads.** The Problem statement is still the problem: the final run's remaining
+misses each carry a disposition, and the two skill findings appear only once the
+instrument stopped hinting. Scope held: no skill edited, no tuple moved, no schema
+change. The Rationale survives: the definitions moved flash from 58 to 87 with no
+case edited, and the one place wording was tuned to a score (iter2) was caught and
+reverted.
+
+### Evidence
+
+- `vp test --run` on `f9af433`: 66/66.
+- Final runs `final-flash-x3.tsv` 103/126, `final-v4pro-x3.tsv` 98/126; every case
+  below k/k has a C6 row. The reviewer's own re-run reproduced the failing set (C7).
+- Repository-wide `check --all --profile draft`: design 10's Verification design
+  names `tests/decisions.test.ts` without the `flow-skills-eval/` prefix
+  (`module.paths-resolve` WARN).
+
+### Findings and routes
+
+No finding makes a Verification-design row fail or become unprovable: each row's
+command was run and seen red first (C5), and the re-run row is met by C6.
+
+Further findings, grouped in `design/11-eval-instrument-followup.md`:
+1. schema: split stage from act (re-architecture);
+2. `flow-common` round budget, `budget-paraphrase` (skill text);
+3. confirm single-family findings; relabel "1 (one model)" as "unconfirmed"
+   (eval practice);
+4. design 10's body: the presupposing example question, the "disposition-3
+   candidate" note, the unprefixed test path (docs clean-up);
+5. a per-case report in the harness (clean-up).
+
+The `flow-retro` verdict 2 finding (`fork-retro-followup-*`) is not routed here:
+it fails a row of design 09, whose retro routes it.
+
+### Verdict
+
+**2 - land with follow-ups.** `Status: landed` once `design/11` is committed. The
+repository's document gate rejects a `draft-followup` file today (design 09's
+retro, finding 2), so landing waits on that fix.

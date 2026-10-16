@@ -82,3 +82,75 @@ not the merge (https://github.com/emliunix/home.conf/pull/16).
 | 4 | note: no case for a design-prescribed P0 | Taken: `fork-retro-p0-design-*`, expecting `halt_structural/unchanged/worklog` |
 
 `vp test` 50/50 after the lock re-approval; `tsc --noEmit` clean.
+
+## Retrospective (2026-10-16)
+
+Closing pass by Bob on `main` at `f9af433`. Trigger: closing stage, and a
+Verification-design row first measured by design 10's L1 runs.
+
+### First-principles bottom line
+
+**Derivation.** The problem: a retro has no defined output and edits artifacts
+with no review gate. The minimal machine: (1) one place the retro writes (the
+worklog entry); (2) one test that says when a finding stops the loop (the design's
+own falsifiable rows); (3) a verdict per outcome, mapped onto routes the lifecycle
+already has; (4) a container for non-blocking findings, so they are tracked without
+being done by the retro.
+
+**Diff against the as-built** (`skills/flow-retro` §3–§5, `flow-common` lifecycle
+and breakout, the one-liners in flow-grill-review, goal-file, flow-supervise):
+items (1)–(4) are present, and no direct-edit wording remains (L0 stale list).
+- (P0) none.
+- (a) the `goal-authoring.md` `ROUTE: BACK` edge (C5 finding 1): needed because the
+  goal file's edge table is the routing surface the supervisor reads. Constraint:
+  `goal-file` owns routing.
+- (b) none.
+- (c) none.
+
+**Heads.** The Problem statement holds. Scope held, with one gap: the scope puts
+the follow-up file at `design/NN-<topic>.md` but does not touch the repository's
+document gate, which governs every `design/NN-*.md` as a lifecycle design (finding
+2). The Rationale survives; the open question it carried (inline correction of a
+landed sentence) has since been ruled by the owner, who allows non-semantic fixes
+in place. That ruling refines the no-direct-edits rule rather than contradicting a
+row, so it goes to its own design, not to this one.
+
+### Evidence
+
+- Final L1 runs (design 10, `worklog/10-eval-corpus-triage/final-*.tsv`), the cases
+  this design added, with neutral questions: `fork-retro-design-defect-*`,
+  `fork-retro-p0-*`, `fork-retro-p0-design-*` 3/3 on flash; pro misses only the two
+  paraphrases (`run_retro`), dispositioned 2 (deferred, schema). `fork-retro-followup-*`
+  0/3 on both models (design 10 C6, disposition 1): both land and record the finding
+  in the worklog; none opens the follow-up file. The trap's in-place edit is rejected
+  correctly, but again no file is opened.
+- A `draft-followup` file written for design 10's retro
+  (`design/11-eval-instrument-followup.md`) is NO-GO under
+  `check --all --profile draft`: status not in `[draft, reviewed, pending-retro,
+  landed]`, and no `Goal`, `Problem statement`, `Rationale` or `Review` section.
+
+### Findings and routes
+
+1. **Blocking.** Row "the cases agree with the skill" fails for
+   `fork-retro-followup-*`: a model following the edited skills answers with a
+   different tuple. The verdict-2 rule itself is sound (both models reach the right
+   *judgement*: the finding does not block, and the in-place edit is wrong); the
+   as-built text does not lead to the act. That is an implementation defect in
+   `flow-retro`'s wording, not a design defect.
+2. **Blocking in practice.** The output verdict 2 prescribes cannot be committed in
+   this repository: the document gate rejects it. No row names the gate, so by the
+   row test this is not blocking; it is routed with finding 1 because verdict 2 is
+   unusable here until it is fixed, and design 10's landing waits on it. The
+   reviewer may overrule this to a follow-up.
+
+### Verdict
+
+**3 - route back to implementation.** Status stays `pending-retro`; round 2 of
+`flow-common`'s round budget. The round:
+- reword `flow-retro` §4 verdict 2 (and its done-checklist line) so the act is
+  stated: the retro writes the follow-up file, then lands; the case stays as it is
+  and re-runs;
+- make the document gate admit a `draft-followup` file: a name the gate can tell
+  apart, and a module that checks only the shape `flow-grill-review` §3 defines
+  (status word, back-pointer);
+- re-run `fork-retro-followup-*` on both models; this flow re-closes afterwards.
