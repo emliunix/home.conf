@@ -57,3 +57,24 @@ deterministic), deepseek-v4-pro 20/42 (×1). Tuples are
 | `write-target-retro-trap` | 0/3 | 1/1 | `run_retro,unchanged,worklog,false` | `reject_finding,unchanged,worklog,false` |  |
 
 Cases at 3/3 and 1/1 are omitted. Every row above gets a disposition at C3.
+
+The raw per-case output of both runs is committed in
+`worklog/10-eval-corpus-triage/baseline-flash-x3.tsv` and `baseline-v4pro-x1.tsv`.
+The earlier 64/126 flash run was not saved; only its total is known.
+
+## C3 - Design review round 1 (2026-10-16)
+
+The Claude seat reviewed `800c8ab`: 1 blocking, 4 should-fix, 4 notes
+(https://github.com/emliunix/home.conf/pull/18).
+
+| # | Finding | Disposition |
+| --- | --- | --- |
+| 1 | blocking: the `write_target` definition ("not the file whose status line changes") contradicts the six `set_status … design_body` tuples, so adopting it re-targets them | Taken: definitions derived from the existing tuples; consistency table over every distinct tuple (12, including `remediate, unchanged, worklog`) plus an L0 row |
+| 2 | should-fix: "what verdict does the retro reach?" invites the landing act | Taken: a two-act situation names the scored act; landing stays with `gate-pending-landed-*` |
+| 3 | should-fix: disposition 3 moves a tuple unguarded | Taken: before/after tuple, quoted deciding sentence, derivation from it, second-seat confirmation; verification row |
+| 4 | should-fix: fixture gaps and intermittent cases | Taken: disposition 2 covers the fixture; dispositions are per case, below k/k needs its own |
+| 5 | should-fix: the leak word list conflicts with enum names | Taken: check conditionals and stage words other than the value's own name |
+| 6 | note: keep the parse rule in the grader only; exactly one `## Status`; no `draft` value | Taken; open question closed |
+| 7 | note: citations without a fragment pass vacuously; strip emphasis | Taken |
+| 8 | note: both models are deepseek | Taken: a disposition-1 row records whether another family confirmed it (no other-family key on this machine) |
+| 9 | note: keep the raw baseline | Taken: both runs committed under `worklog/10-eval-corpus-triage/` |

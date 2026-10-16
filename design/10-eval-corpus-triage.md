@@ -41,40 +41,71 @@ model already does. Designs 08 and 09 cannot land on this corpus yet.
      the only way the fixture allows, and the model answers otherwise. The case
      stays as it is and stays red. The fix goes to the skill, through the normal
      route (design → module docs → code), and the case re-runs afterwards;
-  2. **ambiguous instrument:** the question or a field admits another reading under
-     which the model's answer is also correct. The fix makes the instrument say one
-     thing (a field definition, or a question that names which act it asks about).
-     The meaning of the expected answer stays the same;
-  3. **stale expectation:** the expected answer contradicts the skills as merged.
-     The case is rewritten to the merged skill, and its citation points to the
-     sentence that now decides it.
-  Agreement between models is a signal, not a verdict. When two models give the
-  same wrong answer, check the reading first (2) before calling it a skill finding
-  (1). Whatever the disposition, the case's expected answer never changes just
-  because a model said something else.
+  2. **ambiguous instrument:** the question, a field or the fixture admits another
+     reading under which the model's answer is also correct (a fixture may leave out
+     a fact the decision needs, such as the round count). The second reading is
+     written out. The fix makes the instrument say one thing: a field definition, a
+     question that names the scored act, or the missing fact. The expected tuple
+     stays the same;
+  3. **stale expectation:** the expected tuple contradicts the skills as merged.
+     This is the one disposition that changes a tuple, so its row carries the
+     before and after tuple, the quoted deciding sentence of the merged skill
+     (which passes the citation check), a derivation of the new tuple from that
+     sentence alone, and a second seat's confirmation.
+  A disposition is per case. A case that misses only sometimes after the edits
+  (below k/k over the repeats) needs its own disposition; flakiness alone is not a
+  skill finding. Agreement between models is a signal, not a verdict: when two
+  models give the same wrong answer, check the reading (2) before calling it a
+  skill finding (1). Both models available here are deepseek, so a disposition-1
+  row records whether a model from another family confirmed it. Whatever the
+  disposition, an expected tuple never changes because a model said something
+  else.
 - **Field definitions** in `flow-skills-eval/src/eval/agent.ts`: each
   `submit_decision` field and enum value gets a `description` that defines the
-  value as an act, without saying which situation calls for it:
-  - `status_to_set`: the status word this decision writes. `unchanged` means the
-    decision writes no status line. Naming the design's current status word means
-    the same thing;
-  - `write_target`: the one file the decision's *content* goes to (the reasoning,
-    the record or the new text), not the file whose status line changes;
+  value as an act, without saying which situation calls for it. The definitions are
+  derived from the expected tuples already in `cases.ts`, not from a reading of the
+  words, so that defining them moves no tuple:
+  - `status_to_set`: the status word this decision writes; `unchanged` means it
+    writes no status line;
+  - `write_target`: the file this decision writes. That is the file holding the
+    status line when the decision sets one; otherwise the document its content goes
+    to; `none` when the change goes only to code, or nowhere;
   - `next_action` and `opens_new_design`: one line each, in the same style.
-  Situation-specific guidance stays in the skills. A definition that names a case
-  shape ("when a retro finds…") is a leak of the answer.
+  Every distinct expected tuple in the corpus is consistent with these definitions:
+
+  | Tuple | Consistent because |
+  | --- | --- |
+  | `set_status, reviewed/pending-retro/landed, design_body` | the status line is in the design |
+  | `set_status, draft-followup, followup_design_file` | the status line is in the new follow-up file |
+  | `run_retro` or `halt_structural`, `unchanged, worklog` | the record goes to the worklog |
+  | `remediate` or `implement`, `unchanged, none` | the change is code only |
+  | `remediate, unchanged, design_body` | the fix is in the design |
+  | `remediate, unchanged, worklog` | the correction is recorded in the worklog (`budget-paraphrase`, a disposition-3 candidate) |
+  | `open_new_design, unchanged, new_design_file` | the content goes to the new design |
+  | `reject_finding, unchanged, worklog` | the defense is recorded in the worklog |
+
+  Situation-specific guidance stays in the skills. A definition that uses a
+  conditional (`when`, `if`, `after`, `once`), or a stage or case-shape word other
+  than its own value's name, leaks the answer.
 - **Parse rule** in `flow-skills-eval/src/eval/decisions.ts`: an answer whose
-  `status_to_set` equals the fixture's current status (its `## Status` word, which
-  `fixtureProblems` already parses) is graded as `unchanged`, as the definition
-  above says.
+  `status_to_set` equals the fixture's current status is graded as `unchanged`.
+  The skills never specify that spelling, so grading it would measure nothing the
+  corpus is for. The rule lives only in the grader, not in the tool description.
+  The current status is the fixture's `## Status` word, and `fixtureProblems` now
+  requires exactly one such line, so the rule cannot compare against the wrong
+  file. `status_to_set` has no `draft` value, so the rule acts only on `reviewed`,
+  `pending-retro` and `landed` fixtures.
 - **The cases** in `flow-skills-eval/src/eval/cases.ts`: every case that misses in
   the baseline run is dispositioned in the worklog. Where the disposition is 2 or 3,
-  the case is edited as that disposition says. A retro case asks "what verdict does
-  the retro reach?", which names the act and leaves "run the retro" with no reading.
+  the case is edited as that disposition says. A case whose situation holds two
+  acts names the act its tuple scores. For example, a `fork-retro-followup-*`
+  question asks "what file does the retro create for these findings, and with what
+  status?", and the landing act stays with `gate-pending-landed-*`.
 - **Citation check**, an L0 test in `flow-skills-eval/tests/`: every `// Cite:`
-  comment names a skill file that exists. Each quoted fragment (split on `…`) occurs
-  in that file after whitespace normalization. Line numbers are not checked, because
-  they move on every edit.
+  comment names a skill file that exists and carries at least one quoted fragment.
+  Each fragment (split on `…`) occurs in that file after normalizing whitespace and
+  stripping Markdown emphasis (`**`, `*`, backticks). Line numbers are not checked,
+  because they move on every edit.
 - **Run provenance** (from PR #17's review): a run's output records the model and
   the names of the `FLOW_SKILLS_EVAL_EXTRA_BODY` keys, so a baseline score can be
   traced to its configuration. A stubbed-fetch unit test pins that the harness's
@@ -115,23 +146,23 @@ reading written out.
 | Property | Failure witness | Command |
 | --- | --- | --- |
 | The guide states the triage rule | `ref-eval-design-guide.md` lacks the three dispositions or the "expected answer never changes because a model said otherwise" rule | new L0 assertion, `vp test` |
-| Fields are defined without situations | a `submit_decision` field or enum value has no description, or a description names a skill stage or case shape (`retro`, `review`, `sweep`, `grill`) | new L0 assertion on the exported tool schema, `vp test` |
+| Fields are defined without situations | a `submit_decision` field or enum value has no description, or a description has a conditional (`when`, `if`, `after`, `once`) or a stage word other than its own value's name | new L0 assertion on the exported tool schema, `vp test` |
+| Definitions move no tuple | a distinct expected tuple in `cases.ts` has no row in the design's consistency table | new L0 assertion listing the distinct tuples against the table, `vp test` |
 | Same-word status is graded as no write | an answer of `status_to_set` equal to the fixture status is scored as a miss against `unchanged` | unit test in `tests/decisions.test.ts` |
-| Citations resolve | a `// Cite:` names a missing file, or a quoted fragment does not occur in it | new L0 citation test, `vp test` |
-| Every baseline miss is dispositioned | a case that missed in the recorded baseline has no row in the worklog's disposition table | review of `worklog/10-eval-corpus-triage.md` against the recorded baseline run |
+| Citations resolve | a `// Cite:` names a missing file, has no quoted fragment, or a fragment does not occur in it | new L0 citation test, `vp test` |
+| Every baseline miss is dispositioned | a case that missed in either committed raw baseline run has no row in the worklog's disposition table | review of `worklog/10-eval-corpus-triage.md` against `worklog/10-eval-corpus-triage/baseline-*.tsv` |
 | No expected answer moved for a model | a case with disposition 1 or 2 has a changed `expected` tuple in the diff | review of the `cases.ts` diff against the disposition table |
+| Disposition 3 is derived, not re-targeted | a disposition-3 row lacks the before and after tuple, the quoted deciding sentence, the derivation, or a second seat's confirmation | review of the disposition table by the reviewer seat |
 | The lock covers the tool schema | editing a field description leaves the lock green | `prek run --all-files` (flow-skills-eval frozen prefix lock) |
 | Runs are traceable | a run's output omits the model or the extra-body key names, or an extra field overrides `model`, `temperature` or `tool_choice` | unit tests with a stubbed `fetch`, `vp test` |
-| Re-run | after the edits, the run on both models is recorded, with each remaining miss tied to a disposition-1 row | `vp run eval:full` on deepseek-flash ×3 and deepseek-v4-pro ×1 |
+| Re-run | after the edits, the run on both models is recorded, and each case below k/k is tied to a disposition-1 row or to its own disposition | `vp run eval:full` on deepseek-flash ×3 and deepseek-v4-pro ×1 |
 
 Each L0 witness is first observed failing on a seeded defect.
 
 ## Open questions
 
-- Whether the parse rule (a same-word status counts as `unchanged`) should instead
-  make the case a miss, so that the definition itself is what gets tested. Bob's
-  reading: the definition is the instrument, and grading both spellings the same
-  removes a spelling test that no skill asks for.
+- None. The parse-rule question was settled at review round 1: keep the rule, in
+  the grader only.
 
 ## Goal
 
