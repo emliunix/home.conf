@@ -7,6 +7,11 @@ export interface ApiConfig {
   readonly apiKey: string;
   readonly baseUrl: string;
   readonly model: string;
+  /**
+   * Provider-specific request fields from `FLOW_SKILLS_EVAL_EXTRA_BODY` (a JSON object), fixed
+   * for the whole run so the request head stays byte-identical. The harness's own fields win.
+   */
+  readonly extraBody: Readonly<Record<string, unknown>>;
 }
 
 /** smoke = L1 canonical cases only; full = all L1 triplets. L0 lint always runs in `vp test`. */
@@ -56,7 +61,23 @@ export function readApiConfig(env = projectEnv()): ApiConfig {
   if (!apiKey) throw new Error(`Missing API key in project .env. Set ${envKeys.apiKey[0]}.`);
   if (!baseUrl) throw new Error(`Missing API base URL in project .env. Set ${envKeys.baseUrl[0]}.`);
 
-  return Object.freeze({ apiKey, baseUrl: baseUrl.replace(/\/$/, ""), model });
+  const extraBody = readExtraBody(env.FLOW_SKILLS_EVAL_EXTRA_BODY);
+
+  return Object.freeze({ apiKey, baseUrl: baseUrl.replace(/\/$/, ""), model, extraBody });
+}
+
+function readExtraBody(raw: string | undefined): Readonly<Record<string, unknown>> {
+  if (raw === undefined || raw.trim() === "") return Object.freeze({});
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new Error("FLOW_SKILLS_EVAL_EXTRA_BODY is not valid JSON.");
+  }
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("FLOW_SKILLS_EVAL_EXTRA_BODY must be a JSON object.");
+  }
+  return Object.freeze(parsed as Record<string, unknown>);
 }
 
 export function readProfile(env: Record<string, string> = {}): EvalProfile {
