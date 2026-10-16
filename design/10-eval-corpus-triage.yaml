@@ -1,0 +1,11 @@
+schema_version: 1
+kind: document-contract
+document:
+  path: design/10-eval-corpus-triage.md
+  kind: design
+  depends_on:
+    - design/09-retro-outcomes.md
+    - flow-skills-eval/design/ref-eval-design-guide.md
+commands:
+  - npm test
+evidence_level: E1

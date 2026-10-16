@@ -1,9 +1,9 @@
 import { describeTask, expect } from "vieval";
 
-import { runDecisionCase } from "../src/eval/agent.ts";
+import { runDecisionCase, runProvenance } from "../src/eval/agent.ts";
 import { projectEnv, readApiConfig, readProfile } from "../src/eval/env.ts";
-import { WARMUP_CASE, casesForProfile } from "../src/eval/cases.ts";
-import { compareDecision } from "../src/eval/decisions.ts";
+import { WARMUP_CASE, casesForProfile, fixtureStatus } from "../src/eval/cases.ts";
+import { compareDecision, normalizeDecision } from "../src/eval/decisions.ts";
 import { checkCacheObservability, extractUsageMetrics } from "../src/eval/metrics.ts";
 import {
   FROZEN_EVALUATION_CONTEXT,
@@ -76,10 +76,14 @@ describeTask("flow-skill-decisions", ({ caseOf, casesFromInputs }) => {
       try {
         const decisionCase = context.matrix.inputs;
         const result = await runDecisionCase(frozenPrompt, decisionCase, apiConfig);
-        const comparison = compareDecision(decisionCase.expected, result.decision);
+        const graded = normalizeDecision(result.decision, fixtureStatus(decisionCase.fixture));
+        const comparison = compareDecision(decisionCase.expected, graded);
+        const provenance = runProvenance(apiConfig);
         const usage = extractUsageMetrics(result.usage);
 
         context.metric("promptHash", result.promptHash);
+        context.metric("model", provenance.model);
+        context.metric("extra_body_keys", provenance.extra_body_keys);
         context.metric("prompt_tokens", usage.promptTokens ?? -1);
         context.metric("completion_tokens", usage.completionTokens ?? -1);
         context.metric("cached_tokens", usage.cachedTokens ?? -1);

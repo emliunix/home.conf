@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { WARMUP_CASE, casesForProfile, decisionCases, fixtureProblems } from "../src/eval/cases.ts";
+import { WARMUP_CASE, casesForProfile, decisionCases, fixtureProblems, fixtureStatus } from "../src/eval/cases.ts";
 import { NEXT_ACTIONS, STATUSES_TO_SET, WRITE_TARGETS } from "../src/eval/decisions.ts";
 
 const KIND_SUFFIXES = ["canonical", "trap", "paraphrase"] as const;
@@ -44,6 +44,11 @@ describe("L1 decision-case corpus", () => {
         ["## Problem statement", "x", "## Scope", "y", "## Rationale", "z", "## Status", "shipped"].join("\n"),
       ),
     ).toContain("missing or invalid ## Status line");
+    const heads = ["## Problem statement", "x", "## Scope", "y", "## Rationale", "z"];
+    expect(fixtureProblems([...heads, "## Status", "draft", "## Status", "landed"].join("\n"))).toContain(
+      "more than one ## Status line",
+    );
+    expect(fixtureStatus([...heads, "## Status", "pending-retro"].join("\n"))).toBe("pending-retro");
   });
 
   it("uses only schema enum values in expected decisions", () => {

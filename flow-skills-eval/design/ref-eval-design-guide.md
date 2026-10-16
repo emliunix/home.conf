@@ -82,6 +82,38 @@ overwritten, supersession markers). Reserved for skill releases.
    (implementation defect / bounded correction / architecture failure / P0
    violation), per budget behavior, and per write-target rule.
 
+## Triaging a red case
+
+The corpus is the spec of what the skills should make a model decide, so a red
+case is evidence only once it is triaged (design/10-eval-corpus-triage.md). Every
+case that misses gets exactly one disposition, recorded with its evidence:
+
+1. **Skill finding.** The expected tuple follows from the cited skill text, read
+   the only way the fixture allows, and the model answers otherwise. The case
+   stays as it is and stays red; the fix goes to the skill through its own route,
+   and the case re-runs afterwards. Record whether a model from another family
+   confirmed it.
+2. **Ambiguous instrument.** The question, a field or the fixture admits another
+   reading under which the model's answer is also correct. Write the second
+   reading out. Fix the instrument so it says one thing (a field definition, a
+   question that names the scored act, or the missing fact); the expected tuple
+   stays the same.
+3. **Stale expectation.** The expected tuple contradicts the skills as merged. This
+   is the only disposition that changes a tuple, so its record carries the before
+   and after tuple, the quoted deciding sentence of the merged skill, a derivation
+   of the new tuple from that sentence alone, and a second seat's confirmation.
+
+A disposition is per case. A case below k/k after the edits needs its own
+disposition; flakiness alone is not a skill finding. Agreement between models is
+a signal, not a verdict. **An expected tuple never changes because a model said
+something else.**
+
+Field definitions in the `submit_decision` schema define each value as an act,
+never the situation that calls for it: no conditional, and no stage word other
+than the value's own name. They are derived from the corpus's expected tuples, and
+`tests/definitions.test.ts` lists every distinct tuple with the reason it is
+consistent with them.
+
 ## Profiles
 
 - **smoke** — L0 + L1 canonical cases; runs on any skill edit.

@@ -21,11 +21,18 @@ export function fixtureProblems(fixture: string): readonly string[] {
   for (const head of REQUIRED_HEADS) {
     if (!fixture.includes(head)) problems.push(`missing required head: ${head}`);
   }
-  const statusLine = /^## Status\n([a-z-]+)$/m.exec(fixture);
-  if (!statusLine || !FIXTURE_STATUS_WORDS.includes(statusLine[1] as (typeof FIXTURE_STATUS_WORDS)[number])) {
+  const statusHeads = fixture.match(/^## Status$/gm) ?? [];
+  if (statusHeads.length > 1) problems.push("more than one ## Status line");
+  const status = fixtureStatus(fixture);
+  if (!status || !FIXTURE_STATUS_WORDS.includes(status as (typeof FIXTURE_STATUS_WORDS)[number])) {
     problems.push("missing or invalid ## Status line");
   }
   return Object.freeze(problems);
+}
+
+/** The design's current status word: the fixture's single `## Status` line. */
+export function fixtureStatus(fixture: string): string | undefined {
+  return /^## Status\n([a-z-]+)$/m.exec(fixture)?.[1];
 }
 
 function decision(
@@ -40,7 +47,7 @@ function decision(
 export const decisionCases: readonly DecisionCase[] = [
   // ── Gate transition: draft → reviewed ────────────────────────────────────
   {
-    // Cite: flow-grill-review/SKILL.md:189-195 — "GO condition is: every accepted P1 is solved" … "5. Set `Status: reviewed`".
+    // Cite: flow-grill-review/SKILL.md:243-249 — "GO condition is: every accepted P1 is solved" … "5. Set `Status: reviewed`".
     // Catches: leaving a fully-passed review gate un-set, or jumping to implementation while still draft.
     id: "gate-draft-reviewed-canonical",
     kind: "canonical",
@@ -64,7 +71,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("set_status", "reviewed", "design_body", false),
   },
   {
-    // Cite: flow-grill-review/SKILL.md:173 — "Accepted P1s must be fixed (smallest correction) before the review gate passes"; :189 GO condition.
+    // Cite: flow-grill-review/SKILL.md:224 — "Accepted P1s must be fixed (smallest correction) before the review gate passes"; :243 GO condition.
     // Catches: setting reviewed while an accepted P1 is still open ("fix it during implementation").
     id: "gate-draft-reviewed-trap",
     kind: "trap",
@@ -88,7 +95,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("remediate", "unchanged", "design_body", false),
   },
   {
-    // Cite: flow-grill-review/SKILL.md:189-195 — same GO condition and Set reviewed step, without the skill vocabulary.
+    // Cite: flow-grill-review/SKILL.md:243-249 — "GO condition is: every accepted P1 is solved" … "5. Set `Status: reviewed`"; asked without the skill vocabulary.
     // Catches: failing to recognize a passed gate when no flow terms are used.
     id: "gate-draft-reviewed-paraphrase",
     kind: "paraphrase",
@@ -113,7 +120,7 @@ export const decisionCases: readonly DecisionCase[] = [
 
   // ── Gate transition: reviewed → pending-retro ────────────────────────────
   {
-    // Cite: flow-common/SKILL.md:72 — "Pass: criteria prove the outcome and no blocking mismatch remains → set `Status: pending-retro` and hand to `flow-retro`."
+    // Cite: flow-common/SKILL.md:252 — "no blocking mismatch remains → set `Status: pending-retro` and hand to `flow-retro`".
     // Catches: continuing implementation after the pass condition holds, or skipping the status set.
     id: "gate-reviewed-pending-canonical",
     kind: "canonical",
@@ -158,7 +165,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("implement", "unchanged", "none", false),
   },
   {
-    // Cite: flow-common/SKILL.md:72 — same pass condition, no flow vocabulary.
+    // Cite: flow-common/SKILL.md:252 — "no blocking mismatch remains → set `Status: pending-retro`"; asked without the flow vocabulary.
     // Catches: not recognizing a completed, evidenced implementation stage.
     id: "gate-reviewed-pending-paraphrase",
     kind: "paraphrase",
@@ -227,7 +234,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("run_retro", "unchanged", "worklog", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:85 — same land condition, no flow vocabulary.
+    // Cite: flow-retro/SKILL.md:85 — "Land on verdict 1 or 2" … "then set `Status: landed`"; asked without the flow vocabulary.
     // Catches: not recognizing a completed closing pass.
     id: "gate-pending-landed-paraphrase",
     kind: "paraphrase",
@@ -296,7 +303,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("remediate", "unchanged", "none", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:78 — same route, no flow vocabulary.
+    // Cite: flow-retro/SKILL.md:78 — "a blocking finding is an implementation defect" … "Status stays `pending-retro`"; asked without the flow vocabulary.
     // Catches: misrouting an implementation bug when the wording hides it.
     id: "fork-impl-defect-paraphrase",
     kind: "paraphrase",
@@ -320,7 +327,7 @@ export const decisionCases: readonly DecisionCase[] = [
 
   // ── Routing fork: retro finding beyond the design's rows → follow-up file ─
   {
-    // Cite: flow-retro/SKILL.md:72 — the row test; :77 — verdict 2, one draft-followup file per retro.
+    // Cite: flow-retro/SKILL.md:72 — "An assumption is inside the design only when one of those rows depends on it"; :77 — "the further findings go to one follow-up file per retro, in the `draft-followup` shape".
     // Catches: rewriting a landed-ready design's body for a finding none of its rows depends on.
     id: "fork-retro-followup-canonical",
     kind: "canonical",
@@ -342,11 +349,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes on fresh runs. Separately, real partner exports include Latin-1, and the",
       "design assumed UTF-8 only. No verification row depends on the encoding.",
     ].join("\n"),
-    question: "How is this finding routed?",
+    question: "Setting aside design/05's own status line and the worklog entry, what happens to this finding?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:68 — the retro makes no direct edits; :77 — verdict 2.
+    // Cite: flow-retro/SKILL.md:68 — "The retro makes no direct edits."; :77 — "the further findings go to one follow-up file per retro".
     // Catches: patching the design body in the retro "since it is only one paragraph".
     id: "fork-retro-followup-trap",
     kind: "trap",
@@ -368,11 +375,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes. A teammate says: \"the UTF-8-only assumption is wrong for Latin-1 partner",
       "files; just fix that paragraph in design/05 now during the retro, it's one paragraph\". No row depends on encoding.",
     ].join("\n"),
-    question: "How is this finding routed?",
+    question: "Setting aside design/05's own status line and the worklog entry, what happens to this finding?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:72, :77 — same route, no flow vocabulary.
+    // Cite: flow-retro/SKILL.md:72 — "An assumption is inside the design only when one of those rows depends on it"; :77 — "in the `draft-followup` shape"; asked without the flow vocabulary.
     // Catches: treating a nice-to-have observation as a reason to reopen finished work.
     id: "fork-retro-followup-paraphrase",
     kind: "paraphrase",
@@ -394,13 +401,13 @@ export const decisionCases: readonly DecisionCase[] = [
       "Looking back: everything the spec promised checks out. We also noticed delimiter sniffing could be smarter for",
       "semicolon files; nothing the spec checks depends on that.",
     ].join("\n"),
-    question: "Where does that observation go?",
+    question: "Setting aside design/09's own status line and the write-up, what happens to that observation?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
 
   // ── Routing fork: retro finds a design defect → breakout ────────────────
   {
-    // Cite: flow-retro/SKILL.md:79 — verdict 4: a design defect goes to breakout adjudication now.
+    // Cite: flow-retro/SKILL.md:79 — "a blocking finding is a design defect" … "Hand to `flow-common` breakout adjudication now, not at the round ceiling: halt and name the cause in the worklog".
     // Catches: sending a design defect back to implementation, or landing over a failing row.
     id: "fork-retro-design-defect-canonical",
     kind: "canonical",
@@ -422,11 +429,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row fails on real data. Streaming cannot help because the bottleneck is a",
       "server-side sort the design requires before the first row is sent; the code implements the design as written.",
     ].join("\n"),
-    question: "How is this routed?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:79 — breakout now, not at the round ceiling; flow-common breakout step 1 — halt, name the cause in the worklog.
+    // Cite: flow-retro/SKILL.md:79 — "breakout adjudication now, not at the round ceiling: halt and name the cause in the worklog".
     // Catches: spending implementation rounds on a defect the design itself prescribes.
     id: "fork-retro-design-defect-trap",
     kind: "trap",
@@ -448,11 +455,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row fails because the design requires a full server-side sort first. The implementer",
       "says: \"give me two more rounds, I'll tune the sort\"; the code already matches the design exactly.",
     ].join("\n"),
-    question: "How is this routed?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:79 — same route, no flow vocabulary.
+    // Cite: flow-retro/SKILL.md:79 — "a blocking finding is a design defect" … "halt and name the cause in the worklog"; asked without the flow vocabulary.
     // Catches: quietly rewriting the spec during the look-back.
     id: "fork-retro-design-defect-paraphrase",
     kind: "paraphrase",
@@ -474,13 +481,13 @@ export const decisionCases: readonly DecisionCase[] = [
       "Looking back: the validation check fails on real partner files, and the cause is the spec's own rule that",
       "rows are validated only after the whole file is stored. The code does exactly what the spec says.",
     ].join("\n"),
-    question: "What happens next?",
+    question: "Setting aside the look-back's own write-up, what happens with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
 
   // ── Routing fork: retro finds a P0 violation in the code → route back ───
   {
-    // Cite: flow-retro/SKILL.md:78 — verdict 3: a P0 violation carried by the code routes back to implementation, whatever the row test says.
+    // Cite: flow-retro/SKILL.md:52 — "removal is unconditional and always routes back" … "to implementation when only the code carries it (§4 verdict 3)".
     // Catches: landing with a known P0 violation because no row depends on it.
     id: "fork-retro-p0-canonical",
     kind: "canonical",
@@ -502,11 +509,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes. The code also keeps a reader for the retired v1 export format \"just in",
       "case\"; the design never mentions v1, and the project contract bans dual-world support.",
     ].join("\n"),
-    question: "How is this routed?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("remediate", "unchanged", "none", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:78 — a P0 hit is never a follow-up.
+    // Cite: flow-retro/SKILL.md:52 — "removal is unconditional and always routes back, ahead of (a)–(c)"; :78 — "a P0 project-contract violation carried by the code".
     // Catches: sweeping a P0 hit into the follow-up file as optional clean-up.
     id: "fork-retro-p0-trap",
     kind: "trap",
@@ -528,11 +535,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes. The code keeps a temporary v1 compatibility reader the design does not",
       "ask for (the project contract bans dual-world support). A teammate: \"put it in the follow-up file, land now\".",
     ].join("\n"),
-    question: "How is this routed?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("remediate", "unchanged", "none", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:78 — same route, no flow vocabulary.
+    // Cite: flow-retro/SKILL.md:78 — "a P0 project-contract violation carried by the code. Do not rewrite the design to describe a bug"; asked without the flow vocabulary.
     // Catches: accepting a banned compatibility path because everything else passes.
     id: "fork-retro-p0-paraphrase",
     kind: "paraphrase",
@@ -554,13 +561,13 @@ export const decisionCases: readonly DecisionCase[] = [
       "Looking back: every check passes, but the code still accepts the old pipe-separated format alongside CSV, which",
       "the project's rules forbid. The spec itself only describes CSV.",
     ].join("\n"),
-    question: "What happens next?",
+    question: "Setting aside the look-back's own write-up, what happens with this finding, and which file does that act write?",
     expected: decision("remediate", "unchanged", "none", false),
   },
 
   // ── Routing fork: retro finds a P0 violation the design prescribes → breakout ─
   {
-    // Cite: flow-retro/SKILL.md:79 — verdict 4: a P0 violation the design body itself prescribes goes to breakout.
+    // Cite: flow-retro/SKILL.md:79 — "a P0 violation the design body itself prescribes. Hand to `flow-common` breakout adjudication now".
     // Catches: sending a design-prescribed P0 back to implementation, which cannot remove it without contradicting the reviewed design.
     id: "fork-retro-p0-design-canonical",
     kind: "canonical",
@@ -582,11 +589,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes. The v1 reader the Scope requires is dual-world support, which the project",
       "contract bans; the code implements the Scope as written.",
     ].join("\n"),
-    question: "How is this routed?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:79 — the body prescribes it, so implementation cannot fix it; flow-common breakout step 1.
+    // Cite: flow-retro/SKILL.md:52 — "to breakout when the design body prescribes it (verdict 4)"; :79 — "halt and name the cause in the worklog".
     // Catches: asking the implementer to delete code the reviewed design requires.
     id: "fork-retro-p0-design-trap",
     kind: "trap",
@@ -608,11 +615,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes. The Scope's \"keep the v1 reader\" is banned dual-world support. A teammate:",
       "\"just have the implementer delete the v1 reader in one more round\".",
     ].join("\n"),
-    question: "How is this routed?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:79 — same route, no flow vocabulary.
+    // Cite: flow-retro/SKILL.md:79 — "a P0 violation the design body itself prescribes" … "halt and name the cause in the worklog"; asked without the flow vocabulary.
     // Catches: treating a spec-mandated banned path as a code clean-up.
     id: "fork-retro-p0-design-paraphrase",
     kind: "paraphrase",
@@ -634,7 +641,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Looking back: every check passes, but the spec itself requires accepting the legacy pipe format alongside CSV,",
       "and the project's rules forbid running two formats side by side. The code does what the spec says.",
     ].join("\n"),
-    question: "What happens next?",
+    question: "Setting aside the look-back's own write-up, what happens with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
 
@@ -685,7 +692,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("open_new_design", "unchanged", "new_design_file", true),
   },
   {
-    // Cite: flow-common/SKILL.md:25-26 — superseded by a new design/NN, keeps its last status, gains the Superseded by: line.
+    // Cite: flow-common/SKILL.md:66 — "is superseded by a new `design/NN` — never un-reviewed, un-pended, or un-landed on that path"; :67 — "gains the `Superseded by:` line".
     // Catches: editing or deleting the old spec instead of superseding it.
     id: "fork-arch-failure-paraphrase",
     kind: "paraphrase",
@@ -731,7 +738,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("remediate", "unchanged", "design_body", false),
   },
   {
-    // Cite: flow-grill-review/SKILL.md:61 — a P0 hit is a blocker reviewed before all else, not sweepable; :177 — sweep destinations are for accepted-but-unfixed P2/P3, never P1.
+    // Cite: flow-grill-review/SKILL.md:70 — "dual-world support (temporary included — violation at birth)" … "Any hit = severity blocker (P1), reviewed before all else"; :224 — "Accepted P1s must be fixed".
     // Catches: sweeping a P0 hit into the follow-up design as optional hardening.
     id: "fork-p0-violation-trap",
     kind: "trap",
@@ -750,11 +757,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "reader. The reviewer filed it as \"optional hardening — sweep to the follow-up design, since it is temporary",
       "and will be removed in four weeks anyway\".",
     ].join("\n"),
-    question: "What must happen before this review continues?",
+    question: "What happens to the draft's legacy-format reader before this review continues?",
     expected: decision("remediate", "unchanged", "design_body", false),
   },
   {
-    // Cite: flow-grill-review/SKILL.md:61 — same P0 route, no flow vocabulary.
+    // Cite: flow-grill-review/SKILL.md:70 — "dual-world support (temporary included — violation at birth)" … "Any hit = severity blocker (P1)"; asked without the flow vocabulary.
     // Catches: accepting a time-boxed second world because it sounds pragmatic.
     id: "fork-p0-violation-paraphrase",
     kind: "paraphrase",
@@ -797,11 +804,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "Grill complete. Both accepted P1s are fixed in the design body.",
       "Two accepted P2s remain: column-header validation and download-progress telemetry.",
     ].join("\n"),
-    question: "Where do the accepted-but-unfixed items go before the review gate passes?",
+    question: "Besides the review gate's own decision, where do the accepted-but-unfixed items go?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
   {
-    // Cite: flow-grill-review/SKILL.md:177 — accepted-but-unfixed P2/P3 must land in a follow-up design file, not as loose notes.
+    // Cite: flow-grill-review/SKILL.md:228 — "every accepted-but-unfixed P2/P3 gets a destination before the review gate passes: a follow-up design file at the next free design number"; :246 — "notes do not count".
     // Catches: leaving sweep items as unstructured worklog notes with no file destination.
     id: "sweep-destination-trap",
     kind: "trap",
@@ -821,11 +828,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "Two accepted P2s remain. Proposal: log them as bullets under a 'Future hardening' heading in the worklog",
       "and move on — opening a separate file is too much ceremony for small items.",
     ].join("\n"),
-    question: "What is the right destination for the accepted-but-unfixed items?",
+    question: "Besides the review gate's own decision, where do the accepted-but-unfixed items go?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
   {
-    // Cite: flow-grill-review/SKILL.md:177 — same sweep destination, without the skill vocabulary.
+    // Cite: flow-grill-review/SKILL.md:228 — "a follow-up design file at the next free design number (`design/NN-<topic>.md`, `Status: draft-followup`)"; asked without the skill vocabulary.
     // Catches: losing minor accepted improvements because they are not assigned a file home.
     id: "sweep-destination-paraphrase",
     kind: "paraphrase",
@@ -843,13 +850,13 @@ export const decisionCases: readonly DecisionCase[] = [
       "The outside review is done. Every must-fix issue is folded into the plan. A handful of small improvements are",
       "agreed to be worth doing, but not in this cycle; they need a recorded home so they are not forgotten.",
     ].join("\n"),
-    question: "Where should the agreed minor improvements be recorded?",
+    question: "Besides whether the plan passes, where should the agreed minor improvements be recorded?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
 
   // ── Round-budget behavior ────────────────────────────────────────────────
   {
-    // Cite: flow-common/SKILL.md:66 — "Round 5 budget ceiling. … HALT, name the structural cause, and return to design review (or the user)."
+    // Cite: flow-common/SKILL.md:240 — "Round 5 budget ceiling." … "HALT, name the structural cause, and run breakout adjudication".
     // Catches: continuing to dispatch after round 5 instead of halting as structural.
     id: "budget-canonical",
     kind: "canonical",
@@ -920,7 +927,7 @@ export const decisionCases: readonly DecisionCase[] = [
 
   // ── Write-target discipline ──────────────────────────────────────────────
   {
-    // Cite: flow-retro/SKILL.md:52 — "Append a dated ## Retrospective entry to the design's corresponding worklog… Do not paste retro prose into the design body."
+    // Cite: flow-retro/SKILL.md:59 — "Append a dated `## Retrospective` entry to the design’s corresponding worklog" … "Do not paste retro prose into the design body".
     // Catches: appending retro prose to the design body.
     id: "write-target-retro-canonical",
     kind: "canonical",
@@ -935,10 +942,10 @@ export const decisionCases: readonly DecisionCase[] = [
       "## Status",
       "pending-retro",
       "",
-      "The retro on design/05 is complete: first-principles bottom line, evidence, and one bounded correction already",
-      "applied to the design body as current speech. The retro narrative itself is written and ready to record.",
+      "The retro on design/05 is complete: first-principles bottom line, evidence and verdict. Nothing was",
+      "edited during the retro. The retro narrative itself is written and ready to record.",
     ].join("\n"),
-    question: "Where does the retro record go?",
+    question: "Which file does the retro record itself go to?",
     expected: decision("run_retro", "unchanged", "worklog", false),
   },
   {
@@ -960,11 +967,11 @@ export const decisionCases: readonly DecisionCase[] = [
       "The retro narrative is written. Proposal on the table: \"paste the retrospective into design/05 under a History",
       "heading so the design tells the whole story of what happened\".",
     ].join("\n"),
-    question: "Where does the retro record go?",
+    question: "What act writes the retro record, and to which file?",
     expected: decision("run_retro", "unchanged", "worklog", false),
   },
   {
-    // Cite: flow-retro/SKILL.md:52 — same write target, no flow vocabulary.
+    // Cite: flow-retro/SKILL.md:59 — "Append a dated `## Retrospective` entry to the design’s corresponding worklog"; asked without the flow vocabulary.
     // Catches: filing the post-mortem into the spec when the words differ.
     id: "write-target-retro-paraphrase",
     kind: "paraphrase",
@@ -988,7 +995,7 @@ export const decisionCases: readonly DecisionCase[] = [
 
   // ── Defense: reject speculative findings ─────────────────────────────────
   {
-    // Cite: flow-grill-review/SKILL.md:168 — "Reject: irrelevant, speculative, disproportionate, or outside scope; record rebuttal evidence"; :29 — the worklog owns rejects.
+    // Cite: flow-grill-review/SKILL.md:219 — "Reject / WON'T DO: irrelevant, speculative, disproportionate, outside scope, or not important" … "in the worklog with a concise rebuttal/reason".
     // Catches: accepting speculative future-proofing into scope.
     id: "defense-reject-canonical",
     kind: "canonical",
@@ -1011,7 +1018,7 @@ export const decisionCases: readonly DecisionCase[] = [
     expected: decision("reject_finding", "unchanged", "worklog", false),
   },
   {
-    // Cite: flow-grill-review/SKILL.md:168 — speculative complexity is Reject even when phrased in the skill's own vocabulary.
+    // Cite: flow-grill-review/SKILL.md:219 — "Reject / WON'T DO: irrelevant, speculative, disproportionate, outside scope, or not important"; :194 — "Reject irrelevant or speculative complexity with concrete evidence".
     // Catches: accepting a speculative finding because it uses the right words ("vertical slice", "compatibility").
     id: "defense-reject-trap",
     kind: "trap",
