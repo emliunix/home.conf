@@ -15,7 +15,7 @@ citations to be checked mechanically, so they cannot drift again.
 
 The L1 corpus in `flow-skills-eval/src/eval/cases.ts` is the spec of what the
 skills should make a model decide. It has never been run against a real model,
-because vieval skipped the project (fixed separately in PR #17). Now that it runs,
+because vieval skipped the project (fixed in PR #17, `e47dabc`). Now that it runs,
 62 of 126 answers miss, and a miss can mean three different things:
 - the skills do not lead a model to the intended decision (a real finding);
 - the question or a schema field can be read two ways, so the expected answer is
@@ -75,6 +75,10 @@ model already does. Designs 08 and 09 cannot land on this corpus yet.
   comment names a skill file that exists. Each quoted fragment (split on `…`) occurs
   in that file after whitespace normalization. Line numbers are not checked, because
   they move on every edit.
+- **Run provenance** (from PR #17's review): a run's output records the model and
+  the names of the `FLOW_SKILLS_EVAL_EXTRA_BODY` keys, so a baseline score can be
+  traced to its configuration. A stubbed-fetch unit test pins that the harness's
+  own request fields win over extra fields.
 - **Lock:** the tool schema joins the frozen prefix that
   `frozen-prefix.lock.json` hashes, since a definition edit changes what the model
   is told. The lock is re-approved.
@@ -117,6 +121,7 @@ reading written out.
 | Every baseline miss is dispositioned | a case that missed in the recorded baseline has no row in the worklog's disposition table | review of `worklog/10-eval-corpus-triage.md` against the recorded baseline run |
 | No expected answer moved for a model | a case with disposition 1 or 2 has a changed `expected` tuple in the diff | review of the `cases.ts` diff against the disposition table |
 | The lock covers the tool schema | editing a field description leaves the lock green | `prek run --all-files` (flow-skills-eval frozen prefix lock) |
+| Runs are traceable | a run's output omits the model or the extra-body key names, or an extra field overrides `model`, `temperature` or `tool_choice` | unit tests with a stubbed `fetch`, `vp test` |
 | Re-run | after the edits, the run on both models is recorded, with each remaining miss tied to a disposition-1 row | `vp run eval:full` on deepseek-flash ×3 and deepseek-v4-pro ×1 |
 
 Each L0 witness is first observed failing on a seeded defect.
