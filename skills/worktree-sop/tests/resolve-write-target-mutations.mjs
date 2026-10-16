@@ -6,7 +6,7 @@
 // looks identical to one that passes because the check agreed. Each mutation below reintroduces ONE
 // defect and requires the named case to redden. A mutation whose anchor is ABSENT is reported BROKEN
 // and is NEVER scored as a pass -- the same contract as `check-canonical-checkout-mutations.mjs` and
-// `check-lock-mutations.mjs`, the in-repo precedent for a committed runner behind a mutation table.
+// `check-canonical-checkout-mutations.mjs`, the in-repo precedent for a committed runner behind a mutation table.
 //
 // ⚠ M2 IS THE IMPORTANT ONE. It is not a hypothetical: it is the defect this script HAD, measured,
 // while it was being written. Without `--path-format=absolute` the classifier reported the SHARED

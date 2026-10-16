@@ -33,7 +33,8 @@ branch is created, name both the branch and the commit it points at.
 ## Work and gate
 
 Run the card's named acceptance gate against the worktree revision. For a
-shared-host heavy gate, use the gate lock in [`gate-lock.md`](gate-lock.md).
+shared-host heavy gate, use the admitted seat in
+[`SKILL.md` § Heavy gates](../SKILL.md#heavy-gates) (`npm run check`).
 A gate report names the revision, population, command, and exit code it read.
 
 ### home.conf: fresh linked worktree (#310 / #312)

@@ -7,8 +7,8 @@
 // reintroduces ONE defect in the guard and requires the named case to redden. A mutation whose
 // anchor is absent is reported BROKEN and is NEVER scored as a pass -- the same contract as
 // `doc-verify/tests/language/references.mutations.mjs` and
-// `skills/worktree-sop/tests/check-lock-mutations.mjs`, which are the in-repo precedent for a
-// committed runner behind a mutation table.
+// `skills/worktree-sop/tests/resolve-write-target-mutations.mjs`, which are the in-repo precedent
+// for a committed runner behind a mutation table.
 //
 // The guard is copied into a temp dir before each mutation, so the working tree is never left
 // mutated and a crash mid-run cannot corrupt the source.

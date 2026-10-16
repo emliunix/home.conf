@@ -8,7 +8,7 @@
 // A suite cannot show its own cases are load-bearing -- a case that passes because the check never ran
 // looks identical to one that passes because the check agreed. That is what
 // `resolve-write-target-mutations.mjs` is for, and it is the in-repo precedent
-// (`check-canonical-checkout-mutations.mjs`, `check-lock-mutations.mjs`).
+// (`check-canonical-checkout-mutations.mjs`, `resolve-write-target-mutations.mjs`).
 //
 // FIXTURES ARE BUILT HERE, not borrowed from the operator's machine: a scratch dir with a real primary
 // repo, a real linked worktree, and a symlink pointing at each. Borrowing `~/.agents/skills` would make

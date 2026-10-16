@@ -49,25 +49,39 @@ the exact checks and cleanup evidence.
 ## Heavy gates
 
 A heavy gate is a resource on the host, not a correctness authority. Run it
-under one lock so two processes cannot overlap:
+under one admission slot so two processes cannot overlap:
 
 ```bash
-node skills/worktree-sop/scripts/gate-lock.mjs -- pnpm check
+npm run check
 ```
 
-Each attempt reports its own exit code and receipt. The lock has a bounded
-wait, an **atomic publish** so the lock path is never partially written, a
-three-way holder classification (**missing** retries the create, **unparseable** —
-including parseable files that are not lock metadata — is honoured until it ages
-out, **parsed** waits unless the holder is dead or aged), a recovery that serializes
-its decision behind a short exclusive claim (so two reclaimers cannot act on one stale
-observation), claims the entry by rename so it can neither evict a successor nor
-clobber one on restore, and a release that never unlinks the shared path.
+`check` runs `scripts/run-admitted-check.mjs`, which binds one fixed loopback
+slot (`127.0.0.1:47123`) and only then runs the compound
+(`npm run build && node doc-verify/dist/cli.js check …`, named in
+`package.json` as `check:compound`). **The kernel bind IS the test-and-set**: a
+second gate gets `EADDRINUSE`, and the slot is freed by the kernel when the
+holder exits, including on `SIGKILL`. There is no lock file, no holder
+classification, and no staleness rule to reason about.
+
+If the slot is held, the wrapper waits a bounded **20 minutes** and then exits
+**75**, printing a `FAIL:` block that names the port and the wait. **Read 75 as
+"the gate did not run", never as a red about the tree** — the compound itself
+exits 0 or 1, so the codes cannot be confused.
+
+⚠ **The admitted unit is the wrapper around the COMPOUND, not an individual
+child.** A wrapper `SIGKILL` releases the slot (the kernel drops it with the
+process) while a reparented child may still run, so this is *equal to the
+retired lock and no better* on that axis. Do not describe it as the sibling
+`agent-substrate` seat, where the bind sits in the process that runs the work.
+
+⚠ **The port is duplicated, not shared.** For a gate here to exclude a gate in
+`agent-substrate`, both must bind the same port, and there is no common source
+of truth. **A drift is silent**: each repository keeps serializing its own gates
+and only the cross-repository exclusion vanishes. Both copies pin the value in
+their own cases.
+
 Removing the lock does not make a gate valid; it only removes the serialization
 guarantee.
-
-Read [`references/gate-lock.md`](references/gate-lock.md) for the contract and
-recovery rules.
 
 ## Reaching a shared tree by a path that does not name it
 

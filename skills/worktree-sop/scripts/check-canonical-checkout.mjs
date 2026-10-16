@@ -37,7 +37,7 @@
 // `pre-commit` does not fire on any landing operation, and the `post-*` hook that does fire runs
 // AFTER the ref has moved, so a non-zero exit cannot undo it (measured: a `post-checkout` exiting
 // 1 still left the branch switched). A guard that cannot refuse is decoration. This is therefore
-// a LANDING-TIME PRE-FLIGHT, run by whoever lands, beside `gate-lock.mjs` -- the other step this
+// a LANDING-TIME PRE-FLIGHT, run by whoever lands, beside the admitted heavy gate -- the other step this
 // repository asks a lander to run by hand. CI is not a venue either: `.github/workflows/` checks
 // out into a single worktree, so a roster entry would redden every pull request on a shape that
 // pull request does not have.
