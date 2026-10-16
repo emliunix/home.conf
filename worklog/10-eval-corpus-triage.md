@@ -245,22 +245,22 @@ reverted.
   names `tests/decisions.test.ts` without the `flow-skills-eval/` prefix
   (`module.paths-resolve` WARN).
 
-### Correction to C6
+### Probe beside C6
 
-Two disposition-1 labels do not survive a prose probe (the frozen prompt, fixture
-and question, no tool, the model asked to explain its decision; design 09's retro
-entry has the method):
-- `fork-retro-followup-*`: all probed answers (flash ×3 cases, pro ×2) give
-  flow-retro's verdict 2 with the follow-up file. The miss is the tuple's single
-  act, so the label is **2 (deferred)**, schema stage vs act, not 1.
-- `budget-paraphrase`: pro's prose is the expected decision ("rewrite the brief
-  … then resume the implementer as round 4") but it picks `halt_structural` for
-  "halt dispatch"; flash's prose mixes the brief rewrite with breakout
-  adjudication. Pro's miss is 2 (deferred, the act vocabulary); flash's leaves a
-  weaker skill signal, so the label stays **1**, unconfirmed by pro.
-
-So the tuple runs found one skill finding, not two, and the prose probe is the
-missing step between a red tuple and disposition 1 (design 11 unit 6).
+A prose probe (`flow-skills-eval/scripts/prose-probe.ts`: the case's own prompt,
+fixture and neutral question, no tool) disagrees with the tuple run on two
+disposition-1 rows. Under the PR #19 review's rule, a disagreeing probe does not
+turn a 1 into a 2; it marks the row unconfirmed:
+- `fork-retro-followup-*`: 6/6 probe answers give verdict 2 with the follow-up
+  file (`worklog/09-retro-outcomes/probe-neutral.md`), while the tuple answers
+  `landed` and `worklog`, the two fields the question sets aside. Label:
+  **1, unconfirmed (probe disagrees)**. An earlier probe that cued the verdict is
+  withdrawn.
+- `budget-paraphrase`: with the case's own question
+  (`worklog/10-eval-corpus-triage/probe-budget-paraphrase.md`), both models' prose
+  is the expected decision (rewrite the brief, no status change), while both tuples
+  say `halt_structural`. Label: **1, unconfirmed (probe disagrees)**. An earlier,
+  cued probe split the models and is withdrawn.
 
 ### Findings and routes
 
@@ -268,7 +268,7 @@ No finding makes a Verification-design row fail or become unprovable: each row's
 command was run and seen red first (C5), and the re-run row is met by C6.
 
 Further findings, grouped in `design/11-eval-instrument-followup.md`:
-1. schema: split stage from act (re-architecture), now including
+1. schema: split stage from act (re-architecture), which would also settle
    `fork-retro-followup-*` and pro's `budget-paraphrase` miss;
 2. `flow-common` round budget, `budget-paraphrase` on flash (skill text);
 3. confirm single-family findings; relabel "1 (one model)" as "unconfirmed"
@@ -276,10 +276,9 @@ Further findings, grouped in `design/11-eval-instrument-followup.md`:
 4. design 10's body: the presupposing example question, the "disposition-3
    candidate" note, the unprefixed test path (docs clean-up);
 5. a per-case report in the harness (clean-up);
-6. a prose probe before any disposition 1 (process optimization).
+6. a prose probe beside the tuple run, with its rule (process optimization).
 
 ### Verdict
 
 **2 - land with follow-ups.** `Status: landed` with `design/11` committed. The
-document gate rejected a `draft-followup` file until design 09's retro finding 2
-was fixed on this branch.
+document gate rejected a `draft-followup` file until the small task `8b39d38`.

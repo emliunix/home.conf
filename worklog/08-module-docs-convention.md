@@ -219,3 +219,50 @@ and that is verdict 4 (breakout); if the wording is, it is verdict 3 and round 3
 which `flow-common` spends on the brief ("Rewrite the brief much more than the
 code"). The choice is put to the owner and the reviewer; status stays
 `pending-retro`.
+
+## C7 - Implementation round 3 (2026-10-16)
+
+The PR #19 review (finding 2) showed the round-2 review fixtures sat at the gate
+("every accepted P1 is solved"), where `flow-grill-review` says "Nothing more is
+required", so passing was a valid reading. Round 3, spent on the instrument as
+`flow-common` prescribes for rounds 3–4: the three review fixtures now show a draft
+just submitted, before any angle runs, which is the moment the Draft contract
+names. Expected tuples unchanged.
+
+Tuple runs (`round3-full-*-x3.tsv`, the whole corpus, also owed for the
+`module_docs` value):
+
+| Case | flash | pro | Prose probe (`probe-review-round3.md`, case's own question) |
+| --- | --- | --- | --- |
+| `module-docs-review-canonical` | 0/3 `implement, …, none` | 0/3 `reject_finding, …, none` | both miss: flash "run the P0 check first", pro "the draft satisfies the Draft contract" |
+| `module-docs-review-trap` | 3/3 | 0/3 `reject_finding` | both return the draft to the drafter |
+| `module-docs-review-paraphrase` | 0/3 `implement` | 0/3 `reject_finding` | pro returns the draft; flash names the gap but sends it into review |
+
+Dispositions: canonical **1** (both models, probe agrees with the tool); trap pro
+and paraphrase pro **2 (deferred)**, "return the draft" read as `reject_finding`
+(design 11 unit 1); paraphrase flash **1, unconfirmed** (its prose names the gap).
+When the fixture's drafter mentions the documents, both models apply the rule;
+when nothing points at them, neither does.
+
+**The 43 older cases after the `module_docs` value:** flash 105/126 (103 at
+design 10's final), pro 91/126 (98). No older case answered `module_docs`. Pro's
+drops are `run_retro` / `reject_finding` answers (`gate-pending-landed-canonical`,
+`fork-retro-p0-paraphrase`, `fork-p0-violation-trap`, `gate-reviewed-pending-trap`
+2/3), the stage-vs-act class, not the new value.
+
+## Retrospective - re-close after round 3 (2026-10-16)
+
+**Finding 1, re-measured.** At the moment design 08 specified, both models take a
+draft that changes a package and names no module document into review unless the
+fixture points at the documents. The probe agrees with the tool run, so this is a
+skill finding, not the instrument. Three wordings of the rule were tried in round
+2 and round 3's experiments (the Draft contract as merged, the GO list, a P1 at
+item 0); none changed it.
+
+**Verdict proposed: 4 - breakout**, for the owner as manager to rule. The design
+prescribes the check as reviewer judgement only, and names a mechanical gate as a
+non-goal; the evidence says judgement alone does not catch the omission. The
+candidate correction is the conditional section the owner-forwarded survey of
+document rules describes (Scope must name `docs/modules/<pkg>/` when it names that
+package's code), decided from a deterministic fact. Status stays `pending-retro`
+until the owner rules; on breakout the manager reverts design 08 to `draft`.

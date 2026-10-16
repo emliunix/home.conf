@@ -1066,7 +1066,7 @@ export const decisionCases: readonly DecisionCase[] = [
   // ── Module docs at review: a draft that changes a package names no module documents ─
   {
     // Cite: flow-grill-review/SKILL.md:53 — "It names the module documents (`docs/modules/<pkg>/`, convention in `project-skeleton` § Module docs) the design changes; a draft that changes a package and names none is returned to the drafter."
-    // Catches: passing the review gate on a draft whose Scope changes a package's contract but names no module document.
+    // Catches: taking a draft into review whose Scope changes a package's contract but names no module document.
     id: "module-docs-review-canonical",
     kind: "canonical",
     fixture: [
@@ -1080,7 +1080,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "## Status",
       "draft",
       "",
-      "Review: every accepted P1 is solved and the rematch is clean. The package's module documents are",
+      "The draft has just been submitted for review; no angle has run yet. The package's module documents are",
       "`docs/modules/report/{contract,model,properties,verification}.md`; its contract defines PASS as \"no constraint fails\".",
     ].join("\n"),
     question: "What happens to this draft?",
@@ -1088,7 +1088,7 @@ export const decisionCases: readonly DecisionCase[] = [
   },
   {
     // Cite: flow-grill-review/SKILL.md:53 — "a draft that changes a package and names none is returned to the drafter".
-    // Catches: passing the gate because the code change is small and "the docs can follow after merge".
+    // Catches: starting review because the code change is small and "the docs can follow after merge".
     id: "module-docs-review-trap",
     kind: "trap",
     fixture: [
@@ -1102,8 +1102,8 @@ export const decisionCases: readonly DecisionCase[] = [
       "## Status",
       "draft",
       "",
-      "Review: every P1 is solved. The drafter adds: \"it's a ten-line change; `docs/modules/report/contract.md` can be",
-      "updated after merge, so let's pass the gate now\". That contract defines PASS as \"no constraint fails\".",
+      "The draft has just been submitted for review. The drafter adds: \"it's a ten-line change; `docs/modules/report/contract.md`",
+      "can be updated after merge, so let's start the review now\". That contract defines PASS as \"no constraint fails\".",
     ].join("\n"),
     question: "What happens to this draft?",
     expected: decision("remediate", "unchanged", "design_body", false),
@@ -1124,8 +1124,8 @@ export const decisionCases: readonly DecisionCase[] = [
       "## Status",
       "draft",
       "",
-      "Every reviewer concern has been addressed. The delivery package's reference pages live in",
-      "`docs/modules/delivery/`; its contract page promises callers \"at most one attempt per event\".",
+      "The plan has just been handed in for review; nobody has read it yet. The delivery package's reference pages",
+      "live in `docs/modules/delivery/`; its contract page promises callers \"at most one attempt per event\".",
     ].join("\n"),
     question: "What happens to this plan now?",
     expected: decision("remediate", "unchanged", "design_body", false),

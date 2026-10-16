@@ -120,39 +120,41 @@ the no-direct-edits rule rather than failing a row, so it is follow-up work.
   `fork-retro-design-defect-*`, `fork-retro-p0-*`, `fork-retro-p0-design-*` 3/3 on
   flash; pro misses only the two paraphrases (`run_retro`), dispositioned 2
   (deferred, schema). `fork-retro-followup-*` 0/3 on both (`run_retro, landed,
-  worklog` or `reject_finding`).
-- **Prose probe** (this retro): the same frozen prompt, fixture and question, no
-  tool, asking the model to say which verdict applies and what the retro writes.
-  4/4 answers (flash: canonical, trap, paraphrase; pro: canonical, paraphrase) give
-  verdict 2, one `draft-followup` file at the next free number with a back-pointer
-  to the worklog entry, then `landed`; the trap answer also refuses the in-place
-  edit. Script `flow-skills-eval/bob-probe.ts` (not committed; see design 11).
-- The follow-up file written for design 10's retro is NO-GO under
+  worklog` or `reject_finding`), although the question sets aside the status line
+  and the worklog entry.
+- Prose probe, `flow-skills-eval/scripts/prose-probe.ts`: the case's own prompt,
+  fixture and neutral question, no tool. All six runs (three cases, both models)
+  name verdict 2 with one follow-up file; the trap answers also refuse the in-place
+  edit. Output: `worklog/09-retro-outcomes/probe-neutral.md`. A first probe, which
+  asked "which verdict applies and what the retro writes", cued the answer and is
+  not used.
+- The follow-up file written for design 10's retro was NO-GO under
   `check --all --profile draft` on `main`: status not in the design vocabulary, and
   no `Goal`, `Problem statement`, `Rationale` or `Review`. The template's
   `.doc-verify.yaml` governs `design/[0-9][0-9]-*.md` the same way.
 
 ### Findings and routes
 
-1. **Not blocking.** Row "the cases agree with the skill" misses on
-   `fork-retro-followup-*`, but the probe shows the skill leads both models to the
-   intended decision; the miss is the tuple: `next_action` can carry the landing
-   or the follow-up file, not both. That is design 10's deferred disposition 2
-   (stage vs act), so design 10's C6 label for these three cases (1) is corrected
-   in its retro entry, and the instrument fix is design 11 unit 1. The row holds on
-   the evidence the instrument can give today: the cases this design added that ask
-   one act pass on both models.
-2. **Not blocking by the row test; must be fixed before any verdict 2 lands.** The
-   document gate rejects the follow-up file. Fixed on this branch as a small task
-   (repository config, no package contract): `design/NN-<topic>-followup.md` names
-   a follow-up file, `doc-verify/modules/design-followup.yaml` checks its status
-   word and references, and `design/00-design-file-guide.md` states the name. Each
-   check seen red first (status `draft`; no `## Status`; a broken back-pointer
-   link), then PASS.
-3. Follow-ups, in `design/12-retro-outcomes-followup.md`: the template's document
-   gate (same fix); the owner's inline-correction ruling (a retro of the retro
-   process); the prose probe as a triage step lives with design 11.
+1. **Blocking.** Row "the cases agree with the skill" fails on
+   `fork-retro-followup-*`: with the edited skills, both models answer with a
+   different tuple, including the two fields the question sets aside, so no second
+   reading makes the answer correct. The probe and the tool run disagree, which
+   makes the case "1, unconfirmed (probe disagrees)" (peer review, PR #19), not a
+   disposition 2. The cause is either the verdict-2 wording or the single-act schema
+   (design 11 unit 1), and the evidence does not yet separate them.
+2. **Not blocking.** The document gate rejected the follow-up file. Fixed outside
+   this retro as a small task (`8b39d38`: the `-followup` name, the follow-up
+   module, the line in `design/00`). The skills still give the name as
+   `design/NN-<topic>.md`; that disagreement is a follow-up unit.
+3. Follow-up units, filed in `design/11-eval-instrument-followup.md` (design 10's
+   follow-up file; this retro has no verdict 2): the template's document gate; the
+   skills on the `-followup` name; the owner's inline-correction ruling; a route
+   for a row made unprovable by a broken instrument.
 
 ### Verdict
 
-**2 - land with follow-ups.** `Status: landed` with `design/12` committed.
+**None yet; status stays `pending-retro`.** Finding 1 blocks. If design 11 unit 1
+(stage vs act) lands and the cases still miss, it is verdict 3, a round on the
+verdict-2 wording; if they pass, this flow re-closes with verdict 1 or 2. The four
+verdicts have no route for a row the instrument cannot yet measure, so this
+waits, recorded, rather than taking verdict 3 on unseparated evidence.
