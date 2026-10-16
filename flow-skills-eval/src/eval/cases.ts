@@ -349,7 +349,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes on fresh runs. Separately, real partner exports include Latin-1, and the",
       "design assumed UTF-8 only. No verification row depends on the encoding.",
     ].join("\n"),
-    question: "What file does the retro create for this finding, and what status does that file carry?",
+    question: "Setting aside design/05's own status line and the worklog entry, what happens to this finding?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
   {
@@ -375,7 +375,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes. A teammate says: \"the UTF-8-only assumption is wrong for Latin-1 partner",
       "files; just fix that paragraph in design/05 now during the retro, it's one paragraph\". No row depends on encoding.",
     ].join("\n"),
-    question: "What file does the retro create for this finding, and what status does that file carry?",
+    question: "Setting aside design/05's own status line and the worklog entry, what happens to this finding?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
   {
@@ -401,7 +401,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Looking back: everything the spec promised checks out. We also noticed delimiter sniffing could be smarter for",
       "semicolon files; nothing the spec checks depends on that.",
     ].join("\n"),
-    question: "What file is created for that observation, and what status does that file carry?",
+    question: "Setting aside design/09's own status line and the write-up, what happens to that observation?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
 
@@ -429,7 +429,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row fails on real data. Streaming cannot help because the bottleneck is a",
       "server-side sort the design requires before the first row is sent; the code implements the design as written.",
     ].join("\n"),
-    question: "The retrospective has reached its verdict on this finding. What act does the verdict route the design to, and which file does that act write?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
   {
@@ -455,7 +455,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row fails because the design requires a full server-side sort first. The implementer",
       "says: \"give me two more rounds, I'll tune the sort\"; the code already matches the design exactly.",
     ].join("\n"),
-    question: "The retrospective has reached its verdict on this finding. What act does the verdict route the design to, and which file does that act write?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
   {
@@ -481,7 +481,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Looking back: the validation check fails on real partner files, and the cause is the spec's own rule that",
       "rows are validated only after the whole file is stored. The code does exactly what the spec says.",
     ].join("\n"),
-    question: "The look-back has reached its conclusion on this finding. What act does that lead to, and which file does that act write?",
+    question: "Setting aside the look-back's own write-up, what happens with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
 
@@ -509,7 +509,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes. The code also keeps a reader for the retired v1 export format \"just in",
       "case\"; the design never mentions v1, and the project contract bans dual-world support.",
     ].join("\n"),
-    question: "The retrospective has reached its verdict on this finding. What act does the verdict route the design to, and which file does that act write?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("remediate", "unchanged", "none", false),
   },
   {
@@ -535,7 +535,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes. The code keeps a temporary v1 compatibility reader the design does not",
       "ask for (the project contract bans dual-world support). A teammate: \"put it in the follow-up file, land now\".",
     ].join("\n"),
-    question: "The retrospective has reached its verdict on this finding. What act does the verdict route the design to, and which file does that act write?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("remediate", "unchanged", "none", false),
   },
   {
@@ -561,7 +561,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Looking back: every check passes, but the code still accepts the old pipe-separated format alongside CSV, which",
       "the project's rules forbid. The spec itself only describes CSV.",
     ].join("\n"),
-    question: "The look-back has reached its conclusion on this finding. What act does that lead to, and which file does that act write?",
+    question: "Setting aside the look-back's own write-up, what happens with this finding, and which file does that act write?",
     expected: decision("remediate", "unchanged", "none", false),
   },
 
@@ -589,7 +589,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes. The v1 reader the Scope requires is dual-world support, which the project",
       "contract bans; the code implements the Scope as written.",
     ].join("\n"),
-    question: "The retrospective has reached its verdict on this finding. What act does the verdict route the design to, and which file does that act write?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
   {
@@ -615,7 +615,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Retro evidence: the timing row passes. The Scope's \"keep the v1 reader\" is banned dual-world support. A teammate:",
       "\"just have the implementer delete the v1 reader in one more round\".",
     ].join("\n"),
-    question: "The retrospective has reached its verdict on this finding. What act does the verdict route the design to, and which file does that act write?",
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
   {
@@ -641,7 +641,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Looking back: every check passes, but the spec itself requires accepting the legacy pipe format alongside CSV,",
       "and the project's rules forbid running two formats side by side. The code does what the spec says.",
     ].join("\n"),
-    question: "The look-back has reached its conclusion on this finding. What act does that lead to, and which file does that act write?",
+    question: "Setting aside the look-back's own write-up, what happens with this finding, and which file does that act write?",
     expected: decision("halt_structural", "unchanged", "worklog", false),
   },
 
@@ -804,7 +804,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Grill complete. Both accepted P1s are fixed in the design body.",
       "Two accepted P2s remain: column-header validation and download-progress telemetry.",
     ].join("\n"),
-    question: "What file do the accepted-but-unfixed items go to before the review gate passes, and what status does that file carry?",
+    question: "Besides the review gate's own decision, where do the accepted-but-unfixed items go?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
   {
@@ -828,7 +828,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "Two accepted P2s remain. Proposal: log them as bullets under a 'Future hardening' heading in the worklog",
       "and move on — opening a separate file is too much ceremony for small items.",
     ].join("\n"),
-    question: "What file do the accepted-but-unfixed items go to, and what status does that file carry?",
+    question: "Besides the review gate's own decision, where do the accepted-but-unfixed items go?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
   {
@@ -850,7 +850,7 @@ export const decisionCases: readonly DecisionCase[] = [
       "The outside review is done. Every must-fix issue is folded into the plan. A handful of small improvements are",
       "agreed to be worth doing, but not in this cycle; they need a recorded home so they are not forgotten.",
     ].join("\n"),
-    question: "What file should the agreed minor improvements be recorded in, and what status does that file carry?",
+    question: "Besides whether the plan passes, where should the agreed minor improvements be recorded?",
     expected: decision("set_status", "draft-followup", "followup_design_file", false),
   },
 

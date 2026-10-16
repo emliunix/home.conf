@@ -107,56 +107,89 @@ per row, and the design's table points at it. Status → `reviewed`.
   altered; a definition edited without the lock; extra fields spread after the
   harness fields (2 tests fail); the one-`## Status` check disabled.
 
-## C6 - Triage (2026-10-16)
+## C6 - Triage (2026-10-16, revised after implementation review)
 
-Raw runs in `worklog/10-eval-corpus-triage/`: `baseline-*` (C2), `defs-only-*`
-(definitions and grading rule, no case edited), `final-*` (after the question and
-fixture edits). Totals:
+Raw runs in `worklog/10-eval-corpus-triage/`, all ×3 except where named:
 
-| Run | deepseek-flash | deepseek-v4-pro |
-| --- | --- | --- |
-| baseline | 58/126 (×3) | 20/42 (×1) |
-| definitions only | 87/126 (×3) | 29/42 (×1) |
-| final | 102/126 (×3) | 96/126 (×3) |
+| Run | What changed | deepseek-flash | deepseek-v4-pro |
+| --- | --- | --- | --- |
+| `baseline-*` | nothing (C2) | 58/126 | 20/42 (×1) |
+| `defs-only-*` | field definitions + grading rule; no case edited | 87/126 | 29/42 (×1) |
+| `iter1-*` | + questions naming the scored act (some presupposed the answer) | 106/126 | 93/126 |
+| `iter2-*` | + `run_retro` "and write its worklog record"; `set_status` "a new file's first status included" | 102/126 | 96/126 |
+| `iter3-presupposing-*` | `set_status` wording reverted | 102/126 | 96/126 |
+| `final-*` | presupposing questions replaced by neutral ones (C7 finding 1) | **103/126** | **98/126** |
 
-`git diff origin/main -- flow-skills-eval/src/eval/cases.ts` changes **no
-`expected` line**: no case took disposition 3. Two intermediate runs (106/93 and
-102/96) tried definition wordings; one wording (`set_status` "a new file's first
-status included") moved flash's `opens_new_design` on the sweep cases and was
-reverted. Wording is not iterated further, because past this point it tunes the
-instrument to a model.
+The `set_status` wording in iter2 was chosen and then reverted by its effect on
+one model's score (it moved flash's `opens_new_design` on the sweep cases). That
+is the tuning this design warns against; it stopped there, and the runs are kept
+so the record shows what was tried. The iter1–iter3 gains on the retro and sweep
+cases are not credited to the skills: those questions presupposed the answer.
 
-Dispositions, one per case that missed in any recorded run (D = disposition):
+`expected` is identical for all 43 cases before and after (checked by the
+reviewer). No case took disposition 3.
 
-| Case(s) | D | Second reading / evidence | Edit | Final flash / pro |
+One row per case that missed in any committed run (32). D is one of the guide's
+three dispositions. **2 (deferred)** is disposition 2 whose instrument fix is out of
+this design's scope: `next_action` mixes *which stage runs* (`run_retro`) with *what
+act it takes*, and no situation-free definition separates them. **1 (one model)** is
+disposition 1 seen on one model only, below k/k, with the other model passing; a
+skill fix waits for confirmation by another model.
+
+| Case | D | Reading / evidence | Edit | Final flash · pro |
 | --- | --- | --- | --- | --- |
-| `gate-draft-reviewed-canonical`, `gate-reviewed-pending-canonical`, `gate-pending-landed-canonical`, `gate-pending-landed-paraphrase` | 2 (field) | `write_target: none`: no content is written, so "no file". Under the definition, the status line's file is the target | definitions | 3/3 · 3/3; landed-paraphrase pro 2/3: `run_retro, landed` (see S below) |
-| `fork-impl-defect-*`, `fork-retro-p0-*` (status) | 2 (field) | `pending-retro` = "stays pending-retro" = `unchanged` | grading rule + definition | 3/3 · 3/3, except below |
-| `gate-reviewed-pending-trap` | 2 (field) | `worklog`: the gap is recorded | definitions | 3/3 · 3/3 |
-| `fork-retro-followup-*` | 2 (question) → **S** | "How is this routed?" scores one act of a two-act verdict (land + follow-up) | questions name the scored act | 0/3 · 0/3: both answer `run_retro, draft-followup, followup_design_file`; only `next_action` differs |
-| `fork-retro-design-defect-*`, `fork-retro-p0-design-*`, `fork-retro-p0-*` (action) | 2 (question) | "routed?" during a retro admits "the retro continues" (`run_retro`) | questions say the verdict is reached | flash 3/3 (p0-design-trap 1/3: `remediate, none`, see M); pro paraphrases 0–1/3: `run_retro` (S) |
-| `sweep-destination-*` | 2 (question) | "where do items go?" admits passing the gate (`set_status, reviewed`) | questions name file + status | flash canonical 0/3, others 2/3: `opens_new_design: true` (M); pro trap 0/3: `reject_finding` (S) |
-| `write-target-retro-canonical` | 2 (fixture + question) | the fixture said a correction was "applied to the design body", which design 09 forbids; "where does the record go?" admits landing | fixture fact fixed; question names the act | 3/3 · 3/3 |
-| `write-target-retro-trap` | 2 (question) | the proposal reads as a finding to reject (`reject_finding, worklog`: right file) | question names the act | 3/3 · 3/3 |
-| `fork-p0-violation-canonical`, `-trap`, `-paraphrase` | 2 (question) → **S** | rejecting the reviewer's "sweep it" filing is itself an act | trap question names the reader | trap 1/3 · 0/3 `reject_finding`; canonical and paraphrase 3/3 · 3/3 |
-| `gate-reviewed-pending-paraphrase` | **S** | pro answers the handoff (`run_retro`) instead of the status write; the skill sentence holds both ("set … and hand to `flow-retro`") | none | 3/3 · 0/3 |
-| `fork-impl-defect-canonical` | **M** | flash `remediate, unchanged, worklog`: 0/3 in the final run, 3/3 in both intermediate runs | none | 0/3 · 3/3 |
-| `budget-paraphrase` | **1** | Both models halt at round 3 of a loop whose brief is misread. `flow-common` gives rounds 3–4 "Rewrite the brief", but the round-5 sentence lists "the brief is wrong" as a halt cause. No other model family available to confirm | none; stays red | 0/3 · 0/3 |
-
-**S (schema, stage vs act):** a disposition-2 reading that definitions cannot remove
-without naming situations. `next_action` mixes *which stage is running* (`run_retro`)
-with *what act it takes* (`set_status`, `remediate`, `halt_structural`). In a retro or
-a handoff, "the retro" is a true answer for every act inside it. The design's
-non-goals put a schema change out of scope, so this is recorded as a finding; the
-cases stay red.
-**M (model-specific, intermittent):** one model, below k/k, with a reading the
-definitions exclude and the other model 3/3. Recorded, no edit; flakiness is not a
-skill finding.
+| `gate-draft-reviewed-canonical` | 2 (field) | `write_target: none` (no content written) vs the status line's file | field definitions | 3/3 · 3/3 |
+| `gate-draft-reviewed-trap` | 1 (one model) | pro 2/3 `reject_finding` in later runs; flash 3/3; definitions exclude it | none | 3/3 · 2/3 |
+| `gate-reviewed-pending-canonical` | 2 (field) | `write_target: none` vs the status line's file | field definitions | 3/3 · 3/3 |
+| `gate-reviewed-pending-trap` | 2 (field) | `write_target: worklog` (the gap is recorded) vs code only | field definitions | 3/3 · 3/3 |
+| `gate-reviewed-pending-paraphrase` | 2 (deferred) | pro answers the handoff `run_retro`; the skill sentence holds both acts ("set … and hand to `flow-retro`") | none | 3/3 · 0/3 |
+| `gate-pending-landed-canonical` | 2 (field) | `write_target: none` vs the status line's file; pro 2/3 `run_retro, landed`: the rest is disposition 2 with its fix deferred to the schema follow-up (stage vs act) | field definitions | 3/3 · 2/3 |
+| `gate-pending-landed-paraphrase` | 2 (field) | `write_target: none` vs the status line's file | field definitions | 3/3 · 3/3 |
+| `fork-impl-defect-canonical` | 2 (field) | `pending-retro` spelling for `unchanged`; flash `worklog` (the retro also records): the rest is disposition 2 with its fix deferred to the schema follow-up (stage vs act) | grading rule + definitions | 2/3 · 3/3 |
+| `fork-impl-defect-trap` | 2 (field) | `pending-retro` spelling, `worklog` vs code only | grading rule + definitions | 3/3 · 3/3 |
+| `fork-impl-defect-paraphrase` | 2 (field) | `pending-retro` spelling, `worklog` vs code only | grading rule + definitions | 3/3 · 3/3 |
+| `fork-retro-followup-canonical` | 1 | With the neutral question both models land and record the finding in the worklog only; verdict 2 ("the further findings go to one follow-up file") does not lead them to the file. No other family available | question excludes the status line and worklog entry without naming an outcome | 0/3 · 0/3 |
+| `fork-retro-followup-trap` | 1 | Both reject the in-place edit (right instinct) but open no follow-up file; same finding as canonical | same | 0/3 · 0/3 |
+| `fork-retro-followup-paraphrase` | 1 | Same as canonical | same | 0/3 · 0/3 |
+| `fork-retro-design-defect-canonical` | 2 (question) | "How is this routed?" during a retro admits "the retro continues" (`run_retro`) | question excludes the retro's own worklog entry without naming an outcome | 3/3 · 3/3 |
+| `fork-retro-design-defect-trap` | 2 (question) | "How is this routed?" during a retro admits "the retro continues" (`run_retro`) | question excludes the retro's own worklog entry without naming an outcome | 3/3 · 3/3 |
+| `fork-retro-design-defect-paraphrase` | 2 (question) | "How is this routed?" during a retro admits "the retro continues" (`run_retro`); pro 0/3 still `run_retro`: the rest is disposition 2 with its fix deferred to the schema follow-up (stage vs act) | question excludes the retro's own worklog entry without naming an outcome | 3/3 · 0/3 |
+| `fork-retro-p0-canonical` | 2 (question) | "How is this routed?" during a retro admits "the retro continues" (`run_retro`); `pending-retro` spelling | question excludes the retro's own worklog entry without naming an outcome | 3/3 · 3/3 |
+| `fork-retro-p0-trap` | 2 (question) | "How is this routed?" during a retro admits "the retro continues" (`run_retro`); `pending-retro` spelling | question excludes the retro's own worklog entry without naming an outcome | 3/3 · 3/3 |
+| `fork-retro-p0-paraphrase` | 2 (question) | "How is this routed?" during a retro admits "the retro continues" (`run_retro`); `pending-retro` spelling | question excludes the retro's own worklog entry without naming an outcome | 3/3 · 3/3 |
+| `fork-retro-p0-design-canonical` | 2 (question) | "How is this routed?" during a retro admits "the retro continues" (`run_retro`) | question excludes the retro's own worklog entry without naming an outcome | 3/3 · 3/3 |
+| `fork-retro-p0-design-trap` | 2 (question) | "How is this routed?" during a retro admits "the retro continues" (`run_retro`) | question excludes the retro's own worklog entry without naming an outcome | 3/3 · 3/3 |
+| `fork-retro-p0-design-paraphrase` | 2 (question) | "How is this routed?" during a retro admits "the retro continues" (`run_retro`); pro 0/3 still `run_retro`: the rest is disposition 2 with its fix deferred to the schema follow-up (stage vs act) | question excludes the retro's own worklog entry without naming an outcome | 3/3 · 0/3 |
+| `fork-arch-failure-paraphrase` | 2 (field) | pro 2/3 `write_target: none` in iter1 only | definitions | 3/3 · 3/3 |
+| `fork-p0-violation-canonical` | 2 (field) | pro `reject_finding, none` in the baseline only | definitions | 3/3 · 3/3 |
+| `fork-p0-violation-trap` | 2 (deferred) | rejecting the reviewer's "sweep it" filing is itself an act (`reject_finding`); question now names the reader without an outcome | question names the reader | 3/3 · 1/3 |
+| `fork-p0-violation-paraphrase` | 2 (field) | `write_target` worklog vs design body | definitions | 3/3 · 3/3 |
+| `sweep-destination-canonical` | 1 (one model) | "where do items go?" admitted passing the gate; with "Besides the review gate's own decision" flash still answers `set_status, reviewed`; pro 3/3 | question excludes the gate's decision | 0/3 · 3/3 |
+| `sweep-destination-trap` | 2 (deferred) | pro rejects the "log as bullets" proposal (`reject_finding`) — an act of its own; flash as canonical | same | 0/3 · 0/3 |
+| `sweep-destination-paraphrase` | 1 (one model) | as canonical; pro 3/3 | same | 0/3 · 3/3 |
+| `budget-paraphrase` | 1 | Both models halt at round 3 of a loop whose brief is misread. `flow-common` gives rounds 3–4 "Rewrite the brief", but its round-5 sentence lists "the brief is wrong" as a halt cause. No other family available | none | 0/3 · 0/3 |
+| `write-target-retro-canonical` | 2 (fixture + question) | the fixture said a correction was "applied to the design body" (design 09 forbids it); flash 2/3 `run_retro, landed`: the rest is disposition 2 with its fix deferred to the schema follow-up (stage vs act) | fixture fact fixed; question names the act | 2/3 · 3/3 |
+| `write-target-retro-trap` | 2 (question) | the proposal reads as a finding to reject (`reject_finding, worklog`) | question names the act | 3/3 · 3/3 |
 
 Follow-ups (for a `draft-followup` file at this design's retro):
-1. **Schema: split stage from act**, e.g. score `act` only, or add a `stage` field.
-   This covers every S row (11 cases).
-2. **Skill finding, `flow-common` round budget:** the rounds 3–4 "rewrite the brief"
-   rule vs "the brief is wrong" as a round-5 halt cause (`budget-paraphrase`).
-3. **Model diversity:** confirm row 2 and the M rows with another model family
+1. **Schema: split stage from act**, e.g. score `act` only or add a `stage` field.
+   Covers every "2 (deferred)" row and the deferred remainders.
+2. **Skill finding, `flow-retro` verdict 2:** a non-blocking finding is landed and
+   recorded in the worklog only; nothing leads a model to the follow-up file
+   (`fork-retro-followup-*`, both models 0/3).
+3. **Skill finding, `flow-common` round budget:** rounds 3–4 "rewrite the brief"
+   vs "the brief is wrong" as a round-5 halt cause (`budget-paraphrase`).
+4. **Model diversity:** confirm the disposition-1 rows with another model family
    (no key on this machine).
+
+## C7 - Implementation review (2026-10-16)
+
+The Claude seat reviewed `0f6e026`: 1 blocking, 1 should-fix, 2 notes
+(https://github.com/emliunix/home.conf/pull/18).
+
+| # | Finding | Disposition |
+| --- | --- | --- |
+| 1 | blocking: several edited questions presuppose the answer, so their traps can't catch what they were written for | Taken: neutral questions that exclude the other act without naming an outcome; re-run as `final-*`; earlier finals kept as `iter3-presupposing-*` and not credited |
+| 2 | should-fix: S and M aren't guide dispositions; one case had two rows | Taken: mapped onto 1/2 ("2 (deferred)", "1 (one model)"); one row per case |
+| 3 | note: record the wording iterations | Taken: iter1–iter3 raw runs committed with what changed |
+| 4 | note: the remaining findings look right | Noted; the follow-up retro finding (2) is new with the neutral questions |

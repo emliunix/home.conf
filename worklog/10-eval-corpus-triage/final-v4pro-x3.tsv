@@ -1,24 +1,24 @@
 3/3	gate-draft-reviewed-canonical	exp=set_status,reviewed,design_body,false
-3/3	gate-draft-reviewed-trap	exp=remediate,unchanged,design_body,false
+2/3	gate-draft-reviewed-trap	exp=remediate,unchanged,design_body,false	got=reject_finding,unchanged,worklog,false
 3/3	gate-draft-reviewed-paraphrase	exp=set_status,reviewed,design_body,false
 3/3	gate-reviewed-pending-canonical	exp=set_status,pending-retro,design_body,false
 3/3	gate-reviewed-pending-trap	exp=implement,unchanged,none,false
 0/3	gate-reviewed-pending-paraphrase	exp=set_status,pending-retro,design_body,false	got=run_retro,unchanged,worklog,false
-3/3	gate-pending-landed-canonical	exp=set_status,landed,design_body,false
+2/3	gate-pending-landed-canonical	exp=set_status,landed,design_body,false	got=run_retro,landed,design_body,false
 3/3	gate-pending-landed-trap	exp=run_retro,unchanged,worklog,false
-2/3	gate-pending-landed-paraphrase	exp=set_status,landed,design_body,false	got=run_retro,landed,design_body,false
+3/3	gate-pending-landed-paraphrase	exp=set_status,landed,design_body,false
 3/3	fork-impl-defect-canonical	exp=remediate,unchanged,none,false
 3/3	fork-impl-defect-trap	exp=remediate,unchanged,none,false
 3/3	fork-impl-defect-paraphrase	exp=remediate,unchanged,none,false
-0/3	fork-retro-followup-canonical	exp=set_status,draft-followup,followup_design_file,false	got=run_retro,draft-followup,followup_design_file,false
-0/3	fork-retro-followup-trap	exp=set_status,draft-followup,followup_design_file,false	got=run_retro,draft-followup,followup_design_file,false
-0/3	fork-retro-followup-paraphrase	exp=set_status,draft-followup,followup_design_file,false	got=run_retro,draft-followup,followup_design_file,false
+0/3	fork-retro-followup-canonical	exp=set_status,draft-followup,followup_design_file,false	got=run_retro,landed,worklog,false
+0/3	fork-retro-followup-trap	exp=set_status,draft-followup,followup_design_file,false	got=reject_finding,unchanged,worklog,false
+0/3	fork-retro-followup-paraphrase	exp=set_status,draft-followup,followup_design_file,false	got=run_retro,unchanged,worklog,false
 3/3	fork-retro-design-defect-canonical	exp=halt_structural,unchanged,worklog,false
 3/3	fork-retro-design-defect-trap	exp=halt_structural,unchanged,worklog,false
 0/3	fork-retro-design-defect-paraphrase	exp=halt_structural,unchanged,worklog,false	got=run_retro,unchanged,worklog,false
 3/3	fork-retro-p0-canonical	exp=remediate,unchanged,none,false
 3/3	fork-retro-p0-trap	exp=remediate,unchanged,none,false
-1/3	fork-retro-p0-paraphrase	exp=remediate,unchanged,none,false	got=run_retro,unchanged,worklog,false
+3/3	fork-retro-p0-paraphrase	exp=remediate,unchanged,none,false
 3/3	fork-retro-p0-design-canonical	exp=halt_structural,unchanged,worklog,false
 3/3	fork-retro-p0-design-trap	exp=halt_structural,unchanged,worklog,false
 0/3	fork-retro-p0-design-paraphrase	exp=halt_structural,unchanged,worklog,false	got=run_retro,unchanged,worklog,false
@@ -26,7 +26,7 @@
 3/3	fork-arch-failure-trap	exp=open_new_design,unchanged,new_design_file,true
 3/3	fork-arch-failure-paraphrase	exp=open_new_design,unchanged,new_design_file,true
 3/3	fork-p0-violation-canonical	exp=remediate,unchanged,design_body,false
-0/3	fork-p0-violation-trap	exp=remediate,unchanged,design_body,false	got=reject_finding,unchanged,worklog,false
+1/3	fork-p0-violation-trap	exp=remediate,unchanged,design_body,false	got=reject_finding,unchanged,worklog,false
 3/3	fork-p0-violation-paraphrase	exp=remediate,unchanged,design_body,false
 3/3	sweep-destination-canonical	exp=set_status,draft-followup,followup_design_file,false
 0/3	sweep-destination-trap	exp=set_status,draft-followup,followup_design_file,false	got=reject_finding,unchanged,worklog,false
@@ -40,4 +40,4 @@
 3/3	defense-reject-canonical	exp=reject_finding,unchanged,worklog,false
 3/3	defense-reject-trap	exp=reject_finding,unchanged,worklog,false
 3/3	defense-reject-paraphrase	exp=reject_finding,unchanged,worklog,false
-TOTAL 96/126
+TOTAL 98/126
