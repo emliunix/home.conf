@@ -78,3 +78,85 @@ The Claude seat reviewed `800c8ab`: 1 blocking, 4 should-fix, 4 notes
 | 7 | note: citations without a fragment pass vacuously; strip emphasis | Taken |
 | 8 | note: both models are deepseek | Taken: a disposition-1 row records whether another family confirmed it (no other-family key on this machine) |
 | 9 | note: keep the raw baseline | Taken: both runs committed under `worklog/10-eval-corpus-triage/` |
+
+## C4 - Design review round 2 (2026-10-16)
+
+The Claude seat re-reviewed `20495e9`: **design passes**, nothing blocking. It
+recomputed the 12 distinct tuples on `main` and found each consistent with the
+definitions. One implementation note: don't parse the grouped prose table. Taken:
+the canonical list is `CONSISTENT_TUPLES` in `tests/definitions.test.ts`, one tuple
+per row, and the design's table points at it. Status → `reviewed`.
+
+## C5 - Implementation (2026-10-16)
+
+- `decisions.ts`: `SUBMIT_DECISION_TOOL` moved here with `FIELD_DEFINITIONS` and
+  `VALUE_DEFINITIONS`; `normalizeDecision` grades the current status word as
+  `unchanged`. `cases.ts`: `fixtureStatus`, and exactly one `## Status`.
+- `agent.ts`: `buildRequestBody` (extra fields first, harness fields win) and
+  `runProvenance` (model + extra-body key names, no values); the eval records both.
+- `prompt.ts` / lock: `toolSchemaHash` joins the lock; re-approved.
+- `ref-eval-design-guide.md`: new section *Triaging a red case*.
+- Citations: the new check found 4 stale quotes (`gate-reviewed-pending-canonical`,
+  `budget-canonical` "return to design review" now "run breakout adjudication",
+  `write-target-retro-canonical`, `defense-reject-canonical` "Reject:" now
+  "Reject / WON'T DO:") and 23 citations with no quote. All 27 re-anchored to the
+  merged text. No tuple moved.
+- `vp test --run` 66/66, `tsc` clean. Each new L0 witness was first seen failing on
+  a seeded defect: guide rule removed; a definition given "when the review passes";
+  a `CONSISTENT_TUPLES` row dropped; the grading rule disabled; a quoted fragment
+  altered; a definition edited without the lock; extra fields spread after the
+  harness fields (2 tests fail); the one-`## Status` check disabled.
+
+## C6 - Triage (2026-10-16)
+
+Raw runs in `worklog/10-eval-corpus-triage/`: `baseline-*` (C2), `defs-only-*`
+(definitions and grading rule, no case edited), `final-*` (after the question and
+fixture edits). Totals:
+
+| Run | deepseek-flash | deepseek-v4-pro |
+| --- | --- | --- |
+| baseline | 58/126 (×3) | 20/42 (×1) |
+| definitions only | 87/126 (×3) | 29/42 (×1) |
+| final | 102/126 (×3) | 96/126 (×3) |
+
+`git diff origin/main -- flow-skills-eval/src/eval/cases.ts` changes **no
+`expected` line**: no case took disposition 3. Two intermediate runs (106/93 and
+102/96) tried definition wordings; one wording (`set_status` "a new file's first
+status included") moved flash's `opens_new_design` on the sweep cases and was
+reverted. Wording is not iterated further, because past this point it tunes the
+instrument to a model.
+
+Dispositions, one per case that missed in any recorded run (D = disposition):
+
+| Case(s) | D | Second reading / evidence | Edit | Final flash / pro |
+| --- | --- | --- | --- | --- |
+| `gate-draft-reviewed-canonical`, `gate-reviewed-pending-canonical`, `gate-pending-landed-canonical`, `gate-pending-landed-paraphrase` | 2 (field) | `write_target: none`: no content is written, so "no file". Under the definition, the status line's file is the target | definitions | 3/3 · 3/3; landed-paraphrase pro 2/3: `run_retro, landed` (see S below) |
+| `fork-impl-defect-*`, `fork-retro-p0-*` (status) | 2 (field) | `pending-retro` = "stays pending-retro" = `unchanged` | grading rule + definition | 3/3 · 3/3, except below |
+| `gate-reviewed-pending-trap` | 2 (field) | `worklog`: the gap is recorded | definitions | 3/3 · 3/3 |
+| `fork-retro-followup-*` | 2 (question) → **S** | "How is this routed?" scores one act of a two-act verdict (land + follow-up) | questions name the scored act | 0/3 · 0/3: both answer `run_retro, draft-followup, followup_design_file`; only `next_action` differs |
+| `fork-retro-design-defect-*`, `fork-retro-p0-design-*`, `fork-retro-p0-*` (action) | 2 (question) | "routed?" during a retro admits "the retro continues" (`run_retro`) | questions say the verdict is reached | flash 3/3 (p0-design-trap 1/3: `remediate, none`, see M); pro paraphrases 0–1/3: `run_retro` (S) |
+| `sweep-destination-*` | 2 (question) | "where do items go?" admits passing the gate (`set_status, reviewed`) | questions name file + status | flash canonical 0/3, others 2/3: `opens_new_design: true` (M); pro trap 0/3: `reject_finding` (S) |
+| `write-target-retro-canonical` | 2 (fixture + question) | the fixture said a correction was "applied to the design body", which design 09 forbids; "where does the record go?" admits landing | fixture fact fixed; question names the act | 3/3 · 3/3 |
+| `write-target-retro-trap` | 2 (question) | the proposal reads as a finding to reject (`reject_finding, worklog`: right file) | question names the act | 3/3 · 3/3 |
+| `fork-p0-violation-canonical`, `-trap`, `-paraphrase` | 2 (question) → **S** | rejecting the reviewer's "sweep it" filing is itself an act | trap question names the reader | trap 1/3 · 0/3 `reject_finding`; canonical and paraphrase 3/3 · 3/3 |
+| `gate-reviewed-pending-paraphrase` | **S** | pro answers the handoff (`run_retro`) instead of the status write; the skill sentence holds both ("set … and hand to `flow-retro`") | none | 3/3 · 0/3 |
+| `fork-impl-defect-canonical` | **M** | flash `remediate, unchanged, worklog`: 0/3 in the final run, 3/3 in both intermediate runs | none | 0/3 · 3/3 |
+| `budget-paraphrase` | **1** | Both models halt at round 3 of a loop whose brief is misread. `flow-common` gives rounds 3–4 "Rewrite the brief", but the round-5 sentence lists "the brief is wrong" as a halt cause. No other model family available to confirm | none; stays red | 0/3 · 0/3 |
+
+**S (schema, stage vs act):** a disposition-2 reading that definitions cannot remove
+without naming situations. `next_action` mixes *which stage is running* (`run_retro`)
+with *what act it takes* (`set_status`, `remediate`, `halt_structural`). In a retro or
+a handoff, "the retro" is a true answer for every act inside it. The design's
+non-goals put a schema change out of scope, so this is recorded as a finding; the
+cases stay red.
+**M (model-specific, intermittent):** one model, below k/k, with a reading the
+definitions exclude and the other model 3/3. Recorded, no edit; flakiness is not a
+skill finding.
+
+Follow-ups (for a `draft-followup` file at this design's retro):
+1. **Schema: split stage from act**, e.g. score `act` only, or add a `stage` field.
+   This covers every S row (11 cases).
+2. **Skill finding, `flow-common` round budget:** the rounds 3–4 "rewrite the brief"
+   rule vs "the brief is wrong" as a round-5 halt cause (`budget-paraphrase`).
+3. **Model diversity:** confirm row 2 and the M rows with another model family
+   (no key on this machine).

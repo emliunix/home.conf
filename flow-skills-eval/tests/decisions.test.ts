@@ -5,6 +5,7 @@ import {
   STATUSES_TO_SET,
   WRITE_TARGETS,
   compareDecision,
+  normalizeDecision,
   parseDecision,
   type Decision,
 } from "../src/eval/decisions.ts";
@@ -99,5 +100,26 @@ describe("compareDecision", () => {
     expect(comparison.matched).toBe(false);
     expect(comparison.divergedFields).toEqual(["status_to_set", "write_target"]);
     expect(comparison.score).toBeCloseTo(2 / 4);
+  });
+});
+
+describe("normalizeDecision", () => {
+  const stays: Decision = Object.freeze({
+    next_action: "remediate",
+    status_to_set: "pending-retro",
+    write_target: "none",
+    opens_new_design: false,
+  });
+
+  it("grades the current status word as no status write", () => {
+    expect(normalizeDecision(stays, "pending-retro").status_to_set).toBe("unchanged");
+    expect(compareDecision({ ...stays, status_to_set: "unchanged" }, normalizeDecision(stays, "pending-retro")).matched).toBe(
+      true,
+    );
+  });
+
+  it("leaves a real status write alone", () => {
+    expect(normalizeDecision({ ...stays, status_to_set: "landed" }, "pending-retro").status_to_set).toBe("landed");
+    expect(normalizeDecision(stays, undefined)).toBe(stays);
   });
 });

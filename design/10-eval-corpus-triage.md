@@ -71,7 +71,9 @@ model already does. Designs 08 and 09 cannot land on this corpus yet.
     status line when the decision sets one; otherwise the document its content goes
     to; `none` when the change goes only to code, or nowhere;
   - `next_action` and `opens_new_design`: one line each, in the same style.
-  Every distinct expected tuple in the corpus is consistent with these definitions:
+  Every distinct expected tuple in the corpus is consistent with these definitions.
+  The canonical list, one tuple per row, lives in `flow-skills-eval/tests/definitions.test.ts`
+  (`CONSISTENT_TUPLES`); this table summarizes it:
 
   | Tuple | Consistent because |
   | --- | --- |
@@ -147,7 +149,7 @@ reading written out.
 | --- | --- | --- |
 | The guide states the triage rule | `ref-eval-design-guide.md` lacks the three dispositions or the "expected answer never changes because a model said otherwise" rule | new L0 assertion, `vp test` |
 | Fields are defined without situations | a `submit_decision` field or enum value has no description, or a description has a conditional (`when`, `if`, `after`, `once`) or a stage word other than its own value's name | new L0 assertion on the exported tool schema, `vp test` |
-| Definitions move no tuple | a distinct expected tuple in `cases.ts` has no row in the design's consistency table | new L0 assertion listing the distinct tuples against the table, `vp test` |
+| Definitions move no tuple | a distinct expected tuple in `cases.ts` has no row in `CONSISTENT_TUPLES` | new L0 assertion listing the distinct tuples against the table, `vp test` |
 | Same-word status is graded as no write | an answer of `status_to_set` equal to the fixture status is scored as a miss against `unchanged` | unit test in `tests/decisions.test.ts` |
 | Citations resolve | a `// Cite:` names a missing file, has no quoted fragment, or a fragment does not occur in it | new L0 citation test, `vp test` |
 | Every baseline miss is dispositioned | a case that missed in either committed raw baseline run has no row in the worklog's disposition table | review of `worklog/10-eval-corpus-triage.md` against `worklog/10-eval-corpus-triage/baseline-*.tsv` |
@@ -174,4 +176,4 @@ worklog/10-eval-corpus-triage.md
 
 ## Status
 
-draft
+pending-retro

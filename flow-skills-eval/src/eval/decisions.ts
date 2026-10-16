@@ -70,6 +70,79 @@ export const WRITE_TARGETS: readonly WriteTarget[] = Object.freeze([
 
 const DECISION_FIELDS = ["next_action", "status_to_set", "write_target", "opens_new_design"] as const;
 
+/**
+ * Field and value definitions shown to the model (design/10-eval-corpus-triage.md).
+ * Each defines a value as an act, never the situation that calls for it, and is
+ * derived from the corpus's expected tuples so that defining it moves no tuple.
+ */
+export const FIELD_DEFINITIONS = Object.freeze({
+  next_action: "The one act this decision takes next.",
+  status_to_set:
+    "The status word this decision writes into its `write_target` file; `unchanged` means it writes no status line.",
+  write_target:
+    "The one file this decision writes: the file holding the status line it sets, or else the document its content goes to; `none` for a change to code only, or no change.",
+  opens_new_design: "Whether this decision starts a new design file whose status is `draft`.",
+});
+
+export const VALUE_DEFINITIONS: Readonly<{
+  next_action: Readonly<Record<NextAction, string>>;
+  status_to_set: Readonly<Record<StatusToSet, string>>;
+  write_target: Readonly<Record<WriteTarget, string>>;
+}> = Object.freeze({
+  next_action: Object.freeze({
+    implement: "write code toward the design's scope",
+    remediate: "correct a defect in existing code or text",
+    open_new_design: "start a new design file",
+    run_retro: "perform the design's retrospective and write its worklog record",
+    set_status: "write a new status word on a design file",
+    halt_structural: "stop the work and record the structural cause for adjudication",
+    reject_finding: "decline a finding and record the reason",
+  }),
+  status_to_set: Object.freeze({
+    "draft-followup": "the status word `draft-followup`",
+    reviewed: "the status word `reviewed`",
+    "pending-retro": "the status word `pending-retro`",
+    landed: "the status word `landed`",
+    unchanged: "no status line is written",
+  }),
+  write_target: Object.freeze({
+    design_body: "the design file under decision",
+    worklog: "the design's worklog",
+    new_design_file: "a new design file",
+    followup_design_file: "a new followup design file",
+    none: "no document",
+  }),
+});
+
+function enumDescription(field: keyof typeof VALUE_DEFINITIONS): string {
+  const values = Object.entries(VALUE_DEFINITIONS[field]).map(([value, text]) => `\`${value}\`: ${text}.`);
+  return [FIELD_DEFINITIONS[field], ...values].join(" ");
+}
+
+/** Provider-enforced Decision schema; the only tool the agent may call. Hashed into the lock. */
+export const SUBMIT_DECISION_TOOL = Object.freeze({
+  type: "function",
+  function: {
+    name: "submit_decision",
+    description: "Submit the single next flow decision for the Tier 2 case.",
+    parameters: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        next_action: { type: "string", enum: [...NEXT_ACTIONS], description: enumDescription("next_action") },
+        status_to_set: {
+          type: "string",
+          enum: [...STATUSES_TO_SET],
+          description: enumDescription("status_to_set"),
+        },
+        write_target: { type: "string", enum: [...WRITE_TARGETS], description: enumDescription("write_target") },
+        opens_new_design: { type: "boolean", description: FIELD_DEFINITIONS.opens_new_design },
+      },
+      required: ["next_action", "status_to_set", "write_target", "opens_new_design"],
+    },
+  },
+} as const);
+
 /** Parse and validate the raw `submit_decision` tool-call arguments. */
 export function parseDecision(argumentsText: string): Decision {
   const parsed = JSON.parse(argumentsText) as Record<string, unknown>;
@@ -107,6 +180,16 @@ export interface DecisionComparison {
   readonly divergedFields: readonly (typeof DECISION_FIELDS)[number][];
   /** Fraction of fields matching, in the 0..1 range. */
   readonly score: number;
+}
+
+/**
+ * The grader's spelling rule (design 10): naming the design's current status word
+ * writes no status line, so it is graded as `unchanged`. The skills never specify
+ * that spelling; the tool description deliberately does not mention it.
+ */
+export function normalizeDecision(actual: Decision, currentStatus: string | undefined): Decision {
+  if (currentStatus === undefined || actual.status_to_set !== currentStatus) return actual;
+  return Object.freeze({ ...actual, status_to_set: "unchanged" });
 }
 
 /** Field-by-field exact comparison; a miss reports which field diverged. */

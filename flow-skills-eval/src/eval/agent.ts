@@ -1,9 +1,7 @@
 import { buildTier2CasePrompt, type FrozenPrompt } from "./prompt.ts";
 import { readApiConfig, type ApiConfig } from "./env.ts";
 import {
-  NEXT_ACTIONS,
-  STATUSES_TO_SET,
-  WRITE_TARGETS,
+  SUBMIT_DECISION_TOOL,
   parseDecision,
   type Decision,
   type DecisionCase,
@@ -33,28 +31,32 @@ interface ChatPayload {
   readonly usage?: Record<string, unknown>;
 }
 
-/** Provider-enforced Decision schema; the only tool the agent may call. */
-const SUBMIT_DECISION_TOOL = {
-  type: "function",
-  function: {
-    name: "submit_decision",
-    description: "Submit the single next flow decision for the Tier 2 case.",
-    parameters: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        next_action: { type: "string", enum: [...NEXT_ACTIONS] },
-        status_to_set: { type: "string", enum: [...STATUSES_TO_SET] },
-        write_target: { type: "string", enum: [...WRITE_TARGETS] },
-        opens_new_design: { type: "boolean" },
-      },
-      required: ["next_action", "status_to_set", "write_target", "opens_new_design"],
-    },
-  },
-} as const;
-
 function chatCompletionsUrl(baseUrl: string): string {
   return baseUrl.endsWith("/chat/completions") ? baseUrl : `${baseUrl}/chat/completions`;
+}
+
+/** The request body; extra fields come first so the harness's own fields win. */
+export function buildRequestBody(
+  frozen: FrozenPrompt,
+  decisionCase: Pick<DecisionCase, "fixture" | "question">,
+  config: ApiConfig,
+): Record<string, unknown> {
+  return {
+    ...config.extraBody,
+    model: config.model,
+    temperature: 0,
+    messages: [
+      { role: "system", content: frozen.text },
+      { role: "user", content: buildTier2CasePrompt(decisionCase.fixture, decisionCase.question) },
+    ],
+    tools: [SUBMIT_DECISION_TOOL],
+    tool_choice: { type: "function", function: { name: "submit_decision" } },
+  };
+}
+
+/** What a run records about its configuration, so a score traces to it. No secrets. */
+export function runProvenance(config: ApiConfig): { readonly model: string; readonly extra_body_keys: string } {
+  return Object.freeze({ model: config.model, extra_body_keys: Object.keys(config.extraBody).sort().join(",") || "none" });
 }
 
 /**
@@ -74,17 +76,7 @@ export async function runDecisionCase(
       authorization: `Bearer ${config.apiKey}`,
       "content-type": "application/json",
     },
-    body: JSON.stringify({
-      ...config.extraBody,
-      model: config.model,
-      temperature: 0,
-      messages: [
-        { role: "system", content: frozen.text },
-        { role: "user", content: buildTier2CasePrompt(decisionCase.fixture, decisionCase.question) },
-      ],
-      tools: [SUBMIT_DECISION_TOOL],
-      tool_choice: { type: "function", function: { name: "submit_decision" } },
-    }),
+    body: JSON.stringify(buildRequestBody(frozen, decisionCase, config)),
     signal: AbortSignal.timeout(120_000),
   });
   const latencyMs = Math.round(performance.now() - startedAt);

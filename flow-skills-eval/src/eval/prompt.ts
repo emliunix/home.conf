@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 
+import { SUBMIT_DECISION_TOOL } from "./decisions.ts";
 import type { SkillDocument, SkillName } from "./skill-loader.ts";
 import { isSkillName, loadSkillDocuments } from "./skill-loader.ts";
 
@@ -30,6 +31,8 @@ export interface FrozenPromptLock {
   readonly skillNames: readonly SkillName[];
   readonly skillHashes: readonly string[];
   readonly promptHash: string;
+  /** The submit_decision schema, field definitions included: the model reads it too. */
+  readonly toolSchemaHash: string;
 }
 
 const SKILL_NAMES: readonly SkillName[] = ["flow-common", "flow-grill-review", "flow-retro"];
@@ -115,7 +118,8 @@ export function readFrozenPromptLock(path = LOCK_PATH): FrozenPromptLock {
     !parsed.skillNames.every((name): name is SkillName => isSkillName(name)) ||
     !Array.isArray(parsed.skillHashes) ||
     !parsed.skillHashes.every((hash): hash is string => typeof hash === "string") ||
-    typeof parsed.promptHash !== "string"
+    typeof parsed.promptHash !== "string" ||
+    typeof parsed.toolSchemaHash !== "string"
   ) {
     throw new Error(`Invalid frozen prompt lock: ${path}`);
   }
@@ -127,6 +131,7 @@ export function readFrozenPromptLock(path = LOCK_PATH): FrozenPromptLock {
     skillNames: Object.freeze([...parsed.skillNames]),
     skillHashes: Object.freeze([...parsed.skillHashes]),
     promptHash: parsed.promptHash,
+    toolSchemaHash: parsed.toolSchemaHash,
   });
 }
 
@@ -138,6 +143,7 @@ export function assertFrozenPromptLock(frozen: FrozenPrompt, lock: FrozenPromptL
     ["skillNames", frozen.skillNames.join(","), lock.skillNames.join(",")],
     ["skillHashes", frozen.skillHashes.join(","), lock.skillHashes.join(",")],
     ["promptHash", frozen.hash, lock.promptHash],
+    ["toolSchemaHash", toolSchemaHash(), lock.toolSchemaHash],
   ] as const;
 
   const drift = expected
@@ -152,4 +158,8 @@ export function assertFrozenPromptLock(frozen: FrozenPrompt, lock: FrozenPromptL
   }
 
   return true;
+}
+
+export function toolSchemaHash(tool: unknown = SUBMIT_DECISION_TOOL): string {
+  return createHash("sha256").update(JSON.stringify(tool)).digest("hex");
 }

@@ -6,6 +6,7 @@ import {
   assertFrozenPromptLock,
   createFrozenPrompt,
   readFrozenPromptLock,
+  toolSchemaHash,
 } from "../src/eval/prompt.ts";
 
 describe("frozen evaluation prompt", () => {
@@ -53,6 +54,14 @@ describe("frozen evaluation prompt", () => {
     expect(() => assertFrozenPromptLock(frozen, { ...lock, promptHash: "drifted" })).toThrow(
       "Frozen prompt lock drift detected",
     );
+  });
+
+  it("rejects a lock when the submit_decision schema drifts", () => {
+    const frozen = createFrozenPrompt(FROZEN_EVALUATION_CONTEXT);
+    const lock = readFrozenPromptLock();
+
+    expect(() => assertFrozenPromptLock(frozen, { ...lock, toolSchemaHash: "drifted" })).toThrow("toolSchemaHash");
+    expect(toolSchemaHash({ edited: "definition" })).not.toBe(lock.toolSchemaHash);
   });
 
   it("appends only the fixture and question after the frozen prefix", () => {

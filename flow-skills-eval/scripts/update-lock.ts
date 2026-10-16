@@ -6,7 +6,7 @@ import { writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { FROZEN_EVALUATION_CONTEXT, createFrozenPrompt } from "../src/eval/prompt.ts";
+import { FROZEN_EVALUATION_CONTEXT, createFrozenPrompt, toolSchemaHash } from "../src/eval/prompt.ts";
 
 const frozen = createFrozenPrompt(FROZEN_EVALUATION_CONTEXT);
 const lockPath = resolve(dirname(fileURLToPath(import.meta.url)), "../frozen-prefix.lock.json");
@@ -18,6 +18,7 @@ const lock = {
   skillNames: frozen.skillNames,
   skillHashes: frozen.skillHashes,
   promptHash: frozen.hash,
+  toolSchemaHash: toolSchemaHash(),
 };
 
 writeFileSync(lockPath, `${JSON.stringify(lock, null, 2)}\n`);
