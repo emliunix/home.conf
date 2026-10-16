@@ -107,50 +107,52 @@ items (1)–(4) are present, and no direct-edit wording remains (L0 stale list).
 - (b) none.
 - (c) none.
 
-**Heads.** The Problem statement holds. Scope held, with one gap: the scope puts
-the follow-up file at `design/NN-<topic>.md` but does not touch the repository's
-document gate, which governs every `design/NN-*.md` as a lifecycle design (finding
-2). The Rationale survives; the open question it carried (inline correction of a
-landed sentence) has since been ruled by the owner, who allows non-semantic fixes
-in place. That ruling refines the no-direct-edits rule rather than contradicting a
-row, so it goes to its own design, not to this one.
+**Heads.** The Problem statement holds. Scope held, with one gap: it puts the
+follow-up file at `design/NN-<topic>.md` but leaves the repository's document gate,
+which governs every `design/NN-*.md` as a lifecycle design (finding 2). The
+Rationale survives. Its open question (inline correction of a landed sentence) has
+since been ruled by the owner, who allows non-semantic fixes in place; that refines
+the no-direct-edits rule rather than failing a row, so it is follow-up work.
 
 ### Evidence
 
-- Final L1 runs (design 10, `worklog/10-eval-corpus-triage/final-*.tsv`), the cases
-  this design added, with neutral questions: `fork-retro-design-defect-*`,
-  `fork-retro-p0-*`, `fork-retro-p0-design-*` 3/3 on flash; pro misses only the two
-  paraphrases (`run_retro`), dispositioned 2 (deferred, schema). `fork-retro-followup-*`
-  0/3 on both models (design 10 C6, disposition 1): both land and record the finding
-  in the worklog; none opens the follow-up file. The trap's in-place edit is rejected
-  correctly, but again no file is opened.
-- A `draft-followup` file written for design 10's retro
-  (`design/11-eval-instrument-followup.md`) is NO-GO under
-  `check --all --profile draft`: status not in `[draft, reviewed, pending-retro,
-  landed]`, and no `Goal`, `Problem statement`, `Rationale` or `Review` section.
+- Final L1 runs (`worklog/10-eval-corpus-triage/final-*.tsv`), neutral questions:
+  `fork-retro-design-defect-*`, `fork-retro-p0-*`, `fork-retro-p0-design-*` 3/3 on
+  flash; pro misses only the two paraphrases (`run_retro`), dispositioned 2
+  (deferred, schema). `fork-retro-followup-*` 0/3 on both (`run_retro, landed,
+  worklog` or `reject_finding`).
+- **Prose probe** (this retro): the same frozen prompt, fixture and question, no
+  tool, asking the model to say which verdict applies and what the retro writes.
+  4/4 answers (flash: canonical, trap, paraphrase; pro: canonical, paraphrase) give
+  verdict 2, one `draft-followup` file at the next free number with a back-pointer
+  to the worklog entry, then `landed`; the trap answer also refuses the in-place
+  edit. Script `flow-skills-eval/bob-probe.ts` (not committed; see design 11).
+- The follow-up file written for design 10's retro is NO-GO under
+  `check --all --profile draft` on `main`: status not in the design vocabulary, and
+  no `Goal`, `Problem statement`, `Rationale` or `Review`. The template's
+  `.doc-verify.yaml` governs `design/[0-9][0-9]-*.md` the same way.
 
 ### Findings and routes
 
-1. **Blocking.** Row "the cases agree with the skill" fails for
-   `fork-retro-followup-*`: a model following the edited skills answers with a
-   different tuple. The verdict-2 rule itself is sound (both models reach the right
-   *judgement*: the finding does not block, and the in-place edit is wrong); the
-   as-built text does not lead to the act. That is an implementation defect in
-   `flow-retro`'s wording, not a design defect.
-2. **Blocking in practice.** The output verdict 2 prescribes cannot be committed in
-   this repository: the document gate rejects it. No row names the gate, so by the
-   row test this is not blocking; it is routed with finding 1 because verdict 2 is
-   unusable here until it is fixed, and design 10's landing waits on it. The
-   reviewer may overrule this to a follow-up.
+1. **Not blocking.** Row "the cases agree with the skill" misses on
+   `fork-retro-followup-*`, but the probe shows the skill leads both models to the
+   intended decision; the miss is the tuple: `next_action` can carry the landing
+   or the follow-up file, not both. That is design 10's deferred disposition 2
+   (stage vs act), so design 10's C6 label for these three cases (1) is corrected
+   in its retro entry, and the instrument fix is design 11 unit 1. The row holds on
+   the evidence the instrument can give today: the cases this design added that ask
+   one act pass on both models.
+2. **Not blocking by the row test; must be fixed before any verdict 2 lands.** The
+   document gate rejects the follow-up file. Fixed on this branch as a small task
+   (repository config, no package contract): `design/NN-<topic>-followup.md` names
+   a follow-up file, `doc-verify/modules/design-followup.yaml` checks its status
+   word and references, and `design/00-design-file-guide.md` states the name. Each
+   check seen red first (status `draft`; no `## Status`; a broken back-pointer
+   link), then PASS.
+3. Follow-ups, in `design/12-retro-outcomes-followup.md`: the template's document
+   gate (same fix); the owner's inline-correction ruling (a retro of the retro
+   process); the prose probe as a triage step lives with design 11.
 
 ### Verdict
 
-**3 - route back to implementation.** Status stays `pending-retro`; round 2 of
-`flow-common`'s round budget. The round:
-- reword `flow-retro` §4 verdict 2 (and its done-checklist line) so the act is
-  stated: the retro writes the follow-up file, then lands; the case stays as it is
-  and re-runs;
-- make the document gate admit a `draft-followup` file: a name the gate can tell
-  apart, and a module that checks only the shape `flow-grill-review` §3 defines
-  (status word, back-pointer);
-- re-run `fork-retro-followup-*` on both models; this flow re-closes afterwards.
+**2 - land with follow-ups.** `Status: landed` with `design/12` committed.

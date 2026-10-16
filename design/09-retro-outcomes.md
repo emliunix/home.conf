@@ -178,4 +178,4 @@ worklog/09-retro-outcomes.md
 
 ## Status
 
-pending-retro
+landed
