@@ -202,7 +202,26 @@ const MUTATIONS = [
   return true;`,
       ),
     expects: ["successor's claim was deleted from the path"],
+  },  {
+    // #328: the default lock path was `join(tmpdir(), ...)`. Restoring it makes the resolved
+    // default MOVE with `TMPDIR`, so two default invocations under different temp roots stop
+    // serializing. The case must report that both ran.
+    name: "default-lock-path-derived-from-tmpdir (#328)",
+    apply: (source) => {
+      const withTmpdir = source.replace(
+        `import { userInfo } from "node:os";`,
+        `import { tmpdir, userInfo } from "node:os";`,
+      );
+      return withTmpdir.replace(
+        `    lockFile: defaultLockFile(),`,
+        `    lockFile:
+      process.env.HOME_CONF_GATE_LOCK ||
+      join(tmpdir(), "home-conf-heavy-gate.lock"),`,
+      );
+    },
+    expects: ["BOTH RAN", "must not depend on TMPDIR"],
   },
+
 ];
 
 let red = 0;

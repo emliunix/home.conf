@@ -11,6 +11,43 @@ second source of truth for a gate result.
 node skills/worktree-sop/scripts/gate-lock.mjs -- pnpm check
 ```
 
+### The lock path must not move with `TMPDIR`
+
+The default lock path is **system-anchored**, not derived from the environment:
+`$HOME_CONF_GATE_LOCK` when set, otherwise `<system-home>/.home-conf-heavy-gate.lock`
+taken from the system account database (`os.userInfo().homedir`, i.e. the passwd
+entry, **not** the `HOME` variable).
+
+⚠ **This matters because the path *is* the mutual exclusion.** The default was
+`join(tmpdir(), "home-conf-heavy-gate.lock")`, and `os.tmpdir()` honours `TMPDIR`, so
+two invocations with different temp roots computed **different paths** — each acquired
+"the" lock and **both ran the gate**, which is the exact overlap this wrapper exists to
+prevent. `os.homedir()` is not a substitute either: it reads `HOME`, and the case runner
+**reassigns `HOME`** for the cases it spawns, so a `$HOME`-anchored default would split
+between the runner and its own child.
+
+Measured across four environments (baseline / `TMPDIR` varied / `TMPDIR`+`HOME` varied /
+hostile `HOME=/evil`), counting **distinct** resolved paths:
+
+| candidate                      | distinct paths | verdict       |
+| ------------------------------ | -------------- | ------------- |
+| `join(tmpdir(), …)`            | 3              | moves         |
+| `join(homedir(), …)`           | 3              | moves         |
+| `join(userInfo().homedir, …)`  | **1**          | **invariant** |
+
+**Bound.** The choice is about *what it reads*, not about always succeeding:
+`userInfo()` resolves via the effective uid, so where that uid has no account entry the
+home may be missing or unwritable. So the system home is used only when it **exists**,
+and the last resort is the fixed absolute `/tmp/home-conf-heavy-gate.lock` — deliberately
+**not** `tmpdir()`, so even the fallback cannot be moved by the environment.
+
+Both explicit override routes are unchanged and still win: `HOME_CONF_GATE_LOCK` and
+`--lock-file <path>`.
+
+The case that guards this is `tests/check-lock.mjs: checkDefaultPathIsInvariant`, and
+`tests/check-lock-mutations.mjs` restores the `tmpdir()` default and requires the case to
+report that **both invocations ran**.
+
 The wrapper:
 
 1. writes complete metadata (token, PID, start time, command) to a private

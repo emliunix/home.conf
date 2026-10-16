@@ -17,6 +17,7 @@ import {
   readdirSync,
   readFileSync,
   renameSync,
+  rmSync,
   rmdirSync,
   statSync,
   unlinkSync,
@@ -1196,6 +1197,107 @@ async function checkSchemaInvalidLocksWait() {
   }
 }
 
+// ---------------------------------------------------------------- default path (#328)
+/**
+ * The default lock path must not move with a caller-controllable variable.
+ *
+ * ⚠ WHY THIS CASE EXISTS. The default was `join(tmpdir(), "home-conf-heavy-gate.lock")`, and
+ * `os.tmpdir()` honours `TMPDIR`. Two invocations with different temp roots therefore computed
+ * DIFFERENT paths, each acquired "the" lock, and BOTH ran the command the lock exists to
+ * serialize. The repository records the cost of that overlap: four `pnpm check` + four
+ * `check-gate-cases.mjs` alive at once, host load 137, and gates producing FALSE REDS — a red
+ * about the host rather than the tree.
+ *
+ * ⚠ THE CASE HAS TWO HALVES, AND THE SECOND IS THE ONE THAT MATTERS. A resolver that returns a
+ * stable-looking string is not evidence of exclusion, so the case varies `TMPDIR` and `HOME`
+ * against the resolver AND then proves the property behaviourally: two concurrent default
+ * invocations under different `TMPDIR`s must serialize. `check-lock-mutations.mjs` restores the
+ * `tmpdir()` default and this case must then report BOTH RAN.
+ */
+async function checkDefaultPathIsInvariant() {
+  const PREFIX = "home-conf-heavy-gate.lock";
+  const { defaultLockFile } = lockModule;
+
+  // (1) The resolver, driven directly across four environments. No processes, no timing.
+  const envs = [
+    ["baseline", {}],
+    ["TMPDIR varied", { TMPDIR: join("/private/tmp", "lock-dflt-a") }],
+    ["TMPDIR and HOME varied", { TMPDIR: join("/private/tmp", "lock-dflt-b"), HOME: "/private/tmp/lock-dflt-h" }],
+    ["hostile HOME", { HOME: "/private/tmp/lock-dflt-evil" }],
+  ];
+  const resolved = envs.map(([label, extra]) => {
+    const env = { ...process.env, ...extra };
+    delete env.HOME_CONF_GATE_LOCK;
+    return { label, path: defaultLockFile(env) };
+  });
+  const distinct = [...new Set(resolved.map((r) => r.path))];
+  if (distinct.length !== 1) {
+    fail(
+      `default lock path moved with the environment: expected 1 value across ${envs.length} envs, ` +
+        `got ${distinct.length} -> ${JSON.stringify(resolved)}`,
+    );
+  }
+  if (distinct.length === 1 && !distinct[0].endsWith(PREFIX)) {
+    fail(`default lock path must end with ${PREFIX}; got ${JSON.stringify(distinct[0])}`);
+  }
+
+  // (2) Behaviour: two concurrent DEFAULT invocations, different `TMPDIR`s, no `--lock-file`.
+  const hold = join(freshDir(), "hold.mjs");
+  writeFileSync(
+    hold,
+    'import { writeFileSync } from "node:fs";\n' +
+      'writeFileSync(process.argv[2], "ran");\n' +
+      "await new Promise((r) => setTimeout(r, 2500));\n",
+  );
+  const launchDefault = (tmpdirValue, marker, name) => {
+    const env = { ...process.env, TMPDIR: tmpdirValue };
+    delete env.HOME_CONF_GATE_LOCK; // the DEFAULT path is the subject, not the override
+    const child = spawn(
+      process.execPath,
+      [SCRIPT, "--timeout-ms", "1200", "--poll-ms", "10", "--", process.execPath, hold, marker],
+      { stdio: ["ignore", "pipe", "pipe"], env },
+    );
+    return new Promise((resolve) => {
+      let stdout = "";
+      child.stdout.on("data", (c) => (stdout += c));
+      child.stderr.on("data", () => {});
+      child.on("close", (code) => resolve({ name, code, stdout }));
+    });
+  };
+
+  const tmpA = mkdtempSync(join(tmpdir(), "lock-dflt-pa-"));
+  const tmpB = mkdtempSync(join(tmpdir(), "lock-dflt-pb-"));
+  const markerA = join(tmpA, "marker-a");
+  const markerB = join(tmpB, "marker-b");
+  const first = launchDefault(tmpA, markerA, "first");
+  await delay(400); // let the first acquire before the second tries
+  const second = launchDefault(tmpB, markerB, "second");
+  const runs = await Promise.all([first, second]);
+
+  const ranA = existsSync(markerA);
+  const ranB = existsSync(markerB);
+  const bothRan = ranA && ranB;
+  const codes = runs.map((r) => r.code);
+  if (bothRan) {
+    fail(
+      `two default invocations under different TMPDIRs BOTH RAN, so the lock excluded nothing: ` +
+        `exitA=${codes[0]} exitB=${codes[1]}. The default path must not depend on TMPDIR.`,
+    );
+  } else if (!(ranA !== ranB && codes.includes(EXIT.lock_timeout))) {
+    fail(
+      `expected exactly one runner and the other exiting ${EXIT.lock_timeout}; got ` +
+        `ranA=${ranA} ranB=${ranB} exitA=${codes[0]} exitB=${codes[1]}`,
+    );
+  }
+  const states = runs.map((r) => (r.stdout.match(/"state":"(\w+)"/) ?? [])[1] ?? "?");
+  if (ranA !== ranB && !states.includes("lock_timeout")) {
+    fail(`the losing invocation must report lock_timeout; states=${JSON.stringify(states)}`);
+  }
+  rmSync(tmpA, { recursive: true, force: true });
+  rmSync(tmpB, { recursive: true, force: true });
+}
+
+await checkDefaultPathIsInvariant();
 checkClassification();
 await checkNoEmptyPublishWindow();
 await checkMalformedLockWaits();
@@ -1217,5 +1319,5 @@ if (failures.length) {
   process.exit(1);
 }
 console.log(
-  "check-lock: ok (state classification, no observable empty window, malformed-lock wait, quarantine identity, release ownership, release-vs-successor, quarantine-restore, schema-invalid wait, stale-recovery serialization, claim-reclaim protection, reclaim-window successor, missing-lock acquire, serialization)",
+  "check-lock: ok (default-path invariance+serialization, state classification, no observable empty window, malformed-lock wait, quarantine identity, release ownership, release-vs-successor, quarantine-restore, schema-invalid wait, stale-recovery serialization, claim-reclaim protection, reclaim-window successor, missing-lock acquire, serialization)",
 );

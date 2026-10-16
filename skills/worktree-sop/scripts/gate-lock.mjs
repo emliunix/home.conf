@@ -3,6 +3,7 @@
 import { randomUUID } from "node:crypto";
 import {
   closeSync,
+  existsSync,
   fstatSync,
   linkSync,
   mkdirSync,
@@ -15,7 +16,7 @@ import {
   unlinkSync,
   writeFileSync,
 } from "node:fs";
-import { tmpdir } from "node:os";
+import { userInfo } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -31,7 +32,8 @@ function usage() {
     "Usage: gate-lock.mjs [options] -- <command> [args...]",
     "",
     "Options:",
-    "  --lock-file <path>  Lock path (default: $HOME_CONF_GATE_LOCK or tmp).",
+    "  --lock-file <path>  Lock path (default: $HOME_CONF_GATE_LOCK, else a",
+    "                      system-anchored path that cannot move with TMPDIR).",
     "  --timeout-ms <n>    Maximum wait for the lock (default: 1200000).",
     "  --stale-ms <n>      Age after which a lock is stale (default: 1800000).",
     "  --poll-ms <n>       Poll interval (default: 250).",
@@ -39,11 +41,59 @@ function usage() {
   ].join("\n");
 }
 
+/**
+ * The default lock path, anchored so that NO caller-controllable variable can move it.
+ *
+ * ⚠⚠ WHY NOT `tmpdir()` — THE DEFECT THIS REPLACES. The default was
+ * `join(tmpdir(), "home-conf-heavy-gate.lock")`, and `os.tmpdir()` honours `TMPDIR`. Two invocations
+ * with different temp roots therefore computed DIFFERENT paths, both acquired "the" lock, and both
+ * ran the heavy gate — the exact overlap this wrapper exists to prevent. The cost is recorded in
+ * this repository: four `pnpm check` + four `check-gate-cases.mjs` alive at once, host load 137,
+ * and gates producing FALSE REDS (7 failures / 39 errors at load ~100, all passing clean). A red
+ * that is about the host rather than the tree is the failure mode a per-`TMPDIR` lock buys you.
+ *
+ * `os.homedir()` is NOT a fix either, and that is the subtler half: it reads the `HOME` variable,
+ * and the case runner REASSIGNS `HOME` for the cases it spawns. So a `$HOME`-anchored default would
+ * split between the runner and its own child.
+ *
+ * ⚠ MEASURED, four environments (baseline / `TMPDIR` varied / `TMPDIR`+`HOME` varied / hostile
+ * `HOME=/evil`), counting DISTINCT resolved paths:
+ *
+ *   `join(tmpdir(), ...)`          3 distinct  -> moves
+ *   `join(homedir(), ...)`         3 distinct  -> moves, including under `HOME=/evil`
+ *   `join(userInfo().homedir, …)`  1 distinct  -> INVARIANT
+ *
+ * `os.userInfo()` takes the home directory from the SYSTEM account database (the passwd entry),
+ * not from the environment, so it is stable across `TMPDIR`, across `HOME`, and across an empty
+ * environment. On this host it is `/Users/ppio` in all four.
+ *
+ * ⚠ THE BOUND, stated because the invariant is about what it READS, not about always succeeding:
+ * `userInfo()` uses the effective uid, so on a host where that uid has no account entry it may
+ * report a home that does not exist or cannot be written. That is why the path is not adopted
+ * blindly: the caller's home is only used when it EXISTS, and the last resort is a fixed absolute
+ * path under `/tmp` — deliberately NOT `tmpdir()`, so even the fallback cannot be moved by the
+ * environment. A lock that cannot be created is caught by the existing `acquire` error path and
+ * reported as `invalid_input`, not as a silent overlap.
+ */
+function defaultLockFile(env = process.env) {
+  const PREFIX = "home-conf-heavy-gate.lock";
+  if (env.HOME_CONF_GATE_LOCK) return env.HOME_CONF_GATE_LOCK;
+  let systemHome;
+  try {
+    systemHome = userInfo().homedir;
+  } catch {
+    // No account entry for this uid; fall through to the fixed path below.
+    systemHome = undefined;
+  }
+  if (systemHome && existsSync(systemHome)) return join(systemHome, `.${PREFIX}`);
+  // ⚠ NOT `tmpdir()`: the whole point is a path `TMPDIR` cannot move. `/tmp` is a fixed absolute
+  // path, and on the platforms this gate runs on it is world-writable.
+  return join("/tmp", PREFIX);
+}
+
 function parseArgs(argv) {
   const options = {
-    lockFile:
-      process.env.HOME_CONF_GATE_LOCK ||
-      join(tmpdir(), "home-conf-heavy-gate.lock"),
+    lockFile: defaultLockFile(),
     timeoutMs: 20 * 60 * 1000,
     staleMs: 30 * 60 * 1000,
     pollMs: 250,
@@ -602,6 +652,7 @@ export {
   EXIT,
   LOCK_STATE,
   acquire,
+  defaultLockFile,
   isLockShape,
   lockIsReclaimable,
   observeLock,
