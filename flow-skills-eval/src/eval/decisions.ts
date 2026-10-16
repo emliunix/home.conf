@@ -20,7 +20,13 @@ export type StatusToSet =
   | "landed"
   | "unchanged";
 
-export type WriteTarget = "design_body" | "worklog" | "new_design_file" | "followup_design_file" | "none";
+export type WriteTarget =
+  | "design_body"
+  | "worklog"
+  | "new_design_file"
+  | "followup_design_file"
+  | "module_docs"
+  | "none";
 
 export interface Decision {
   readonly next_action: NextAction;
@@ -65,6 +71,7 @@ export const WRITE_TARGETS: readonly WriteTarget[] = Object.freeze([
   "worklog",
   "new_design_file",
   "followup_design_file",
+  "module_docs",
   "none",
 ]);
 
@@ -110,6 +117,7 @@ export const VALUE_DEFINITIONS: Readonly<{
     worklog: "the design's worklog",
     new_design_file: "a new design file",
     followup_design_file: "a new followup design file",
+    module_docs: "a package's module documents under `docs/modules/`",
     none: "no document",
   }),
 });

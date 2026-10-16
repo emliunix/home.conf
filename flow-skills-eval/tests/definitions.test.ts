@@ -32,6 +32,7 @@ const CONSISTENT_TUPLES: Readonly<Record<string, string>> = Object.freeze({
   "remediate,unchanged,worklog,false": "the correction is recorded in the worklog",
   "open_new_design,unchanged,new_design_file,true": "the content goes to a new `draft` design",
   "reject_finding,unchanged,worklog,false": "the reason is recorded in the worklog",
+  "remediate,unchanged,module_docs,false": "the correction is in a package's module documents",
 });
 
 const CONDITIONALS = /\b(when|if|after|once|unless)\b/i;

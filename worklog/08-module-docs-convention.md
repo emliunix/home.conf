@@ -154,3 +154,68 @@ citation check resolves and a tuple that has a `CONSISTENT_TUPLES` row:
   one that mismatches without contradicting (follow-up);
 then runs them on both models and triages any miss by design 10's rule. This flow
 re-closes afterwards.
+
+## C6 - Implementation round 2 (2026-10-16)
+
+Routed back by the retrospective above. Round 2 of the round budget.
+
+- `flow-skills-eval/src/eval/cases.ts`: nine cases, `module-docs-{review,dispatch,retro}-{canonical,trap,paraphrase}`,
+  each with a quoted `// Cite:` the citation test resolves. Expected tuples were
+  written before any run: review `remediate, unchanged, design_body` (the drafter
+  names the documents in Scope); dispatch and retro `remediate, unchanged,
+  module_docs`.
+- `decisions.ts`: a `write_target` value `module_docs` ("a package's module
+  documents under `docs/modules/`"). The schema could not name a module document
+  at all; no existing tuple uses or changes meaning with it. One new
+  `CONSISTENT_TUPLES` row; lock re-approved.
+- `vp test --run` 66/66, `tsc` clean. Seeded red: a cited fragment altered (1
+  failed); the new tuple row dropped (1 failed).
+
+**Seeded skill defects** (the stage's module-docs sentence removed from the skill
+the prompt loads, ×3 per model):
+
+| Stage | With the sentence | Without it | Witness? |
+| --- | --- | --- | --- |
+| dispatch | `write_target: module_docs` on every run | `none` on every run (both models) | yes, on the write target |
+| retro | 9/9 both models | 9/9 both models | no: the row test alone ("a failing row blocks") gives the same verdict |
+| review (first fixtures) | flash 6/9 | flash 6/9 | no: the fixture said "names no document under `docs/modules/`" |
+| review (revised fixtures, hint removed) | `set_status, reviewed` on canonical, both models | the same | the case fails with the rule in place |
+
+The review fixtures were revised once to remove the hint; the expected tuples did
+not change. One skill edit was tried and reverted: adding the Scope check to
+flow-grill-review §4's GO list did not change either model's canonical answer.
+
+**Graded runs** (`worklog/08-module-docs-convention/round2-*.tsv`): flash 12/27,
+pro 15/27.
+
+| Case | D | Reading / evidence |
+| --- | --- | --- |
+| `module-docs-review-canonical` | 1 | Both models pass the gate (`set_status, reviewed`). Flash's prose: the gate passes and the contract "must be reconciled before implementation". The Draft-contract sentence does not stop a review that has otherwise passed |
+| `module-docs-review-trap` | 2 (deferred) | `reject_finding` for "decline the drafter's proposal", the act vocabulary (design 11 unit 1) |
+| `module-docs-review-paraphrase` | 1 | Both return the plan but name `module_docs`: they would update the page now, not name it in Scope. Same finding as canonical: the review-stage rule is read as "update the docs", not "the design names them" |
+| `module-docs-dispatch-canonical` | 2 (deferred) | flash `implement, …, module_docs`: the write target is right; updating a document from the design reads as implementation. Prose (flash): "update the contract … before writing `src/report.ts`" |
+| `module-docs-dispatch-paraphrase` | 2 (deferred) | same, both models; pro's prose says the same |
+
+## Retrospective - re-close after round 2 (2026-10-16)
+
+**Bottom line** unchanged from the first pass; the round changed only the eval.
+
+**Findings and routes.**
+1. **Blocking.** Row "Stage behaviour" fails at the review stage: with the merged
+   skills, both models pass a review gate on a draft that changes a package and
+   names no module document. The dispatch stage is witnessed (seeded red flips the
+   write target); its remaining misses are the act vocabulary.
+2. **Not blocking.** The retro-stage cases do not witness §5's sentence: the row
+   test decides them alone. The part only §5 adds ("any other mismatch is a
+   follow-up unit") needs a case that the schema can score once stage and act are
+   split (design 11 unit 1).
+3. **Not blocking.** PR #15 changes doc-verify's constraint language with no
+   `Module docs:` line (observation from the first pass).
+
+**Route for finding 1, open.** Design 08 places the review check in the Draft
+contract table, a precondition read before review starts. One wording edit at the
+GO list did not help. If the placement is the cause, the design body prescribes it,
+and that is verdict 4 (breakout); if the wording is, it is verdict 3 and round 3,
+which `flow-common` spends on the brief ("Rewrite the brief much more than the
+code"). The choice is put to the owner and the reviewer; status stays
+`pending-retro`.
