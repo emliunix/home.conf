@@ -36,6 +36,14 @@ recognized:
   source for a sprint (frozen root + funnel), not designs: no lifecycle
   `Status:`, no grill → impl → retro. Design numbers never refer to them.
 
+- **`design/NN-<topic>-followup.md`** — a follow-up file (`Status: draft-followup`):
+  a review sweep's or a retro's further findings, grouped into units
+  (`flow-grill-review` §3, `flow-retro` §4 verdict 2). It takes the next free
+  number like a design, but it is not a lifecycle design: no three heads, no
+  obligation until a unit is picked up as a new design. The `-followup` suffix is
+  how the document gate tells it apart (`doc-verify/modules/design-followup.yaml`),
+  so a lifecycle design's topic never ends in `-followup`.
+
 Anything else does not have a defined place.
 
 ## How a file gets its name
