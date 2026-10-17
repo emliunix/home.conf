@@ -32,6 +32,10 @@ Design 08's round 2 already added one value, `write_target: module_docs`, becaus
 the schema could not name a module document at all; this unit owns the schema
 from here, and a full-corpus run on both models after that change is owed.
 
+The class is sensitive to the prompt: after `module_docs` was added, pro's older
+cases fell from 98 to 91, and after one sentence in flow-grill-review they rose to
+100, every move in the stage-vs-act answers (worklog/08 C7–C8).
+
 Candidate shapes: score `act` only, or add a `stage` field. Either one changes the
 tool schema and so the frozen-prefix lock; the expected tuples' meaning must not move
 (design 10's rule).

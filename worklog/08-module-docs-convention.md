@@ -241,8 +241,9 @@ Tuple runs (`round3-full-*-x3.tsv`, the whole corpus, also owed for the
 Dispositions: canonical **1** (both models, probe agrees with the tool); trap pro
 and paraphrase pro **2 (deferred)**, "return the draft" read as `reject_finding`
 (design 11 unit 1); paraphrase flash **1, unconfirmed** (its prose names the gap).
-When the fixture's drafter mentions the documents, both models apply the rule;
-when nothing points at them, neither does.
+Unless the fixture's drafter raises the documents (the trap proposes deferring
+them), neither model applies the rule. All of this is deepseek only, not confirmed
+by another family (design 11 unit 3).
 
 **The 43 older cases after the `module_docs` value:** flash 105/126 (103 at
 design 10's final), pro 91/126 (98). No older case answered `module_docs`. Pro's
@@ -255,14 +256,59 @@ drops are `run_retro` / `reject_finding` answers (`gate-pending-landed-canonical
 **Finding 1, re-measured.** At the moment design 08 specified, both models take a
 draft that changes a package and names no module document into review unless the
 fixture points at the documents. The probe agrees with the tool run, so this is a
-skill finding, not the instrument. Three wordings of the rule were tried in round
-2 and round 3's experiments (the Draft contract as merged, the GO list, a P1 at
-item 0); none changed it.
+skill finding, not the instrument. The wording experiments behind this sentence ran on
+the round-2 gate-moment fixtures and are superseded by C8.
 
-**Verdict proposed: 4 - breakout**, for the owner as manager to rule. The design
+**Verdict proposed: 4 - breakout** (withdrawn at C8), for the owner as manager to rule. The design
 prescribes the check as reviewer judgement only, and names a mechanical gate as a
 non-goal; the evidence says judgement alone does not catch the omission. The
 candidate correction is the conditional section the owner-forwarded survey of
 document rules describes (Scope must name `docs/modules/<pkg>/` when it names that
 package's code), decided from a deterministic fact. Status stays `pending-retro`
 until the owner rules; on breakout the manager reverts design 08 to `draft`.
+
+## C8 - Implementation round 4: the wording, at the submission moment (2026-10-17)
+
+The C7 re-review (should-fix 1) noted that both wording experiments had run on the
+gate-moment fixtures, so "wording does not fix it" was unmeasured where it
+mattered. Re-run on the round-3 fixtures, ×3 per model, skill restored between runs:
+
+| Wording (diff) | flash | pro | Output |
+| --- | --- | --- | --- |
+| P1 at review item 0 (`wording-item0.diff`) | 9/9 | 1/9; the misses are `reject_finding`, and the prose probe returns the draft to the drafter (`probe-item0-pro.md`) | `wording-item0-round3.tsv` |
+| GO list item 4 (`wording-golist.diff`) | 6/9, canonical 0/3 | 0/9 `reject_finding` | `wording-golist-round3.tsv` |
+
+The item-0 wording is the fix: `skills/flow-grill-review/SKILL.md` §0 now makes a
+draft whose Scope changes a package and names none of its module documents a P1,
+reviewed before all else. It restates no definition (it points at `project-skeleton`
+§ Module docs); the L0 tests pass 66/66 and the lock is re-approved.
+
+Runs after the fix, whole corpus (`round4-full-*-x3.tsv`): flash 122/153, pro
+116/153. Module-docs cases: review flash 9/9, pro canonical 3/3 with trap and
+paraphrase `reject_finding` (2, deferred: "return the draft"); dispatch misses are
+`implement, …, module_docs` (2, deferred); retro 9/9 both. Older cases: flash
+101/126 (105 before), pro 100/126 (91). Every older case that moved is in the
+stage-vs-act class (`run_retro`, `reject_finding`, `open_new_design`), on both
+sides, so the class moves with any edit to the prompt (design 11 unit 1).
+
+## Retrospective - re-close after round 4 (2026-10-17)
+
+**Bottom line** unchanged; round 4 added one sentence to flow-grill-review §0,
+which stays inside design 08's Scope (the review stage check, pointing at
+project-skeleton).
+
+**Findings and routes.**
+1. **Resolved.** Row "Stage behaviour": the review stage now gets the expected
+   decision at the moment the design names (flash 9/9; pro canonical 3/3, its other
+   misses the act vocabulary with the probe agreeing); dispatch is witnessed on the
+   write target; no row fails for a skill reason.
+2. Not blocking: the retro-stage cases are decided by the row test alone (§5's own
+   clause needs a scorable case, design 11 unit 1).
+3. Not blocking: PR #15 has no `Module docs:` line; its author takes it there.
+4. Not blocking: design 08's Scope still says flow-retro's check is "a bounded
+   correction", which design 09 replaced; the as-built row holds.
+5. Not blocking: all evidence is deepseek only.
+
+**Verdict: 2 - land with follow-ups**, in `design/12-module-docs-convention-followup.md`.
+`Status: landed` with that file committed; the merge waits for the owner, who was
+ruling on this design.

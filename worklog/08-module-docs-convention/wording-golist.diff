@@ -1,0 +1,13 @@
+diff --git a/skills/flow-grill-review/SKILL.md b/skills/flow-grill-review/SKILL.md
+index af11929..6408731 100644
+--- a/skills/flow-grill-review/SKILL.md
++++ b/skills/flow-grill-review/SKILL.md
+@@ -245,7 +245,7 @@ Pass the review gate when — **GO condition is: every accepted P1 is solved.**
+ 1. All accepted P1 findings are resolved (smallest correction applied to the design body, or a P1 Defer discharged with its named evidence)
+ 2. Design body is intact current speech; rejected items, defense, and Simplicity delta are in the worklog; every accepted-but-unfixed P2/P3 has its follow-up sweep destination recorded (file + functional unit) — unfollowed "we'll get to it" notes do not count
+ 3. The minimum real-data happy path and outcome-proving verification are coherent
+-4. Design **Review** backlinks the worklog; no unauthorized scope expansion remains
++4. Design **Review** backlinks the worklog; no unauthorized scope expansion remains; a design that changes a package names its module documents in Scope (Draft contract), or the draft goes back to the drafter
+ 5. Set `Status: reviewed`
+ 6. **Supervisor gate** (`flow-common` orchestrator): re-warm on the goal hierarchy and this design, then dispatch `flow:impl` or not. Review-passed is not impl-started.
+ 
