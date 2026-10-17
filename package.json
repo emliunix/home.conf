@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "tsc -p doc-verify/tsconfig.build.json && cp doc-verify/src/kernel/core.pl doc-verify/dist/kernel/core.pl && chmod +x doc-verify/dist/cli.js",
-    "prepare": "npm run build && if [ \"$(git rev-parse --path-format=absolute --git-dir 2>/dev/null)\" = \"$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)\" ] && command -v prek >/dev/null 2>&1; then prek install --git-dir \"$(git rev-parse --path-format=absolute --git-common-dir)\" -t pre-commit; fi",
+    "prepare": "npm run build && common=\"$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)\" && if [ -n \"$common\" ] && [ \"$(git rev-parse --path-format=absolute --git-dir 2>/dev/null)\" = \"$common\" ] && command -v prek >/dev/null 2>&1; then prek install --git-dir \"$common\" -t pre-commit; fi",
     "test": "npm run build && vitest run",
     "test:kernel-slow": "npm run build && node doc-verify/tests/kernel-slow/run-kernel-slow.mjs",
     "typecheck": "tsc -p doc-verify/tsconfig.json --noEmit",
@@ -23,7 +23,8 @@
     "mutate": "npm run build && node scripts/run-mutate-tables.mjs",
     "test:remote-hook": "bash doc-verify/tests/remote-hook.sh",
     "test:mutations": "node scripts/run-mutation-runners.mjs",
-    "check:tracked-ignored": "node scripts/check-tracked-ignored.mjs"
+    "check:tracked-ignored": "node scripts/check-tracked-ignored.mjs",
+    "test:prepare-guard": "bash doc-verify/tests/prepare-guard.sh"
   },
   "engines": {
     "node": ">=18"

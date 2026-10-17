@@ -4,6 +4,15 @@
 // Exit codes (doc-verify owns the public vocabulary — README / report.ts):
 //   0 PASS | 1 NO-GO | 2 NEEDS-REVIEW | 3 BLOCKED | 64+ usage/config
 //
+// STAGE POLICY (owner decision 2026-10-17, thread #comp-agent-substrate-qa:d3974615,
+// refined by @CowBoy): structural checks block; the semantic judge informs.
+//   --stage pre-commit  NOTHING is refused. Every verdict prints and exits 0.
+//   --stage pre-push    NO-GO (1) blocks; BLOCKED (3) reports and exits 0. A BLOCKED that
+//                       refused would make the judge's credential a requirement to push at
+//                       all, which is the dependency this split removes.
+// Without --stage the historical pass-through is kept, so every existing caller and
+// the self-test arms are unchanged.
+//
 // Exit 2 is overloaded on purpose (house pattern = oxlint: discriminate on the
 // stream when codes collide). This wrapper may also return 2 for:
 //   - setup refusal — prefixed on stderr
@@ -124,11 +133,13 @@ function ensureCli(root, { autoBuild = true, autoSetup = false } = {}) {
   return { ok: true, cli };
 }
 
-function runCheck(root, checkArgs, { autoSetup = false } = {}) {
+function runCheck(root, checkArgs, { autoSetup = false, stage } = {}) {
   const ensured = ensureCli(root, { autoBuild: true, autoSetup });
   if (!ensured.ok) {
     console.error(ensured.message);
-    return ensured.code;
+    // A setup refusal is BLOCKED, not a document finding. Under a stage policy it reports
+    // rather than refusing, for the same reason a BLOCKED verdict does.
+    return applyStagePolicy(ensured.code === 2 ? 3 : ensured.code, stage);
   }
   // Node's fetch ignores HTTPS_PROXY unless NODE_USE_ENV_PROXY is set.
   const env = { ...process.env };
@@ -156,7 +167,69 @@ function runCheck(root, checkArgs, { autoSetup = false } = {}) {
     );
     return 2;
   }
-  return result.status;
+  return applyStagePolicy(result.status, stage);
+}
+
+/**
+ * Map the CLI's exit status onto the hook's stage policy.
+ *
+ * The matrix, so the next reader does not have to infer it:
+ *
+ *   status        pre-commit   pre-push   (no --stage)
+ *   0 PASS            0            0            0
+ *   1 NO-GO           0            1            1      <- refused only at push
+ *   2 NEEDS-REVIEW    0            2            2      <- refused only at push
+ *   3 BLOCKED         0            0            3      <- never refused under a stage
+ *
+ * pre-commit refuses NOTHING. The owner's decision (2026-10-17) is "contracts warns on
+ * pre-commit, blocks on pre-push", with the rationale "a verdict there must inform, not
+ * veto": the commit hook is where an author is still editing. Refusing a NO-GO at commit
+ * would also keep the judge on the critical path of every document commit, which is the
+ * credential coupling this split exists to remove.
+ *
+ * A refused verdict still PRINTS, naming its class, so a real finding is visible even when
+ * it does not block. That is the difference between "warns" and "silently passes".
+ *
+ * @param {number} status
+ * @param {"pre-commit" | "pre-push" | undefined} stage
+ */
+function applyStagePolicy(status, stage) {
+  if (stage === undefined) return status;
+  if (stage === "pre-commit") {
+    if (status !== 0) {
+      console.error(
+        `document-contracts: ${verdictName(status)} -- reported, not refused (pre-commit warns; ` +
+          "pre-push blocks on NO-GO). This verdict does not stop the commit.",
+      );
+    }
+    return 0;
+  }
+  // pre-push: BLOCKED reports, NO-GO blocks. NEEDS-REVIEW keeps its historical code.
+  if (status === 3) {
+    console.error(
+      "document-contracts: BLOCKED -- the judge could not run, so this is not a document " +
+        "finding and does not refuse the push. Fix the credential if you want the semantic " +
+        "check to actually read the change.",
+    );
+    return 0;
+  }
+  return status;
+}
+
+/** Human name for an exit status, so a warning says what it saw. */
+function verdictName(status) {
+  switch (status) {
+    case 0:
+      return "PASS";
+    case 1:
+      return "NO-GO (a document finding)";
+    case 2:
+      return "NEEDS-REVIEW or a setup/anomaly refusal";
+    case 3:
+      return "BLOCKED (the judge could not run)";
+    default:
+      return `exit ${status}`;
+  }
 }
 
 function writeStubCli(dir, exitCode) {
@@ -270,6 +343,125 @@ function selfTest() {
     }
   }
 
+  // Arm F: stub CLI exits 3 (BLOCKED) under --stage pre-commit -> reports, exits 0.
+  {
+    const dir = mkdtempSync(join(tmpdir(), "doc-contracts-blocked-commit-"));
+    try {
+      writeFileSync(
+        join(dir, "package.json"),
+        JSON.stringify({ name: "fixture", private: true }, null, 2),
+      );
+      writeStubCli(dir, 3);
+      mkdirSync(join(dir, "node_modules"), { recursive: true });
+      const code = runCheck(dir, ["check", "--staged", "--profile", "auto", "--format", "text"], {
+        stage: "pre-commit",
+      });
+      if (code !== 0) failures.push(`arm F: BLOCKED at pre-commit must exit 0, got ${code}`);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // Arm G: stub CLI exits 3 (BLOCKED) under --stage pre-push -> reports, exits 0. A BLOCKED
+  // that refused here would make the judge credential a requirement to push at all.
+  {
+    const dir = mkdtempSync(join(tmpdir(), "doc-contracts-blocked-push-"));
+    try {
+      writeFileSync(
+        join(dir, "package.json"),
+        JSON.stringify({ name: "fixture", private: true }, null, 2),
+      );
+      writeStubCli(dir, 3);
+      mkdirSync(join(dir, "node_modules"), { recursive: true });
+      const code = runCheck(dir, ["check", "--staged", "--profile", "auto", "--format", "text"], {
+        stage: "pre-push",
+      });
+      if (code !== 0) failures.push(`arm G: BLOCKED at pre-push must exit 0, got ${code}`);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // Arm H: stub CLI exits 1 (NO-GO) under --stage pre-push -> still blocks. The stage
+  // policy must not become "never refuse"; only BLOCKED is excused.
+  {
+    const dir = mkdtempSync(join(tmpdir(), "doc-contracts-nogo-push-"));
+    try {
+      writeFileSync(
+        join(dir, "package.json"),
+        JSON.stringify({ name: "fixture", private: true }, null, 2),
+      );
+      writeStubCli(dir, 1);
+      mkdirSync(join(dir, "node_modules"), { recursive: true });
+      const code = runCheck(dir, ["check", "--staged", "--profile", "auto", "--format", "text"], {
+        stage: "pre-push",
+      });
+      if (code !== 1) failures.push(`arm H: NO-GO at pre-push must still exit 1, got ${code}`);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // Arm I: stub CLI exits 1 (NO-GO) under --stage pre-commit -> reports, exits 0. This is the
+  // arm the first version of this change was missing: pre-commit warns on EVERY verdict, it
+  // does not refuse a real finding. (Review finding, @CowBoy, 2026-10-17.)
+  {
+    const dir = mkdtempSync(join(tmpdir(), "doc-contracts-nogo-commit-"));
+    try {
+      writeFileSync(
+        join(dir, "package.json"),
+        JSON.stringify({ name: "fixture", private: true }, null, 2),
+      );
+      writeStubCli(dir, 1);
+      mkdirSync(join(dir, "node_modules"), { recursive: true });
+      const code = runCheck(dir, ["check", "--staged", "--profile", "auto", "--format", "text"], {
+        stage: "pre-commit",
+      });
+      if (code !== 0) failures.push(`arm I: NO-GO at pre-commit must exit 0, got ${code}`);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // Arm J: stub CLI exits 2 (NEEDS-REVIEW) under --stage pre-commit -> reports, exits 0.
+  {
+    const dir = mkdtempSync(join(tmpdir(), "doc-contracts-review-commit-"));
+    try {
+      writeFileSync(
+        join(dir, "package.json"),
+        JSON.stringify({ name: "fixture", private: true }, null, 2),
+      );
+      writeStubCli(dir, 2);
+      mkdirSync(join(dir, "node_modules"), { recursive: true });
+      const code = runCheck(dir, ["check", "--staged", "--profile", "auto", "--format", "text"], {
+        stage: "pre-commit",
+      });
+      if (code !== 0) failures.push(`arm J: NEEDS-REVIEW at pre-commit must exit 0, got ${code}`);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  // Arm K: stub CLI exits 2 (NEEDS-REVIEW) under --stage pre-push -> keeps its historical code.
+  // The push stage is NOT "excuse everything": only BLOCKED is excused there.
+  {
+    const dir = mkdtempSync(join(tmpdir(), "doc-contracts-review-push-"));
+    try {
+      writeFileSync(
+        join(dir, "package.json"),
+        JSON.stringify({ name: "fixture", private: true }, null, 2),
+      );
+      writeStubCli(dir, 2);
+      mkdirSync(join(dir, "node_modules"), { recursive: true });
+      const code = runCheck(dir, ["check", "--staged", "--profile", "auto", "--format", "text"], {
+        stage: "pre-push",
+      });
+      if (code !== 2) failures.push(`arm K: NEEDS-REVIEW at pre-push must exit 2, got ${code}`);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
   if (failures.length > 0) {
     for (const line of failures) console.error(line);
     console.error(
@@ -278,7 +470,8 @@ function selfTest() {
     return 2;
   }
   console.log(
-    "document-contracts: --self-test PASS (setup refuse / RED / GREEN / exit-2 / auto-setup fail)",
+    "document-contracts: --self-test PASS (setup refuse / RED / GREEN / exit-2 / auto-setup " +
+      "fail / pre-commit-refuses-nothing (BLOCKED+NO-GO+NEEDS-REVIEW) / pre-push-blocks-NO-GO-only)",
   );
   return 0;
 }
@@ -288,11 +481,21 @@ if (argv.includes("--self-test")) {
   process.exit(selfTest());
 }
 
+const stageIndex = argv.indexOf("--stage");
+let stage;
+if (stageIndex !== -1) {
+  stage = argv[stageIndex + 1];
+  if (stage !== "pre-commit" && stage !== "pre-push") {
+    console.error(`document-contracts: --stage must be pre-commit or pre-push; got ${stage}`);
+    process.exit(64);
+  }
+}
+
 const autoSetup = argv.includes("--auto-setup");
-const checkArgs = argv.filter((a) => a !== "--auto-setup");
+const checkArgs = argv.filter((a, i) => a !== "--auto-setup" && i !== stageIndex && i !== stageIndex + 1);
 const finalArgs =
   checkArgs.length > 0
     ? checkArgs
     : ["check", "--staged", "--profile", "auto", "--format", "text"];
 
-process.exit(runCheck(REPO_ROOT, finalArgs, { autoSetup }));
+process.exit(runCheck(REPO_ROOT, finalArgs, { autoSetup, stage }));
