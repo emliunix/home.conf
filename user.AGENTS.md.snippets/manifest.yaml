@@ -48,6 +48,10 @@ snippets:
     path: user.AGENTS.md.snippets/agent-phrasing.md
     title: Reporting style
 
+  - id: verified-instruments
+    path: user.AGENTS.md.snippets/verified-instruments.md
+    title: A claim is only as good as its instrument
+
   # Machine-specific sections, resolved from ~/.agents-local/agents-snippets (see
   # snippet_roots). Their bodies carry live endpoints, account names and credential
   # paths, so they live outside the repo; only their identity and order are here.
