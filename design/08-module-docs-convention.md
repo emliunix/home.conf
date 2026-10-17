@@ -172,4 +172,4 @@ worklog/08-module-docs-convention.md
 
 ## Status
 
-pending-retro
+landed

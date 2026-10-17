@@ -11,6 +11,11 @@ documents:
   - pattern: design/03-companion-driven-document-verification.md
     artifact_kind: design
     modules: [doc-verify:artifact, doc-verify/modules/design.yaml, doc-verify/modules/design-03.yaml]
+  # Follow-up files (Status: draft-followup) from a review sweep or a retro's verdict 2: units of
+  # findings, not lifecycle designs, so none of the design heads apply.
+  - pattern: design/{0[1-9],[1-9][0-9]}-*-followup.md
+    artifact_kind: design-followup
+    modules: [doc-verify/modules/design-followup.yaml]
   - pattern: goals/[0-9][0-9]-*.md
     artifact_kind: goal
     modules: [doc-verify:goal]

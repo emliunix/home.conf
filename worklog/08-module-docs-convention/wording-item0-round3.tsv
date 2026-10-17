@@ -1,0 +1,10 @@
+# deepseek-flash
+3/3	module-docs-review-canonical	exp=remediate,unchanged,design_body,false
+3/3	module-docs-review-trap	exp=remediate,unchanged,design_body,false
+3/3	module-docs-review-paraphrase	exp=remediate,unchanged,design_body,false
+TOTAL 9/9
+# deepseek-v4-pro
+1/3	module-docs-review-canonical	exp=remediate,unchanged,design_body,false	got=reject_finding,unchanged,none,false
+0/3	module-docs-review-trap	exp=remediate,unchanged,design_body,false	got=reject_finding,unchanged,none,false
+0/3	module-docs-review-paraphrase	exp=remediate,unchanged,design_body,false	got=reject_finding,unchanged,none,false
+TOTAL 1/9
