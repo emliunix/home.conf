@@ -34,6 +34,11 @@ const constraintSchema = z.object({
    * population is vacuously satisfied and silent.
    */
   population: z.literal("nonempty").optional(),
+  /**
+   * The forall variable whose value is the document line a finding for this binding sits at
+   * (a reference's own line, say). Without it a finding sits at its section's heading.
+   */
+  line: z.string().regex(/^[A-Z][A-Za-z0-9_]*$/).optional(),
 }).strict();
 
 const importSchema = z.union([z.string(), z.object({ module: z.string(), params: z.record(z.string(), paramValue).optional() }).strict()]);

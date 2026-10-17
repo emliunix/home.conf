@@ -73,6 +73,31 @@ describe("snapshot and graph behavior", () => {
       repoPath("docs/a.md"),
     ]);
   });
+
+  it("follows prose citations and code-span paths, not only Markdown links, to the citing documents", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "doc-verify-prose-graph-"));
+    await mkdir(path.join(root, "docs"), { recursive: true });
+    await writeFile(path.join(root, "docs/a.md"), "# A\n\n## Intro\n\nText.\n");
+    await writeFile(path.join(root, "docs/cites.md"), "# Cites\n\nSee docs/a.md §Intro for the setup.\n");
+    await writeFile(path.join(root, "docs/names.md"), "# Names\n\nThe file `docs/a.md` holds it.\n");
+    await writeFile(path.join(root, "docs/other.md"), "# Other\n\nNothing here.\n");
+    git(root, ["init"]);
+    git(root, ["config", "user.email", "test@example.invalid"]);
+    git(root, ["config", "user.name", "Test"]);
+    git(root, ["add", "."]);
+    git(root, ["commit", "-m", "base"]);
+    await writeFile(path.join(root, "docs/a.md"), "# A\n\n## Introduction\n\nText.\n");
+    git(root, ["add", "docs/a.md"]);
+
+    const pair = await captureSnapshots({
+      root,
+      mode: { kind: "staged" },
+      documentRules: [{ pattern: "docs/*.md", modules: [] }],
+      invalidationPatterns: [],
+    });
+    expect(pair.candidatePaths).toEqual([repoPath("docs/a.md"), repoPath("docs/cites.md"), repoPath("docs/names.md")]);
+    expect(pair.impactPaths.get(repoPath("docs/cites.md"))).toEqual([repoPath("docs/a.md"), repoPath("docs/cites.md")]);
+  });
 });
 
 function git(root: string, args: string[]): void {

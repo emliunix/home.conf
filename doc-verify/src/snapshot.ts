@@ -11,6 +11,7 @@ import remarkParse from "remark-parse";
 import YAML from "yaml";
 import { z } from "zod";
 
+import { citedDocuments } from "./engine/facts.js";
 import { canonicalJson, sha256 } from "./hash.js";
 import { DocumentSelector, resolveDocumentSelector } from "./selection.js";
 import { RepoPath, Snapshot, SnapshotEntry, TextBlob, UsageError, repoPath } from "./types.js";
@@ -260,8 +261,12 @@ async function buildPair(input: {
     capture(input.baselineLabel, input.baselineInputPaths, input.readBaseline),
     capture(input.candidateLabel, input.candidateInputPaths, input.readCandidate),
   ]);
-  const baselineLinks = linkGraph(baseline, input.baselinePaths, input.documentRules);
-  const candidateLinks = linkGraph(candidate, input.candidatePaths, input.documentRules);
+  // What a prose citation may bind to: every file either side holds. A file one side deleted
+  // still binds, so the document citing it is re-checked.
+  const files = [...new Set([...input.candidateInventory, ...baseline.entries.keys(), ...candidate.entries.keys()])].sort();
+  const known = new Set(files);
+  const baselineLinks = linkGraph(baseline, input.baselinePaths, input.documentRules, files, known);
+  const candidateLinks = linkGraph(candidate, input.candidatePaths, input.documentRules, files, known);
   const changedRoots = input.changed.map((file) => normalizeRepoPath(input.root, file));
   const allDocuments = [...new Set([...input.baselinePaths, ...input.candidatePaths])].sort();
   const invalidatesAll = changedRoots.some((file) => input.invalidationPatterns.some((pattern) => minimatch(file, pattern, { dot: true })));
@@ -303,6 +308,8 @@ function linkGraph(
   snapshot: Snapshot,
   documentPaths: RepoPath[],
   documentRules: DocumentReferenceRule[],
+  files: readonly string[],
+  known: ReadonlySet<string>,
 ): Map<RepoPath, RepoPath[]> {
   const graph = new Map<RepoPath, RepoPath[]>();
   for (const [file, entry] of snapshot.entries) {
@@ -322,6 +329,9 @@ function linkGraph(
     const moduleFiles = (rule?.modules ?? []).flatMap((reference) => referencePath(repoPath("."), reference));
     graph.set(file, [...new Set([
       ...extractMarkdownLinks(file, entry.content),
+      // Prose names a document too (`design/04 §Heading`, a path in a code span); without these
+      // edges a renamed heading or a moved file breaks a document the staged check never reaches.
+      ...citedDocuments(entry.content, { path: file, files, exists: (repoPath) => known.has(repoPath) }).map(repoPath),
       companionPath,
       ...moduleFiles,
       ...(companion === undefined || "deleted" in companion ? [] : extractCompanionDependencies(companion.content)),

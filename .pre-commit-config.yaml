@@ -15,9 +15,9 @@ repos:
       - id: document-structure
         name: document structure (whole repository, draft)
         language: system
-        # The staged check above follows a changed file to the documents that LINK to it, not to
-        # those that name it in prose (`design/04 §Heading`, a path in backticks), so a renamed
-        # heading or a moved file can break a document nobody staged. This pass re-checks every
+        # Backstop for the staged check above: its closure follows links, `§` citations and
+        # code-span paths, but a reference it does not model (a bare file name, a `design/NN`
+        # with no `§`) can still break a document nobody staged. This pass re-checks every
         # configured document structurally: no judge, about 3 s.
         entry: node scripts/run-document-contracts.mjs --auto-setup check --all --profile draft --format text
         pass_filenames: false

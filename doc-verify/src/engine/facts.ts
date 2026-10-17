@@ -703,11 +703,45 @@ interface DocumentCandidate {
  * nothing is reported either way.
  */
 export function sectionReferences(markdown: string, sections: Section[], context: ReferenceContext): SectionReference[] {
-  if (context.readTarget === undefined) {
+  const read = context.readTarget;
+  if (read === undefined) {
     return [];
   }
-  const read = context.readTarget;
-  const exists = context.exists ?? ((repoPath: string): boolean => read(repoPath) !== undefined);
+  return scanSectionReferences(markdown, sections, context, context.exists ?? ((repoPath: string): boolean => read(repoPath) !== undefined));
+}
+
+/**
+ * The documents this one names in prose, for the affected closure: each `.md` file a `§` citation
+ * binds to, and each repository path a code span names (`DocumentReference` kind `path`). A target
+ * is not read: binding needs only `exists` and `files`, so a renamed heading or a deleted file
+ * still leaves its edge. Markdown links are the link graph's own (`extractMarkdownLinks`).
+ */
+export function citedDocuments(markdown: string, context: ReferenceContext & { exists: (repoPath: string) => boolean }): string[] {
+  const cited = new Set<string>();
+  const { readTarget: _readTarget, ...unread } = context;
+  scanSectionReferences(markdown, [], unread, context.exists, (repoPath) => cited.add(repoPath));
+  for (const reference of documentReferences(markdown, [], unread)) {
+    if (reference.kind === "path") {
+      const repoPath = resolveTargetPath(context.path, reference.target, context.exists);
+      if (repoPath !== undefined) {
+        cited.add(repoPath);
+      }
+    }
+  }
+  return [...cited].sort();
+}
+
+/**
+ * `sectionReferences` without the guard: `onCite` hears every document a `§` citation binds to,
+ * before its headings are read (so it hears it even when nothing can be read).
+ */
+function scanSectionReferences(
+  markdown: string,
+  sections: Section[],
+  context: ReferenceContext,
+  exists: (repoPath: string) => boolean,
+  onCite?: (repoPath: string) => void,
+): SectionReference[] {
   const tree = unified().use(remarkParse).parse(markdown);
   const metadataEnd = frontMatterEnd(markdown);
   const own = targetHeadings(sections.filter((section) => section.depth > 0).map((section) => section.heading));
@@ -929,6 +963,7 @@ export function sectionReferences(markdown: string, sections: Section[], context
     if (bound === undefined || !/\.md$/i.test(bound.repoPath)) {
       continue;
     }
+    onCite?.(bound.repoPath);
     const headings = readHeadings(context, bound.repoPath);
     if (headings === undefined) {
       continue;

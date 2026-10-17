@@ -56,6 +56,8 @@ export interface Constraint {
   profiles: string[] | undefined;
   /** Whether an empty population violates the constraint (`population: nonempty`). */
   nonempty: boolean;
+  /** The forall variable that carries a finding's line (`line:`), if the constraint names one. */
+  line: string | undefined;
   source: ConstraintSource;
 }
 
@@ -151,11 +153,16 @@ export function checkModule(parsed: ParsedModule): Program {
       }
     }
     checkSafety([], goal, `${where}.${constraint.mode}`, oracleInputs, issues, new Set([...bound].filter((name) => binding.has(name))));
+    const line = constraint.source.line;
+    if (line !== undefined && !binding.has(line)) {
+      issues.push(`${where}.line: ${line} is not a binding variable of the forall`);
+    }
     return {
       id: constraint.id, forall, goal, mode: constraint.mode,
       severity: constraint.source.severity, weight: constraint.source.weight ?? 1,
       message: constraint.source.message, repair: constraint.source.repair, profiles: constraint.source.profiles,
       nonempty: constraint.source.population === "nonempty",
+      line,
       source: constraint.source,
     };
   });
