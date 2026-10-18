@@ -65,6 +65,34 @@ these five facts before composing the table:
 5. **Gate state** — whether a heavy gate or held lock is running. A gate in flight changes what a
    concurrent push can do, and a red produced while one is held is not yet evidence about the code.
 
+### A frozen composition's base is read from its parent edge, never from the message that names it
+
+When a pass reports a **frozen composition** — a merge commit built to carry reviewed tips into one
+tree for a live gate — the base it was built on is a fact about the OBJECT, and the announcement is
+not evidence of it. **Read the commit and state all three together:**
+
+```sh
+git show -s --format='commit=%H%nparents=%P%ntree=%T' <composition>
+git ls-remote origin main          # the base tip, read fresh — not a remembered SHA
+```
+
+- **The FIRST PARENT must equal the named remote base.** If it does not, the composition is built on
+  an older tree than the message claims, and it is **one accepted change short** however green its
+  focused tests are — the missing change is simply not in the population those tests exercise.
+- **The tree is the object's identity**, so it is quoted with the commit, not instead of it. Two
+  different compositions can be announced for the same purpose; only the tree tells them apart.
+- **The remote base tip is read fresh in the same receipt.** A SHA named in prose is a reading of
+  whenever that message was written, not a property of the commit.
+
+⚠ **A message naming the base is not evidence of the commit edge — it records INTENT.** The failure
+this rule exists for: a freeze announced "from remote base `main = ab1a00de`" whose commit's first
+parent was `75eb48b3`. The sentence described the intended base; Git stored the earlier one. The
+focused suite stayed green because the missing landing was outside it.
+
+⇒ **Call an object frozen only after its first parent equals the named remote base.** Until then the
+receipt says what was read: *"commit P — first parent X, named base Y, they disagree"* is a finding,
+and it is the honest form of the same line.
+
 **Report the read, not the expectation.** When a ref cannot be read — the remote hangs, the
 network is down, the credential is absent — say which ref went unread. Silence about a failed read
 is indistinguishable from "unchanged", and "unchanged" is a claim.
