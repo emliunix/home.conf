@@ -8,7 +8,11 @@ repos:
         # opt-in HERE (prek) so a fresh worktree installs+builds without a
         # manual step; a direct wrapper call without the flag still refuses.
         # Credential fallback to the canonical checkout is in doc-verify itself.
-        entry: node scripts/run-document-contracts.mjs --auto-setup
+        # ⚠ --stage pre-commit IS REQUIRED, not cosmetic (#38). Without it the wrapper takes its
+        # historical pass-through, so the engine's exit 3 (BLOCKED -- which an empty population now
+        # returns) would block EVERY docs-only commit. #27's settled policy is that pre-commit warns
+        # and pre-push blocks; passing the stage is what makes that policy reach the hook.
+        entry: node scripts/run-document-contracts.mjs --auto-setup --stage pre-commit
         pass_filenames: false
         files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$|^scripts/run-document-contracts\.mjs$'
         require_serial: true
@@ -19,7 +23,10 @@ repos:
         # those that name it in prose (`design/04 §Heading`, a path in backticks), so a renamed
         # heading or a moved file can break a document nobody staged. This pass re-checks every
         # configured document structurally: no judge, about 3 s.
-        entry: node scripts/run-document-contracts.mjs --auto-setup check --all --profile draft --format text
+        # ⚠ SAME GAP, FOUND WHILE FIXING THE ONE ABOVE: this entry also passed no --stage, so a NO-GO
+        # in this whole-repo pass took the historical pass-through and would BLOCK a commit -- directly
+        # against "#27: pre-commit refuses nothing". Both local pre-commit entries now name their stage.
+        entry: node scripts/run-document-contracts.mjs --auto-setup --stage pre-commit check --all --profile draft --format text
         pass_filenames: false
         files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$|^scripts/run-document-contracts\.mjs$'
         require_serial: true

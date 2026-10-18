@@ -1,7 +1,17 @@
+# ⚠ EXTERNAL CONSUMERS GET THE STAGE-AWARE WRAPPER, NOT A BARE `doc-verify` (#38).
+#
+# These entries used to call `doc-verify` directly, which bypasses `--stage` entirely: an empty staged
+# population now exits 3 (BLOCKED), and a bare entry would therefore BLOCK EVERY DOCS-ONLY COMMIT for
+# any consumer of this file. That is the `home.conf` policy inverted -- pre-commit warns, pre-push
+# blocks -- and it is the failure mode @CowBoy named: "not silently green" must not become "a normal
+# docs commit cannot be made".
+#
+# Routing through the wrapper gives external consumers the same policy local ones get, and the verdict
+# still PRINTS, so a real finding is visible even when it does not block.
 - id: document-contracts
   name: document contracts
   language: node
-  entry: doc-verify check --staged --profile auto --format text --verbose
+  entry: node scripts/run-document-contracts.mjs --stage pre-commit --auto-setup
   pass_filenames: false
   files: '(^|/).+\.(md|ya?ml)$'
   require_serial: true
@@ -11,7 +21,7 @@
   # Opt-in companion to document-contracts: every configured document, structural checks only (no
   # judge), so a reference broken by a change elsewhere is caught even when its document is not
   # staged.
-  entry: doc-verify check --all --profile draft --format text
+  entry: node scripts/run-document-contracts.mjs --stage pre-commit --auto-setup check --all --profile draft --format text
   pass_filenames: false
   files: '(^|/).+\.(md|ya?ml)$'
   require_serial: true
