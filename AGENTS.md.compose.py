@@ -21,6 +21,9 @@ import sys
 from pathlib import Path
 from typing import Any, NoReturn
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import compose_guard as guard  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent
 MANIFEST = ROOT / "user.AGENTS.md.snippets" / "manifest.yaml"
 
@@ -166,9 +169,25 @@ def main(argv: list[str]) -> int:
                     help="also write the composed bytes to this path")
     ap.add_argument("--force", action="store_true",
                     help="allow --install to replace an existing, differing file")
+    ap.add_argument("--allow-outside-root", action="store_true",
+                    help="required when a destination is outside this repository "
+                         "(every write to the user-global target needs it)")
     ap.add_argument("--with-local", action="store_true",
                     help="with --print, include the local-only snippets")
     args = ap.parse_args(argv)
+
+    # ⚠ THE INVOCATION MATRIX (#40 review 2, blocker 2). Today `--check` returns before `--install` is
+    # ever read, so `--check --install` silently checked the output and ignored the target. Refusing the
+    # combination names the confusion; supporting it would hide a second, differently-shaped answer.
+    reading = args.check or args.to_stdout or args.only is not None
+    if reading and args.install is not None:
+        print("compose: --install cannot be combined with --check/--print/--only. "
+              "A read-only verb reports on the output only; run the writing form for installs.",
+              file=sys.stderr)
+        return guard.EXIT_USAGE
+    if args.force and (args.check or args.to_stdout or args.only is not None):
+        print("compose: --force is only meaningful on a writing invocation.", file=sys.stderr)
+        return guard.EXIT_USAGE
 
     if not MANIFEST.is_file():
         _fail(f"no manifest at {MANIFEST.relative_to(ROOT)}")
@@ -194,38 +213,88 @@ def main(argv: list[str]) -> int:
 
     out = resolve_output(str(manifest["output"]))
 
+    composed_bytes = composed.encode()
+
+    # DESTINATIONS, resolved once and deduped by resolved path (#40 §1).
+    dests = [guard.Destination.of(str(out))]
+    if args.install is not None:
+        installed_dest = guard.Destination.of(args.install)
+        if installed_dest.resolved != dests[0].resolved:
+            dests.append(installed_dest)
+
+    try:
+        # PREFLIGHT FIRST: H (unsafe destination) and the outside-root rule, before any byte.
+        guard.preflight(dests, ROOT, args.allow_outside_root)
+    except guard.Refusal as refusal:
+        print(refusal.message, file=sys.stderr)
+        return refusal.code
+
+    states = []
+    for dest in dests:
+        try:
+            state, stamp = guard.classify(dest, composed_bytes)
+        except guard.Refusal as refusal:
+            print(refusal.message, file=sys.stderr)
+            return refusal.code
+        states.append((dest, state, stamp))
+
+    # --check REPORTS EVERY STATE, INCLUDING H, and writes NOTHING: no output, no stamp, no backup.
     if args.check:
-        current = out.read_text() if out.is_file() else ""
-        if current != composed:
-            print(f"compose: {out.name} is OUT OF DATE "
-                  f"(run AGENTS.md.compose.py)", file=sys.stderr)
-            return 1
-        print(f"compose: {out.name} is up to date")
-        return 0
+        worst = 0
+        for dest, state, stamp in states:
+            if state == "A":
+                print(f"compose: {dest.resolved} is up to date ({len(composed_bytes)} bytes)")
+            elif state == "B":
+                print(f"compose: {dest.resolved} is out of date (last written by this composer; re-run)",
+                      file=sys.stderr)
+                worst = max(worst, 1)
+            elif state == "C":
+                print(guard.refusal_message(dest, state, stamp, composed_bytes), file=sys.stderr)
+                worst = max(worst, 3)
+            elif state == "D":
+                print(f"compose: {dest.resolved} has no compose record; the next run backs up and writes",
+                      file=sys.stderr)
+                worst = max(worst, 1)
+            elif state == "E":
+                print(guard.refusal_message(dest, state, stamp, composed_bytes), file=sys.stderr)
+                worst = max(worst, 3)
+            elif state == "F":
+                print(f"compose: {dest.resolved} was written by this composer but the file is GONE",
+                      file=sys.stderr)
+                worst = max(worst, 1)
+            else:  # G
+                print(f"compose: {dest.resolved} does not exist and has no compose record",
+                      file=sys.stderr)
+                worst = max(worst, 1)
+        return worst
 
-    out.write_text(composed)
-    print(f"compose: wrote {out} ({len(composed)} bytes)")
+    # REFUSAL PREFLIGHT over the whole set: if any destination refuses, write NOTHING anywhere.
+    refusals = [(d, s, st) for d, s, st in states if s in ("C", "E") and not args.force]
+    if refusals:
+        for dest, state, stamp in refusals:
+            print(guard.refusal_message(dest, state, stamp, composed_bytes), file=sys.stderr)
+        print("compose: nothing was written, and no backup was taken.", file=sys.stderr)
+        return guard.EXIT_REFUSED
 
-    if args.install:
-        target = Path(args.install).expanduser()
-        # Installing into an arbitrary path replaces whatever is there. Refuse to
-        # destroy content this script did not write: an existing file that differs
-        # is the owner's, and a silent overwrite is unrecoverable. --force is the
-        # explicit override.
-        installed = compose(MANIFEST)
-        if target.exists() and target.read_text() != installed and not args.force:
-            print(
-                f"compose: REFUSING to overwrite {target} — it exists and differs "
-                f"({len(target.read_text().splitlines())} lines on disk vs "
-                f"{len(installed.splitlines())} composed).\n"
-                f"  Review the diff first: diff {target} <(python3 "
-                f"{Path(__file__).name} --print --with-local)\n"
-                f"  Then pass --force if replacing it is really intended.",
-                file=sys.stderr,
-            )
-            return 3
-        target.write_text(installed)
-        print(f"compose: installed to {target}")
+    # EXECUTION: fail-stop, per destination, naming what changed on failure (#40 §2).
+    written: list[str] = []
+    for dest, state, _stamp in states:
+        try:
+            if state in ("B", "D") or (state in ("C", "E") and args.force):
+                bak = guard.backup(dest)
+                print(f"compose: backed up {dest.resolved} -> {bak}", file=sys.stderr)
+            guard.write_bytes_and_stamp(dest, composed_bytes)
+            written.append(str(dest.resolved))
+        except (OSError, guard.Refusal) as exc:
+            detail = getattr(exc, "message", str(exc))
+            print(f"compose: REFUSING at {dest.resolved} -- {detail}", file=sys.stderr)
+            if written:
+                print(f"  already written: {', '.join(written)}  (NOT rolled back)", file=sys.stderr)
+            print(f"  unchanged: {dest.resolved}", file=sys.stderr)
+            return guard.EXIT_REFUSED
+
+    for path in written:
+        print(f"compose: wrote {path} ({len(composed_bytes)} bytes)")
     return 0
 
 

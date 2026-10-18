@@ -245,3 +245,41 @@ def write_stamp(dest: Destination, composed: bytes) -> None:
         os.fsync(fh.fileno())
     os.chmod(tmp, 0o644 if not dest.stamp_path.exists() else stat.S_IMODE(os.stat(dest.stamp_path).st_mode))
     os.replace(tmp, dest.stamp_path)
+
+
+def refusal_message(dest: Destination, state: str, stamp: Optional[dict], composed: bytes) -> str:
+    """The user-facing message for a refusing state, naming three sizes and hashes.
+
+    Tonight's failure was invisible because the run printed `wrote … 13804 bytes` and nothing else.
+    A reader must see what is on disk and what would replace it without asking.
+    """
+    disk_sha = sha_of_file(dest.resolved) or "(absent)"
+    new_sha = hashlib.sha256(composed).hexdigest()
+    disk_bytes = (
+        len(dest.resolved.read_bytes()) if dest.resolved.is_file() else 0
+    )
+    if state == "C":
+        return (
+            f"compose: REFUSING to overwrite {dest.resolved} -- it differs from the bytes this "
+            f"composer last wrote.\n"
+            f"  The file has been edited outside the composer (a hand-added block, or another tool).\n"
+            f"    last composed : {stamp['bytes']} bytes, sha256 {stamp['sha256'][:12]}\n"
+            f"    on disk       : {disk_bytes} bytes, sha256 {disk_sha[:12]}\n"
+            f"    composed now  : {len(composed)} bytes, sha256 {new_sha[:12]}\n"
+            f"  Review: diff {dest.resolved} <(python3 AGENTS.md.compose.py --print)\n"
+            f"  Then readmit the block into a snippet, or pass --force to replace it (a backup is taken)."
+        )
+    if state == "E":
+        _stamp, reason = read_stamp(dest)
+        return (
+            f"compose: REFUSING to touch {dest.resolved} -- its stamp is unusable: {reason}.\n"
+            f"  A stamp that cannot be read cannot certify the file. Inspect {dest.stamp_path},\n"
+            f"  or pass --force to replace the file (a backup is taken)."
+        )
+    if state == "F":
+        return (
+            f"compose: {dest.resolved} was written by this composer but the file is GONE -- writing "
+            f"fresh.\n  The previous bytes are not recoverable from this design; any hand edits in it "
+            f"are lost."
+        )
+    return f"compose: {dest.resolved} is in state {state}"
