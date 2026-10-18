@@ -36,7 +36,7 @@
   # REPOSITORY. The first attempt used this same path with `system`, and the witness reproduced #38's
   # failure exactly: prek resolved it in the CONSUMER's checkout and found
   # `<consumer>/skills/privacy-review/...`. The fix is the language, not the path.
-  entry: skills/privacy-review/scripts/privacy_scan.py . --staged
+  entry: skills/privacy-review/scripts/privacy_gate
   pass_filenames: false
   always_run: true
   require_serial: true

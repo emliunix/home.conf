@@ -1,6 +1,16 @@
 repos:
   - repo: local
     hooks:
+      # ⚠ THE PRIVACY GATE IS FIRST (#50 rev 7). The wrapper owns the staged population, the zero-file
+      # refusal and the exclusions; Gitleaks owns detection and redaction. It REJECTS; it never rewrites
+      # content (owner, 2026-10-18).
+      - id: privacy-scan
+        name: privacy scan (staged, reject-only)
+        language: system
+        entry: sh skills/privacy-review/scripts/privacy_gate
+        pass_filenames: false
+        always_run: true
+        require_serial: true
       - id: document-contracts
         name: document contracts
         language: system
