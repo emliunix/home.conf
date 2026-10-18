@@ -23,7 +23,20 @@ root=$(git rev-parse --show-toplevel 2>/dev/null) || {
   echo "privacy-gate: not inside a git repository" >&2; exit 2; }
 
 cfg="$root/.privacy-scan.json"
-rules="$root/.gitleaks.toml"
+# ⚠ THE BASE CONFIG IS HOOK-OWNED, NOT REPO-LOCAL (#50 review). `rules="$root/.gitleaks.toml"` is a
+# NON-EMPTY STRING even when that file is absent, so the emptiness test chose a path that did not exist
+# and Gitleaks failed -- a CLEAN CONSUMER WAS FALSELY REFUSED, measured. The base rules ship with the
+# hook and are resolved from THIS SCRIPT's directory; a repository may add its own on top, merged.
+hook_dir=$(cd "$(dirname "$0")" && pwd)
+base="$hook_dir/../../../.gitleaks.toml"
+[ -f "$base" ] || base=""
+rules="$base"
+if [ -f "$root/.gitleaks.toml" ]; then
+  merged=$(mktemp)
+  [ -n "$base" ] && grep -v '^\[extend\]\|^useDefault' "$base" > "$merged"
+  grep -v '^\[extend\]\|^useDefault' "$root/.gitleaks.toml" | grep -v '^title = ' >> "$merged"
+  rules="$merged"
+fi
 excl=""
 nexcl=0
 if [ -f "$cfg" ]; then
