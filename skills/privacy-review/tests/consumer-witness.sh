@@ -7,6 +7,12 @@
 # Now the repo root is derived from this script, and the leak assertion compares captured output against
 # the EXACT generated value.
 set -uo pipefail
+# ⚠ AN ARM THAT PRINTS ITS EXIT BUT NEVER ASSERTS IT IS NOT A TEST (#50 review). Under `set -uo pipefail`
+# the script exited 0 whatever its arms observed, so `owned-rule arm exit=0` printed and passed.
+fail=0
+want() {  # name want got
+  if [ "$2" = "$3" ]; then echo "ok   $1 (exit $3)"; else echo "FAIL $1: exit $3, want $2"; fail=1; fi
+}
 SRC="$(git -C "$(dirname "$0")/../../.." rev-parse --show-toplevel)"
 REV="$(git -C "$SRC" rev-parse HEAD)"
 W=$(mktemp -d); trap 'rm -rf "$W"' EXIT
@@ -25,7 +31,7 @@ git add secret.txt
 # report the ASSIGNMENT status (0), not the command's -- @GameBoy measured both. Separate lines.
 out=$(prek run 2>&1)
 rc=$?
-echo "red arm  exit=$rc"
+want "red arm" 1 "$rc"
 printf '%s\n' "$out" | grep -E "privacy scan|privacy-gate" | head -3
 # ⚠ THE EXACT GENERATED VALUE, not a fixed string.
 if printf '%s' "$out" | grep -qF -- "${value#api_key = }"; then echo "LEAK: output contained the value"; exit 1; fi
@@ -39,10 +45,14 @@ python3 -c 'print("host: buildcorp9" + "." + "internal")' > owned.txt
 git add owned.txt
 out=$(prek run 2>&1)
 rc=$?
-echo "owned-rule arm exit=$rc"
-[ "$rc" = 1 ] && echo "owned rule fires in a no-copy consumer" || echo "FAIL owned rule did not fire"
+want "owned-rule arm" 1 "$rc"
+
 git rm -q --cached owned.txt; rm -f owned.txt
 echo "an ordinary change" > note.md; git add note.md
 out=$(prek run 2>&1)
 rc=$?
-echo "green arm exit=$rc"
+want "green arm" 0 "$rc"
+
+echo
+echo "witness failures: $fail"
+exit $fail

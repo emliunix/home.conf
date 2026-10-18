@@ -27,7 +27,13 @@ echo base > a.txt; git add -A; git commit -qm base
 # ended up with a merged config built from itself, and the owned rules stopped firing.
 git add -A; git commit -qm cfg 2>/dev/null || :
 
-staged_exit() { git add -A >/dev/null 2>&1; sh "$G" >/dev/null 2>&1; echo $?; }
+# ⚠ `git add -A` STAGES THE FIXTURE'S OWN HELPER TREES, which then get scanned as staged content and
+# change every downstream count. The arms that need a helper package use an EXCLUDE file so the fixture's
+# own scaffolding is never part of the population under test.
+staged_exit() {
+  git add -A >/dev/null 2>&1
+  sh "$G" >/dev/null 2>&1; echo $?
+}
 
 # RED — generated credential material
 v=$(gen); printf '%s\n' "$v" > s.txt
@@ -127,7 +133,7 @@ rm -f .gitleaks.toml
 # fixture-local copy is what a consumer would have; writing the real tree would damage the repo under test.
 # The gate resolves its base config from ITS OWN directory, so a fixture-local copy is what a consumer
 # would have. A SEPARATE subdir keeps it out of the fixture's staged set.
-FIXG="$W/gatefix/skills/privacy-review"
+FIXG="$(mktemp -d)/skills/privacy-review"
 mkdir -p "$FIXG/scripts"
 cp "$G" "$FIXG/scripts/privacy_gate"
 printf '# a comment and nothing else\n' > "$FIXG/gitleaks.toml"
@@ -136,13 +142,13 @@ git add -A >/dev/null 2>&1
 sh "$FIXG/scripts/privacy_gate" >/dev/null 2>&1; rc=$?
 [ "$rc" = 2 ] && ok "a rules-free config is refused (exit 2, not a clean pass)" || bad "rules-free config exit $rc, want 2"
 git rm -q --cached zz-nr.json 2>/dev/null; rm -f zz-nr.json
-rm -rf "$W/gatefix"
+rm -rf "$(dirname "$(dirname "$FIXG")")"
 
 # NINTH ARM — THE THREE CONFIG-VALIDITY CASES, seeded separately (@CowBoy review).
 #   missing base   -> the owned rules VANISH and an internal host reads clean
 #   malformed      -> FTL, exit 1 from Gitleaks
 #   ruleless       -> exit 0, report [], a valid file that loads zero rules
-cfgpkg="$W/cfgpkg/skills/privacy-review"
+cfgpkg="$(mktemp -d)/skills/privacy-review"
 mkdir -p "$cfgpkg/scripts"
 cp "$G" "$cfgpkg/scripts/privacy_gate"
 python3 -c 'print("host: buildcorp9" + "." + "internal")' > zz-cfg.txt
@@ -164,7 +170,30 @@ sh "$cfgpkg/scripts/privacy_gate" >/dev/null 2>&1; rc=$?
 [ "$rc" = 2 ] && ok "ruleless config refuses (exit 2)" || bad "ruleless config exit $rc, want 2"
 
 git rm -q --cached zz-cfg.txt 2>/dev/null; rm -f zz-cfg.txt
-rm -rf "$W/cfgpkg"
+rm -rf "$(dirname "$(dirname "$cfgpkg")")"
+
+# TENTH ARM — deny_terms through the real gate (@CowBoy's conditions).
+# ⚠ THE CONFIG STAYS OUTSIDE THE STAGED SET: committing it would put the term itself in the population
+# and the assertion below could pass because the SCANNER file matched, not the marker.
+marker="PRIVATE_MARKER_$(python3 -c 'import os;print(os.urandom(4).hex().upper())')"
+printf '{"deny_terms":["%s"]}\n' "$marker" > .privacy-scan.json
+git rm -q --cached .privacy-scan.json 2>/dev/null
+printf 'the %s rollout\n' "$marker" > zz-mark.txt
+git add zz-mark.txt >/dev/null 2>&1
+out=$(sh "$G" 2>&1); rc=$?
+[ "$rc" = 1 ] && ok "a deny term refuses by name" || bad "deny term exit $rc, want 1"
+printf '%s' "$out" | grep -q "$marker" && bad "OUTPUT LEAKED THE DENY TERM" || ok "deny term absent from output"
+git rm -q --cached zz-mark.txt 2>/dev/null; rm -f zz-mark.txt .privacy-scan.json
+
+# and the three malformed shapes must refuse, not vanish
+for bad_deny in '{"deny_terms":"X"}' '{"deny_terms":[""]}' '{"deny_terms":[1]}'; do
+  printf '%s\n' "$bad_deny" > .privacy-scan.json
+  git rm -q --cached .privacy-scan.json 2>/dev/null
+  printf 'a line\n' > zz-bd.txt; git add zz-bd.txt >/dev/null 2>&1
+  sh "$G" >/dev/null 2>&1; rc=$?
+  [ "$rc" = 4 ] && ok "refused deny_terms $bad_deny" || bad "deny_terms $bad_deny exit $rc, want 4"
+  git rm -q --cached zz-bd.txt 2>/dev/null; rm -f zz-bd.txt .privacy-scan.json
+done
 
 # GREEN
 printf 'an ordinary line of prose\n' > ok.txt; rc=$(staged_exit)
