@@ -65,6 +65,37 @@ json.dump({"api_" + "key": "your_api_key_here"}, open("zz-placeholder.json", "w"
 rc=$(staged_exit); [ "$rc" = 0 ] && ok "placeholder json passes" || bad "placeholder json exit $rc"
 git rm -q --cached zz-placeholder.json; rm -f zz-placeholder.json
 
+# SIXTH ARM — THE CONFIG MUST EXTEND, OR THE GATE REPORTS CLEAN FOREVER (@GameBoy, measured).
+# A config without [extend] REPLACES the default ruleset and prints the ordinary clean line:
+#   no --config -> exit 1 · --config without [extend] -> exit 0 "no leaks found" · with -> exit 1
+# So this asserts the property in the shipped file rather than trusting that nobody edits it out.
+n=$((n+1))
+if grep -q '^\[extend\]' .gitleaks.toml 2>/dev/null && grep -q '^useDefault = true' .gitleaks.toml 2>/dev/null; then
+  ok ".gitleaks.toml extends the default ruleset"
+else
+  fail=1; echo "FAIL .gitleaks.toml does not [extend] -- a non-extending config REPORTS CLEAN, exit 0"
+fi
+# and prove the mechanism on a throwaway config, so the assertion is not a grep for its own sake
+probe=$(mktemp -d)
+python3 -c '
+import base64, json, os, sys
+json.dump({"api_" + "key": base64.b64encode(os.urandom(32)).decode()}, open(sys.argv[1] + "/zz.json", "w"))
+' "$probe"
+GLBIN="${HOME}/.local/share/home-conf/gitleaks/8.30.1/gitleaks"
+if [ -x "$GLBIN" ]; then
+  printf '[[rules]]\nid = "nomatch"\nregex = "zzzzdoesnotoccur"\n' > "$probe/noext.toml"
+  "$GLBIN" dir "$probe" --no-banner --redact --config "$probe/noext.toml" >/dev/null 2>&1; rc_noext=$?
+  "$GLBIN" dir "$probe" --no-banner --redact >/dev/null 2>&1; rc_default=$?
+  n=$((n+1))
+  if [ "$rc_default" = 1 ] && [ "$rc_noext" = 0 ]; then
+    ok "a non-extending config reports CLEAN on the same fixture (default 1, noext 0)"
+  else
+    fail=1; echo "FAIL extend mechanism changed: default=$rc_default noext=$rc_noext (want 1 and 0)"
+  fi
+  rm -f "$probe/noext.toml"
+fi
+rm -rf "$probe"
+
 # GREEN
 printf 'an ordinary line of prose\n' > ok.txt; rc=$(staged_exit)
 [ "$rc" = 0 ] && ok "clean change passes" || bad "clean change exit $rc"

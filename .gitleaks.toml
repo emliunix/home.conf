@@ -1,9 +1,20 @@
 # home.conf's own privacy rules. Gitleaks covers the GENERAL credential forms; these cover the classes no
 # default engine ships (@GameBoy's blob measurement: 1 PEM, 4 internal URLs, 0 absolute home paths).
 #
-# ⚠ [extend] useDefault IS LOAD-BEARING. Any --config REPLACES the default ruleset, and an allowlist-only
-# config was measured to turn "leaks found: 2" into exit 0 -- the exclusion silently disabled detection.
-# Extending keeps the maintained rules and adds ours on top.
+# ⚠ [extend] useDefault IS NOT A NICETY: WITHOUT IT THIS FILE REPORTS CLEAN, FOREVER (@GameBoy).
+#
+# Measured on v8.30.1 against a clean directory holding ONLY a runtime-generated generic-api-key .json:
+#
+#   no --config                            exit 1   "leaks found: 1"
+#   --config WITHOUT [extend]              exit 0   "INF no leaks found"     <-- the failure
+#   --config WITH [extend] useDefault      exit 1   "leaks found: 1"
+#
+# Any --config REPLACES the default ruleset. The failure is NOT a silent drop and NOT an error: Gitleaks
+# prints the ordinary clean line. A consumer whose config omits [extend] gets a CONFIDENT CLEAN REPORT,
+# exit 0, on every commit, with the standard output of a working gate. That is worse than a crash.
+#
+# ⚠ So the constraint is "a config that does not extend REPORTS CLEAN", not "a config that does not
+# extend is incomplete". Keep this line or the file becomes a blindfold.
 title = "home.conf privacy rules"
 [extend]
 useDefault = true
