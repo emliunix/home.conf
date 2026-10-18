@@ -119,6 +119,25 @@ rc=$(staged_exit); [ "$rc" = 1 ] && ok "a repo-local rule fires" || bad "local r
 git rm -q --cached zz-loc.txt; rm -f zz-loc.txt
 rm -f .gitleaks.toml
 
+# EIGHTH ARM — A CONFIG THAT EXISTS, PARSES, AND CARRIES NO RULES REPORTS CLEAN FOREVER
+# (@GameBoy measured). It is not missing, not malformed, and the report is `[]` -- identical to a clean
+# repository, because "no rules ran" and "no leaks found" produce the same report. Only a pre-Gitleaks
+# validity check can see it.
+# ⚠ NEVER WRITE INTO THE REAL PACKAGE. The gate resolves its base config from ITS OWN directory, so a
+# fixture-local copy is what a consumer would have; writing the real tree would damage the repo under test.
+# The gate resolves its base config from ITS OWN directory, so a fixture-local copy is what a consumer
+# would have. A SEPARATE subdir keeps it out of the fixture's staged set.
+FIXG="$W/gatefix/skills/privacy-review"
+mkdir -p "$FIXG/scripts"
+cp "$G" "$FIXG/scripts/privacy_gate"
+printf '# a comment and nothing else\n' > "$FIXG/gitleaks.toml"
+python3 -c 'import base64,json,os;json.dump({"api_"+"key":base64.b64encode(os.urandom(32)).decode()},open("zz-nr.json","w"))'
+git add -A >/dev/null 2>&1
+sh "$FIXG/scripts/privacy_gate" >/dev/null 2>&1; rc=$?
+[ "$rc" = 2 ] && ok "a rules-free config is refused (exit 2, not a clean pass)" || bad "rules-free config exit $rc, want 2"
+git rm -q --cached zz-nr.json 2>/dev/null; rm -f zz-nr.json
+rm -rf "$W/gatefix"
+
 # GREEN
 printf 'an ordinary line of prose\n' > ok.txt; rc=$(staged_exit)
 [ "$rc" = 0 ] && ok "clean change passes" || bad "clean change exit $rc"

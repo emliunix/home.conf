@@ -165,6 +165,26 @@ fi
 # "FTL unable to load config", so mapping every 1 to REFUSED reports a setup failure as a privacy finding.
 # The discriminator is its own REPORT: if it produced findings we have a finding; if it exited 1 and
 # produced no report, the engine failed and we say so by name.
+# ⚠ A CONFIG THAT LOADS NO RULES REPORTS CLEAN FOREVER (#50, @GameBoy measured). A file that EXISTS,
+# parses, and carries zero rules makes Gitleaks exit 0 with report `[]` -- indistinguishable from a clean
+# repository. That sits BETWEEN "missing -> fail closed" and "report `[]` -> clean", and the report alone
+# cannot see it, because "no rules ran" and "no leaks found" produce the identical `[]`.
+# So validity is checked BEFORE Gitleaks is consulted: the config must resolve AND yield at least one rule.
+if [ -n "$cfgfile" ]; then
+  if [ ! -f "$cfgfile" ]; then
+    echo "privacy-gate: config $cfgfile does not resolve -- refusing" >&2; exit 2
+  fi
+  # ⚠ `grep -c` prints 0 AND exits 1 when nothing matches, so `|| echo 0` appends a SECOND zero and
+  # the comparison fails with "integer expression expected". Count without the exit status.
+  nrules=$(grep -c '^\[\[rules\]\]' "$cfgfile" 2>/dev/null); nrules=${nrules:-0}
+  ext=$(grep -c '^useDefault = true' "$cfgfile" 2>/dev/null); ext=${ext:-0}
+  if [ "$nrules" -eq 0 ] && [ "$ext" -eq 0 ]; then
+    echo "privacy-gate: config $cfgfile loads NO RULES and does not extend the defaults" >&2
+    echo "privacy-gate: such a config reports clean on every commit; refusing rather than passing" >&2
+    exit 2
+  fi
+fi
+
 report=$(mktemp); report_created=1; rm -f "$report"
 
 args="--staged --redact --exit-code 1 --no-banner --report-format json --report-path $report"
