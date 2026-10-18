@@ -224,7 +224,9 @@ def main(argv: list[str]) -> int:
 
     try:
         # PREFLIGHT FIRST: H (unsafe destination) and the outside-root rule, before any byte.
-        guard.preflight(dests, ROOT, args.allow_outside_root)
+        # ⚠ `--check` is READ-ONLY and has no destination to announce: the outside-root rule applies
+        # to writers only, while H still applies (#40 review 6, blocker 1).
+        guard.preflight(dests, ROOT, args.allow_outside_root, reading=args.check)
     except guard.Refusal as refusal:
         print(refusal.message, file=sys.stderr)
         return refusal.code
@@ -285,6 +287,17 @@ def main(argv: list[str]) -> int:
                 print(f"compose: backed up {dest.resolved} -> {bak}", file=sys.stderr)
             guard.write_bytes_and_stamp(dest, composed_bytes)
             written.append(str(dest.resolved))
+        except guard.StampFailed as exc:
+            # ⚠ WRITTEN BUT UNSTAMPED (#40 review 6, blocker 2 / arm 34). Reporting this as
+            # "unchanged" was the opposite of the truth: the bytes are on disk. The state it leaves
+            # is D on the next run, and the user is told that rather than left to discover it.
+            print(f"compose: the bytes were written to {dest.resolved} but its STAMP failed -- "
+                  f"{exc.cause}", file=sys.stderr)
+            print(f"  The destination is WRITTEN and UNSTAMPED; the next run will classify it as "
+                  f"state D and take a backup before rewriting.", file=sys.stderr)
+            if written:
+                print(f"  already written: {', '.join(written)}  (NOT rolled back)", file=sys.stderr)
+            return guard.EXIT_REFUSED
         except (OSError, guard.Refusal) as exc:
             detail = getattr(exc, "message", str(exc))
             print(f"compose: REFUSING at {dest.resolved} -- {detail}", file=sys.stderr)

@@ -186,9 +186,46 @@ def test_stamp_failure_leaves_destination_unstamped_and_next_run_is_D(tmp_path, 
         raise OSError(28, "No space left on device")
 
     monkeypatch.setattr(compose_guard, "write_stamp", boom)
-    with pytest.raises(OSError):
+    # ⚠ A DISTINCT EXCEPTION, not a bare OSError (review 6, blocker 2): the caller must be able to
+    # tell "bytes written, stamp failed" from "nothing happened", or it reports the opposite.
+    with pytest.raises(compose_guard.StampFailed):
         write_bytes_and_stamp(dest, A)
     assert d.read_bytes() == A, "the bytes landed"
     assert not dest.stamp_path.exists(), "the stamp did not"
     monkeypatch.undo()
     assert classify(dest, A)[0] == "D", "written but unstamped -> the next run is D, and says so"
+
+
+# ── gap 1 (review 6): --check must not apply the outside-root rule ──────────────────────────────
+def test_check_skips_outside_root_but_still_reports_H(tmp_path):
+    """A read-only verb has no destination to announce, so the writer rule must not fire on it."""
+    outside = tmp_path.parent / "outside-check.md"
+    dest = Destination.of(str(outside))
+    # writing: refuses
+    with pytest.raises(Refusal):
+        preflight([dest], tmp_path, allow_outside_root=False)
+    # reading: allowed
+    preflight([dest], tmp_path, allow_outside_root=False, reading=True)
+    # but H still fires in reading mode
+    link = tmp_path.parent / "outside-link.md"
+    link.symlink_to(outside)
+    with pytest.raises(Refusal) as ei:
+        preflight([Destination.of(str(link))], tmp_path, allow_outside_root=False, reading=True)
+    assert "SYMLINK" in ei.value.message
+
+
+# ── gap 2 (review 6): a stamp failure is WRITTEN+BUT-UNSTAMPED, not "unchanged" ─────────────────
+def test_stamp_failure_is_a_distinct_exception_not_a_silent_unchanged(tmp_path, monkeypatch):
+    d, dest = fresh(tmp_path)
+    import compose_guard
+
+    def boom(*a, **k):
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(compose_guard, "write_stamp", boom)
+    with pytest.raises(compose_guard.StampFailed) as ei:
+        write_bytes_and_stamp(dest, A)
+    assert ei.value.dest.resolved == dest.resolved
+    assert "No space left" in str(ei.value.cause)
+    # the fact that matters: the bytes ARE on disk
+    assert d.read_bytes() == A

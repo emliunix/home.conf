@@ -17,10 +17,24 @@ through an ordered root list and writes the result to `~/.agents-local/AGENTS.md
 which is then installed into the agent runtimes.
 
 ```sh
-python3 AGENTS.md.compose.py          # compose the user-global target
-python3 AGENTS.md.compose.py --check  # exit 1 if it is out of date
-python3 AGENTS.md.compose.py --install ~/.pi/agent/AGENTS.md --force
+python3 AGENTS.md.compose.py --allow-outside-root                      # compose the user-global target
+python3 AGENTS.md.compose.py --check                                   # read-only; exit 0/1/3
+python3 AGENTS.md.compose.py --allow-outside-root --install ~/.pi/agent/AGENTS.md
 ```
+
+**`--allow-outside-root` is required for every write outside this repository**, and the
+user-global target is outside it — so it is part of the ordinary form, not an exception. It exists
+to make the writer state its destination: a scratch checkout composes to the same home-anchored
+file as the canonical one, and `output:` is what decides that, not where you ran the command.
+
+**The composer records what it last wrote** in `<destination>.stamp` (a sha256 of the exact bytes).
+That record is what lets it tell a legitimate recompose — a snippet changed, so the composed bytes
+changed — from a hand-added block, which it **refuses** and preserves. **It never overwrites content
+it did not write without `--force`**, and every overwrite is backed up beside the file first.
+
+`--force` replaces content this composer did not write, after taking a backup. It is **not** part of
+a normal install and **not** a way to silence a destination refusal (a symlink destination, or one
+outside the repository, needs the right invocation, not the override).
 
 ## Nothing machine-specific may be committed here
 

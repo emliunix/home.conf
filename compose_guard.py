@@ -140,14 +140,24 @@ def classify(dest: Destination, composed: bytes) -> tuple[str, Optional[dict]]:
     return "B", stamp
 
 
-def preflight(dests: list[Destination], root: Path, allow_outside_root: bool) -> None:
+def preflight(
+    dests: list[Destination], root: Path, allow_outside_root: bool, *, reading: bool = False
+) -> None:
     """Refuse before any byte, any backup, any stamp is written.
 
     H is decided here, not in `classify`, because it is a fact about WHERE we would write.
+
+    ⚠ `reading=True` SKIPS THE OUTSIDE-ROOT RULE (#40 review 6, blocker 1). The rule exists to make
+    a WRITER say its destination out loud; a read-only verb has no destination to announce, and the
+    production manifest's output is legitimately outside ROOT -- so applying it to `--check` refused
+    every real check with a refusal that was read-only in fact but wrong in verdict. **H is still
+    checked**, because a check must not call a destination safe that a writing run would refuse.
     """
     for d in dests:
         if d.is_symlink():
             raise Refusal(_symlink_message(d))
+        if reading:
+            continue
         if not allow_outside_root and not _under(d.resolved, root):
             raise Refusal(
                 f"compose: REFUSING to write {d.resolved} -- it is outside the repository root "
@@ -194,6 +204,21 @@ def backup(dest: Destination) -> Path:
     raise Refusal(f"compose: REFUSING -- could not create a unique backup name beside {dest.resolved}")
 
 
+class StampFailed(Exception):
+    """The bytes landed but the stamp did not. The destination is WRITTEN and UNSTAMPED.
+
+    ⚠ THIS IS ITS OWN EXCEPTION ON PURPOSE (#40 review 6, blocker 2). The shell around this reported
+    "unchanged: <dest>" for a stamp failure, which is the opposite of the truth: the destination had
+    already been replaced. A caller that cannot tell "bytes written, stamp failed" from "nothing
+    happened" cannot warn the user about the state that arm 34 requires.
+    """
+
+    def __init__(self, dest: "Destination", cause: OSError):
+        super().__init__(str(cause))
+        self.dest = dest
+        self.cause = cause
+
+
 def write_bytes_and_stamp(dest: Destination, composed: bytes) -> None:
     """Replace the destination, then replace its stamp. Each is atomic; the PAIR IS NOT A TRANSACTION.
 
@@ -224,7 +249,11 @@ def write_bytes_and_stamp(dest: Destination, composed: bytes) -> None:
             pass
         raise
 
-    write_stamp(dest, composed)
+    try:
+        write_stamp(dest, composed)
+    except OSError as exc:
+        # The bytes are on disk and the stamp is not. Say it as a distinct fact.
+        raise StampFailed(dest, exc) from exc
 
 
 def write_stamp(dest: Destination, composed: bytes) -> None:
