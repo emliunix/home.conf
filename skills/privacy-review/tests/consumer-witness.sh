@@ -14,13 +14,17 @@ cd "$W" || exit 1
 git init -q; git config user.email c@c; git config user.name c
 printf 'repos:\n  - repo: file://%s\n    rev: %s\n    hooks:\n      - id: privacy-scan\n' "$SRC" "$REV" > .pre-commit-config.yaml
 
-cp "$SRC/.gitleaks.toml" . 2>/dev/null || :
+# ⚠ NO CONFIG IS COPIED. The base config is HOOK-OWNED; copying it into the consumer was what hid
+# the false-refusal defect (@CowBoy P1) -- the witness passed while a real consumer was refused.
 git add -A; git commit -qm base
 
 value=$(python3 -c 'import base64,os;print("api_key = sk-"+base64.b32encode(os.urandom(20)).decode().lower().rstrip("="))')
 printf '%s\n' "$value" > secret.txt
 git add secret.txt
-out=$(prek run 2>&1); rc=$?
+# ⚠ `rc=$?` ON ITS OWN LINE. Inline `local out=$(cmd); echo $?` and `export out=$(cmd); echo $?`
+# report the ASSIGNMENT status (0), not the command's -- @GameBoy measured both. Separate lines.
+out=$(prek run 2>&1)
+rc=$?
 echo "red arm  exit=$rc"
 printf '%s\n' "$out" | grep -E "privacy scan|privacy-gate" | head -3
 # ⚠ THE EXACT GENERATED VALUE, not a fixed string.
@@ -28,5 +32,17 @@ if printf '%s' "$out" | grep -qF -- "${value#api_key = }"; then echo "LEAK: outp
 echo "leak=0"
 
 git rm -q --cached secret.txt; rm -f secret.txt
+
+# ⚠ THE OWNED-RULE ARM IN THE NO-COPY CONSUMER. This is the arm that would have caught P1: the base
+# config is hook-owned, and a consumer that copies nothing must still get a refusal for an owned class.
+python3 -c 'print("host: buildcorp9" + "." + "internal")' > owned.txt
+git add owned.txt
+out=$(prek run 2>&1)
+rc=$?
+echo "owned-rule arm exit=$rc"
+[ "$rc" = 1 ] && echo "owned rule fires in a no-copy consumer" || echo "FAIL owned rule did not fire"
+git rm -q --cached owned.txt; rm -f owned.txt
 echo "an ordinary change" > note.md; git add note.md
-out=$(prek run 2>&1); echo "green arm exit=$?"
+out=$(prek run 2>&1)
+rc=$?
+echo "green arm exit=$rc"
