@@ -178,3 +178,39 @@ l0 entries: 120 total -- 13 post-template, 107 pre-template (reported, never fai
 exit 1
 ```
 Those four are the `#42` finding; they are left unamended here by @CowBoy's ruling and by `#46`'s scope.
+
+### Entry validation — revision 2 (`#45` review)
+
+⚠ **These rows were missing from the first push.** The seeds were run and reported in chat, **but the
+receipt was never committed** — and a chat description is not a durable receipt. @CowBoy caught it by
+diffing the commit, which is the correct way to catch it.
+
+**Baseline** `l0.py` = `464c355471e3d227`
+**Command** — every row, with only the fixture path varying:
+`uv run --with pyyaml python skills/failure-pattern-library/tests/l0.py --entries <fixture>`
+
+| # | clause | fixture | observed (named) | exit |
+|---|---|---|---|---|
+| **29** | post-template entry without `## Criteria` fails by name | `2026-10-18-x/metadata.md` in bold-label prose | `entry 2026-10-18-x: dated 2026-10-18 (on/after TEMPLATE_INTRODUCED 2026-10-17, 25416563) but has no admitted \`## Criteria\` block` | **1** |
+| **30** | **the date is what fails it, not its presence** | the SAME entry renamed `2026-09-19-x` | `OK`; counter reads "1 pre-template (reported, never failed)" | **0** |
+| **31** | **the block is what passes it, not the rename** | the SAME entry given a `## Criteria` block | `OK` | **0** |
+| **32** | an undated entry is refused, not skipped | `undated-entry/metadata.md` in bold-label prose | `entry undated-entry: directory name does not begin with a canonical YYYY-MM-DD- date…` | **1** |
+| **33** | an empty directory is refused, not counted | `empty-dir/` with no files | `--entries …: 1 directory/ies but no entry -- refusing rather than passing vacuously over an empty corpus` | **1** |
+| **34** | a date-shaped name that is not a date | `2026-02-30-x/` (impossible day) | `entry 2026-02-30-x: the leading YYYY-MM-DD is not a real calendar date…` | **1** |
+| **35** | no-op control | all fixtures removed; corpus unchanged | `OK`, and the real-corpus run below is unchanged | **0** |
+
+⚠ **30 and 31 are the discriminating pair.** Each changes ONE property of the failing entry: 30 the
+name's date, 31 the presence of the block. A check that only ever reddens has not been shown to
+discriminate; these two are what turn 29 from a red mark into a measurement.
+
+⚠ **34 exists because `^\d{4}-\d{2}-\d{2}-` is a SHAPE, not a date.** It accepted `2026-02-30` and
+`2026-13-45`; both then compared lexicographically, so **an impossible date silently chose which rule
+applied** (`2026-13-45` sorted post-template, `2026-02-30` pre-template). Measured before the fix:
+exit 0 for both. It is now validated with `datetime.date.fromisoformat`.
+
+**Real corpus after every fix (the expected evidence, unsuppressed):**
+```text
+l0 entries: 120 total -- 13 post-template, 107 pre-template (reported, never failed),
+            0 undated, 0 invalid-date, 0 empty directory/ies;
+            4 post-template without \`## Criteria\`      ->  exit 1
+```

@@ -293,8 +293,23 @@ def entry_records(root: pathlib.Path) -> list[dict]:
         #
         # The date prefix is the entry's own claim about which rule it is held to; an entry that does
         # not make the claim cannot be checked, and cannot be skipped.
+        # ⚠ A SHAPE IS NOT A DATE (#45 review 2). `^\d{4}-\d{2}-\d{2}-` accepted `2026-02-30` and
+        # `2026-13-45`; both then compared lexicographically and were classified as ordinary entries --
+        # `2026-13-45` as POST-template and `2026-02-30` as PRE-template, so an impossible date silently
+        # chose which rule applied. Measured before the fix: exit 0 for both.
+        #
+        # A date-shaped string is not a date, which is this package's whole subject one level down: the
+        # ENTRY's name has to be evidence, not just a shape that matched.
         m = re.match(r"^(\d{4}-\d{2}-\d{2})-", d.name)
-        dated = m.group(1) if m else None
+        dated = None
+        if m:
+            try:
+                import datetime
+                datetime.date.fromisoformat(m.group(1))
+                dated = m.group(1)
+            except ValueError:
+                out.append({"name": d.name, "date": None, "kind": "invalid-date"})
+                continue
         md = d / "metadata.md"
         readme = d / "README.md"
         if not md.is_file() and not readme.is_file():
@@ -328,7 +343,8 @@ def check_entries(root: pathlib.Path) -> None:
         return
     # ⚠ EVERY DIRECTORY IS CLASSIFIED, AND EVERY REFUSAL IS NAMED (#45 review). The previous version
     # silently ignored `undated` and `empty-directory`, so both were ways past the gate.
-    undated = [r for r in records if r["date"] is None]
+    undated = [r for r in records if r["date"] is None and r["kind"] != "invalid-date"]
+    invalid = [r for r in records if r["kind"] == "invalid-date"]
     empty = [r for r in records if r["kind"] == "empty-directory"]
     real = [r for r in records if r["kind"] != "empty-directory"]
     if not real:
@@ -337,6 +353,11 @@ def check_entries(root: pathlib.Path) -> None:
             "passing vacuously over an empty corpus"
         )
         return
+    for r in invalid:
+        failures.append(
+            f"entry {r['name']}: the leading YYYY-MM-DD is not a real calendar date -- a date-shaped "
+            "name is not a date, and cannot choose which rule applies"
+        )
     for r in undated:
         failures.append(
             f"entry {r['name']}: directory name does not begin with a canonical YYYY-MM-DD- date, so "
@@ -355,7 +376,8 @@ def check_entries(root: pathlib.Path) -> None:
     # Pre-template entries are REPORTED, never failed: they are evidence of age, not of a failure.
     print(
         f"l0 entries: {len(records)} total -- {len(post)} post-template, {len(pre)} pre-template "
-        f"(reported, never failed), {len(undated)} undated, {len(empty)} empty directory/ies; "
+        f"(reported, never failed), {len(undated)} undated, {len(invalid)} invalid-date, "
+        f"{len(empty)} empty directory/ies; "
         f"{len(bad)} post-template without `## Criteria`"
     )
 
