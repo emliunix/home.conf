@@ -311,12 +311,24 @@ TEMPLATE_INTRODUCED_AT = "2026-10-17T11:07:33Z"
 #      bounds an entry's write time from below, never from above.
 #
 # The sound instrument is a stored fact: the message that ANNOUNCED each entry's creation. An entry that
-# was announced at T existed by T, which is a genuine UPPER bound and needs no live read.
+# was announced at T existed by T, which is a genuine UPPER bound and requires no live read.
+#
+# ⚠ AND THE ANNOUNCEMENT MUST SAY THE ENTRY WAS WRITTEN. My first correction used msg `c815c16d`
+# (09:40:31Z) for status-names on the strength of its opening line; @CowBoy read it and it announces
+# *taking* an entry -- "one library entry I am taking" -- not writing one. **Taking is a claim of
+# ownership; writing is the fact this list needs.** The creation announcement is `35d8ffbf` (09:47:25Z),
+# seven minutes later, which says "Library entry written" and names the directory.
+#
+# ⚠ THE GENERAL RULE, since two attempts got this wrong: **entry content and cited locators bound write
+# time FROM BELOW; only a stored creation announcement bounds it FROM ABOVE.** Neither a Date line nor a
+# cited message id can establish "before the template" -- they establish "at or after" whatever they name.
 SAME_DAY_PRE_TEMPLATE = {
     "2026-10-17-status-names-its-object-not-its-content":
-        "announced created at 2026-10-17 09:40:31Z (msg c815c16d), before 11:07:33Z",
+        "creation announced at 2026-10-17T09:47:25Z (msg 35d8ffbf: 'Library entry written'), before "
+        "11:07:33Z",
     "2026-10-17-window-bound-read-as-absence":
-        "announced written at 2026-10-17 10:46:42Z (msg 42a4129f), before 11:07:33Z",
+        "creation announced at 2026-10-17T10:46:42Z (msg 42a4129f: 'The -A window entry is written'), "
+        "before 11:07:33Z",
 }
 TEMPLATE_INTRODUCED_COMMIT = "2541656309f8a03d0be0aa4176149252f60647e2"
 

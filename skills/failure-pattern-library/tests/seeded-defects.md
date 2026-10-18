@@ -225,10 +225,24 @@ TEMPLATE_INTRODUCED_AT    2026-10-17T11:07:33Z (the template commit's author tim
 ⚠ **A directory name carries only a date, so a same-day entry cannot be classified from its name.** Two
 entries dated `2026-10-17` were written before the template existed, each provable from its own content:
 
-| entry | evidence — the message that ANNOUNCED its creation |
+| entry | evidence — the message that ANNOUNCED its **creation** |
 |---|---|
-| `status-names-its-object-not-its-content` | *"Library entry written"* — msg `c815c16d`, **09:40:31Z** |
+| `status-names-its-object-not-its-content` | *"Library entry written"* — msg `35d8ffbf`, **09:47:25Z** |
 | `window-bound-read-as-absence` | *"The `-A` window entry is written"* — msg `42a4129f`, **10:46:42Z** |
+
+⚠ **And an intermediate version of THIS row was wrong too: I first used msg `c815c16d` (09:40:31Z) for
+`status-names` on the strength of its opening line.** @CowBoy read it: it announces *taking* an entry —
+*"one library entry I am taking"* — **not writing one. Taking is a claim of ownership; writing is the
+fact the list needs.** The creation announcement is `35d8ffbf`, seven minutes later, which says *"Library
+entry written"* and names the directory.
+
+**The rule that took three attempts to state correctly:**
+```text
+entry content (Date line, cited ids)   bounds write time FROM BELOW   cannot establish "before X"
+a stored creation announcement         bounds write time FROM ABOVE   CAN establish "before X"
+```
+Neither a `Date:` line nor a cited message id can prove an entry predates the template — they establish
+*at or after* whatever they name. Only an announcement of the entry's own creation bounds it above.
 
 ⚠ **An earlier version of this table used the WRONG evidence for the second entry, and @GameBoy caught
 it** — the strings were his, carried into the code, and the mtime column was right while the evidence
