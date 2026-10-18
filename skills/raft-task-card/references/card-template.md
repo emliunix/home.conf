@@ -31,6 +31,10 @@ cleanup, and any shared-resource lock in acceptance.
 AUTHORITY. <owner decision, accepted object, or source that authorizes this
 card>. Do not use assignment as a substitute for action-specific permission.
 
+CREDENTIAL AUTHORITY. <credential-backed effect> -> <authorized owner and exact
+permitted file/source>; or None. First check the authorized credential list;
+then verify that the named source can satisfy the effect before execution.
+
 SCOPE. <allowed paths or systems>. Name adjacent work that is out of scope when
 it could be confused with this card.
 
@@ -93,6 +97,10 @@ WORKTREE. required | not-needed. <reason>. Base/ref: <commit or ref>.
 
 AUTHORITY. <owner decision, accepted object, or source that authorizes this
 card>.
+
+CREDENTIAL AUTHORITY. <credential-backed effect> -> <authorized owner and exact
+permitted file/source>; or None. First check the authorized credential list;
+then verify that the named source can satisfy the effect before execution.
 
 SCOPE. <allowed paths or systems>. Name adjacent work that is out of scope.
 

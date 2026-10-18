@@ -56,6 +56,13 @@ surface.
 
 ## Authority and grouping
 
+- **Credential authority names its subject and source.**
+  `CREDENTIAL AUTHORITY` names the authorized owner and exact permitted
+  file/source for each credential-backed effect, or `None`. First check the
+  authorized credential list; then verify that the named source can satisfy the
+  effect before execution. Assignment, a broader action GO, or possession of a
+  readable file does not establish authority; never print or copy credential
+  values.
 - **The goal file tracks.** It owns the frozen root, additions, design index,
   dependencies, workstreams, phases, and worklog pointer. Do not put a second
   goal or design body inside a task card.
@@ -116,6 +123,7 @@ GOAL
 PROJECT GUIDANCE
 WORKTREE
 AUTHORITY
+CREDENTIAL AUTHORITY
 SCOPE
 REQUIRED OUTCOME
 ACCEPTANCE
