@@ -127,6 +127,10 @@ else
   exit 2
 fi
 
+# ⚠ `--exit-code 1` IS EXPLICIT AS A GUARD, NOT BECAUSE THE DEFAULT IS 0. `gitleaks git --help` reports
+# `--exit-code int … (default 1)`, and both @CowBoy and @GameBoy measured exit 1 on every arm without the
+# flag. My earlier note that "without it the positive arm exits 0" was a PIPELINE ARTIFACT: `cmd | tail`
+# reports `tail`'s status, which is what I read. The pin makes the question moot.
 args="--staged --redact --exit-code 1 --no-banner"
 [ -n "$cfgfile" ] && args="$args --config $cfgfile"
 

@@ -43,6 +43,28 @@ red_class "internal host"  "$(python3 -c 'print("host: buildcorp9"+"."+"internal
 red_class "absolute user path" "$(python3 -c 'import os;print("notes /Users/"+"humanname"+"/x.md")')"
 red_class "sensitive file path" "$(python3 -c 'print("see "+"."+"env"+".production")')"
 
+# FIFTH ARM — a .json whose KEY carries a generic-api-key keyword and whose VALUE is 32+ random bytes,
+# which is the shape Gitleaks' entropy+keyword rule exists for. Generated, never literal.
+python3 -c '
+import base64, json, os
+key = "api_" + "key"          # assembled so this file carries no secret-keyword literal
+val = base64.b64encode(os.urandom(32)).decode()
+json.dump({key: val}, open("zz-generic.json", "w"))
+print(val)
+' > /tmp/zzval.txt
+rc=$(staged_exit); [ "$rc" = 1 ] && ok "generic-api-key json refused" || bad "generic json exit $rc"
+out=$(sh "$G" 2>&1)
+printf '%s' "$out" | grep -qF -- "$(cat /tmp/zzval.txt)" && bad "generic json LEAKED ITS VALUE" || ok "generic value absent from output"
+git rm -q --cached zz-generic.json; rm -f zz-generic.json
+
+# and its green twin: the same key with a PLACEHOLDER value
+python3 -c '
+import json
+json.dump({"api_" + "key": "your_api_key_here"}, open("zz-placeholder.json", "w"))
+'
+rc=$(staged_exit); [ "$rc" = 0 ] && ok "placeholder json passes" || bad "placeholder json exit $rc"
+git rm -q --cached zz-placeholder.json; rm -f zz-placeholder.json
+
 # GREEN
 printf 'an ordinary line of prose\n' > ok.txt; rc=$(staged_exit)
 [ "$rc" = 0 ] && ok "clean change passes" || bad "clean change exit $rc"
