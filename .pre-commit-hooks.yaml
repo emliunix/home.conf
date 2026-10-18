@@ -1,17 +1,22 @@
-# ⚠ EXTERNAL CONSUMERS GET THE STAGE-AWARE WRAPPER, NOT A BARE `doc-verify` (#38).
+# ⚠ EXTERNAL HOOKS BLOCK, AND THE EMPTY-POPULATION CASE MUST NOT (#38).
 #
-# These entries used to call `doc-verify` directly, which bypasses `--stage` entirely: an empty staged
-# population now exits 3 (BLOCKED), and a bare entry would therefore BLOCK EVERY DOCS-ONLY COMMIT for
-# any consumer of this file. That is the `home.conf` policy inverted -- pre-commit warns, pre-push
-# blocks -- and it is the failure mode @CowBoy named: "not silently green" must not become "a normal
-# docs commit cannot be made".
+# These entries have never carried `home.conf`'s stage policy: a consumer's `document-contracts` is a
+# BLOCKING hook, and `doc-verify/tests/remote-hook.sh` asserts exactly that (an invalid fixture must
+# exit non-zero). Imposing "pre-commit warns" here would have silently inverted that contract -- and my
+# first two attempts at this file each broke consumers in a different way:
 #
-# Routing through the wrapper gives external consumers the same policy local ones get, and the verdict
-# still PRINTS, so a real finding is visible even when it does not block.
+#   1. a bare `doc-verify check --staged` -- correct until #38, because BLOCKED (exit 3) is now what an
+#      empty population returns, and an empty index is the NORMAL state of a docs-only commit;
+#   2. `node scripts/run-document-contracts.mjs ...` -- that wrapper is not in `package.json`'s
+#      `files`, and prek resolves the entry in the CONSUMER's checkout, so a real consumer run died
+#      MODULE_NOT_FOUND on `<consumer>/scripts/run-document-contracts.mjs`.
+#
+# The narrow fix is `--stage external`: still blocking for a real finding, not blocking for "nothing
+# was selected". Consumers keep the semantics they had, and an empty index stops being a hard failure.
 - id: document-contracts
   name: document contracts
   language: node
-  entry: node scripts/run-document-contracts.mjs --stage pre-commit --auto-setup
+  entry: doc-verify check --staged --profile auto --format text --verbose --stage external
   pass_filenames: false
   files: '(^|/).+\.(md|ya?ml)$'
   require_serial: true
@@ -21,7 +26,7 @@
   # Opt-in companion to document-contracts: every configured document, structural checks only (no
   # judge), so a reference broken by a change elsewhere is caught even when its document is not
   # staged.
-  entry: node scripts/run-document-contracts.mjs --stage pre-commit --auto-setup check --all --profile draft --format text
+  entry: doc-verify check --all --profile draft --format text --stage external
   pass_filenames: false
   files: '(^|/).+\.(md|ya?ml)$'
   require_serial: true

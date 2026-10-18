@@ -114,6 +114,12 @@ async function runCheck(argv: string[]): Promise<number> {
       output: { type: "string" },
       verbose: { type: "boolean" },
       "no-cache": { type: "boolean" },
+      // ⚠ THE STAGE POLICY MUST LIVE IN THE SHIPPED CLI (#38, @CowBoy's external-hook finding). The
+      // wrapper that implements it is `scripts/run-document-contracts.mjs`, which is NOT in
+      // `package.json`'s `files` -- so an external consumer installing this hook gets `doc-verify` and
+      // nothing else. A hook entry naming `scripts/...` resolves in the CONSUMER's checkout and fails
+      // MODULE_NOT_FOUND. `--stage` is therefore part of the CLI's own contract.
+      stage: { type: "string" },
     },
   }));
   // A bare positional file is a path: `doc-verify check FILE` works without `--paths`.
@@ -156,7 +162,52 @@ async function runCheck(argv: string[]): Promise<number> {
   } else {
     process.stdout.write(rendered);
   }
-  return exitCodeFor(report.verdict);
+  return applyStagePolicy(exitCodeFor(report.verdict), parsed.values.stage, report.verdict);
+}
+
+/**
+ * Map the engine's exit status onto a hook stage's policy.
+ *
+ *   status        pre-commit   pre-push   (no --stage)
+ *   0 PASS            0            0            0
+ *   1 NO-GO           0            1            1      <- refused only at push
+ *   2 NEEDS-REVIEW    0            2            2      <- refused only at push
+ *   3 BLOCKED         0            0            3      <- never refused under a stage
+ *
+ * The owner's decision: contracts WARN on pre-commit and BLOCK on pre-push. A refused verdict still
+ * prints, naming its class -- that is the difference between "warns" and "silently passes".
+ */
+export function applyStagePolicy(status: number, stage: string | undefined, verdict: string): number {
+  if (stage === undefined) return status;
+  if (stage !== "pre-commit" && stage !== "pre-push" && stage !== "external") {
+    throw new UsageError(`--stage must be pre-commit, pre-push or external, got ${stage}`);
+  }
+  // ⚠ EXTERNAL IS NOT A THIRD POLICY, IT IS THE ABSENCE OF ONE PLUS ONE EXCEPTION (#38). A consumer's
+  // hook has always blocked on a real finding, and `remote-hook.sh` asserts that. What changed is that
+  // an empty population now returns BLOCKED -- and an empty index is the NORMAL state of a docs-only
+  // commit, so blocking there would break every consumer that stages no docs. So: block on findings,
+  // report an unevaluable population.
+  if (stage === "external") {
+    if (status === 3) {
+      process.stderr.write(
+        `doc-verify: ${verdict} -- no documents were selected, so nothing was evaluated. Not failing ` +
+          "the commit: an empty selection is not a finding.\n",
+      );
+      return 0;
+    }
+    return status;
+  }
+  if (stage === "pre-commit") {
+    if (status !== 0) {
+      process.stderr.write(
+        `doc-verify: ${verdict} -- reported, not refused (pre-commit warns; pre-push blocks on NO-GO). ` +
+          "This verdict does not stop the commit.\n",
+      );
+    }
+    return 0;
+  }
+  // pre-push: NO-GO and NEEDS-REVIEW block; BLOCKED reports (it is a "could not evaluate", not a finding).
+  return status === 3 ? 0 : status;
 }
 
 async function runMutateCommand(argv: string[]): Promise<number> {
