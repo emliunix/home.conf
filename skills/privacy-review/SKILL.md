@@ -15,27 +15,57 @@ Automated privacy security review for git repositories. Detects sensitive data e
 - Before opening pull requests
 - Periodic security audits
 
-## Checks Performed
+## What the gate does, and what it does not
 
-### 1. Sensitive Files in Commits
-Scans git history for committed files with sensitive extensions:
-- `.env`, `.env.local` - Environment configuration
-- `.pem`, `.p12` - Private keys and certificates
-- `*_secrets.*` - Secret configuration
-- `*_credentials.*` - API credentials
+**It is a pre-commit gate over the STAGED set. It rejects; it never rewrites.**
 
-### 2. Secrets in Committed Code
-Pattern-based scanning for sensitive patterns in source files:
-- Database URLs with credentials (`postgresql://user:pass@host`)
-- API keys (`sk-`, `AKIA`, `Bearer`)
-- Secret tokens and assignments
-- Authorization headers
+| property | value |
+|---|---|
+| population | **staged files only** — `git diff --cached`. Never the working tree, never history. |
+| detector | Gitleaks, pinned to one exact release; home.conf rules extend its defaults |
+| disposition | **reject** — the commit stops and the author fixes the source |
+| content | **never modified.** No `--fix`, no rewrite, no autostage |
+| output | **redacted** — rule class, path, line, and a one-way fingerprint; never the matched value |
 
-### 3. .gitignore Protection
-Verifies that `.env` and other sensitive files are properly ignored.
+⚠ **This is not a history audit.** It does not scan commits, `.gitignore`, or a local `.env`. Those were
+the retired `privacy_scan.py`'s behaviours, and it is gone.
 
-### 4. Local .env File
-Checks if local `.env` exists with real credentials (not committed).
+## How a consumer wires it
+
+```text
+repos:
+  - repo: <this repository>
+    rev: <pinned ref>
+    hooks:
+      - id: privacy-scan
+```
+
+The hook needs the pinned Gitleaks binary. If it is absent the gate **fails by name (exit 2)** rather
+than borrowing one from `PATH`.
+
+## Exit codes
+
+| code | meaning |
+|---|---|
+| 0 | clean — the configured detectors matched nothing |
+| 1 | **refused** — a finding; fix the source |
+| 2 | cannot run — Gitleaks absent, config invalid or empty of rules |
+| 3 | nothing examined — no staged files, or all excluded |
+| 4 | bad repository config (`.privacy-scan.json`) |
+| 64 | unsupported argument — this gate takes none |
+
+## Per-repository configuration
+
+`.privacy-scan.json` at the repository root. **Paths only, never rules** — a rule-wide exclusion
+disables a detector everywhere:
+
+```json
+{ "exclude_paths": ["fixtures/"], "deny_terms": ["<your private term>"] }
+```
+
+An exclusion names **one path**; `*`, `**`, `.`, `..` and anything rule-shaped are refused with exit 4.
+`deny_terms` must be a list of non-empty strings. **The gate prints how many exclusions it loaded** — a
+silent exclusion is indistinguishable from a silent pass.
 
 ## Quick Start
 
@@ -44,10 +74,13 @@ Checks if local `.env` exists with real credentials (not committed).
 home-conf-privacy-scan
 
 # Scan specific repository
-home-conf-privacy-scan
+# from inside the repository you are committing in
+sh skills/privacy-review/scripts/privacy_gate
+```
+⚠ **The gate takes no options and always scans the INVOKING repository's staged set.** `--repo-path` and
+`--quiet` are refused with exit 64 rather than silently ignored — an accepted-but-ignored flag makes the
+invocation not mean what it says.
 
-# Quiet mode (show only issues)
-home-conf-privacy-scan --quiet
 ```
 
 ## Report Format
@@ -55,65 +88,37 @@ home-conf-privacy-scan --quiet
 The tool generates a structured report with:
 
 ```
+```text
 ======================================================================
-PRIVACY REVIEW REPORT
+PRIVACY REVIEW - STAGED SET (reject-only; findings redacted)
 ======================================================================
 
-📁 CHECK 1: Sensitive Files in Git
-----------------------------------------------------------------------
-✅ No sensitive files committed
+privacy-gate: staged=2 scanned=2 excluded=0 exclusions_loaded=0
 
-🔍 CHECK 2: Secrets in Committed Code
-----------------------------------------------------------------------
-❌ FOUND potential secrets:
-   - API key assignment: OPENAI_API_KEY="sk-abc123xyz..." (line 42)
+1 finding(s). VALUES ARE NOT PRINTED.
 
-🛡️  CHECK 3: .gitignore Protection
-----------------------------------------------------------------------
-✅ .env is protected by .gitignore
+  src/config.ts:42  generic-api-key  fp=0fe51f9302b4
 
-📄 CHECK 4: Local .env File
-----------------------------------------------------------------------
-⚠️  WARNING: .env exists with real credentials
-   Status: .env file exists locally but is NOT committed
-
-======================================================================
-SUMMARY
-======================================================================
-❌ Found 2 privacy concern(s)
-
-Recommendations:
-  - Replace secrets with environment variable references
-  - Rotate any exposed credentials
-  - Ensure .env remains in .gitignore
-
-======================================================================
+The commit is refused. Fix the source; this gate never rewrites content.
 ```
+### What to do when the gate refuses
 
-## Remediation Guide
-
-### Removing Secrets from History
-
-If secrets are found in committed files:
+**Fix the source and commit the intended content.** That is the whole procedure:
 
 ```bash
-# Remove specific file from all branches
-git filter-branch --force --index-filter \
-  'git rm --cached --ignore-unmatch file-with-secrets.py' HEAD
-
-# Push cleaned history (requires force)
-git push origin --force
+# 1. the gate names the path and line; open it and remove the literal
+# 2. if the value is a real credential, ROTATE IT -- removing it from a file does not un-expose it
+# 3. re-stage and commit
+git add <file>
+git commit
 ```
 
-### Replacing Secrets with Environment Variables
+The gate **never rewrites staged content**, because a redaction that changes content without notice is
+unacceptable: the commit would proceed with bytes nobody chose. If the value is already in committed
+history, that is a separate, deliberate decision — not something a pre-commit hook does.
 
-Before:
-```python
-DATABASE_URL="postgresql://user:password@host:5432/db"
-API_KEY="sk-abc123xyz..."
-```
+### Reading values from the environment
 
-After:
 ```python
 import os
 
@@ -121,11 +126,11 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 API_KEY = os.getenv("API_KEY")
 ```
 
-Create `.env.example`:
-```bash
-DATABASE_URL=postgresql://user:password@localhost:5432/db
-API_KEY=your-api-key-here
-```
+A documentation example that LOOKS like a credential is exactly what the detector matches — a provider
+key prefix followed by random-looking characters, or a connection string with an inline password. A
+placeholder must be obviously not one (`your-api-key-here`). This package's own reference material is
+allowlisted by exact path for that reason.
+
 
 ## Common Mistakes
 
@@ -187,32 +192,44 @@ Binary files and large assets are skipped:
 - Images (`.png`, `.jpg`, `.gif`)
 - PDFs
 - Zip files
-- Already committed files (use `git filter-branch` for historical scans)
+- Already committed files (this gate scans the staged set only; history is a separate decision)
 
 ## Advanced Usage
 
-### CI/CD Integration
+### CI/CD integration
 
-Add to GitHub Actions:
+The gate takes **no options** — it always scans the invoking repository's staged set and exits by code:
+
 ```yaml
-- name: Privacy Scan
+- name: Privacy scan
   run: |
-    home-conf-privacy-scan --quiet
+    sh skills/privacy-review/scripts/privacy_gate
 ```
 
-### Custom Patterns
+**Do not pass `--quiet`, `--repo-path` or any other flag.** They are refused with **exit 64** rather than
+silently ignored: an option that is accepted and does nothing makes the invocation not mean what it says.
 
-Extend `privacy_scan.py` with additional patterns:
-```python
-# Add to patterns list in check_sensitive_patterns_in_content()
-(r"custom_pattern", "Custom sensitive data"),
+### Custom rules — extending the detector
+
+Rules live in `.gitleaks.toml`, and a repository's file **must extend the defaults** or it replaces
+them. A config that does not extend **reports clean on every commit**:
+
+```toml
+[extend]
+useDefault = true
+
+[[rules]]
+id = "our-internal-marker"
+description = "a term that must not appear in this repository"
+regex = '<your term>'
 ```
 
-### Ignore Specific Patterns
+### Excluding a known-safe file
 
-For files with known safe patterns (like test data):
-```python
-# Modify scan_commit_for_secrets() to skip files
-if "test_" in file_path.lower():
-    continue
+```json
+{ "exclude_paths": ["fixtures/"] }
 ```
+
+**Paths only — never a rule and never a glob.** `*`, `**`, `.`, `..` and anything rule-shaped are refused
+with exit 4, because an exclusion that disables a detector is how a gate is quietly defeated. The gate
+prints how many exclusions it loaded, so a silent one is visible.

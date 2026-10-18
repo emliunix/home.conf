@@ -265,6 +265,29 @@ sh "$G" >/dev/null 2>&1; rc=$?
 [ "$rc" = 0 ] && ok "binary content is green" || bad "binary exit $rc, want 0"
 git rm -q --cached zz-bin.dat 2>/dev/null; rm -f zz-bin.dat
 
+# THIRTEENTH ARM — a repo-local config must not drop the BASE's own allowlist (@CowBoy's P2).
+# The shipped docs are green alone and were REFUSED with a valid local config, because the merge stripped
+# allowlists from BOTH inputs. A supported configuration broke a shipped one.
+COMB=$(mktemp -d)
+mkdir -p "$COMB/skills/privacy-review/scripts" "$COMB/skills/privacy-review/references"
+cp "$G" "$COMB/skills/privacy-review/scripts/privacy_gate"
+cp "$SCRIPT_DIR/../gitleaks.toml" "$COMB/skills/privacy-review/gitleaks.toml"
+cp "$SCRIPT_DIR/../SKILL.md" "$COMB/skills/privacy-review/SKILL.md"
+cp "$SCRIPT_DIR/../references/patterns.md" "$COMB/skills/privacy-review/references/patterns.md"
+printf '[extend]\nuseDefault = true\n[[rules]]\nid = "zz-local"\nregex = "zzzzneveroccurs"\n' > "$COMB/.gitleaks.toml"
+# ⚠ THE GATE RESOLVES ITS BASE CONFIG FROM ITS OWN DIRECTORY, so the local config goes BESIDE THE COPY,
+# not at the fixture root -- at the root it would be staged and scanned as part of the population.
+# The DOCS are the staged population; the gate binary and its configs sit BESIDE them, untracked.
+mkdir -p skills/privacy-review/references
+cp "$SCRIPT_DIR/../SKILL.md" skills/privacy-review/SKILL.md
+cp "$SCRIPT_DIR/../references/patterns.md" skills/privacy-review/references/patterns.md
+cp -r "$COMB/skills" skills-local
+cp "$COMB/.gitleaks.toml" skills-local/.gitleaks.toml
+git add -f skills/privacy-review/SKILL.md skills/privacy-review/references/patterns.md >/dev/null 2>&1
+sh skills-local/privacy-review/scripts/privacy_gate >/dev/null 2>&1; rc=$?
+[ "$rc" = 0 ] && ok "the shipped docs stay green WITH a repo-local config" || bad "docs + local config exit $rc, want 0"
+git rm -rq --cached skills-local skills/privacy-review 2>/dev/null; rm -rf skills-local skills .gitleaks.toml "$COMB"
+
 # GREEN
 printf 'an ordinary line of prose\n' > ok.txt; rc=$(staged_exit)
 [ "$rc" = 0 ] && ok "clean change passes" || bad "clean change exit $rc"
