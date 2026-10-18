@@ -319,16 +319,23 @@ TEMPLATE_INTRODUCED_AT = "2026-10-17T11:07:33Z"
 # ownership; writing is the fact this list needs.** The creation announcement is `35d8ffbf` (09:47:25Z),
 # seven minutes later, which says "Library entry written" and names the directory.
 #
+# ⚠ EACH ID CARRIES ITS ENCLOSING THREAD, because a bare msgid is NOT resolvable on its own (@GameBoy):
+# a channel-level `--target "<channel>" --around <id>` returns "Message not found" for a THREAD REPLY, so
+# a reader must already know the thread. Worse, the entry's own `Where:` is not always it -- the
+# window-bound entry names `dd9129ce`, while its creation announcement lives in `1be8d1a9`. So
+# `(@<thread>)` follows each id here; a reader can then resolve without searching, and searching for a
+# msgid is exactly the "a hit is a quotation, not a resolution" trap these entries warn about.
+#
 # ⚠ THE GENERAL RULE, since two attempts got this wrong: **entry content and cited locators bound write
 # time FROM BELOW; only a stored creation announcement bounds it FROM ABOVE.** Neither a Date line nor a
 # cited message id can establish "before the template" -- they establish "at or after" whatever they name.
 SAME_DAY_PRE_TEMPLATE = {
     "2026-10-17-status-names-its-object-not-its-content":
-        "creation announced at 2026-10-17T09:47:25Z (msg 35d8ffbf: 'Library entry written'), before "
-        "11:07:33Z",
-    "2026-10-17-window-bound-read-as-absence":
-        "creation announced at 2026-10-17T10:46:42Z (msg 42a4129f: 'The -A window entry is written'), "
+        "creation announced at 2026-10-17T09:47:25Z (msg 35d8ffbf @73892fbc: 'Library entry written'), "
         "before 11:07:33Z",
+    "2026-10-17-window-bound-read-as-absence":
+        "creation announced at 2026-10-17T10:46:42Z (msg 42a4129f @1be8d1a9: 'The -A window entry is "
+        "written'), before 11:07:33Z",
 }
 TEMPLATE_INTRODUCED_COMMIT = "2541656309f8a03d0be0aa4176149252f60647e2"
 

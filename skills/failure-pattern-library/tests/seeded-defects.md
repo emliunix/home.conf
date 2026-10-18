@@ -227,8 +227,8 @@ entries dated `2026-10-17` were written before the template existed, each provab
 
 | entry | evidence — the message that ANNOUNCED its **creation** |
 |---|---|
-| `status-names-its-object-not-its-content` | *"Library entry written"* — msg `35d8ffbf`, **09:47:25Z** |
-| `window-bound-read-as-absence` | *"The `-A` window entry is written"* — msg `42a4129f`, **10:46:42Z** |
+| `status-names-its-object-not-its-content` | *"Library entry written"* — msg `35d8ffbf` **@73892fbc**, **09:47:25Z** |
+| `window-bound-read-as-absence` | *"The `-A` window entry is written"* — msg `42a4129f` **@1be8d1a9**, **10:46:42Z** |
 
 ⚠ **And an intermediate version of THIS row was wrong too: I first used msg `c815c16d` (09:40:31Z) for
 `status-names` on the strength of its opening line.** @CowBoy read it: it announces *taking* an entry —
@@ -243,6 +243,13 @@ a stored creation announcement         bounds write time FROM ABOVE   CAN establ
 ```
 Neither a `Date:` line nor a cited message id can prove an entry predates the template — they establish
 *at or after* whatever they name. Only an announcement of the entry's own creation bounds it above.
+
+⚠ **Each id carries its enclosing thread, because a bare msgid is not resolvable on its own** (@GameBoy):
+a channel-level `--around` returns `Message not found` for a **thread reply**, so the reader must already
+know the thread — and **the entry's own `Where:` is not always it**: `window-bound` names `dd9129ce`,
+while its creation announcement lives in `1be8d1a9`. `(@<thread>)` after each id makes it resolvable
+without a search, and a search for a msgid is exactly the *"a hit is a quotation, not a resolution"* trap
+these entries warn about.
 
 ⚠ **An earlier version of this table used the WRONG evidence for the second entry, and @GameBoy caught
 it** — the strings were his, carried into the code, and the mtime column was right while the evidence
