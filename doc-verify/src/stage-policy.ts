@@ -58,4 +58,3 @@ export function applyStagePolicy(
   // pre-push: NO-GO and NEEDS-REVIEW block; BLOCKED reports (it is a "could not evaluate", not a finding).
   return status === 3 ? 0 : status;
 }
-
