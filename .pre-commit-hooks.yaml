@@ -15,3 +15,28 @@
   pass_filenames: false
   files: '(^|/).+\.(md|ya?ml)$'
   require_serial: true
+- id: privacy-scan
+  name: privacy scan (staged set, reject-only)
+  # ⚠ THE LANGUAGE WAS WRONG TWICE, AND ONLY THE CONSUMER WITNESS FOUND IT.
+  #   1. `language: python` died: prek provisions a Python environment only when the hook repository is
+  #      itself a Python project (pyproject.toml or setup.py) -- home.conf is not one.
+  #   2. `language: system` then failed to FIND the entry: it runs a name from PATH but never installs
+  #      one, so `home-conf-privacy-scan` was not there. "No such file or directory (os error 2)".
+  # `script` is the mechanism for a repository-local executable with no environment: prek runs the file
+  # from the hook repository, which is exactly "a program that ships with this repo".
+  language: script
+  # ⚠ A PROGRAM FOR PREK, NOT A SKILL FOR AN AGENT (owner, 2026-10-18). `privacy-review` shipped as a
+  # skill -- its SKILL.md description tells an AGENT when to run it -- so no consumer's git could invoke
+  # it. This is the hook half, consumed exactly like `doc-verify`.
+  #
+  # ⚠ IT REJECTS AND NEVER REWRITES: a redaction that changes content without notice is unacceptable.
+  # `always_run` because every commit moves content; the scan decides by reading the staged diff, not by
+  # file extension.
+  # ⚠ THE ENTRY IS A REPO-RELATIVE PATH AND THAT IS NOW CORRECT, BECAUSE `script` RUNS IT FROM THE HOOK
+  # REPOSITORY. The first attempt used this same path with `system`, and the witness reproduced #38's
+  # failure exactly: prek resolved it in the CONSUMER's checkout and found
+  # `<consumer>/skills/privacy-review/...`. The fix is the language, not the path.
+  entry: skills/privacy-review/scripts/privacy_scan.py . --staged
+  pass_filenames: false
+  always_run: true
+  require_serial: true

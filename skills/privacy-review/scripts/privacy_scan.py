@@ -7,11 +7,13 @@
 """Privacy review script - scans git repo for sensitive data exposure."""
 
 import argparse
+import hashlib
+import json
 import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 
 def run_git_command(args: List[str], cwd: Path) -> str:
@@ -25,15 +27,16 @@ def run_git_command(args: List[str], cwd: Path) -> str:
         return e.stdout
 
 
-def check_sensitive_patterns_in_content(
-    content: str, file_path: str
-) -> List[Tuple[str, str, int, str]]:
-    """Check content for sensitive patterns. Returns (description, match, line_num, line_content)."""
-    findings = []
-    lines = content.split("\n")
+# ⚠ ONE DEFINITION, TWO CALLERS (#50). The committed-content path and the staged path must not
+# disagree about what counts as a secret.
+#
+# ⚠ THE PRIVATE-KEY ENTRY WAS MISSING AND A CONTROL FOUND IT. The first run produced
+# `FAIL private-key block: expected RED, got exit 0`: eight patterns and none matched a PEM header --
+# the exact material in the 2026-10-18 incident, where a live GitHub App key sat tracked for two months.
+# The header alone is sufficient and is not itself a secret.
+_PATTERNS: List[Tuple[str, str]] = [
+    (r"-----BEGIN (?:[A-Z]+ )?PRIVATE KEY-----", "Private key block"),
 
-    # Define sensitive patterns with exclusion patterns
-    patterns = [
         (r"postgresql://[^u][^s]+@[^\s]+", "Database URL with credentials"),
         (r"(?i)sk-[a-zA-Z0-9]{20,}", "API token (sk-)"),
         (r"AKIA[0-9A-Z]{16}", "AWS access key"),
@@ -42,10 +45,9 @@ def check_sensitive_patterns_in_content(
         (r"(?i)api[_-]?key\s*=\s*[\"']?[a-zA-Z0-9]{20,}", "API key assignment"),
         (r"(?i)secret\s*=\s*[\"']?[a-zA-Z0-9]{10,}", "Secret assignment"),
         (r"(?i)password\s*=\s*[\"']?[^\s\"'\)]{8,}", "Password assignment (8+ chars)"),
-    ]
+]
 
-    # Exclude patterns for common false positives
-    exclusions = [
+_EXCLUSIONS: List[str] = [
         r"[A-Z_]+PASSWORD\s*=\s*your_",  # Environment variable placeholders (PG_PASSWORD=your_password)
         r"[A-Z_]+PASSWORD\s*=\s*test",  # Test passwords in env vars
         r"password\s*=\s*os\.getenv",  # password=os.getenv(...)
@@ -55,7 +57,50 @@ def check_sensitive_patterns_in_content(
         r"password\s*=\s*[\"\']?test[\"\']?",  # Test password
         r"password\s*=\s*[\"\']?your_[a-z_]+[\"\']?",  # Placeholder passwords (your_password, your_secret)
         r"password\s*=\s*[\"\']?example[\"\']?",  # Example passwords
-    ]
+]
+
+PRIVACY_CONFIG = ".privacy-scan.json"
+
+
+def fingerprint(value: str) -> str:
+    """A short one-way identifier so a finding is traceable WITHOUT the value.
+
+    ⚠ The value must not survive the detector. The legacy path returns `match.group()` in its finding
+    tuple, so anything downstream could echo a live secret; this is the only function that reads it.
+    """
+    return hashlib.sha256(value.encode("utf-8", "surrogatepass")).hexdigest()[:12]
+
+
+def load_exclusions(repo_path: Path) -> Tuple[List[str], int]:
+    """Repository-local exclusions: PATHS only, never rules (#50, owner 2026-10-18).
+
+    ⚠ A rule-wide exclusion silently disables a detector; a path exclusion is a statement about one
+    file a repository has decided is a fixture. The gate prints how many it loaded, because a silent
+    exclusion is indistinguishable from a silent pass.
+    """
+    cfg = repo_path / PRIVACY_CONFIG
+    if not cfg.is_file():
+        return [], 0
+    try:
+        data = json.loads(cfg.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        # ⚠ MALFORMED CONFIG IS A REFUSAL, not an empty exclusion set.
+        raise SystemExit("privacy-scan: .privacy-scan.json is not valid JSON -- refusing")
+    paths = data.get("exclude_paths", []) if isinstance(data, dict) else []
+    if any("rule" in str(p) for p in paths):
+        raise SystemExit("privacy-scan: exclude_paths must name PATHS, not rules")
+    return [str(p) for p in paths], len(paths)
+
+
+def check_sensitive_patterns_in_content(
+    content: str, file_path: str
+) -> List[Tuple[str, str, int, str]]:
+    """Check content for sensitive patterns. Returns (description, match, line_num, line_content)."""
+    findings = []
+    lines = content.split("\n")
+
+    patterns = _PATTERNS
+    exclusions = _EXCLUSIONS
 
     for pattern, desc in patterns:
         matches = re.finditer(pattern, content, re.MULTILINE)
@@ -98,6 +143,55 @@ def check_committed_files(repo_path: Path) -> dict:
             results["sensitive_files"].append(file_path)
 
     return results
+
+
+def staged_files(repo_path: Path) -> List[str]:
+    """Repository-relative paths in the staged set. NOT the working tree."""
+    out = run_git_command(["diff", "--cached", "--name-only", "--diff-filter=ACMR"], repo_path)
+    return [x for x in out.split("\n") if x.strip()]
+
+
+def scan_staged(repo_path: Path, deny_terms: Optional[List[str]] = None) -> List[dict]:
+    """Scan the STAGED set; findings never carry the matched bytes.
+
+    Returns {rule, path, line, fingerprint} -- no value, no line content.
+    """
+    findings: List[dict] = []
+    exclude, _ = load_exclusions(repo_path)
+    diff = run_git_command(["diff", "--cached", "--unified=0", "--diff-filter=ACMR"], repo_path)
+    current = None
+    new_line = 0
+    for raw in diff.split("\n"):
+        if raw.startswith("+++ b/"):
+            current = raw[6:]
+            continue
+        if raw.startswith("@@"):
+            m = re.search(r"\+(\d+)", raw)
+            new_line = int(m.group(1)) if m else 0
+            continue
+        if not raw.startswith("+") or raw.startswith("+++"):
+            continue
+        if current is not None and any(current == e or current.startswith(e.rstrip("/") + "/") for e in exclude):
+            new_line += 1
+            continue
+        added = raw[1:]
+        hit = False
+        for pattern, desc in _PATTERNS:
+            for m in re.finditer(pattern, added, re.MULTILINE):
+                if any(re.search(excl, added) for excl in _EXCLUSIONS):
+                    continue
+                findings.append({"rule": desc, "path": current or "", "line": new_line,
+                                 "fingerprint": fingerprint(m.group())})
+                hit = True
+                break
+            if hit:
+                break
+        for term in deny_terms or []:
+            if term and term in added:
+                findings.append({"rule": "deny-list term", "path": current or "", "line": new_line,
+                                 "fingerprint": fingerprint(term)})
+        new_line += 1
+    return findings
 
 
 def scan_commit_for_secrets(repo_path: Path) -> List[Tuple[str, str, int, str, str]]:
@@ -290,10 +384,50 @@ def main():
         action="store_true",
         help="Suppress informational output, show only issues",
     )
+    parser.add_argument("--staged", action="store_true",
+                        help="scan the STAGED set, redact every match; pre-commit gate")
+    parser.add_argument("--deny-terms", default="",
+                        help="comma-separated private terms refused in the staged set")
 
     args = parser.parse_args()
 
-    repo_path = Path(args.repo_path).resolve()
+    # ⚠ `.` IS THE CALLER'S REPOSITORY, NOT THE HOOK'S -- and with `language: script` the process runs
+    # from the hook repository, so a bare `.` scanned home.conf while the consumer's staged secret sat
+    # in the consumer's checkout. The consumer witness caught it as exit 3 "no staged files" against a
+    # repository that plainly had one. `rev-parse --show-toplevel` of the INVOKING directory is the only
+    # correct subject for a hook: it is the repo whose commit is being gated.
+    if str(args.repo_path) == ".":
+        top = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+        repo_path = Path(top.stdout.strip() or ".").resolve() if top.returncode == 0 else Path.cwd().resolve()
+    else:
+        repo_path = Path(args.repo_path).resolve()
+
+    if getattr(args, "staged", False):
+        terms = [x.strip() for x in (args.deny_terms or "").split(",") if x.strip()]
+        try:
+            findings = scan_staged(repo_path, terms)
+        except SystemExit:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            print(f"privacy-scan: could not scan the staged set: {type(exc).__name__}", file=sys.stderr)
+            sys.exit(2)
+        if not staged_files(repo_path):
+            print("privacy-scan: no staged files -- nothing was scanned (not a pass)", file=sys.stderr)
+            sys.exit(3)
+        _, n_excl = load_exclusions(repo_path)
+        print(f"privacy-scan: exclusions loaded from {PRIVACY_CONFIG}: {n_excl}", file=sys.stderr)
+        print("=" * 70)
+        print("PRIVACY REVIEW - STAGED SET (reject-only; findings redacted)")
+        print("=" * 70)
+        if not findings:
+            print(f"\nNo matches ({len(terms)} deny term(s) configured).")
+            print("A pass means no configured detector matched -- not that the change is private.")
+            sys.exit(0)
+        print(f"\n{len(findings)} finding(s). VALUES ARE NOT PRINTED.\n")
+        for f in findings:
+            print(f"  {f['path']}:{f['line']}  {f['rule']}  fp={f['fingerprint']}")
+        print("\nThe commit is refused. Fix the source; this gate never rewrites content.")
+        sys.exit(1)
 
     # Check if it's a git repository
     if not (repo_path / ".git").exists():
