@@ -201,7 +201,25 @@ printf '%s\n' "$out" | grep -viE '^[0-9]{1,2}:[0-9]{2}(AM|PM)' >&2 || true
 case "$rc" in
   0) echo "privacy-gate: clean ($scanned file(s) scanned, $skipped excluded)" >&2; exit 0 ;;
   1)
-    if [ ! -s "$report" ] || ! grep -q '"Description"\|"RuleID"' "$report" 2>/dev/null; then
+    # ⚠ THREE-WAY, NOT "REPORT PRESENT" (#50 review, @CowBoy + @GameBoy measured independently).
+    # A CLEAN run also writes a report -- it is `[]`. So presence is not the finding signal:
+    #   report absent          -> config/execution failure   exit 2
+    #   report present, []     -> clean                      exit 0
+    #   report present, N > 0  -> finding                    exit 1
+    entries=$(python3 - "$report" <<'PY' 2>/dev/null || echo "absent"
+import json, sys
+try:
+    d = json.load(open(sys.argv[1]))
+except Exception:
+    print("absent"); raise SystemExit
+print(len(d) if isinstance(d, list) else "absent")
+PY
+)
+    if [ "$entries" = "0" ]; then
+      echo "privacy-gate: gitleaks exited 1 but its report is EMPTY -- engine/config failure, not a secret" >&2
+      exit 2
+    fi
+    if [ "$entries" = "absent" ] || [ ! -s "$report" ]; then
       echo "privacy-gate: gitleaks exited 1 WITH NO FINDINGS REPORT -- engine or config failure, not a secret" >&2
       echo "privacy-gate: this is a setup problem; the gate cannot say the staged set is clean or dirty" >&2
       exit 2
