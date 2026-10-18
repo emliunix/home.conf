@@ -138,6 +138,34 @@ sh "$FIXG/scripts/privacy_gate" >/dev/null 2>&1; rc=$?
 git rm -q --cached zz-nr.json 2>/dev/null; rm -f zz-nr.json
 rm -rf "$W/gatefix"
 
+# NINTH ARM — THE THREE CONFIG-VALIDITY CASES, seeded separately (@CowBoy review).
+#   missing base   -> the owned rules VANISH and an internal host reads clean
+#   malformed      -> FTL, exit 1 from Gitleaks
+#   ruleless       -> exit 0, report [], a valid file that loads zero rules
+cfgpkg="$W/cfgpkg/skills/privacy-review"
+mkdir -p "$cfgpkg/scripts"
+cp "$G" "$cfgpkg/scripts/privacy_gate"
+python3 -c 'print("host: buildcorp9" + "." + "internal")' > zz-cfg.txt
+git add -A >/dev/null 2>&1
+
+# missing
+sh "$cfgpkg/scripts/privacy_gate" >/dev/null 2>&1; rc=$?
+[ "$rc" = 2 ] && ok "missing hook-owned config fails closed (exit 2)" || bad "missing base exit $rc, want 2"
+
+# malformed
+printf 'x [[[
+' > "$cfgpkg/gitleaks.toml"
+sh "$cfgpkg/scripts/privacy_gate" >/dev/null 2>&1; rc=$?
+[ "$rc" = 2 ] && ok "malformed config refuses (exit 2)" || bad "malformed config exit $rc, want 2"
+
+# ruleless
+printf '# comment only\n' > "$cfgpkg/gitleaks.toml"
+sh "$cfgpkg/scripts/privacy_gate" >/dev/null 2>&1; rc=$?
+[ "$rc" = 2 ] && ok "ruleless config refuses (exit 2)" || bad "ruleless config exit $rc, want 2"
+
+git rm -q --cached zz-cfg.txt 2>/dev/null; rm -f zz-cfg.txt
+rm -rf "$W/cfgpkg"
+
 # GREEN
 printf 'an ordinary line of prose\n' > ok.txt; rc=$(staged_exit)
 [ "$rc" = 0 ] && ok "clean change passes" || bad "clean change exit $rc"

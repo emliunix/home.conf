@@ -29,7 +29,16 @@ cfg="$root/.privacy-scan.json"
 # hook and are resolved from THIS SCRIPT's directory; a repository may add its own on top, merged.
 hook_dir=$(cd "$(dirname "$0")" && pwd)
 base="$hook_dir/../gitleaks.toml"
-[ -f "$base" ] || base=""
+# ⚠ A MISSING HOOK-OWNED CONFIG MUST NOT FALL BACK TO DEFAULTS (#50 review, measured). The old
+# `[ -f "$base" ] || base=""` silently ran Gitleaks' defaults, so EVERY home.conf-owned rule disappeared
+# and a staged internal host reported `clean`, exit 0. An explicit `--config <missing>` would be loud;
+# removing the path is not. Fail closed by name.
+if [ ! -f "$base" ]; then
+  echo "privacy-gate: the hook-owned base config is absent: $base" >&2
+  echo "privacy-gate: without it the owned rules (internal host, absolute path, sensitive path) do not run" >&2
+  echo "privacy-gate: refusing rather than falling back to engine defaults" >&2
+  exit 2
+fi
 rules="$base"
 if [ -f "$root/.gitleaks.toml" ]; then
   # ⚠ THE MERGE MUST RE-ADD [extend] OR IT REPORTS CLEAN FOREVER (#50 review, measured). Stripping
