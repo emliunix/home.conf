@@ -32,13 +32,21 @@ base="$hook_dir/../gitleaks.toml"
 [ -f "$base" ] || base=""
 rules="$base"
 if [ -f "$root/.gitleaks.toml" ]; then
-  merged=$(mktemp); mktemp_done=1
-  [ -n "$base" ] && grep -v '^\[extend\]\|^useDefault' "$base" > "$merged"
-  grep -v '^\[extend\]\|^useDefault' "$root/.gitleaks.toml" | grep -v '^title = ' >> "$merged"
+  # ⚠ THE MERGE MUST RE-ADD [extend] OR IT REPORTS CLEAN FOREVER (#50 review, measured). Stripping
+  # `[extend]`/`useDefault` from both inputs and using the merged file directly REPLACES the default
+  # ruleset -- a valid repo-local config with one no-match rule made a generated high-entropy secret read
+  # `clean`, exit 0. Every merged config gets one `[extend] useDefault = true` appended AFTER the last
+  # rule table, on every branch, including when there are no exclusions.
+  merged=$(mktemp); cfgfile_created=1
+  [ -n "$base" ] && grep -v '^\[extend\]\|^useDefault\|^allowlists\]\|^paths = ' "$base" > "$merged"
+  grep -v '^\[extend\]\|^useDefault\|^allowlists\]\|^paths = ' "$root/.gitleaks.toml" \
+    | grep -v '^title = ' >> "$merged"
+  printf '\n[extend]\nuseDefault = true\n' >> "$merged"
   rules="$merged"
 fi
 excl=""
 nexcl=0
+deny=""
 if [ -f "$cfg" ]; then
   # ⚠ PATHS ONLY, AND VALIDATED, NOT SUBSTRING-CHECKED (#50 review). The first version only looked for
   # the substring `"rule"` and trusted every value. Measured: `{"exclude_paths":[".*"]}` made a staged
@@ -64,6 +72,15 @@ print("\n".join(x.strip() for x in paths))
 PY
 ) || exit 4
   if [ -n "$excl" ]; then nexcl=$(printf '%s\n' "$excl" | wc -l | tr -d ' '); else nexcl=0; fi
+  deny=$(python3 - "$cfg" <<'PY' || true
+import json, sys
+try: d = json.load(open(sys.argv[1]))
+except Exception: sys.exit(0)
+terms = d.get("deny_terms", [])
+if not isinstance(terms, list): sys.exit(0)
+print("\n".join(str(t) for t in terms if str(t).strip()))
+PY
+)
 fi
 
 # (2)+(3) THE POPULATION, counted here because Gitleaks counts commits.
@@ -117,7 +134,7 @@ if [ -z "$allowlist" ] && [ -z "$rules" ]; then
 elif [ -z "$allowlist" ]; then
   cfgfile="$rules"
 else
-  cfgfile=$(mktemp); mktemp_done=1
+  cfgfile=$(mktemp); cfgfile_created=1
   if [ -f "$rules" ]; then
     # keep the repo's rules, drop nothing, then re-open a section for extend+allowlist
     grep -v '^\[extend\]' "$rules" | grep -v '^useDefault' > "$cfgfile"
@@ -144,19 +161,52 @@ fi
 # `--exit-code int … (default 1)`, and both @CowBoy and @GameBoy measured exit 1 on every arm without the
 # flag. My earlier note that "without it the positive arm exits 0" was a PIPELINE ARTIFACT: `cmd | tail`
 # reports `tail`'s status, which is what I read. The pin makes the question moot.
-args="--staged --redact --exit-code 1 --no-banner"
+# ⚠ A FINDING AND AN ENGINE FAILURE BOTH EXIT 1 (#50 review). Gitleaks exits 1 for "leaks found" AND for
+# "FTL unable to load config", so mapping every 1 to REFUSED reports a setup failure as a privacy finding.
+# The discriminator is its own REPORT: if it produced findings we have a finding; if it exited 1 and
+# produced no report, the engine failed and we say so by name.
+report=$(mktemp); report_created=1; rm -f "$report"
+
+args="--staged --redact --exit-code 1 --no-banner --report-format json --report-path $report"
 [ -n "$cfgfile" ] && args="$args --config $cfgfile"
+
+# deny_terms: repo-local private terms, rendered into the config as an exact-match rule.
+if [ -n "${deny:-}" ]; then
+  df=$(mktemp); cfgfile_created=1
+  # ⚠ `cfgfile` may be EMPTY, and `cat ""` errors: the deny rule then never reached the config and a
+  # private term read clean. Guard the read, do not assume a config exists.
+  if [ -n "$cfgfile" ] && [ -f "$cfgfile" ]; then cat "$cfgfile" > "$df"; else : > "$df"; fi
+{
+  echo ""
+  echo "[[rules]]"
+  echo 'id = "home-conf-deny-term"'
+  echo 'description = "repository private term"'
+  term=$(printf '%s\n' "$deny" | python3 -c 'import re,sys; print("|".join(re.escape(l.strip()) for l in sys.stdin if l.strip()))')
+  echo "regex = '($term)'"
+} >> "$df"
+  cfgfile="$df"; args=$(printf '%s' "$args" | sed "s|--config [^ ]*|--config $df|")
+  case "$args" in *--config*) ;; *) args="$args --config $df" ;; esac
+fi
 
 out=$( cd "$root" && "$gl" git $args 2>&1 ); rc=$?
 # ⚠ ONLY DELETE A FILE THIS RUN CREATED (#50 review). `cfgfile` can be the HOOK-OWNED base config, which
 # lives outside the consumer's root -- so the old "outside $root" guard deleted the shipped rules, and
 # prek reported "files were modified by this hook". Track what we made, not where it happens to live.
-[ -n "${mktemp_done:-}" ] && [ -n "$cfgfile" ] && rm -f "$cfgfile"
+# ⚠ ONLY the config file this run created. An earlier version set a single `mktemp_done` flag for the
+# REPORT too, so the cleanup fired unconditionally and DELETED the repository's own gitleaks.toml on every
+# run -- measured: the file vanished after each gate invocation.
+[ -n "${cfgfile_created:-}" ] && [ -n "$cfgfile" ] && rm -f "$cfgfile"
 printf '%s\n' "$out" | grep -viE '^[0-9]{1,2}:[0-9]{2}(AM|PM)' >&2 || true
 
 case "$rc" in
   0) echo "privacy-gate: clean ($scanned file(s) scanned, $skipped excluded)" >&2; exit 0 ;;
-  1) echo "privacy-gate: REFUSED. Fix the source; this gate never rewrites content." >&2; exit 1 ;;
+  1)
+    if [ ! -s "$report" ] || ! grep -q '"Description"\|"RuleID"' "$report" 2>/dev/null; then
+      echo "privacy-gate: gitleaks exited 1 WITH NO FINDINGS REPORT -- engine or config failure, not a secret" >&2
+      echo "privacy-gate: this is a setup problem; the gate cannot say the staged set is clean or dirty" >&2
+      exit 2
+    fi
+    echo "privacy-gate: REFUSED. Fix the source; this gate never rewrites content." >&2; exit 1 ;;
   126|127) echo "privacy-gate: gitleaks not found -- refusing rather than passing" >&2; exit 2 ;;
   *) echo "privacy-gate: gitleaks exited $rc -- refusing rather than passing" >&2; exit 2 ;;
 esac

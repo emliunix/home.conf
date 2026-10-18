@@ -22,7 +22,9 @@ W=$(mktemp -d); trap 'rm -rf "$W"' EXIT
 cd "$W" || exit 1
 git init -q; git config user.email t@t; git config user.name t
 echo base > a.txt; git add -A; git commit -qm base
-cp "$(dirname "$G")/../gitleaks.toml" . 2>/dev/null || :
+# ⚠ NO COPY. The base config is HOOK-OWNED and the gate resolves it from the script's own directory.
+# Copying it here put it in the REPO-LOCAL slot, which the merge treats as ADDITIONAL -- so the fixture
+# ended up with a merged config built from itself, and the owned rules stopped firing.
 git add -A; git commit -qm cfg 2>/dev/null || :
 
 staged_exit() { git add -A >/dev/null 2>&1; sh "$G" >/dev/null 2>&1; echo $?; }
@@ -101,6 +103,21 @@ if [ -x "$GLBIN" ]; then
   rm -f "$probe/noext.toml"
 fi
 rm -rf "$probe"
+
+# SEVENTH ARM — A REPO-LOCAL CONFIG MUST NOT DISABLE THE DEFAULTS (#50 review, measured).
+# Stripping [extend] when merging made a valid local config replace the ruleset: a generated secret read
+# "clean", exit 0. Assert the merge keeps the defaults AND still honours a local rule.
+printf '[extend]\nuseDefault = true\n[[rules]]\nid = "zz-local-noop"\nregex = "zzzzneveroccurs"\n' > .gitleaks.toml
+python3 -c 'import base64,json,os;json.dump({"api_"+"key":base64.b64encode(os.urandom(32)).decode()},open("zz-gen.json","w"))'
+rc=$(staged_exit); [ "$rc" = 1 ] && ok "a repo-local config does not disable the defaults" || bad "local config let a generated secret through (exit $rc)"
+git rm -q --cached zz-gen.json; rm -f zz-gen.json
+
+# and a LOCAL rule of its own must still fire
+python3 -c 'print("zz-local-" + "marker")' > zz-loc.txt
+printf '[extend]\nuseDefault = true\n[[rules]]\nid = "zz-local"\ndescription = "local marker"\nregex = "zz-local-marker"\n' > .gitleaks.toml
+rc=$(staged_exit); [ "$rc" = 1 ] && ok "a repo-local rule fires" || bad "local rule did not fire (exit $rc)"
+git rm -q --cached zz-loc.txt; rm -f zz-loc.txt
+rm -f .gitleaks.toml
 
 # GREEN
 printf 'an ordinary line of prose\n' > ok.txt; rc=$(staged_exit)
