@@ -2,14 +2,14 @@
 # amended after the plan review (results/round-11-review.md) before the build. Keyed by
 # (file, line, target as written, backticks stripped). `dangling` must produce exactly one
 # `fragment` finding at that line; `resolves` and `skipped` none.
-fixture:   # worklog/kernel-trials/probe/fragment-fixtures/fixture.md
+fixture:   # doc-verify/tests/references/fragment-fixture/fixture.md (labelled at worklog/kernel-trials/probe/fragment-fixtures/, links rebased)
   resolves:
-    - [5, "../../../../docs/doc-verify-model.md#3-semantics"]
-    - [5, "../../../../docs/doc-verify-model.md#4-constraints-and-status"]
-    - [6, "../../../../design/05-trusted-kernel-redesign.md#kernel"]
-    - [6, "../../../../design/03-companion-driven-document-verification.md#companion-contract"]
+    - [5, "../docs/doc-verify-model.md#3-semantics"]
+    - [5, "../docs/doc-verify-model.md#4-constraints-and-status"]
+    - [6, "../design/05-trusted-kernel-redesign.md#kernel"]
+    - [6, "../design/03-companion-driven-document-verification.md#companion-contract"]
     - [7, "#links-with-fragments"]
-    - [7, "../../../../docs/doc-verify-model.md#where-u-comes-from"]
+    - [7, "../docs/doc-verify-model.md#where-u-comes-from"]
     - [8, "dup-target.md#notes-1"]
     - [18, "design/05 §Oracle toolkit"]
     - [18, "design/03 §Report contract"]
@@ -17,11 +17,11 @@ fixture:   # worklog/kernel-trials/probe/fragment-fixtures/fixture.md
     - [18, "design/06 §Language breaks"]
     - [18, "AGENTS.md §Experiment programmes"]
   dangling:
-    - [10, "../../../../design/06-kernel-migration.md#no-such-section"]
-    - [10, "../../../../docs/doc-verify-model.md#semantics"]
-    - [11, "../../../../design/05-trusted-kernel-redesign.md#kernal"]
+    - [10, "../design/06-kernel-migration.md#no-such-section"]
+    - [10, "../docs/doc-verify-model.md#semantics"]
+    - [11, "../design/05-trusted-kernel-redesign.md#kernal"]
     - [11, "#not-a-heading"]
-    - [11, "../../../../design/03-companion-driven-document-verification.md#language"]
+    - [11, "../design/03-companion-driven-document-verification.md#language"]
     - [12, "dup-target.md#notes-2"]
     - [20, "design/05 §Interpreter"]
     - [20, "design/03 §Reporting contract"]

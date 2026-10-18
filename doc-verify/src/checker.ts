@@ -530,8 +530,8 @@ function bindingFinding(file: RepoPath, sections: Section[], ruleId: string, ver
     (oracle.label === "fails" || oracle.label === "unknown") && oracle.sections.some((section) => ids.includes(section)));
   const oracle = proofSpan === undefined ? onSections.find((entry) => entry.span !== undefined) ?? onSections[0] : undefined;
   const span = proofSpan ?? oracle?.span;
-  // A binding that names a `Line` (a reference's own line, as `fragments-resolve` binds) sits at it.
-  const line = /^[1-9][0-9]*$/.test(binding.values.Line ?? "") ? Number(binding.values.Line) : undefined;
+  // A constraint that names a `line:` variable places its finding at that line (`binding.line`).
+  const line = binding.line;
   if (oracle !== undefined && !basis.some((line) => line.startsWith("answered "))) {
     const distribution = oracle.distribution;
     const peak = distribution.length === 0 ? undefined : Math.max(...distribution);

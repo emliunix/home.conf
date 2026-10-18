@@ -44,6 +44,7 @@ constraints:
   fragments-resolve:
     forall: core.ref(D, S, T, fragment), core.section_ref(D, S, T, Line, Closest)
     forbid: core.dangling(D, S, T, fragment)
+    line: Line
     severity: error
     message: "{D}:{Line} cites {T}, which names no section of that document"
     repair: "Point it at an existing heading (closest: {Closest}), or drop the section"
