@@ -76,5 +76,19 @@ grep -qE "^(NO-GO|NEEDS-REVIEW)" "$ext2_out" && check "the finding is named" "ye
   || check "the finding is named" "yes" "no"
 rm -rf "$finding_dir"
 
+# ⚠ THE OTHER CAUSE OF BLOCKED (#38, @CowBoy). The arms above pin "zero artifacts"; this one pins
+# "artifacts, but the oracle could not be consulted". Both are exit 3; only the first is not a finding.
+# Driving the shipped policy directly is the only way to hold the population fixed while varying the
+# status -- the CLI has no flag for "pretend an artifact exists".
+pol="$(node --input-type=module -e '
+  const m = await import(process.argv[1]);
+  process.stdout.write([
+    m.applyStagePolicy(3, "external", "BLOCKED", 0),
+    m.applyStagePolicy(3, "external", "BLOCKED", 1),
+  ].join(","));
+' "$root/doc-verify/dist/stage-policy.js")"
+check "external allows an empty population" "0" "${pol%,*}"
+check "external refuses a non-empty BLOCKED population" "3" "${pol#*,}"
+
 rm -f "$cli_out" "$hook_out" "$ext_out"
 exit "$fail"
