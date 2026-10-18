@@ -1,5 +1,13 @@
 # home.conf
 
+## Companion skills: pstack
+
+[pstack](https://github.com/cursor/plugins/tree/main/pstack) (in `cursor/plugins`, MIT) is the
+recommended companion skill set. Some skills here point into it:
+[process-module-review](skills/process-module-review/SKILL.md) names pstack's principle and
+verification skills as related reading, and [worktree-sop](skills/worktree-sop/SKILL.md) treats
+pstack links as third-party and read-only. Install it beside these skills; it is not vendored here.
+
 ## doc-verify
 
 `doc-verify` checks Markdown documents against verification modules (design 04,
