@@ -28,11 +28,11 @@ cfg="$root/.privacy-scan.json"
 # and Gitleaks failed -- a CLEAN CONSUMER WAS FALSELY REFUSED, measured. The base rules ship with the
 # hook and are resolved from THIS SCRIPT's directory; a repository may add its own on top, merged.
 hook_dir=$(cd "$(dirname "$0")" && pwd)
-base="$hook_dir/../../../.gitleaks.toml"
+base="$hook_dir/../gitleaks.toml"
 [ -f "$base" ] || base=""
 rules="$base"
 if [ -f "$root/.gitleaks.toml" ]; then
-  merged=$(mktemp)
+  merged=$(mktemp); mktemp_done=1
   [ -n "$base" ] && grep -v '^\[extend\]\|^useDefault' "$base" > "$merged"
   grep -v '^\[extend\]\|^useDefault' "$root/.gitleaks.toml" | grep -v '^title = ' >> "$merged"
   rules="$merged"
@@ -117,7 +117,7 @@ if [ -z "$allowlist" ] && [ -z "$rules" ]; then
 elif [ -z "$allowlist" ]; then
   cfgfile="$rules"
 else
-  cfgfile=$(mktemp)
+  cfgfile=$(mktemp); mktemp_done=1
   if [ -f "$rules" ]; then
     # keep the repo's rules, drop nothing, then re-open a section for extend+allowlist
     grep -v '^\[extend\]' "$rules" | grep -v '^useDefault' > "$cfgfile"
@@ -148,7 +148,10 @@ args="--staged --redact --exit-code 1 --no-banner"
 [ -n "$cfgfile" ] && args="$args --config $cfgfile"
 
 out=$( cd "$root" && "$gl" git $args 2>&1 ); rc=$?
-[ -n "$cfgfile" ] && [ "${cfgfile#$root}" = "$cfgfile" ] && rm -f "$cfgfile"
+# ⚠ ONLY DELETE A FILE THIS RUN CREATED (#50 review). `cfgfile` can be the HOOK-OWNED base config, which
+# lives outside the consumer's root -- so the old "outside $root" guard deleted the shipped rules, and
+# prek reported "files were modified by this hook". Track what we made, not where it happens to live.
+[ -n "${mktemp_done:-}" ] && [ -n "$cfgfile" ] && rm -f "$cfgfile"
 printf '%s\n' "$out" | grep -viE '^[0-9]{1,2}:[0-9]{2}(AM|PM)' >&2 || true
 
 case "$rc" in

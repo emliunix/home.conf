@@ -8,7 +8,11 @@
 #   ⚠ THE LEAK CHECK GREPED A HARDCODED STRING, so it could report zero regardless of the fixture. This
 #     one compares captured output against the EXACT generated value.
 set -uo pipefail
-G="$(git -C "$(dirname "$0")/../../.." rev-parse --show-toplevel)/skills/privacy-review/scripts/privacy_gate"
+# ⚠ RESOLVE BEFORE ANY cd. `$0` may be RELATIVE, and the script cds into a temp fixture at line ~18, so a
+# `dirname "$0"` computed after that points into the fixture. This exact defect made the base-config
+# assertion read "/../gitleaks.toml" and fail while the file was present and correct.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+G="$SCRIPT_DIR/../scripts/privacy_gate"
 fail=0; n=0
 gen() { python3 -c 'import base64,os;print("api_key = sk-"+base64.b32encode(os.urandom(20)).decode().lower().rstrip("="))'; }
 ok()   { n=$((n+1)); echo "ok   $1"; }
@@ -18,7 +22,7 @@ W=$(mktemp -d); trap 'rm -rf "$W"' EXIT
 cd "$W" || exit 1
 git init -q; git config user.email t@t; git config user.name t
 echo base > a.txt; git add -A; git commit -qm base
-cp "$(dirname "$G")/../../../.gitleaks.toml" . 2>/dev/null || :
+cp "$(dirname "$G")/../gitleaks.toml" . 2>/dev/null || :
 git add -A; git commit -qm cfg 2>/dev/null || :
 
 staged_exit() { git add -A >/dev/null 2>&1; sh "$G" >/dev/null 2>&1; echo $?; }
@@ -70,10 +74,12 @@ git rm -q --cached zz-placeholder.json; rm -f zz-placeholder.json
 #   no --config -> exit 1 · --config without [extend] -> exit 0 "no leaks found" · with -> exit 1
 # So this asserts the property in the shipped file rather than trusting that nobody edits it out.
 n=$((n+1))
-if grep -q '^\[extend\]' .gitleaks.toml 2>/dev/null && grep -q '^useDefault = true' .gitleaks.toml 2>/dev/null; then
-  ok ".gitleaks.toml extends the default ruleset"
+# ⚠ THE CONFIG MOVED INTO THE PACKAGED DIRECTORY, so this reads it from there rather than the repo root.
+BASECFG="$SCRIPT_DIR/../gitleaks.toml"
+if grep -q '^\[extend\]' "$BASECFG" 2>/dev/null && grep -q '^useDefault = true' "$BASECFG" 2>/dev/null; then
+  ok "the packaged base config extends the default ruleset"
 else
-  fail=1; echo "FAIL .gitleaks.toml does not [extend] -- a non-extending config REPORTS CLEAN, exit 0"
+  fail=1; echo "FAIL $BASECFG does not [extend] -- a non-extending config REPORTS CLEAN, exit 0"
 fi
 # and prove the mechanism on a throwaway config, so the assertion is not a grep for its own sake
 probe=$(mktemp -d)

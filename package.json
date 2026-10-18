@@ -5,7 +5,7 @@
   "type": "module",
   "bin": {
     "doc-verify": "doc-verify/dist/cli.js",
-    "home-conf-privacy-scan": "skills/privacy-review/scripts/privacy_scan.py"
+    "home-conf-privacy-scan": "skills/privacy-review/scripts/privacy_gate"
   },
   "files": [
     "doc-verify/dist",
