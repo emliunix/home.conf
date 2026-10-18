@@ -43,5 +43,38 @@ grep -qi "BLOCKED" "$hook_out" && check "hook still prints the verdict" "yes" "y
 grep -qi "not refused" "$hook_out" && check "hook states it did not refuse" "yes" "yes" \
   || check "hook states it did not refuse" "yes" "no"
 
-rm -f "$cli_out" "$hook_out"
+# ⚠ THE EXTERNAL STAGE IS A THIRD CONTRACT (#38, @CowBoy's finding). A consumer's hook must keep
+# blocking on a REAL finding -- `remote-hook.sh` asserts that -- while not failing a docs-only commit
+# on an empty selection. Checking only the local wrapper was why my first version stayed green while
+# it broke every consumer with MODULE_NOT_FOUND.
+ext_out="$(mktemp)"
+set +e
+node doc-verify/dist/cli.js check --staged --stage external --profile auto --format text >"$ext_out" 2>&1
+ext=$?
+set -e
+check "external stage does not fail an empty selection" "0" "$ext"
+grep -qi "nothing was evaluated" "$ext_out" && check "external stage says why" "yes" "yes" \
+  || check "external stage says why" "yes" "no"
+
+# A REAL finding still blocks under the external stage. Measured through the CLI on a throwaway repo
+# built from the shipped fixture -- the same way a consumer would meet it. Importing the CLI is not an
+# option: import runs main and prints usage instead of evaluating the policy.
+finding_dir="$(mktemp -d)"
+cp -R "$root/docs/doc-verify-intro/fixture/." "$finding_dir/"
+rm -f "$finding_dir/run.sh"
+git -C "$finding_dir" init -q
+git -C "$finding_dir" -c user.email=t@t -c user.name=t add -A
+git -C "$finding_dir" -c user.email=t@t -c user.name=t commit -qm fixture
+ext2_out="$(mktemp)"
+set +e
+(cd "$finding_dir" && node "$root/doc-verify/dist/cli.js" check --paths docs/bad.md \
+  --stage external --profile draft --format text) >"$ext2_out" 2>&1
+ext2=$?
+set -e
+check "external stage keeps blocking on a real finding" "1" "$ext2"
+grep -qE "^(NO-GO|NEEDS-REVIEW)" "$ext2_out" && check "the finding is named" "yes" "yes" \
+  || check "the finding is named" "yes" "no"
+rm -rf "$finding_dir"
+
+rm -f "$cli_out" "$hook_out" "$ext_out"
 exit "$fail"
