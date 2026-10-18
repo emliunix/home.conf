@@ -23,6 +23,21 @@ criteria in `criteria.md` can be evaluated; a field left as `not captured` is ho
 | **2 — distinct seats cited** | `<n>` — and name them |
 | **2 — recurring?** | `structural` (≥3 seats, ≥2 scenarios) / `single-observation` |
 
+<!-- ⚠ THE FIELDS BELOW EXIST SO `references/manifest.md`'s EXECUTABLE CHECKS HAVE SOMETHING TO READ
+     (#41). The rule in criteria.md is "a criterion without a field is a wish"; the manifest's E1-E6
+     are checks over an entry's own claims, so each names the field it reads. `not captured` is the
+     honest value wherever the record never held one -- and `not-recoverable` where the SOURCE cannot
+     support it at all. Neither is a guess wearing a number. -->
+
+| manifest check | field | value |
+|---|---|---|
+| **E3 — additivity** | `partition` | `a+b+c = total` or `sum / total` — printed together, or `not-applicable` |
+| **E6 — shape-not-content** | `classification_basis` | what the classification keyed on (payload, never a role/field name) |
+
+<!-- ⚠ ONLY THE TWO FIELDS AN IMPLEMENTED CHECK READS. E1/E4/E5's fields were removed when those checks
+     were withdrawn to semantic in the manifest's 2b table: a field nothing reads is the mirror of a
+     criterion with no field, and both are the wish this package exists to refuse. -->
+
 ## Observed
 
 <What was believed, then what was true. The gap IS the defect. Quote the smallest

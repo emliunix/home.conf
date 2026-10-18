@@ -48,12 +48,14 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SKILL = ROOT / "SKILL.md"
 CRITERIA = ROOT / "references" / "criteria.md"
 TEMPLATE = ROOT / "references" / "entry-template.md"
+MANIFEST = ROOT / "references" / "manifest.md"
 
 # The only path form the guidance may contain. Anything else shaped like a home-directory
 # path is a machine-specific literal, which is the defect the lead rule prevents.
 GENERAL_ROOT = "~/Documents/process-failure-patterns/<project>/"
 
 failures: list[str] = []
+entries_root: pathlib.Path | None = None
 
 
 def frontmatter(text: str) -> dict:
@@ -147,6 +149,186 @@ def check_criteria_have_fields() -> None:
                 )
 
 
+def manifest_tables(text: str) -> tuple[list[dict], list[dict]]:
+    """The manifest's executable and semantic tables, as rows keyed by header.
+
+    The manifest supersedes criteria.md for the corpus study (#41), so the same property must hold
+    there: an executable criterion that names no template field is a wish wearing an exit code.
+    """
+    executable: list[dict] = []
+    semantic: list[dict] = []
+    section = None
+    header = None
+    for line in text.splitlines():
+        if line.startswith("## "):
+            section = line[3:].strip()
+            header = None
+            continue
+        if not line.strip().startswith("|"):
+            header = None
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if header is None:
+            if any(c.strip("*` ").lower() in ("id", "criterion") for c in cells):
+                # Normalise emphasis so `**authority**` and `authority` are the same key.
+                header = [c.strip("*` ") for c in cells]
+            continue
+        if all(set(c) <= set("-: ") for c in cells):
+            continue
+        if len(cells) != len(header):
+            continue
+        row = dict(zip(header, cells))
+        if section is not None and section.startswith("2."):
+            executable.append(row)
+        elif section is not None and section.startswith("3."):
+            semantic.append(row)
+    return executable, semantic
+
+
+def check_manifest_split() -> None:
+    """⚠ A semantic criterion must never appear in the executable table, and vice versa.
+
+    This is the manifest's own central claim: the split IS the instrument. A criterion that moved
+    between the tables is the change most likely to be made silently and with the most consequence,
+    because it moves a judgement onto an exit code.
+    """
+    if not MANIFEST.exists():
+        failures.append("manifest.md: missing -- the corpus study (#41) has no manifest to apply")
+        return
+    executable, semantic = manifest_tables(MANIFEST.read_text(encoding="utf-8"))
+    if not executable:
+        failures.append("manifest.md: no executable table found under section 2")
+    if not semantic:
+        failures.append("manifest.md: no semantic table found under section 3")
+
+    exec_ids = {row.get("id", "").strip("*` ") for row in executable} - {""}
+    sem_ids = {row.get("id", "").strip("*` ") for row in semantic} - {""}
+    both = exec_ids & sem_ids
+    if both:
+        failures.append(
+            "manifest.md: " + ", ".join(sorted(both)) + " appears in BOTH the executable and the "
+            "semantic tables -- a criterion has exactly one authority"
+        )
+
+    # ⚠ THE MARKER MUST BE STRUCTURAL, NOT PROSE (#41). A criterion's authority is a cell, not a
+    # phrase somewhere in the row: checking for words in free text is the "wrong control" this
+    # manifest exists to refuse. A semantic row must carry an `authority` cell saying so, and an
+    # executable row must not add one (its authority is the exit code, which the section implies).
+    if semantic and "authority" not in semantic[0]:
+        failures.append(
+            "manifest.md: the semantic table has no `authority` column -- a criterion's authority "
+            "must be a cell, so it cannot be inferred from prose"
+        )
+        return
+    # ⚠ THE TEST IS "DENIES AUTHORITY", NOT "MENTIONS EXIT" (#41). The first version tested
+    # `"exit" in authority`, which is true of the CORRECT value `no exit code` -- a check that
+    # reddens on the right answer and passes on `exit 3`. It has to read the negation.
+    for row in semantic:
+        authority = row.get("authority", "").strip("*` ").lower()
+        denies = authority.startswith("no ") or "no exit" in authority or "none" in authority
+        if not denies:
+            failures.append(
+                f"manifest.md: semantic criterion {row.get('id', '?')!r} does not deny exit-code "
+                f"authority ({authority!r}) -- a semantic criterion cannot gate, and silence here "
+                "reads as permission"
+            )
+    # ⚠ EVERY EXECUTABLE CHECK MUST NAME THE TEMPLATE FIELD IT READS (#41). This is `criteria.md`'s
+    # own rule extended to the manifest: "a criterion without a field is a wish". The corpus checks
+    # read fields off entries, so an executable check over a field no entry carries cannot be applied
+    # to the corpus at all -- it can only be described.
+    if executable and "evaluated from" not in executable[0]:
+        failures.append(
+            "manifest.md: the executable table has no `evaluated from` column -- an executable "
+            "check that names no field cannot be applied to the corpus"
+        )
+        return
+    entry_fields = TEMPLATE.read_text(encoding="utf-8")
+    for row in executable:
+        named = re.findall(r"`([a-z_]+)`", row.get("evaluated from", ""))
+        if not named:
+            failures.append(
+                f"manifest.md: executable check {row.get('id', '?')!r} names no template field"
+            )
+            continue
+        for field in named:
+            if field not in entry_fields:
+                failures.append(
+                    f"manifest.md: executable check {row.get('id', '?')!r} reads `{field}`, which "
+                    "entry-template.md does not ask for -- add the field or label the check semantic"
+                )
+
+    if executable and "authority" in executable[0]:
+        failures.append(
+            "manifest.md: the executable table declares an `authority` column -- an executable "
+            "criterion's authority IS its exit code and must not be restated"
+        )
+
+
+# ⚠ TEMPLATE_INTRODUCED IS DATA WITH GIT EVIDENCE, NOT A DATE SOMEONE REMEMBERED (#45).
+#
+#   $ git log -S"## Criteria" --oneline -- skills/failure-pattern-library/references/entry-template.md
+#   25416563 feat(skill): add failure-pattern-library, with criteria that a template can evaluate
+#   $ git log -1 --format="%H %ad" --date=short 25416563
+#   2541656309f8a03d0be0aa4176149252f60647e2 2026-10-17
+#   $ git merge-base --is-ancestor 25416563 origin/main   ->  yes
+#
+# Before this date the admitted form did not exist, so an entry lacking it is EVIDENCE OF AGE, not of a
+# capture-policy failure. The check counts those and never fails them.
+TEMPLATE_INTRODUCED = "2026-10-17"
+TEMPLATE_INTRODUCED_COMMIT = "2541656309f8a03d0be0aa4176149252f60647e2"
+
+
+def entry_records(root: pathlib.Path) -> list[dict]:
+    """Every entry directory under `root`, with the facts the entry check needs.
+
+    ⚠ THE CORPUS PATH IS EXPLICIT AND HAS NO DEFAULT (#45). The library lives outside this package, so
+    guessing its location would make the check pass by finding nothing -- the vacuous-green shape.
+    """
+    out: list[dict] = []
+    for d in sorted(p for p in root.iterdir() if p.is_dir()):
+        m = re.match(r"^(\d{4}-\d{2}-\d{2})", d.name)
+        dated = m.group(1) if m else None
+        md = d / "metadata.md"
+        if not md.is_file():
+            out.append({"name": d.name, "date": dated, "kind": "readme-only" if (d / "README.md").is_file() else "no-metadata"})
+            continue
+        text = md.read_text(encoding="utf-8")
+        admitted = re.search(r"^##\s+Criteria\s*$", text, re.M) is not None
+        out.append({"name": d.name, "date": dated, "kind": "admitted" if admitted else "unadmitted"})
+    return out
+
+
+def check_entries(root: pathlib.Path) -> None:
+    """Refuse a post-template entry that is not in the admitted `## Criteria` form (#45).
+
+    ⚠ ONE ADMITTED DIALECT. @CowBoy's ruling, 2026-10-18: "`## Criteria` is the single admitted form.
+    Do not parse a second convention. The four existing entries are evidence of the policy gap, not
+    exceptions that make the new check quieter." So `bold-label-prose` is NOT parsed here; an entry
+    carrying it is unadmitted and fails if it is new enough to have known better.
+    """
+    if not root.is_dir():
+        failures.append(f"--entries {root}: not a directory -- refusing rather than reporting zero")
+        return
+    records = entry_records(root)
+    if not records:
+        failures.append(f"--entries {root}: no entry directories -- refusing rather than passing vacuously")
+        return
+    post = [r for r in records if r["date"] is not None and r["date"] >= TEMPLATE_INTRODUCED]
+    pre = [r for r in records if r["date"] is not None and r["date"] < TEMPLATE_INTRODUCED]
+    undated = [r for r in records if r["date"] is None]
+    bad = [r for r in post if r["kind"] != "admitted"]
+    for r in bad:
+        failures.append(
+            f"entry {r['name']}: dated {r['date']} (on/after TEMPLATE_INTRODUCED {TEMPLATE_INTRODUCED}, "
+            f"{TEMPLATE_INTRODUCED_COMMIT[:8]}) but has no admitted `## Criteria` block"
+        )
+    # Pre-template entries are REPORTED, never failed: they are evidence of age, not of a failure.
+    print(
+        f"l0 entries: {len(records)} total -- {len(post)} post-template, {len(pre)} pre-template "
+        f"(reported, never failed), {len(undated)} undated; {len(bad)} post-template without `## Criteria`"
+    )
+
+
 def check_lead_rule() -> None:
     crit = CRITERIA.read_text(encoding="utf-8")
     skill = SKILL.read_text(encoding="utf-8")
@@ -194,9 +376,23 @@ def check_template_names_both_criteria() -> None:
             )
 
 
-def main() -> int:
+def main(argv: list[str]) -> int:
+    global entries_root
+    # ⚠ EXPLICIT CORPUS PATH ONLY (#45). `--entries <root>` is the ONLY entry-validation path; there is
+    # no default, because a guessed path that happens not to exist would make every entry check pass by
+    # finding nothing, which is the vacuous green this package exists to refuse.
+    entries_root = None
+    if "--entries" in argv:
+        i = argv.index("--entries")
+        if i + 1 >= len(argv):
+            print("l0: --entries requires a corpus path")
+            return 64
+        entries_root = pathlib.Path(argv[i + 1]).expanduser().resolve()
     check_frontmatter()
     check_criteria_have_fields()
+    check_manifest_split()
+    if entries_root is not None:
+        check_entries(entries_root)
     check_lead_rule()
     check_template_names_both_criteria()
     if failures:
@@ -209,4 +405,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))
