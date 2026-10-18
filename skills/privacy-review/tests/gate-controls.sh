@@ -286,6 +286,19 @@ sh "$G" >/dev/null 2>&1; rc=$?
 git rm -q --cached zz-lm.txt skills/privacy-review/SKILL.md skills/privacy-review/references/patterns.md 2>/dev/null
 rm -rf skills zz-lm.txt .gitleaks.toml
 
+# FOURTEENTH ARM — the gate takes NO options (@CowBoy). The skill promised exit 64 for any unsupported
+# argument; the shipped source accepted and IGNORED them, so the promise and the program disagreed.
+printf 'a line\n' > zz-arg.txt
+git add zz-arg.txt >/dev/null 2>&1
+for badarg in "--quiet" "--repo-path" "arbitrary-token"; do
+  sh "$G" "$badarg" >/dev/null 2>&1; rc=$?
+  [ "$rc" = 64 ] && ok "refused unsupported argument $badarg (exit 64)" || bad "argument $badarg exit $rc, want 64"
+done
+# and no argument still runs normally
+sh "$G" >/dev/null 2>&1; rc=$?
+[ "$rc" = 0 ] && ok "no argument still scans normally" || bad "no-arg run exit $rc, want 0"
+git rm -q --cached zz-arg.txt 2>/dev/null; rm -f zz-arg.txt
+
 # GREEN
 printf 'an ordinary line of prose
 \n' > ok.txt; rc=$(staged_exit)

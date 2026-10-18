@@ -19,6 +19,15 @@
 # Exit: 0 clean · 1 finding · 2 cannot run · 3 nothing examined · 4 bad config
 set -u
 
+# ⚠ THIS GATE TAKES NO OPTIONS (#50 review). The skill advertised `--repo-path` and `--quiet`; both were
+# accepted and ignored, so a consumer passing `--repo-path /tmp` and reading "clean" had been told about
+# a repository it never scanned. Refuse anything by name rather than silently accepting it.
+if [ "$#" -ne 0 ]; then
+  echo "privacy-gate: unsupported argument(s): $*" >&2
+  echo "privacy-gate: this gate takes no options and always scans the invoking repository's staged set" >&2
+  exit 64
+fi
+
 root=$(git rev-parse --show-toplevel 2>/dev/null) || {
   echo "privacy-gate: not inside a git repository" >&2; exit 2; }
 
