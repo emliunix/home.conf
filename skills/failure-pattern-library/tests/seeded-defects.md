@@ -241,6 +241,27 @@ entries dated `2026-10-17` were written before the template existed, each provab
 **36 and 37 are the pair that matters**: the exception list is *closed*, so the same date passes one
 entry and fails another **only because of the name**, which is what the list is for.
 
+**Control for 36–38 — before / seeded / restored, with the discriminating twin** (row **39**). Rows 36–38
+show the new *behaviour*; this shows the fixture bytes moved and came back, and that the **name** is the
+only variable:
+
+```text
+fixture: 2026-10-17-status-names-its-object-not-its-content/metadata.md   (a LISTED name)
+
+  baseline, admitted `## Criteria` block      4c68d9c7cb028c07   exit 0   (passes on the block)
+  seeded,   bold-label prose                  1f81b7aba857e0e5   exit 0   (passes ONLY via the list;
+                                                                        stderr names it as an exception)
+  restored to baseline                        4c68d9c7cb028c07   exit 0   (identical bytes, same result)
+
+  discriminator: SAME seeded bytes under an UNLISTED name
+               2026-10-17-other-entry/                                exit 1   <- the name is the only
+                                                                             difference between 0 and 1
+```
+
+⚠ **The unlisted twin is what makes this a control rather than a demo.** Without it, "the listed entry
+passed" is consistent with a check that passes every same-day entry. With it, the only variable is the
+name.
+
 **Real corpus, the expected evidence:**
 ```text
 l0 entries: 120 total -- 11 post-template, 107 pre-template (reported, never failed),

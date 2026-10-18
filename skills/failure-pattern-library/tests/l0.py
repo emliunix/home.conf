@@ -402,6 +402,13 @@ def check_entries(root: pathlib.Path) -> None:
     # The dead check was removed rather than kept with a seed invented to reach it.
     boundary = [r for r in records
                 if r["name"] in SAME_DAY_PRE_TEMPLATE and r["date"] == TEMPLATE_INTRODUCED]
+    # ⚠ A COUNT DOES NOT TELL A READER WHICH ENTRIES ESCAPED THE GATE (#45 rev 6). The ordinary
+    # pre-template population stays aggregate -- 107 lines would bury the signal -- but a BOUNDARY
+    # exception is a decision this file made about a specific entry, and a reader must be able to see
+    # which entry and on what evidence. One named line each.
+    for r in sorted(boundary, key=lambda x: x["name"]):
+        print(f"l0 boundary exception: {r['name']} (dated {r['date']}) -- {SAME_DAY_PRE_TEMPLATE[r['name']]}")
+
     post = [r for r in records
             if r["date"] is not None and r["date"] >= TEMPLATE_INTRODUCED
             and r["name"] not in SAME_DAY_PRE_TEMPLATE]
