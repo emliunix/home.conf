@@ -608,8 +608,20 @@ function sectionBody(section: Section | undefined): string | undefined {
   return section.content.split("\n").slice(1).join("\n").trim().split(/\s+/, 1)[0];
 }
 
-/** The worst verdict; a `WARN` finding does not move it. */
+/**
+ * The worst verdict; a `WARN` finding does not move it.
+ *
+ * ⚠ AN EMPTY POPULATION IS `BLOCKED`, NOT `PASS` (#38). The old `?? "PASS"` made zero artifacts -- the
+ * normal state of a docs-only commit through `check --staged` -- indistinguishable from a real pass:
+ * `[].includes(v)` is false for every verdict, so the fallback fired and a hook that was asked to
+ * verify nothing reported success. That is the same shape as a suite that skips its arms and reports
+ * green. `BLOCKED` already means "could not be evaluated" and already exits 3, so no new verdict is
+ * needed: an empty population is a population that could not be evaluated.
+ */
 export function combineVerdicts(verdicts: Array<Verdict | FindingVerdict>): Verdict {
+  if (verdicts.length === 0) {
+    return "BLOCKED";
+  }
   const precedence: Verdict[] = ["NO-GO", "BLOCKED", "NEEDS-REVIEW", "PASS"];
   return precedence.find((verdict) => verdicts.includes(verdict)) ?? "PASS";
 }
