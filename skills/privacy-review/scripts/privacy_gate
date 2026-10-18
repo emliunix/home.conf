@@ -82,9 +82,16 @@ for line in open(sys.argv[1]):
 sys.stdout.write("".join(out))
 PY
   }
-  [ -n "$base" ] && strip_allowlists "$base" > "$merged"
+  # ⚠ THE BASE'S OWN ALLOWLISTS MUST SURVIVE THE MERGE (#50 review 7). Stripping allowlists from BOTH
+  # inputs dropped the shipped docs allowlist, so the same two docs were green alone and REFUSED once a
+  # valid repo-local config existed. A supported configuration broke a shipped one. Only the REPO-LOCAL
+  # allowlists are stripped; the base is copied intact and already carries [extend].
+  if [ -n "$base" ]; then
+    cat "$base" > "$merged"
+  else
+    printf '\n[extend]\nuseDefault = true\n' > "$merged"
+  fi
   strip_allowlists "$root/.gitleaks.toml" >> "$merged"
-  printf '\n[extend]\nuseDefault = true\n' >> "$merged"
   rules="$merged"
 fi
 excl=""

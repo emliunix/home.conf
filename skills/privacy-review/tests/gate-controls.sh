@@ -266,30 +266,29 @@ sh "$G" >/dev/null 2>&1; rc=$?
 git rm -q --cached zz-bin.dat 2>/dev/null; rm -f zz-bin.dat
 
 # THIRTEENTH ARM — a repo-local config must not drop the BASE's own allowlist (@CowBoy's P2).
-# The shipped docs are green alone and were REFUSED with a valid local config, because the merge stripped
-# allowlists from BOTH inputs. A supported configuration broke a shipped one.
-COMB=$(mktemp -d)
-mkdir -p "$COMB/skills/privacy-review/scripts" "$COMB/skills/privacy-review/references"
-cp "$G" "$COMB/skills/privacy-review/scripts/privacy_gate"
-cp "$SCRIPT_DIR/../gitleaks.toml" "$COMB/skills/privacy-review/gitleaks.toml"
-cp "$SCRIPT_DIR/../SKILL.md" "$COMB/skills/privacy-review/SKILL.md"
-cp "$SCRIPT_DIR/../references/patterns.md" "$COMB/skills/privacy-review/references/patterns.md"
-printf '[extend]\nuseDefault = true\n[[rules]]\nid = "zz-local"\nregex = "zzzzneveroccurs"\n' > "$COMB/.gitleaks.toml"
-# ⚠ THE GATE RESOLVES ITS BASE CONFIG FROM ITS OWN DIRECTORY, so the local config goes BESIDE THE COPY,
-# not at the fixture root -- at the root it would be staged and scanned as part of the population.
-# The DOCS are the staged population; the gate binary and its configs sit BESIDE them, untracked.
+# ⚠ THE LOCAL CONFIG MUST SIT AT THE CONSUMER ROOT. The gate resolves the consumer root with
+# `git rev-parse --show-toplevel`, so a config placed anywhere else is never read and the arm silently
+# tests nothing -- which is exactly what my first version did.
 mkdir -p skills/privacy-review/references
 cp "$SCRIPT_DIR/../SKILL.md" skills/privacy-review/SKILL.md
 cp "$SCRIPT_DIR/../references/patterns.md" skills/privacy-review/references/patterns.md
-cp -r "$COMB/skills" skills-local
-cp "$COMB/.gitleaks.toml" skills-local/.gitleaks.toml
+printf '[extend]\nuseDefault = true\n[[rules]]\nid = "zz-local"\nregex = "zzzzneveroccurs"\n' > .gitleaks.toml
 git add -f skills/privacy-review/SKILL.md skills/privacy-review/references/patterns.md >/dev/null 2>&1
-sh skills-local/privacy-review/scripts/privacy_gate >/dev/null 2>&1; rc=$?
-[ "$rc" = 0 ] && ok "the shipped docs stay green WITH a repo-local config" || bad "docs + local config exit $rc, want 0"
-git rm -rq --cached skills-local skills/privacy-review 2>/dev/null; rm -rf skills-local skills .gitleaks.toml "$COMB"
+sh "$G" >/dev/null 2>&1; rc=$?
+[ "$rc" = 0 ] && ok "docs stay green WITH a repo-local config at the consumer root" || bad "docs + local config exit $rc, want 0"
+
+# and a local rule of its own must still fire under the same merge
+printf '[extend]\nuseDefault = true\n[[rules]]\nid = "zz-local"\nregex = "zz-local-marker"\n' > .gitleaks.toml
+printf 'zz-local-marker\n' > zz-lm.txt
+git add -f zz-lm.txt >/dev/null 2>&1
+sh "$G" >/dev/null 2>&1; rc=$?
+[ "$rc" = 1 ] && ok "a repo-local rule still fires under the same merge" || bad "local rule under merge exit $rc, want 1"
+git rm -q --cached zz-lm.txt skills/privacy-review/SKILL.md skills/privacy-review/references/patterns.md 2>/dev/null
+rm -rf skills zz-lm.txt .gitleaks.toml
 
 # GREEN
-printf 'an ordinary line of prose\n' > ok.txt; rc=$(staged_exit)
+printf 'an ordinary line of prose
+\n' > ok.txt; rc=$(staged_exit)
 [ "$rc" = 0 ] && ok "clean change passes" || bad "clean change exit $rc"
 git rm -q --cached ok.txt; rm -f ok.txt
 

@@ -87,7 +87,6 @@ invocation not mean what it says.
 
 The tool generates a structured report with:
 
-```
 ```text
 ======================================================================
 PRIVACY REVIEW - STAGED SET (reject-only; findings redacted)
@@ -228,7 +227,6 @@ regex = '<your term>'
 
 ```json
 { "exclude_paths": ["fixtures/"] }
-```
 
 **Paths only — never a rule and never a glob.** `*`, `**`, `.`, `..` and anything rule-shaped are refused
 with exit 4, because an exclusion that disables a detector is how a gate is quietly defeated. The gate
