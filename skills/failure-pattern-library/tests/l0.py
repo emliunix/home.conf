@@ -298,11 +298,25 @@ TEMPLATE_INTRODUCED_AT = "2026-10-17T11:07:33Z"
 #
 # ⚠ THIS LIST IS CLOSED. A same-day entry NOT named here is post-template and fails. Adding a name
 # requires new evidence of the same kind, in this comment, not a looser predicate.
+# ⚠ THE EVIDENCE STRINGS ARE CREATION ANNOUNCEMENTS, NOT "CONTENT BEFORE THE BOUNDARY" (#45, @GameBoy).
+#
+# My first version said window-bound was proved by "cited 223e4fba, 7350d082, 0c79bb54 resolve at
+# 10:01-10:02Z". That is wrong in two ways, and he measured both:
+#
+#   1. THOSE TIMES ARE NOT IN THE FILE. `grep -cE '[0-9]{2}:[0-9]{2}'` on that entry returns 0. I got
+#      them from a LIVE `raft message read` -- the exact network dependency the paragraph above rejects.
+#      The stated admission standard used the instrument it disclaims.
+#   2. AND THE DIRECTION IS WRONG ANYWAY. A message the entry CITES was sent at 10:02Z, so the ENTRY
+#      was written AT OR AFTER 10:02Z -- a LOWER bound. Neither can yield "before 11:07:33Z". Content
+#      bounds an entry's write time from below, never from above.
+#
+# The sound instrument is a stored fact: the message that ANNOUNCED each entry's creation. An entry that
+# was announced at T existed by T, which is a genuine UPPER bound and needs no live read.
 SAME_DAY_PRE_TEMPLATE = {
     "2026-10-17-status-names-its-object-not-its-content":
-        "own Date line: 09:28Z to 09:40Z (published to replaced), before 11:07:33Z",
+        "announced created at 2026-10-17 09:40:31Z (msg c815c16d), before 11:07:33Z",
     "2026-10-17-window-bound-read-as-absence":
-        "cited 223e4fba, 7350d082, 0c79bb54 resolve at 10:01-10:02Z, before 11:07:33Z",
+        "announced written at 2026-10-17 10:46:42Z (msg 42a4129f), before 11:07:33Z",
 }
 TEMPLATE_INTRODUCED_COMMIT = "2541656309f8a03d0be0aa4176149252f60647e2"
 

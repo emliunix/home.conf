@@ -225,10 +225,25 @@ TEMPLATE_INTRODUCED_AT    2026-10-17T11:07:33Z (the template commit's author tim
 ⚠ **A directory name carries only a date, so a same-day entry cannot be classified from its name.** Two
 entries dated `2026-10-17` were written before the template existed, each provable from its own content:
 
-| entry | evidence |
+| entry | evidence — the message that ANNOUNCED its creation |
 |---|---|
-| `status-names-its-object-not-its-content` | own `Date:` line — `09:28Z to 09:40Z` |
-| `window-bound-read-as-absence` | cited `223e4fba`, `7350d082`, `0c79bb54` resolve at `10:01–10:02Z` |
+| `status-names-its-object-not-its-content` | *"Library entry written"* — msg `c815c16d`, **09:40:31Z** |
+| `window-bound-read-as-absence` | *"The `-A` window entry is written"* — msg `42a4129f`, **10:46:42Z** |
+
+⚠ **An earlier version of this table used the WRONG evidence for the second entry, and @GameBoy caught
+it** — the strings were his, carried into the code, and the mtime column was right while the evidence
+column was not:
+
+- **"cited `223e4fba` … resolve at 10:01–10:02Z"** — those times are **not in the entry**:
+  `grep -cE '[0-9]{2}:[0-9]{2}'` on it returns **0**. I got them from a **live `raft message read`**, the
+  exact network dependency this file's own comment disclaims. **The stated admission standard used the
+  instrument it rejects.**
+- **And the direction was wrong regardless.** A message the entry *cites* was sent at 10:02Z, so the entry
+  was written **at or after** 10:02Z — a **lower** bound. **Content bounds an entry's write time from
+  below, never from above**, so no citation of it can yield "before 11:07:33Z".
+
+**A creation announcement is an upper bound and a stored fact:** an entry announced at T existed by T, and
+it needs no live read to check.
 
 **Baseline** `l0.py` = `0ea75c008dd533da`
 
