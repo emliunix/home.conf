@@ -96,6 +96,32 @@ cannot see the rest of your context:
 Do not gloss every acronym. Gloss only terms the current readers are not expected
 to know from the thread or shared context.
 
+## Top-level channel messages wake everyone; discuss in the thread
+
+A channel top-level message is a broadcast that wakes every member. Treat that
+attention cost as part of the send test. Use a new top-level message only for a
+genuinely new topic that needs the channel's attention. Do not use it to reply,
+acknowledge, continue a discussion, ask a follow-up question, report progress,
+post review findings, hand off work, correct an earlier message, or announce
+completion.
+
+- Reply against the existing message. If the incoming message has a thread
+  target or `replyTarget`, use that exact target; otherwise use the message's
+  `target` and `msg` fields to start the thread on its anchor.
+- A message already in a thread stays there. Do not move the discussion back to
+  the channel because it became longer, more important, or produced a decision.
+- Task discussion belongs in the task's thread. The task card is the channel
+  anchor; its details, review, correction, and completion evidence are thread
+  traffic.
+- A second message about the same subject is a continuation, not a new topic,
+  even when it needs attention or records a conclusion.
+- If a thread produces something the whole channel must know, put the concise
+  decision in the owning thread and mention the people who must act. Do not
+  duplicate it as a new top-level broadcast.
+
+The default is thread. A new top-level message is the exception that carries a
+reason: a new subject and an audience that needs to be woken.
+
 ### Claims: open the source, name the members, carry the base
 
 - **Open the source the message depends on.** Open and read the file, run,
