@@ -312,3 +312,56 @@ project-skeleton).
 **Verdict: 2 - land with follow-ups**, in `design/12-module-docs-convention-followup.md`.
 `Status: landed` with that file committed; the merge waits for the owner, who was
 ruling on this design.
+
+## Retrospective - corrections to the round-4 re-close (2026-10-18)
+
+From the re-reviews of `9e83201`. The round-4 entries above stay as written; this
+entry corrects them.
+
+**Route into round 4.** The round-3 re-close proposed verdict 4 for the owner to
+rule; no ruling is recorded. C8 ran as verdict 3 (a wording round, round 4 of the
+budget) on the C7 re-review's should-fix 1, which asked for the submission-moment
+wording runs. The withdrawal of verdict 4 is the implementer's reading of C8's
+evidence, not a ruling, and is put to the owner with this entry.
+
+**Every post-fix run, not the best one.** The §0 sentence is byte-identical across
+three committed runs (`wording-item0-round3.tsv`, `round4-*-x3.tsv`,
+`round4-full-*-x3.tsv`):
+
+| Case | flash | pro |
+| --- | --- | --- |
+| `module-docs-review-canonical` | 8/9 (3, 2, 3); the miss is `implement, reviewed` | 6/9 (1, 2, 3); misses `reject_finding` and `set_status, unchanged, none` |
+| `module-docs-review-trap` | 9/9 | 0/9 `reject_finding` |
+| `module-docs-review-paraphrase` | 9/9 | 0/9 `reject_finding` |
+
+C8's "flash 9/9" and "pro canonical 3/3" are one run each.
+
+**The probe, as committed.** `probe-item0-pro.md` holds canonical and paraphrase,
+no trap. Canonical returns the draft to the drafter. Paraphrase starts the review
+and raises the omission as a P1, which is the §0 outcome, not the Draft
+contract's. C8's "the prose probe returns the draft" holds for canonical only.
+
+**Dispositions owed by design 10** (cases below k/k after the fix, or moved from
+k/k):
+
+| Case | D | Reading / evidence |
+| --- | --- | --- |
+| `module-docs-review-canonical` | 1, intermittent | one flash run and at least one pro run answer the original finding (the draft passes into review, or the gate passes); the per-case runner records only the first miss per run, which for pro's other run is `reject_finding` for "return the draft", as below. Deepseek only (design 11 unit 3). Design 12 unit 1 removes the reliance on the reviewer |
+| `module-docs-review-trap`, `-paraphrase` (pro) | 2 (deferred) | "return the draft" is answered `reject_finding`, the act vocabulary (design 11 unit 1); prose probe for paraphrase agrees on the P1, trap unprobed |
+| `gate-reviewed-pending-paraphrase` (flash 3/3 → 0/3) | 2 (deferred) | flash now answers `run_retro, unchanged, worklog`, the reading pro already gave at design 10 (worklog/10 row: the skill sentence holds both acts) |
+| `write-target-retro-trap` (flash 3/3 → 2/3) | 2 (question) | `reject_finding, worklog`, the reading worklog/10 already records for this case |
+| `sweep-destination-canonical` (pro 3/3 → 2/3) | 2 (deferred) | `open_new_design, draft-followup, followup_design_file`: status and target right, the act is stage vs act (design 11 unit 1) |
+| `module-docs-dispatch-trap` (flash 3/3 → 0/3) | 2 (deferred) | `implement, …, module_docs`, the dispatch reading C6 already records |
+
+**Bottom line, one divergence added.** Design 08's Scope places the review check in
+flow-grill-review's Draft contract only. As built it is also a P1 at §0, and the
+two give different outcomes (returned before review; a blocker raised in review).
+(a) constraint-justified: the Draft-contract wording alone does not get the
+decision at the submission moment (C7, C8). The double statement is design 12
+unit 4.
+
+**Finding 1, restated.** The review stage gets the expected decision on flash 26/27
+and on pro canonical 6/9 at the moment the design names, with the remaining misses
+dispositioned above. Whether that is "resolved" for the Stage behaviour row, or the
+residual 1-intermittent row keeps the row unprovable, is the owner's ruling; verdict
+2 stands only on the first reading.

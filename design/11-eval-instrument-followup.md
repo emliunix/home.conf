@@ -17,7 +17,7 @@ act it takes* (`set_status`, `remediate`, `halt_structural`). Inside a retro,
 `run_retro` is a true answer for any decision, so no situation-free definition
 separates the two. Cases it explains (design 10 C6, "2 (deferred)" rows and the
 deferred remainders):
-- `gate-reviewed-pending-paraphrase` (pro 0/3), `gate-pending-landed-canonical` (pro 2/3);
+- `gate-reviewed-pending-paraphrase` (pro 0/3; flash 0/3 after design 08's §0 sentence), `gate-pending-landed-canonical` (pro 2/3);
 - `fork-retro-design-defect-paraphrase` and `fork-retro-p0-design-paraphrase` (pro 0/3);
 - `fork-impl-defect-canonical` (flash 2/3), `write-target-retro-canonical` (flash 2/3);
 - `fork-p0-violation-trap` (pro 1/3) and `sweep-destination-trap` (both 0/3), where

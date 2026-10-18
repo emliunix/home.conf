@@ -37,6 +37,17 @@ follow-up unit", which is what `flow-retro` §5 says. Design 08 is landed, so th
 moves only through a design, or through the non-semantic correction rule (design 11
 unit 8) if it lands.
 
+## Unit 4 - One home for the review-stage rule
+
+Kind: process or docs optimization (skill text).
+
+The rule is stated twice in `flow-grill-review` with two outcomes: the Draft
+contract returns such a draft to the drafter before review, and §0 makes it a P1
+raised in review (worklog/08, corrections of 2026-10-18). Pick one consequence, and
+place the §0 sentence so that §0's "if the project has none, skip this step" (about
+the P0 contract) does not also skip it. A skill edit moves the stage-vs-act class
+(design 11 unit 1), so the whole corpus re-runs after it.
+
 ## Status
 
 draft-followup
