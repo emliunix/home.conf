@@ -293,8 +293,10 @@ def main(argv: list[str]) -> int:
             # is D on the next run, and the user is told that rather than left to discover it.
             print(f"compose: the bytes were written to {dest.resolved} but its STAMP failed -- "
                   f"{exc.cause}", file=sys.stderr)
-            print(f"  The destination is WRITTEN and UNSTAMPED; the next run will classify it as "
-                  f"state D and take a backup before rewriting.", file=sys.stderr)
+            # ⚠ THE NEXT STATE IS THE CLASSIFIED ONE, not a promise (#40 review 7, blocker 1): an
+            # unusable stamp leaves E, a stale valid one leaves C, and only a missing stamp leaves D.
+            print(f"  The destination is WRITTEN; the next run will classify it as state "
+                  f"{exc.state_after} -- {exc.why}.", file=sys.stderr)
             if written:
                 print(f"  already written: {', '.join(written)}  (NOT rolled back)", file=sys.stderr)
             return guard.EXIT_REFUSED

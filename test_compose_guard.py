@@ -1,6 +1,14 @@
 """Arms for compose_guard (#40). Each test names the STATE it pins.
 
-Run: python3 -m pytest test_compose_guard.py -q   (or: python3 test_compose_guard.py)
+RUN IT WITH PYTEST. There is no self-runner here:
+
+    uv run --with pytest --with pyyaml python -m pytest test_compose_guard.py -q
+
+⚠ An earlier docstring said `python3 test_compose_guard.py` also worked. It did not: without ambient
+pytest the module fails at import (exit 1), and with pytest installed the script exits 0 having
+collected nothing -- a runner that reports success while running no tests, which is the defect class
+these arms exist for. The claim is removed rather than implemented, because a second runner is a second
+thing to keep honest.
 """
 import os
 import stat
@@ -229,3 +237,128 @@ def test_stamp_failure_is_a_distinct_exception_not_a_silent_unchanged(tmp_path, 
     assert "No space left" in str(ei.value.cause)
     # the fact that matters: the bytes ARE on disk
     assert d.read_bytes() == A
+
+
+# ── review 7, blocker 2: malformed stamps are state E, never a traceback ───────────────────────
+def test_non_utf8_stamp_is_E_not_a_traceback(tmp_path):
+    d, dest = fresh(tmp_path)
+    d.write_bytes(A)
+    dest.stamp_path.write_bytes(b"\xff\xfe\x00binary")
+    state, _ = classify(dest, A)
+    assert state == "E"
+    _s, reason = read_stamp(dest)
+    assert "not UTF-8" in reason
+
+
+def test_stamp_without_bytes_field_is_E_not_a_KeyError(tmp_path):
+    """The state-C message formats stamp['bytes']; a stamp missing it crashed there."""
+    import json as _json
+    import hashlib as _hashlib
+
+    d, dest = fresh(tmp_path)
+    d.write_bytes(A)
+    dest.stamp_path.write_text(_json.dumps({
+        "schema": 1,
+        "sha256": "a" * 64,
+        "dest": str(dest.resolved),
+    }))
+    state, _ = classify(dest, A)
+    assert state == "E"
+    assert "bytes field" in read_stamp(dest)[1]
+
+
+# ── review 7, blocker 1: the post-failure state is CLASSIFIED, never promised ──────────────────
+def _stamp_failure_state(tmp_path, monkeypatch, stale_stamp=None):
+    import compose_guard
+
+    d, dest = fresh(tmp_path)
+    write_bytes_and_stamp(dest, A)          # a valid stamp and destination exist
+    if stale_stamp is not None:
+        dest.stamp_path.write_text(stale_stamp)
+
+    def boom(*a, **k):
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(compose_guard, "write_stamp", boom)
+    with pytest.raises(compose_guard.StampFailed) as ei:
+        write_bytes_and_stamp(dest, B)
+    monkeypatch.undo()
+    # the claim in the message must equal what a real next classify() says
+    assert ei.value.state_after == classify(dest, B)[0], "the message must match the real next state"
+    return ei.value.state_after
+
+
+def test_stamp_failure_leaves_D_when_no_stamp(tmp_path, monkeypatch):
+    # remove the valid stamp so the failure leaves none
+    d, dest = fresh(tmp_path)
+    write_bytes_and_stamp(dest, A)
+    dest.stamp_path.unlink()
+
+    import compose_guard
+
+    def boom(*a, **k):
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(compose_guard, "write_stamp", boom)
+    with pytest.raises(compose_guard.StampFailed) as ei:
+        write_bytes_and_stamp(dest, B)
+    assert ei.value.state_after == "D"
+
+
+def test_stamp_failure_leaves_C_when_a_valid_stale_stamp_remains(tmp_path, monkeypatch):
+    import compose_guard
+
+    d, dest = fresh(tmp_path)
+    write_bytes_and_stamp(dest, A)          # valid stamp for A
+    unchanged_stamp = dest.stamp_path.read_text()
+
+    def boom(*a, **k):
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(compose_guard, "write_stamp", boom)
+    with pytest.raises(compose_guard.StampFailed) as ei:
+        write_bytes_and_stamp(dest, B)      # bytes for B land, stamp still says A
+    assert ei.value.state_after == "C", "a stale valid stamp leaves C, not D"
+    assert "REFUSE rather than rewrite" in ei.value.why
+
+
+def test_stamp_failure_leaves_E_when_the_stamp_is_unusable(tmp_path, monkeypatch):
+    import compose_guard
+
+    d, dest = fresh(tmp_path)
+    write_bytes_and_stamp(dest, A)
+    dest.stamp_path.write_text("not json")
+
+    def boom(*a, **k):
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(compose_guard, "write_stamp", boom)
+    with pytest.raises(compose_guard.StampFailed) as ei:
+        write_bytes_and_stamp(dest, B)
+    assert ei.value.state_after == "E", "an unusable stamp leaves E, not D"
+
+
+# ── review 7: the stamp path is a destination, so H applies to it ──────────────────────────────
+def test_symlinked_stamp_is_refused(tmp_path):
+    d, dest = fresh(tmp_path)
+    d.write_bytes(A)
+    elsewhere = tmp_path / "elsewhere.stamp"
+    elsewhere.write_text("{}")
+    dest.stamp_path.symlink_to(elsewhere)
+    with pytest.raises(Refusal) as ei:
+        preflight([dest], tmp_path, allow_outside_root=True)
+    assert "SYMLINK" in ei.value.message
+    assert dest.stamp_path.is_symlink(), "the link is untouched"
+
+
+# ── review 7: a fresh stamp respects the umask, same rule as the destination ───────────────────
+def test_fresh_stamp_respects_umask(tmp_path):
+    old = os.umask(0o027)
+    try:
+        d, dest = fresh(tmp_path)
+        write_bytes_and_stamp(dest, A)
+        assert stat.S_IMODE(dest.stamp_path.stat().st_mode) == 0o640, (
+            "a fixed 0644 stamp would ignore the caller's umask"
+        )
+    finally:
+        os.umask(old)

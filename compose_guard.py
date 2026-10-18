@@ -97,6 +97,11 @@ def read_stamp(dest: Destination) -> tuple[Optional[dict], Optional[str]]:
         return None, None
     except OSError as exc:
         return None, f"unreadable ({exc.strerror or exc})"
+    except UnicodeDecodeError as exc:
+        # ⚠ A NON-UTF-8 STAMP IS STATE E, NOT A TRACEBACK (#40 review 7, blocker 2). `read_text`
+        # raises before JSON is ever attempted, and the generic handler did not catch it, so a
+        # binary-garbage stamp crashed the tool instead of refusing with a reason.
+        return None, f"not UTF-8 ({exc.reason} at byte {exc.start})"
     try:
         stamp = json.loads(raw)
     except json.JSONDecodeError:
@@ -108,8 +113,13 @@ def read_stamp(dest: Destination) -> tuple[Optional[dict], Optional[str]]:
         return None, f"schema {schema!r} (this composer writes {STAMP_SCHEMA})"
     if stamp.get("dest") != str(dest.resolved):
         return None, f"dest field names {stamp.get('dest')!r}, not this destination"
+    # ⚠ VALIDATE EVERY FIELD THE MESSAGES READ (#40 review 7, blocker 2). The state-C message formats
+    # `stamp["bytes"]`, and a stamp with schema+sha256+dest but no `bytes` reached it as
+    # `KeyError: 'bytes'` -- a traceback instead of the typed refusal E exists to be.
     if not isinstance(stamp.get("sha256"), str) or len(stamp["sha256"]) != 64:
         return None, "sha256 field is missing or not a 64-character hex digest"
+    if not isinstance(stamp.get("bytes"), int) or isinstance(stamp.get("bytes"), bool):
+        return None, "bytes field is missing or not an integer"
     return stamp, None
 
 
@@ -156,6 +166,15 @@ def preflight(
     for d in dests:
         if d.is_symlink():
             raise Refusal(_symlink_message(d))
+        # ⚠ THE STAMP IS ALSO A DESTINATION (#40 review 7). It was being read through a symlink and
+        # then replaced, so the link's target survived while the link itself was swapped -- the same
+        # class H exists to refuse, on the file that certifies the write.
+        if d.stamp_path.is_symlink():
+            raise Refusal(
+                f"compose: REFUSING to write {d.stamp_path} -- it is a SYMLINK.\n"
+                f"  The stamp must be a real file beside its destination; a link can be repointed,\n"
+                f"  which would make the record of what was written describable by someone else."
+            )
         if reading:
             continue
         if not allow_outside_root and not _under(d.resolved, root):
@@ -213,10 +232,16 @@ class StampFailed(Exception):
     happened" cannot warn the user about the state that arm 34 requires.
     """
 
-    def __init__(self, dest: "Destination", cause: OSError):
+    def __init__(self, dest: "Destination", cause: OSError, state_after: str, why: str):
         super().__init__(str(cause))
         self.dest = dest
         self.cause = cause
+        # ⚠ THE POST-FAILURE STATE IS CLASSIFIED, NOT ASSERTED (#40 review 7, blocker 1). The message
+        # used to promise "the next run will classify it as state D" unconditionally -- but an
+        # unusable stamp left E, and a valid-but-stale one left C. `StampFailed` proves the
+        # DESTINATION changed; it proves nothing about the stamp.
+        self.state_after = state_after
+        self.why = why
 
 
 def write_bytes_and_stamp(dest: Destination, composed: bytes) -> None:
@@ -252,8 +277,10 @@ def write_bytes_and_stamp(dest: Destination, composed: bytes) -> None:
     try:
         write_stamp(dest, composed)
     except OSError as exc:
-        # The bytes are on disk and the stamp is not. Say it as a distinct fact.
-        raise StampFailed(dest, exc) from exc
+        # The bytes are on disk. What the NEXT run sees depends on the stamp, so classify it rather
+        # than predicting it.
+        state_after, why = _state_after_failure(dest, composed)
+        raise StampFailed(dest, exc, state_after, why) from exc
 
 
 def write_stamp(dest: Destination, composed: bytes) -> None:
@@ -272,7 +299,11 @@ def write_stamp(dest: Destination, composed: bytes) -> None:
         fh.write(body)
         fh.flush()
         os.fsync(fh.fileno())
-    os.chmod(tmp, 0o644 if not dest.stamp_path.exists() else stat.S_IMODE(os.stat(dest.stamp_path).st_mode))
+    # ⚠ THE STAMP GETS THE SAME MODE RULE AS THE DESTINATION (#40 review 7): an existing stamp keeps
+    # its exact mode, and a FRESH one comes from `O_CREAT` with 0o666 so the caller's umask applies.
+    # A fixed 0644 ignored the umask, which the design says twice.
+    if dest.stamp_path.exists():
+        os.chmod(tmp, stat.S_IMODE(os.stat(dest.stamp_path).st_mode))
     os.replace(tmp, dest.stamp_path)
 
 
@@ -312,3 +343,20 @@ def refusal_message(dest: Destination, state: str, stamp: Optional[dict], compos
             f"are lost."
         )
     return f"compose: {dest.resolved} is in state {state}"
+
+
+def _state_after_failure(dest: Destination, composed: bytes) -> tuple[str, str]:
+    """What the next invocation will actually see, after the bytes landed but the stamp did not."""
+    try:
+        state, _stamp = classify(dest, composed)
+    except Refusal:
+        return "H", "the destination is no longer writable (symlink)"
+    if state == "D":
+        return "D", "there is no usable stamp, so it takes a backup before rewriting"
+    if state == "C":
+        return "C", "an OLD valid stamp remains and no longer matches the new bytes, so it will REFUSE rather than rewrite"
+    if state == "E":
+        return "E", "the stamp present is unusable, so it will REFUSE until the stamp is inspected"
+    if state == "B":
+        return "B", "the stamp still matches, so it will rewrite"
+    return state, "the destination and stamp agree"
