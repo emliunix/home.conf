@@ -19,7 +19,7 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE  # the test lives beside the composer, not in a tests/ dir
 
 
-def _make_copy(tmp_path: Path, *, output: str, redirect_overlay: bool = True) -> Path:
+def _make_copy(tmp_path: Path, *, output: str, home: Path) -> Path:
     """A throwaway copy of the composer + manifest, with `output:` set explicitly."""
     d = tmp_path / "copy"
     d.mkdir()
@@ -32,10 +32,9 @@ def _make_copy(tmp_path: Path, *, output: str, redirect_overlay: bool = True) ->
         f"output: {output}" if line.startswith("output:") else line
         for line in text.splitlines()
     )
-    if redirect_overlay:
-        # the overlay snippets live outside the repo; point at the real ones (read-only use)
-        text = text.replace("  - ~/.agents-local/agents-snippets",
-                            f"  - {Path.home()}/.agents-local/agents-snippets")
+    # Point snippet_roots at the FIXTURE overlay inside the scratch HOME, never the host's.
+    text = text.replace("  - ~/.agents-local/agents-snippets",
+                        f"  - {home}/.agents-local/agents-snippets")
     manifest.write_text(text + "\n")
     return d
 
@@ -48,18 +47,51 @@ def run(cwd: Path, home: Path, *args: str):
     )
 
 
-def _have_overlay() -> bool:
-    return (Path.home() / ".agents-local" / "agents-snippets").is_dir()
+# ⚠ NO MODULE-LEVEL SKIP, AND NO HOST OVERLAY (#40 review 8). The suite used to skip 4 of 4 e2e arms
+# whenever `~/.agents-local/agents-snippets` was absent -- which is every CI run and every cold
+# checkout -- so the G->A, C/refusal, read-only `--check` and force->A paths vanished exactly where
+# they were needed. The overlay is FIVE FILES whose identities the manifest names; a fixture with
+# those names exercises the same composer paths without a host dependency.
+_OVERLAY_SNIPPETS = (
+    "registries-and-mirrors.md",
+    "containers.md",
+    "owned-resources.md",
+    "credentials.md",
+    "working-habits.md",
+)
 
 
-pytestmark = pytest.mark.skipif(not _have_overlay(), reason="the private overlay is absent")
+def _make_overlay(home: Path) -> Path:
+    """A minimal fixture overlay in the scratch HOME: the five filenames the manifest names."""
+    root = home / ".agents-local" / "agents-snippets"
+    root.mkdir(parents=True, exist_ok=True)
+    # ⚠ THE FRONTMATTER IS PART OF THE CONTRACT, not decoration: the composer refuses a snippet with
+    # no `id`/`title`, so a fixture body without them tests the refusal path instead of the state
+    # machine. Fixture bodies carry the same frontmatter shape as the real ones.
+    # The declared titles must MATCH THE MANIFEST: the composer cross-checks them and refuses a
+    # mismatch, so an invented title tests the refusal path rather than the state machine.
+    _TITLES = {
+        "registries-and-mirrors": "Registries and mirrors",
+        "containers": "Containers (podman + podman-compose)",
+        "owned-resources": "Owned resources",
+        "credentials": "Credentials",
+        "working-habits": "Working habits that have paid off here",
+    }
+    for name in _OVERLAY_SNIPPETS:
+        stem = name.removesuffix(".md")
+        (root / name).write_text(
+            f"---\nid: {stem}\ntitle: {_TITLES[stem]}\n---\n\n"
+            f"Fixture body for {stem}.\n"
+        )
+    return root
 
 
 # ── the state machine, through the CLI ────────────────────────────────────────────────────────
 def test_G_then_A_a_fresh_destination_is_protected_from_the_next_run(tmp_path):
     home = tmp_path / "home"
     home.mkdir()
-    d = _make_copy(tmp_path, output=str(home / "out" / "AGENTS.md"))
+    _make_overlay(home)
+    d = _make_copy(tmp_path, output=str(home / "out" / "AGENTS.md"), home=home)
     home.mkdir(exist_ok=True)
     (home / "out").mkdir(exist_ok=True)
     os.makedirs(home / "out", exist_ok=True)
@@ -79,7 +111,8 @@ def test_G_then_A_a_fresh_destination_is_protected_from_the_next_run(tmp_path):
 def test_C_a_hand_added_block_refuses_and_survives(tmp_path):
     home = tmp_path / "home"
     (home / "out").mkdir(parents=True)
-    d = _make_copy(tmp_path, output=str(home / "out" / "AGENTS.md"))
+    _make_overlay(home)
+    d = _make_copy(tmp_path, output=str(home / "out" / "AGENTS.md"), home=home)
     run(d, home, "--allow-outside-root")
 
     target = home / "out" / "AGENTS.md"
@@ -97,7 +130,8 @@ def test_C_a_hand_added_block_refuses_and_survives(tmp_path):
 def test_check_reports_states_without_writing(tmp_path):
     home = tmp_path / "home"
     (home / "out").mkdir(parents=True)
-    d = _make_copy(tmp_path, output=str(home / "out" / "AGENTS.md"))
+    _make_overlay(home)
+    d = _make_copy(tmp_path, output=str(home / "out" / "AGENTS.md"), home=home)
     run(d, home, "--allow-outside-root")
 
     target = home / "out" / "AGENTS.md"
@@ -123,7 +157,8 @@ def test_check_reports_states_without_writing(tmp_path):
 def test_force_then_a_second_run_is_A(tmp_path):
     home = tmp_path / "home"
     (home / "out").mkdir(parents=True)
-    d = _make_copy(tmp_path, output=str(home / "out" / "AGENTS.md"))
+    _make_overlay(home)
+    d = _make_copy(tmp_path, output=str(home / "out" / "AGENTS.md"), home=home)
     run(d, home, "--allow-outside-root")
     with open(home / "out" / "AGENTS.md", "ab") as fh:
         fh.write(b"\n## hand added\n")
