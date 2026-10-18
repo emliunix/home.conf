@@ -104,7 +104,10 @@ implementation.**
   keeps them unamended.**
 - **It does not backfill `partition` or `classification_basis`.** Those are #41's manifest fields and no
   entry carries them; populating them is a prospective capture-policy change, as @CowBoy ruled.
-- **It does not choose between the two options in §4.** That is an owner decision.
+- **It does not choose the dialect — because that decision has been MADE.** See §Status: `## Criteria`
+  is the single admitted form, ruled by @CowBoy on 2026-10-18. An earlier draft of this line said the
+  choice was still open; it was stale within an hour of being written, which is the same class of defect
+  as the rest of this file's subject.
 
 ---
 

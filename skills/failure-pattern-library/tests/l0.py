@@ -286,11 +286,24 @@ def entry_records(root: pathlib.Path) -> list[dict]:
     """
     out: list[dict] = []
     for d in sorted(p for p in root.iterdir() if p.is_dir()):
-        m = re.match(r"^(\d{4}-\d{2}-\d{2})", d.name)
+        # ⚠ A DIRECTORY MUST DECLARE ITSELF BY NAME (#45 review). `entry_records` used to put a no-date
+        # directory into NEITHER `post` nor `pre`, and `check_entries` only printed the aggregate
+        # `undated` count -- so a malformed or new entry in bold-label prose SILENTLY EVADED the one
+        # refusal this check adds. Measured before the fix: 2 undated entries, exit 0.
+        #
+        # The date prefix is the entry's own claim about which rule it is held to; an entry that does
+        # not make the claim cannot be checked, and cannot be skipped.
+        m = re.match(r"^(\d{4}-\d{2}-\d{2})-", d.name)
         dated = m.group(1) if m else None
         md = d / "metadata.md"
+        readme = d / "README.md"
+        if not md.is_file() and not readme.is_file():
+            # ⚠ AND AN EMPTY SUBDIRECTORY IS NOT AN ENTRY. Counting it made "one empty directory" look
+            # like a populated corpus, which defeats the empty-corpus refusal.
+            out.append({"name": d.name, "date": dated, "kind": "empty-directory"})
+            continue
         if not md.is_file():
-            out.append({"name": d.name, "date": dated, "kind": "readme-only" if (d / "README.md").is_file() else "no-metadata"})
+            out.append({"name": d.name, "date": dated, "kind": "readme-only"})
             continue
         text = md.read_text(encoding="utf-8")
         admitted = re.search(r"^##\s+Criteria\s*$", text, re.M) is not None
@@ -313,9 +326,26 @@ def check_entries(root: pathlib.Path) -> None:
     if not records:
         failures.append(f"--entries {root}: no entry directories -- refusing rather than passing vacuously")
         return
+    # ⚠ EVERY DIRECTORY IS CLASSIFIED, AND EVERY REFUSAL IS NAMED (#45 review). The previous version
+    # silently ignored `undated` and `empty-directory`, so both were ways past the gate.
+    undated = [r for r in records if r["date"] is None]
+    empty = [r for r in records if r["kind"] == "empty-directory"]
+    real = [r for r in records if r["kind"] != "empty-directory"]
+    if not real:
+        failures.append(
+            f"--entries {root}: {len(empty)} directory/ies but no entry -- refusing rather than "
+            "passing vacuously over an empty corpus"
+        )
+        return
+    for r in undated:
+        failures.append(
+            f"entry {r['name']}: directory name does not begin with a canonical YYYY-MM-DD- date, so "
+            "the entry cannot be held to either rule -- rename it to claim a date"
+        )
+    for r in empty:
+        failures.append(f"entry {r['name']}: carries neither metadata.md nor README.md -- not an entry")
     post = [r for r in records if r["date"] is not None and r["date"] >= TEMPLATE_INTRODUCED]
     pre = [r for r in records if r["date"] is not None and r["date"] < TEMPLATE_INTRODUCED]
-    undated = [r for r in records if r["date"] is None]
     bad = [r for r in post if r["kind"] != "admitted"]
     for r in bad:
         failures.append(
@@ -325,7 +355,8 @@ def check_entries(root: pathlib.Path) -> None:
     # Pre-template entries are REPORTED, never failed: they are evidence of age, not of a failure.
     print(
         f"l0 entries: {len(records)} total -- {len(post)} post-template, {len(pre)} pre-template "
-        f"(reported, never failed), {len(undated)} undated; {len(bad)} post-template without `## Criteria`"
+        f"(reported, never failed), {len(undated)} undated, {len(empty)} empty directory/ies; "
+        f"{len(bad)} post-template without `## Criteria`"
     )
 
 
