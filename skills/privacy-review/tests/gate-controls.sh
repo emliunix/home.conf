@@ -195,6 +195,23 @@ for bad_deny in '{"deny_terms":"X"}' '{"deny_terms":[""]}' '{"deny_terms":[1]}';
   git rm -q --cached zz-bd.txt 2>/dev/null; rm -f zz-bd.txt .privacy-scan.json
 done
 
+# ELEVENTH ARM — THE INSTALLED npm .bin SYMLINK (@CowBoy's P1).
+# ⚠ SOURCE-PATH TESTS CANNOT SEE THIS. An installed bin is a SYMLINK, so `dirname "$0"` is
+# `<pkg>/node_modules/.bin` and the packaged config is invisible from there -- the gate refused a good
+# install with "base config absent". This arm runs the gate THROUGH a real symlink and requires the owned
+# rule to fire.
+lnkroot=$(mktemp -d)
+mkdir -p "$lnkroot/pkg/skills/privacy-review/scripts" "$lnkroot/pkg/node_modules/.bin"
+cp "$G" "$lnkroot/pkg/skills/privacy-review/scripts/privacy_gate"
+cp "$SCRIPT_DIR/../gitleaks.toml" "$lnkroot/pkg/skills/privacy-review/gitleaks.toml"
+ln -sf ../../skills/privacy-review/scripts/privacy_gate "$lnkroot/pkg/node_modules/.bin/home-conf-privacy-scan"
+python3 -c 'print("host: buildcorp9" + "." + "internal")' > zz-sym.txt
+git add zz-sym.txt >/dev/null 2>&1
+sh "$lnkroot/pkg/node_modules/.bin/home-conf-privacy-scan" >/dev/null 2>&1; rc=$?
+[ "$rc" = 1 ] && ok "the installed .bin symlink resolves the packaged config" || bad "bin symlink exit $rc, want 1"
+git rm -q --cached zz-sym.txt 2>/dev/null; rm -f zz-sym.txt
+rm -rf "$lnkroot"
+
 # GREEN
 printf 'an ordinary line of prose\n' > ok.txt; rc=$(staged_exit)
 [ "$rc" = 0 ] && ok "clean change passes" || bad "clean change exit $rc"

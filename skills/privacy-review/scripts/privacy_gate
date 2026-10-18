@@ -27,7 +27,19 @@ cfg="$root/.privacy-scan.json"
 # NON-EMPTY STRING even when that file is absent, so the emptiness test chose a path that did not exist
 # and Gitleaks failed -- a CLEAN CONSUMER WAS FALSELY REFUSED, measured. The base rules ship with the
 # hook and are resolved from THIS SCRIPT's directory; a repository may add its own on top, merged.
-hook_dir=$(cd "$(dirname "$0")" && pwd)
+# ⚠ CANONICALIZE THROUGH SYMLINKS BEFORE DERIVING hook_dir (#50 review, measured). An installed npm
+# `.bin` is a SYMLINK to the script, so `dirname "$0"` is `<pkg>/node_modules/.bin` -- and the packaged
+# config looked for at `../gitleaks.toml` does not exist there. The gate then refused a perfectly good
+# install with "base config absent". Resolve the real script path first.
+_self=$0
+while [ -h "$_self" ]; do
+  _lnk=$(readlink "$_self")
+  case "$_lnk" in
+    /*) _self=$_lnk ;;
+    *)  _self=$(dirname "$_self")/$_lnk ;;
+  esac
+done
+hook_dir=$(cd "$(dirname "$_self")" && pwd)
 base="$hook_dir/../gitleaks.toml"
 # ⚠ A MISSING HOOK-OWNED CONFIG MUST NOT FALL BACK TO DEFAULTS (#50 review, measured). The old
 # `[ -f "$base" ] || base=""` silently ran Gitleaks' defaults, so EVERY home.conf-owned rule disappeared
