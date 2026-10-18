@@ -223,7 +223,15 @@ TEMPLATE_INTRODUCED_AT    2026-10-17T11:07:33Z (the template commit's author tim
 ```
 
 ⚠ **A directory name carries only a date, so a same-day entry cannot be classified from its name.** Two
-entries dated `2026-10-17` were written before the template existed, each provable from its own content:
+entries dated `2026-10-17` were written before the template existed, and each has a **stored creation
+announcement** that proves it:
+
+⚠ **Not their content, and the reason differs per entry** — a single "content says so" sentence was wrong
+for both: `window-bound` carries **zero** time-of-day tokens (nothing to bound with), while
+`status-names` carries `09:28Z–09:40Z` — **when the incident ran**, so the entry was written *at or after*
+09:40Z, a **lower** bound. The general rule covers both: **content and cited locators bound write time FROM BELOW, never from
+above.** Counterexample that makes it general: `2026-09-29-split-wrong-total-right`, Date
+`2026-09-29`, last written `2026-10-18` because a section was added.
 
 | entry | evidence — the message that ANNOUNCED its **creation** |
 |---|---|

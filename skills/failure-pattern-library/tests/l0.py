@@ -282,8 +282,20 @@ TEMPLATE_INTRODUCED_AT = "2026-10-17T11:07:33Z"
 # ⚠ SAME-DAY BOUNDARY EXCEPTIONS -- EXPLICIT, EVIDENCED, AND CLOSED (#45 rev 5).
 #
 # A directory name carries only a calendar date, so a same-day entry cannot be classified from its name.
-# These two were WRITTEN BEFORE the template existed and each says so in its own content. They are named
-# here rather than inferred, because every automatic route to their write time is unsound:
+# These two were WRITTEN BEFORE the template existed, and each has a STORED CREATION ANNOUNCEMENT that
+# proves it. ⚠ Their CONTENT does not establish that bound, and the reason differs per entry -- which is
+# why a single "content says so" sentence was wrong for both and would mislead a reader on one:
+#
+#   window-bound : content carries ZERO time-of-day tokens            -> nothing to bound with
+#   status-names : content carries 09:28Z-09:40Z, but that is when    -> a LOWER bound, wrong direction
+#                  the INCIDENT ran, so the entry was written AT OR
+#                  AFTER 09:40Z
+#
+# The general rule covers both without needing the distinction: **entry content AND CITED LOCATORS bound
+# write time FROM BELOW, never from above.** The counterexample that makes it general is `2026-09-29-split-wrong-total-
+# right` -- Date `2026-09-29`, last written `2026-10-18` because a section was added to it.
+#
+# They are named here rather than inferred, because every automatic route to their write time is unsound:
 #
 #   ⚠ NOT mtime. It is not owned by the corpus and changes under copies and checkouts. It is sound in
 #      ONE direction only: a last-write BEFORE the boundary proves the file predates it, and that is
