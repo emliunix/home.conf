@@ -59,9 +59,31 @@ if [ -f "$root/.gitleaks.toml" ]; then
   # `clean`, exit 0. Every merged config gets one `[extend] useDefault = true` appended AFTER the last
   # rule table, on every branch, including when there are no exclusions.
   merged=$(mktemp); cfgfile_created=1
-  [ -n "$base" ] && grep -v '^\[extend\]\|^useDefault\|^allowlists\]\|^paths = ' "$base" > "$merged"
-  grep -v '^\[extend\]\|^useDefault\|^allowlists\]\|^paths = ' "$root/.gitleaks.toml" \
-    | grep -v '^title = ' >> "$merged"
+  # ⚠ LINE-BY-LINE GREPPING CANNOT STRIP A MULTI-LINE TOML ARRAY (#50 review). The docs allowlist is a
+  # `paths = [` ... `]` block; dropping only the `paths = ` line left the array ELEMENTS orphaned and the
+  # merged config failed to parse ("expected character ="). Strip whole sections by structure instead.
+  strip_allowlists() {
+    python3 - "$1" <<'PY'
+import sys
+out, skip = [], False
+for line in open(sys.argv[1]):
+    k = line.strip()
+    if k.startswith("[[allowlists]]"):
+        skip = True
+        continue
+    if skip:
+        if k.startswith("[") or k.startswith("[["):
+            skip = False
+        else:
+            continue
+    if k.startswith("[extend]") or k.startswith("useDefault"):
+        continue
+    out.append(line)
+sys.stdout.write("".join(out))
+PY
+  }
+  [ -n "$base" ] && strip_allowlists "$base" > "$merged"
+  strip_allowlists "$root/.gitleaks.toml" >> "$merged"
   printf '\n[extend]\nuseDefault = true\n' >> "$merged"
   rules="$merged"
 fi

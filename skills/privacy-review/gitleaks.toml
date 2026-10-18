@@ -40,3 +40,16 @@ description = "a path that names a credential-bearing file"
 regex = '''(?i)(?:\.env(\.[a-z0-9]+)?|[^/"'\s]+\.(?:pem|p12|pfx|key)|id_(?:rsa|ed25519)|credentials\.json)'''
 [rules.allowlist]
 regexes = ['''\.env\.example''', '''\bexample\.(?:pem|key)''']
+
+# ⚠ THE SCANNER'S OWN DOCUMENTATION MUST STAY GREEN (#50 review, measured). Staging these two shipped
+# files as NEW content produced 49 findings -- the reference material is ABOUT sensitive paths, internal
+# hosts and key shapes, so every example in it matches. A normal documentation edit was impossible.
+#
+# The allowlist is the two EXACT PATHS, not a pattern: these are the package's own docs, and an exact list
+# cannot silently widen the way a `skills/.*` glob would.
+[[allowlists]]
+description = "the privacy scanner's own shipped documentation"
+paths = [
+  '''^skills/privacy-review/SKILL\.md$''',
+  '''^skills/privacy-review/references/patterns\.md$''',
+]

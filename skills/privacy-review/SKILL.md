@@ -1,6 +1,6 @@
 ---
 name: privacy-review
-description: Automated privacy review for git repositories. Scans for sensitive data exposure including API keys, passwords, database credentials, and tokens. Use before pushing to public repositories or sharing code. Trigger by running 'python privacy_scan.py' on a git repository.
+description: Automated privacy review for git repositories. Scans for sensitive data exposure including API keys, passwords, database credentials, and tokens. Use before pushing to public repositories or sharing code. Trigger by running the packaged gate, `privacy_gate`, which is also the pre-commit hook.
 ---
 
 # Privacy Review
@@ -41,13 +41,13 @@ Checks if local `.env` exists with real credentials (not committed).
 
 ```bash
 # Scan current directory
-python privacy_scan.py
+home-conf-privacy-scan
 
 # Scan specific repository
-python privacy_scan.py --repo-path /path/to/repo
+home-conf-privacy-scan
 
 # Quiet mode (show only issues)
-python privacy_scan.py --quiet
+home-conf-privacy-scan --quiet
 ```
 
 ## Report Format
@@ -197,7 +197,7 @@ Add to GitHub Actions:
 ```yaml
 - name: Privacy Scan
   run: |
-    python -m privacy_scan.scripts.privacy_scan --quiet
+    home-conf-privacy-scan --quiet
 ```
 
 ### Custom Patterns

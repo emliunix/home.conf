@@ -212,6 +212,59 @@ sh "$lnkroot/pkg/node_modules/.bin/home-conf-privacy-scan" >/dev/null 2>&1; rc=$
 git rm -q --cached zz-sym.txt 2>/dev/null; rm -f zz-sym.txt
 rm -rf "$lnkroot"
 
+# TWELFTH ARM — the four controls @CowBoy requires as CONTROLS (he measured them; they were not seeded).
+# Each red arm also asserts the staged file's bytes AND the index tree are unchanged: a gate that
+# "catches" a secret by rewriting the file would pass every other arm here.
+
+filehash() { shasum -a 256 "$1" 2>/dev/null | cut -d' ' -f1; }
+indexhash() { git write-tree; }
+
+# (a) generated private-key block, with exact-value redaction
+# ⚠ THE FIXTURE IS BUILT AT RUNTIME AND *EVERY* PART IS ASSEMBLED -- the extension, the header, the
+# footer. Writing any of them literally means the gate matches the CONTROL and refuses to commit its own
+# test, which it did three times: a sensitive-file-path hit on the extension, then a private-key hit on
+# the header itself, then a hit on the COMMENT explaining the first two. A control whose text trips the
+# rule it tests cannot be committed -- so describe the class, never quote the sample.
+pkfile="zz-pk.$(printf 'p')em"
+python3 -c '
+import base64, os, sys
+h = "-----BEGIN " + "RSA PRIVATE " + "KEY-----"
+f = "-----END " + "RSA PRIVATE " + "KEY-----"
+b = base64.b64encode(os.urandom(600)).decode()
+print(h)
+print("\n".join(b[i:i+64] for i in range(0, len(b), 64)))
+print(f)
+' > "$pkfile"
+body=$(sed -n '2p' "$pkfile")
+git add "$pkfile" >/dev/null 2>&1
+before=$(filehash "$pkfile"); ibefore=$(indexhash)
+out=$(sh "$G" 2>&1); rc=$?
+after=$(filehash "$pkfile"); iafter=$(indexhash)
+[ "$rc" = 1 ] && ok "generated private-key block refused" || bad "private-key exit $rc, want 1"
+printf '%s' "$out" | grep -qF -- "$body" && bad "OUTPUT LEAKED THE KEY BODY" || ok "key body absent from output"
+[ "$before" = "$after" ] && ok "staged file bytes unchanged after a red arm" || bad "gate MODIFIED the staged file"
+[ "$ibefore" = "$iafter" ] && ok "index tree unchanged after a red arm" || bad "gate MODIFIED the index"
+git rm -q --cached "$pkfile" 2>/dev/null; rm -f "$pkfile"
+
+# (b) the shipped scanner documentation is GREEN by exact path
+# ⚠ AS NEW CONTENT, which is the case that failed: staging the whole file fresh produced 49 findings,
+# because the reference material is ABOUT sensitive paths and hosts. An EDIT did not reproduce it.
+mkdir -p skills/privacy-review/references
+cp "$SCRIPT_DIR/../SKILL.md" skills/privacy-review/SKILL.md
+cp "$SCRIPT_DIR/../references/patterns.md" skills/privacy-review/references/patterns.md
+git add -f skills/privacy-review/SKILL.md skills/privacy-review/references/patterns.md >/dev/null 2>&1
+out=$(sh "$G" 2>&1); rc=$?
+[ "$rc" = 0 ] && ok "the shipped scanner docs are green by exact path" || bad "scanner docs exit $rc, want 0"
+git rm -q --cached skills/privacy-review/SKILL.md skills/privacy-review/references/patterns.md 2>/dev/null
+rm -rf skills
+
+# (c) binary content is GREEN
+printf '\x00\x01\x02\x03binary\x00' > zz-bin.dat
+git add zz-bin.dat >/dev/null 2>&1
+sh "$G" >/dev/null 2>&1; rc=$?
+[ "$rc" = 0 ] && ok "binary content is green" || bad "binary exit $rc, want 0"
+git rm -q --cached zz-bin.dat 2>/dev/null; rm -f zz-bin.dat
+
 # GREEN
 printf 'an ordinary line of prose\n' > ok.txt; rc=$(staged_exit)
 [ "$rc" = 0 ] && ok "clean change passes" || bad "clean change exit $rc"
