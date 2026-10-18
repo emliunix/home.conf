@@ -27,15 +27,30 @@ rules="$root/.gitleaks.toml"
 excl=""
 nexcl=0
 if [ -f "$cfg" ]; then
-  # ⚠ PATHS ONLY. A rule-wide exclusion disables a detector everywhere; that is how a gate is defeated.
-  if grep -q '"rule' "$cfg" 2>/dev/null; then
-    echo "privacy-gate: .privacy-scan.json must exclude PATHS, not rules" >&2; exit 4; fi
-  excl=$(python3 -c 'import json,sys
-try: d=json.load(open(sys.argv[1]))
-except Exception: sys.exit(4)
-print(" ".join(d.get("exclude_paths",[])))' "$cfg") || {
-    echo "privacy-gate: .privacy-scan.json is not valid JSON -- refusing" >&2; exit 4; }
-  if [ -n "$excl" ]; then nexcl=$(printf '%s\n' $excl | wc -l | tr -d ' '); else nexcl=0; fi
+  # ⚠ PATHS ONLY, AND VALIDATED, NOT SUBSTRING-CHECKED (#50 review). The first version only looked for
+  # the substring `"rule"` and trusted every value. Measured: `{"exclude_paths":[".*"]}` made a staged
+  # token exit **0** — a catch-all exclusion that silently defeated detection, and `.` / `*` split on
+  # shell whitespace into four phantom entries. An exclusion is a statement about ONE file a repository
+  # has decided is a fixture; anything pattern-shaped is a rule, whatever its id.
+  excl=$(python3 - "$cfg" <<'PY' || { echo "privacy-gate: .privacy-scan.json is invalid -- refusing" >&2; exit 4; }
+import json, sys
+try:
+    d = json.load(open(sys.argv[1]))
+except Exception:
+    sys.exit(1)
+paths = d.get("exclude_paths", [])
+if not isinstance(paths, list) or any(not isinstance(p, str) for p in paths):
+    sys.exit(1)
+BANNED = ("*", "?", "[", "]", "(", ")", "{", "}", "|", "^", "$", "+", "\\")
+for p in paths:
+    s = p.strip()
+    if (not s or s in (".", "..", "/") or "rule" in s.lower()
+            or any(ch in s for ch in BANNED) or s.startswith("**")):
+        sys.exit(1)
+print("\n".join(x.strip() for x in paths))
+PY
+) || exit 4
+  if [ -n "$excl" ]; then nexcl=$(printf '%s\n' "$excl" | wc -l | tr -d ' '); else nexcl=0; fi
 fi
 
 # (2)+(3) THE POPULATION, counted here because Gitleaks counts commits.
@@ -44,13 +59,21 @@ if [ -z "$staged" ]; then
   echo "privacy-gate: no staged files -- nothing was scanned (not a pass)" >&2; exit 3; fi
 
 scanned=0; skipped=0
-for f in $staged; do
+# ⚠ EXACT LINE MATCH, NOT WORD SPLITTING. `for e in $excl` splits on whitespace, which turned one
+# pattern-shaped entry into four phantom ones; and a pipeline would put the counters in a subshell.
+while IFS= read -r f; do
+  [ -n "$f" ] || continue
   hit=0
-  for e in $excl; do
-    case "$f" in "$e"|"$e"/*) hit=1 ;; esac
-  done
-  [ "$hit" = 1 ] && skipped=$((skipped+1)) || scanned=$((scanned+1))
-done
+  while IFS= read -r e; do
+    [ -n "$e" ] || continue
+    case "$f" in "$e"|"$e"/*) hit=1; break ;; esac
+  done <<EOF
+$excl
+EOF
+  if [ "$hit" = 1 ]; then skipped=$((skipped+1)); else scanned=$((scanned+1)); fi
+done <<EOF
+$staged
+EOF
 echo "privacy-gate: staged=$((scanned+skipped)) scanned=$scanned excluded=$skipped exclusions_loaded=$nexcl" >&2
 
 if [ "$scanned" = 0 ]; then
@@ -60,16 +83,35 @@ if [ "$scanned" = 0 ]; then
 # arithmetic but handed Gitleaks the whole staged set, so an excluded file still reddened the gate --
 # measured: `scanned=1 excluded=2` alongside "REFUSED", because real.txt was in the list and Gitleaks
 # saw it anyway. The excluded paths are written into the gitleaks config as allowlist paths.
-if [ -f "$rules" ]; then cfgfile="$rules"; else cfgfile="$root/.gitleaks.toml"; fi
-if [ -z "$excl" ]; then
-  [ -f "$cfgfile" ] || cfgfile=""
-elif [ -f "$cfgfile" ]; then
-  cfgfile=$(mktemp); cp "$root/.gitleaks.toml" "$cfgfile" 2>/dev/null || :
-  printf '
-[[allowlists]]\npaths = [%s]\n' "$(printf '%s\n' $excl | sed 's|.*|"&"|' | paste -sd, -)" >> "$cfgfile"
+# ⚠ ANY `--config` REPLACES THE DEFAULT RULESET (#50 review, measured). An allowlist-only config made
+# `leaks found: 2` become exit **0** -- the exclusion silently disabled every default rule, which is the
+# vacuous pass again in a new place. So: pass no config at all when there are no exclusions, and when
+# there are, EXTEND the defaults rather than replace them.
+# ⚠ PRECEDENCE, AND WHY EVERY BRANCH EXTENDS. Any `--config` replaces the default ruleset, so a config
+# that does not extend disables every maintained rule. Measured: an allowlist-only file turned
+# `leaks found: 2` into exit 0. So:
+#   - no repo rules, no exclusions -> no config at all (pure defaults)
+#   - repo rules, no exclusions    -> the repo config as written (it carries [extend] itself)
+#   - exclusions present           -> repo config (or a stub) PLUS an [extend] and the allowlist,
+#                                     emitted in that order so TOML does not absorb them into the last rule
+allowlist=""
+if [ -n "$excl" ]; then
+  allowlist=$(printf '%s\n' "$excl" | sed 's|.*|"^&(/.*)?$"|' | paste -sd, -)
+fi
+
+if [ -z "$allowlist" ] && [ -z "$rules" ]; then
+  cfgfile=""
+elif [ -z "$allowlist" ]; then
+  cfgfile="$rules"
 else
   cfgfile=$(mktemp)
-  printf '[[allowlists]]\npaths = [%s]\n' "$(printf '%s\n' $excl | sed 's|.*|"&"|' | paste -sd, -)" > "$cfgfile"
+  if [ -f "$rules" ]; then
+    # keep the repo's rules, drop nothing, then re-open a section for extend+allowlist
+    grep -v '^\[extend\]' "$rules" | grep -v '^useDefault' > "$cfgfile"
+  else
+    echo 'title = "home-conf privacy"' > "$cfgfile"
+  fi
+  printf '\n[extend]\nuseDefault = true\n\n[[allowlists]]\npaths = [%s]\n' "$allowlist" >> "$cfgfile"
 fi
 
 # ⚠ THE PINNED BINARY, NOT PATH (#50, @CowBoy). `gitleaks` on PATH is an ambient dependency: it can be

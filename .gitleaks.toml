@@ -1,0 +1,31 @@
+# home.conf's own privacy rules. Gitleaks covers the GENERAL credential forms; these cover the classes no
+# default engine ships (@GameBoy's blob measurement: 1 PEM, 4 internal URLs, 0 absolute home paths).
+#
+# ⚠ [extend] useDefault IS LOAD-BEARING. Any --config REPLACES the default ruleset, and an allowlist-only
+# config was measured to turn "leaks found: 2" into exit 0 -- the exclusion silently disabled detection.
+# Extending keeps the maintained rules and adds ours on top.
+title = "home.conf privacy rules"
+[extend]
+useDefault = true
+
+[[rules]]
+id = "internal-host"
+description = "internal hostname that must not appear in a public repository"
+regex = '''\b[a-z0-9-]+\.(?:internal|local|corp|lan)\b'''
+[rules.allowlist]
+regexes = ['''example\.(?:internal|local|corp)''', '''\bFAKE[a-z]*\.internal''']
+
+[[rules]]
+id = "absolute-user-path"
+description = "absolute home-directory path identifying a person or machine"
+regex = '''(?:/Users/|/home/)[A-Za-z][A-Za-z0-9._-]+'''
+[rules.allowlist]
+# `/Users/` alone is not identifying; a literal placeholder or the generic word is.
+regexes = ['''(?:/Users/|/home/)(?:your[_-]?user|<user>|USER|username|example)''']
+
+[[rules]]
+id = "sensitive-file-path"
+description = "a path that names a credential-bearing file"
+regex = '''(?i)(?:\.env(\.[a-z0-9]+)?|[^/"'\s]+\.(?:pem|p12|pfx|key)|id_(?:rsa|ed25519)|credentials\.json)'''
+[rules.allowlist]
+regexes = ['''\.env\.example''', '''\bexample\.(?:pem|key)''']
