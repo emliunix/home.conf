@@ -274,7 +274,36 @@ def check_manifest_split() -> None:
 #
 # Before this date the admitted form did not exist, so an entry lacking it is EVIDENCE OF AGE, not of a
 # capture-policy failure. The check counts those and never fails them.
+# The template commit's author time is the real boundary; the calendar date is the classification unit
+# because it is the ENTRY's own datum and the only one a directory name carries.
 TEMPLATE_INTRODUCED = "2026-10-17"
+TEMPLATE_INTRODUCED_AT = "2026-10-17T11:07:33Z"
+
+# ⚠ SAME-DAY BOUNDARY EXCEPTIONS -- EXPLICIT, EVIDENCED, AND CLOSED (#45 rev 5).
+#
+# A directory name carries only a calendar date, so a same-day entry cannot be classified from its name.
+# These two were WRITTEN BEFORE the template existed and each says so in its own content. They are named
+# here rather than inferred, because every automatic route to their write time is unsound:
+#
+#   ⚠ NOT mtime. It is not owned by the corpus and changes under copies and checkouts. It is sound in
+#      ONE direction only: a last-write BEFORE the boundary proves the file predates it, and that is
+#      what admitted these two. A last-write AFTER proves NOTHING -- an edit and a late creation look
+#      identical. Measured: 8 pre-template entries have late mtimes, and one (`2026-09-29-split-wrong-
+#      total-right`, mtime 2026-10-18 12:17) is late because an `## Instance 2` section was added to it
+#      today. So mtime could have admitted these two and could NOT have excluded the 8.
+#
+#   ⚠ NOT the entry's own time tokens. Three of the four same-day entries carry no parseable write time,
+#      and one of them cites three message ids that would need a LIVE `raft message read` -- turning a
+#      corpus-only validator into one with a network dependency.
+#
+# ⚠ THIS LIST IS CLOSED. A same-day entry NOT named here is post-template and fails. Adding a name
+# requires new evidence of the same kind, in this comment, not a looser predicate.
+SAME_DAY_PRE_TEMPLATE = {
+    "2026-10-17-status-names-its-object-not-its-content":
+        "own Date line: 09:28Z to 09:40Z (published to replaced), before 11:07:33Z",
+    "2026-10-17-window-bound-read-as-absence":
+        "cited 223e4fba, 7350d082, 0c79bb54 resolve at 10:01-10:02Z, before 11:07:33Z",
+}
 TEMPLATE_INTRODUCED_COMMIT = "2541656309f8a03d0be0aa4176149252f60647e2"
 
 
@@ -365,7 +394,17 @@ def check_entries(root: pathlib.Path) -> None:
         )
     for r in empty:
         failures.append(f"entry {r['name']}: carries neither metadata.md nor README.md -- not an entry")
-    post = [r for r in records if r["date"] is not None and r["date"] >= TEMPLATE_INTRODUCED]
+    # ⚠ A STALE LIST ENTRY IS SILENTLY CORRECT, SO NO CHECK IS WRITTEN FOR IT (#45 rev 5).
+    # I first wrote a "the exception list is stale" failure and could not make it fire: a listed name
+    # whose date moved off the boundary is simply NOT in `boundary`, so the list clause never sees it,
+    # and the entry is then judged normally -- as a post-template entry it must pass like any other, and
+    # as an unadmitted one it fails by name. Both outcomes are already right.
+    # The dead check was removed rather than kept with a seed invented to reach it.
+    boundary = [r for r in records
+                if r["name"] in SAME_DAY_PRE_TEMPLATE and r["date"] == TEMPLATE_INTRODUCED]
+    post = [r for r in records
+            if r["date"] is not None and r["date"] >= TEMPLATE_INTRODUCED
+            and r["name"] not in SAME_DAY_PRE_TEMPLATE]
     pre = [r for r in records if r["date"] is not None and r["date"] < TEMPLATE_INTRODUCED]
     bad = [r for r in post if r["kind"] != "admitted"]
     for r in bad:
@@ -376,7 +415,8 @@ def check_entries(root: pathlib.Path) -> None:
     # Pre-template entries are REPORTED, never failed: they are evidence of age, not of a failure.
     print(
         f"l0 entries: {len(records)} total -- {len(post)} post-template, {len(pre)} pre-template "
-        f"(reported, never failed), {len(undated)} undated, {len(invalid)} invalid-date, "
+        f"(reported, never failed), {len(boundary)} same-day pre-template exception(s), "
+        f"{len(undated)} undated, {len(invalid)} invalid-date, "
         f"{len(empty)} empty directory/ies; "
         f"{len(bad)} post-template without `## Criteria`"
     )

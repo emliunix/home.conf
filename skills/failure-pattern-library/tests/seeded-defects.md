@@ -214,3 +214,53 @@ l0 entries: 120 total -- 13 post-template, 107 pre-template (reported, never fai
             0 undated, 0 invalid-date, 0 empty directory/ies;
             4 post-template without \`## Criteria\`      ->  exit 1
 ```
+
+### Same-day boundary (`#45` rev 5)
+
+```text
+TEMPLATE_INTRODUCED       2026-10-17          (date -- the entry's own datum, from its directory name)
+TEMPLATE_INTRODUCED_AT    2026-10-17T11:07:33Z (the template commit's author time)
+```
+
+⚠ **A directory name carries only a date, so a same-day entry cannot be classified from its name.** Two
+entries dated `2026-10-17` were written before the template existed, each provable from its own content:
+
+| entry | evidence |
+|---|---|
+| `status-names-its-object-not-its-content` | own `Date:` line — `09:28Z to 09:40Z` |
+| `window-bound-read-as-absence` | cited `223e4fba`, `7350d082`, `0c79bb54` resolve at `10:01–10:02Z` |
+
+**Baseline** `l0.py` = `0ea75c008dd533da`
+
+| # | clause | fixture | observed | exit |
+|---|---|---|---|---|
+| **36** | a listed same-day exception passes | `2026-10-17-status-names-…` in bold-label prose | `OK`; counter reads "1 same-day pre-template exception(s)" | **0** |
+| **37** | an UNLISTED same-day entry still fails | `2026-10-17-unlisted-entry` | `entry 2026-10-17-unlisted-entry: dated 2026-10-17 (on/after …) but has no admitted \`## Criteria\` block` | **1** |
+| **38** | an earlier pre-template entry passes | `2026-09-01-old-entry` | `OK`; counted as excluded by age | **0** |
+
+**36 and 37 are the pair that matters**: the exception list is *closed*, so the same date passes one
+entry and fails another **only because of the name**, which is what the list is for.
+
+**Real corpus, the expected evidence:**
+```text
+l0 entries: 120 total -- 11 post-template, 107 pre-template (reported, never failed),
+            2 same-day pre-template exception(s), 0 undated, 0 invalid-date, 0 empty;
+            2 post-template without \`## Criteria\`      ->  exit 1
+```
+**11 / 107 / 2**, not 13 / 107: the two exceptions moved out of the failing population, and #46's target
+list is the two that remain.
+
+⚠ **ON mtime, so the next reader does not reach for it.** It is sound in ONE direction only:
+```text
+FORWARD  last-write BEFORE the boundary  =>  PROVES the file predates it            sound
+REVERSE  last-write AFTER  the boundary  =>  touched after; edit or late creation?  silent
+```
+Measured: 8 pre-template entries have late mtimes and **none** of them is evidence — `2026-09-29-split-
+wrong-total-right` is late (`2026-10-18 12:17`) because an `## Instance 2` section was added to it
+today. mtime could have admitted the two exceptions and could not have excluded those 8, and it is not
+owned by the corpus, so the validator does not use it.
+
+⚠ **A check I wrote and removed:** "the exception list is stale". It could not be made to fire — a listed
+name whose date moved off the boundary is simply not in `boundary`, and the entry is then judged
+normally with the correct outcome either way. **Removed rather than kept with a seed invented to reach
+it.**
