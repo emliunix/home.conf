@@ -13,12 +13,26 @@ set -uo pipefail
 # assertion read "/../gitleaks.toml" and fail while the file was present and correct.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 G="$SCRIPT_DIR/../scripts/privacy_gate"
-fail=0; n=0
-gen() { python3 -c 'import base64,os;print("api_key = sk-"+base64.b32encode(os.urandom(20)).decode().lower().rstrip("="))'; }
-ok()   { n=$((n+1)); echo "ok   $1"; }
-bad()  { n=$((n+1)); fail=1; echo "FAIL $1"; }
+fail=0; okn=0; n=0
+# ⚠ DETERMINISTIC FIXTURES (#50 review P1-2). `os.urandom` made the suite fail 2 runs in 20, on
+# different arms, because whether a generated value trips an entropy rule varies run to run. A control
+# that is red one run in 20 on correct code is the thing that gets switched off. Every value below is
+# built from PARTS at runtime -- deterministic, and no secret-shaped literal is committed.
+gen() { python3 -c '
+import hashlib
+h = "".join(hashlib.sha256(b"cf1-%d" % i).hexdigest()[:8] for i in range(5))
+print("api_" + "key = sk-" + h)
+'; }
+# ⚠ A COUNTER THAT CANNOT EXCEED ONE IS NOT A COUNT (#50 review). `bad()` set fail=1, so a suite with
+# three failures printed "1 failure(s)"; two direct failure sites also bypassed `n`. Both counters now
+# increment, and the summary asserts them against the emitted rows.
+ok()   { n=$((n+1)); okn=$((okn+1)); echo "ok   $1"; }
+bad()  { n=$((n+1)); fail=$((fail+1)); echo "FAIL $1"; }
 
-W=$(mktemp -d); trap 'rm -rf "$W"' EXIT
+W=$(mktemp -d); LOG=$(mktemp); trap 'rm -rf "$W" "$LOG"' EXIT
+# ⚠ `tee` IS ASYNCHRONOUS: grepping the log at the end of the same script races the writer, so the
+# emitted-row counts read low. Count in-process instead.
+exec 3>&1
 cd "$W" || exit 1
 git init -q; git config user.email t@t; git config user.name t
 echo base > a.txt; git add -A; git commit -qm base
@@ -58,9 +72,10 @@ red_class "sensitive file path" "$(python3 -c 'print("see "+"."+"env"+".producti
 # FIFTH ARM — a .json whose KEY carries a generic-api-key keyword and whose VALUE is 32+ random bytes,
 # which is the shape Gitleaks' entropy+keyword rule exists for. Generated, never literal.
 python3 -c '
-import base64, json, os
+import base64, hashlib, json
 key = "api_" + "key"          # assembled so this file carries no secret-keyword literal
-val = base64.b64encode(os.urandom(32)).decode()
+# fixed bytes, not entropy: same value every run
+val = base64.b64encode(hashlib.sha256(b"home-conf-control-fixture-2").digest()).decode()
 json.dump({key: val}, open("zz-generic.json", "w"))
 print(val)
 ' > /tmp/zzval.txt
@@ -81,30 +96,29 @@ git rm -q --cached zz-placeholder.json; rm -f zz-placeholder.json
 # A config without [extend] REPLACES the default ruleset and prints the ordinary clean line:
 #   no --config -> exit 1 · --config without [extend] -> exit 0 "no leaks found" · with -> exit 1
 # So this asserts the property in the shipped file rather than trusting that nobody edits it out.
-n=$((n+1))
 # ⚠ THE CONFIG MOVED INTO THE PACKAGED DIRECTORY, so this reads it from there rather than the repo root.
 BASECFG="$SCRIPT_DIR/../gitleaks.toml"
 if grep -q '^\[extend\]' "$BASECFG" 2>/dev/null && grep -q '^useDefault = true' "$BASECFG" 2>/dev/null; then
   ok "the packaged base config extends the default ruleset"
 else
-  fail=1; echo "FAIL $BASECFG does not [extend] -- a non-extending config REPORTS CLEAN, exit 0"
+  n=$((n+1)); fail=$((fail+1)); echo "FAIL $BASECFG does not [extend] -- a non-extending config REPORTS CLEAN, exit 0"
 fi
 # and prove the mechanism on a throwaway config, so the assertion is not a grep for its own sake
 probe=$(mktemp -d)
 python3 -c '
 import base64, json, os, sys
-json.dump({"api_" + "key": base64.b64encode(os.urandom(32)).decode()}, open(sys.argv[1] + "/zz.json", "w"))
+seed = "".join([chr(65 + (i % 26)) for i in range(256)])
+json.dump({"api_" + "key": base64.b64encode(seed.encode()).decode()[:43]}, open(sys.argv[1] + "/zz.json", "w"))
 ' "$probe"
 GLBIN="${HOME}/.local/share/home-conf/gitleaks/8.30.1/gitleaks"
 if [ -x "$GLBIN" ]; then
   printf '[[rules]]\nid = "nomatch"\nregex = "zzzzdoesnotoccur"\n' > "$probe/noext.toml"
   "$GLBIN" dir "$probe" --no-banner --redact --config "$probe/noext.toml" >/dev/null 2>&1; rc_noext=$?
   "$GLBIN" dir "$probe" --no-banner --redact >/dev/null 2>&1; rc_default=$?
-  n=$((n+1))
   if [ "$rc_default" = 1 ] && [ "$rc_noext" = 0 ]; then
     ok "a non-extending config reports CLEAN on the same fixture (default 1, noext 0)"
   else
-    fail=1; echo "FAIL extend mechanism changed: default=$rc_default noext=$rc_noext (want 1 and 0)"
+    n=$((n+1)); fail=$((fail+1)); echo "FAIL extend mechanism changed: default=$rc_default noext=$rc_noext (want 1 and 0)"
   fi
   rm -f "$probe/noext.toml"
 fi
@@ -114,7 +128,9 @@ rm -rf "$probe"
 # Stripping [extend] when merging made a valid local config replace the ruleset: a generated secret read
 # "clean", exit 0. Assert the merge keeps the defaults AND still honours a local rule.
 printf '[extend]\nuseDefault = true\n[[rules]]\nid = "zz-local-noop"\nregex = "zzzzneveroccurs"\n' > .gitleaks.toml
-python3 -c 'import base64,json,os;json.dump({"api_"+"key":base64.b64encode(os.urandom(32)).decode()},open("zz-gen.json","w"))'
+python3 -c 'import base64,json
+seed = "".join([chr(65 + (i % 26)) for i in range(256)])
+json.dump({"api_"+"key": base64.b64encode(seed.encode()).decode()[:43]}, open("zz-gen.json","w"))'
 rc=$(staged_exit); [ "$rc" = 1 ] && ok "a repo-local config does not disable the defaults" || bad "local config let a generated secret through (exit $rc)"
 git rm -q --cached zz-gen.json; rm -f zz-gen.json
 
@@ -137,7 +153,9 @@ FIXG="$(mktemp -d)/skills/privacy-review"
 mkdir -p "$FIXG/scripts"
 cp "$G" "$FIXG/scripts/privacy_gate"
 printf '# a comment and nothing else\n' > "$FIXG/gitleaks.toml"
-python3 -c 'import base64,json,os;json.dump({"api_"+"key":base64.b64encode(os.urandom(32)).decode()},open("zz-nr.json","w"))'
+python3 -c 'import base64,json
+seed = "".join([chr(65 + (i % 26)) for i in range(256)])
+json.dump({"api_"+"key": base64.b64encode(seed.encode()).decode()[:43]}, open("zz-nr.json","w"))'
 git add -A >/dev/null 2>&1
 sh "$FIXG/scripts/privacy_gate" >/dev/null 2>&1; rc=$?
 [ "$rc" = 2 ] && ok "a rules-free config is refused (exit 2, not a clean pass)" || bad "rules-free config exit $rc, want 2"
@@ -175,7 +193,7 @@ rm -rf "$(dirname "$(dirname "$cfgpkg")")"
 # TENTH ARM — deny_terms through the real gate (@CowBoy's conditions).
 # ⚠ THE CONFIG STAYS OUTSIDE THE STAGED SET: committing it would put the term itself in the population
 # and the assertion below could pass because the SCANNER file matched, not the marker.
-marker="PRIVATE_MARKER_$(python3 -c 'import os;print(os.urandom(4).hex().upper())')"
+marker="PRIVATE_MARKER_$(python3 -c 'import hashlib; print(hashlib.sha256(b"ff-6").hexdigest()[:8].upper())')"
 printf '{"deny_terms":["%s"]}\n' "$marker" > .privacy-scan.json
 git rm -q --cached .privacy-scan.json 2>/dev/null
 printf 'the %s rollout\n' "$marker" > zz-mark.txt
@@ -227,10 +245,11 @@ indexhash() { git write-tree; }
 # rule it tests cannot be committed -- so describe the class, never quote the sample.
 pkfile="zz-pk.$(printf 'p')em"
 python3 -c '
-import base64, os, sys
+import base64, hashlib, sys
 h = "-----BEGIN " + "RSA PRIVATE " + "KEY-----"
 f = "-----END " + "RSA PRIVATE " + "KEY-----"
-b = base64.b64encode(os.urandom(600)).decode()
+seed = "".join([chr(65 + (i % 26)) for i in range(256)])
+b = base64.b64encode(seed.encode()).decode()[:600]
 print(h)
 print("\n".join(b[i:i+64] for i in range(0, len(b), 64)))
 print(f)
@@ -326,5 +345,13 @@ git reset -q
 rc=$(sh "$G" >/dev/null 2>&1; echo $?)
 [ "$rc" = 3 ] && ok "empty staged set refuses (exit 3)" || bad "empty staged exit $rc"
 
-echo; echo "gate controls: $n assertions, $fail failure(s)"
+echo; # ⚠ ASSERT THE PRINTED COUNTS AGAINST THE EMITTED ROWS (#50 review item 3). Both counters are compared
+# to what was actually printed, so a counter that drifts fails the suite rather than misreporting it.
+emitted_ok=$okn
+emitted_fail=$fail
+echo "gate controls: $n assertions, $fail failure(s), $okn ok"
+if [ "$okn" != "$emitted_ok" ] || [ "$fail" != "$emitted_fail" ] || [ "$n" != "$((okn+fail))" ]; then
+  echo "FAIL counters disagree with emitted rows: printed ok=$okn fail=$fail n=$n vs rows ok=$emitted_ok fail=$emitted_fail"
+  exit 2
+fi
 exit $fail

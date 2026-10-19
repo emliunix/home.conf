@@ -53,3 +53,15 @@ paths = [
   '''^skills/privacy-review/SKILL\.md$''',
   '''^skills/privacy-review/references/patterns\.md$''',
 ]
+
+# ⚠ THE DEFAULT RULESET MISSES BASE64 VALUES CONTAINING `+` OR `/` (#50 review, measured).
+# Through the real gate: a JSON api_key whose base64 body starts with `/` was missed 3/3, one starting
+# with `+` missed 3/3, while `A` and `7` were caught 3/3. Gitleaks' built-in entropy rule admits
+# `[A-Za-z0-9]` in the leading position only, so a value beginning with either separator is invisible --
+# and `/` and `+` are ordinary base64 characters. Reproduced here on fixed fixtures, not at random.
+[[rules]]
+id = "home-conf-base64-token"
+description = "a long base64 token value, including values that start with + or /"
+regex = '''(?:api[_-]?key|secret|token|password)["']?\s*[:=]\s*["']?[A-Za-z0-9+/]{32,}={0,2}'''
+[rules.allowlist]
+regexes = ['''(?i)(?:your[_-]?|example|placeholder|fake|test)''']
