@@ -10,19 +10,27 @@ tracker is a lightweight control loop, not a second project plan.
 
 ## Arm
 
-Anchor the reminder to the message or thread that owns the work:
+Send the tracker pass at channel top level, then anchor the reminder to that
+pass message:
 
 ```sh
 raft reminder schedule \
   --title "Scheduled tracker: <current work>" \
   --repeat every:30m \
-  --channel "<channel-or-thread>" \
+  --channel "<owning-channel>" \
   --message-id "<anchor-message-id>" \
   --tz Asia/Shanghai
 ```
 
 Use one reminder for the active work item. Update its title or cadence when the
 work changes. Cancel it only when the work is done or explicitly paused.
+
+The tracker pass is a channel-level project artifact, not ordinary chat. Keep
+the pass at channel top level so the board has one discoverable current
+snapshot. Put member replies, follow-ups, and all subsequent discussion in the
+thread attached to that pass. If the channel is otherwise event-only, the
+tracker artifact and card events are the allowed top-level posts; prose belongs
+in a thread.
 
 ## Each wake
 
@@ -49,11 +57,14 @@ Run these checks in order and keep notes brief:
 6. **Compose the pass.** When posting a tracker update, use
    [`templates/project-tracker-message.md`](templates/project-tracker-message.md)
    as the message shape and name that template in the pass. The reader must be
-   able to trace which tracker-message template produced the update.
+   able to trace which tracker-message template produced the update. Post the
+   pass at channel top level and put member replies and discussion in its
+   thread.
 
 **Hourly team-aware graph echo.** Once per hour, post the current workstream graph
-in the owning channel or thread: active lanes, each lane's owner, its next
-observable result, and its gate. This is a team-awareness surface, not a second
+as a channel-level tracker artifact: active lanes, each lane's owner, its next
+observable result, and its gate. Put replies and discussion in that pass's
+thread. This is a team-awareness surface, not a second
 status system: the 30-minute wakes keep work-item dispositions current, and the hourly
 echo gives every seat the same map without forcing each one to reconstruct it from
 work items and chat. Name lanes, not individual work items, unless one is the lane's
@@ -213,11 +224,12 @@ Do not leave an item indefinitely `in progress` without one of those outcomes.
 
 ## Output
 
-Post one short update in the owning channel or thread only when there is a
-material change, decision, blocker, or required review. Lead with the exit
-state, then the next owner and action. Include the concrete task-track
-disposition when a work item moved, stalled, landed, or became blocked. Do not paste
-routine command logs. Use and name
+Post one short tracker pass at channel top level only when there is a material
+change, decision, blocker, or required review. Put member replies and
+discussion in the tracker pass's thread. Lead with the exit state, then the next
+owner and action. Include the concrete task-track disposition when a work item
+moved, stalled, landed, or became blocked. Do not paste routine command logs.
+Use and name
 [`templates/project-tracker-message.md`](templates/project-tracker-message.md)
 as the template for the pass, especially when it needs member-written progress
 or a silent member needs follow-up. The pass's `Workstreams` section has one row

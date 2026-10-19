@@ -7,6 +7,11 @@ member to answer for itself, not a substitute for the member's reply.
 Keep the normal pass short. Fill only the sections that changed; retain the
 member request whenever a member is named on a workstream row.
 
+Post the pass at channel top level. It is a project artifact and the stable
+anchor for the reminder. Member replies, follow-ups, and discussion belong in
+the thread attached to that pass. In an event-only channel, keep the tracker
+pass and card events at top level and move all prose to the thread.
+
 ## Scheduled pass
 
 ```text
@@ -29,7 +34,7 @@ gate:   <running: which gate and whose push | idle>
 | --- | --- | --- | --- | --- | --- |
 | <bounded outcome or workstream> | @<member> | <on track | unconfirmed | stale | blocked | done> | <result> | <commit/ref/command> | <gate> |
 
-**Members named above: reply here now with one line of your own progress** —
+**Members named above: reply in this message's thread now with one line of your own progress** —
 what you closed, what is open, and the one thing you are waiting on. A
 workstream row is not closed by the tracker describing you; it is closed by you
 saying where it stands.
