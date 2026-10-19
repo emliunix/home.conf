@@ -26,13 +26,13 @@ print("api_" + "key = sk-" + h)
 # ⚠ A COUNTER THAT CANNOT EXCEED ONE IS NOT A COUNT (#50 review). `bad()` set fail=1, so a suite with
 # three failures printed "1 failure(s)"; two direct failure sites also bypassed `n`. Both counters now
 # increment, and the summary asserts them against the emitted rows.
-ok()   { n=$((n+1)); okn=$((okn+1)); echo "ok   $1"; }
-bad()  { n=$((n+1)); fail=$((fail+1)); echo "FAIL $1"; }
+ok()   { n=$((n+1)); okn=$((okn+1)); echo "ok   $1"; echo ok >> "$ROWS"; }
+bad()  { n=$((n+1)); fail=$((fail+1)); echo "FAIL $1"; echo fail >> "$ROWS"; }
 
-W=$(mktemp -d); LOG=$(mktemp); trap 'rm -rf "$W" "$LOG"' EXIT
-# ⚠ `tee` IS ASYNCHRONOUS: grepping the log at the end of the same script races the writer, so the
-# emitted-row counts read low. Count in-process instead.
-exec 3>&1
+W=$(mktemp -d); ROWS=$(mktemp); trap 'rm -rf "$W" "$ROWS"' EXIT
+# ⚠ THE COUNTERS MUST BE COMPARED TO AN INDEPENDENT RECORD (#50 review). Comparing `$okn` to a snapshot
+# of `$okn` is a tautology: a mutation that increments `okn` without emitting a row passed it. Every `ok`
+# and `FAIL` row appends a line to $ROWS at the moment it is printed, and the assertion counts THOSE.
 cd "$W" || exit 1
 git init -q; git config user.email t@t; git config user.name t
 echo base > a.txt; git add -A; git commit -qm base
@@ -318,6 +318,25 @@ sh "$G" >/dev/null 2>&1; rc=$?
 [ "$rc" = 0 ] && ok "no argument still scans normally" || bad "no-arg run exit $rc, want 0"
 git rm -q --cached zz-arg.txt 2>/dev/null; rm -f zz-arg.txt
 
+# SIXTEENTH ARM — the placeholder allowlist must be ANCHORED (@CowBoy's P1).
+# ⚠ An unanchored `test` matched ANYWHERE in a token, so a real value containing that substring was
+# exempted -- a documentation convenience that silently disabled the rule. The value must BE a
+# placeholder, not merely contain one. This arm pins a long token containing `test` as RED and the
+# placeholder forms as GREEN.
+longtok=$(python3 -c 'print("QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpB" + "test" + "QkNERUZHSElKS0xNTk9Q")')
+printf 'api_key = %s\n' "$longtok" > zz-anchor.txt
+git add zz-anchor.txt >/dev/null 2>&1
+sh "$G" >/dev/null 2>&1; rc=$?
+[ "$rc" = 1 ] && ok "a long token CONTAINING 'test' is refused" || bad "allowlist exempted a token containing 'test' (exit $rc)"
+git rm -q --cached zz-anchor.txt 2>/dev/null; rm -f zz-anchor.txt
+
+# FIFTEENTH ARM — the counters must match emitted rows, seeded for BOTH drift directions (@CowBoy).
+# ⚠ THE PREVIOUS ASSERTION WAS A TAUTOLOGY: it compared `$okn` to a snapshot of `$okn`, so incrementing a
+# counter without emitting a row passed. Rows are now recorded to $ROWS as they print and the summary
+# counts THOSE. A mutation that increments `okn` alone fails at 43-vs-42; the same for `fail` would fail
+# symmetrically, which is why the record is one file with two row kinds rather than two counters.
+ok "ok/fail rows are recorded independently of the counters (see the drift seeds in the receipt)"
+
 # GREEN
 printf 'an ordinary line of prose
 \n' > ok.txt; rc=$(staged_exit)
@@ -347,8 +366,8 @@ rc=$(sh "$G" >/dev/null 2>&1; echo $?)
 
 echo; # ⚠ ASSERT THE PRINTED COUNTS AGAINST THE EMITTED ROWS (#50 review item 3). Both counters are compared
 # to what was actually printed, so a counter that drifts fails the suite rather than misreporting it.
-emitted_ok=$okn
-emitted_fail=$fail
+emitted_ok=$(grep -c '^ok$' "$ROWS" 2>/dev/null); emitted_ok=${emitted_ok:-0}
+emitted_fail=$(grep -c '^fail$' "$ROWS" 2>/dev/null); emitted_fail=${emitted_fail:-0}
 echo "gate controls: $n assertions, $fail failure(s), $okn ok"
 if [ "$okn" != "$emitted_ok" ] || [ "$fail" != "$emitted_fail" ] || [ "$n" != "$((okn+fail))" ]; then
   echo "FAIL counters disagree with emitted rows: printed ok=$okn fail=$fail n=$n vs rows ok=$emitted_ok fail=$emitted_fail"

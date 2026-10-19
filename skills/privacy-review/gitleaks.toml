@@ -64,4 +64,12 @@ id = "home-conf-base64-token"
 description = "a long base64 token value, including values that start with + or /"
 regex = '''(?:api[_-]?key|secret|token|password)["']?\s*[:=]\s*["']?[A-Za-z0-9+/]{32,}={0,2}'''
 [rules.allowlist]
-regexes = ['''(?i)(?:your[_-]?|example|placeholder|fake|test)''']
+# ⚠ AN UNANCHORED PLACEHOLDER ALLOWLIST IS A DETECTOR BYPASS (#50 review). `test` matched ANYWHERE in a
+# value, so a real token containing the substring would be exempted -- a documentation convenience that
+# silently disables the rule. Anchor to the COMPLETE placeholder forms: the value must be one of them,
+# not merely contain one.
+regexes = [
+  '''(?i)^(?:your[_-]?)?(?:api[_-]?key|secret|token|password)(?:[_-]?(?:here|goes[_-]?here))?$''',
+  '''(?i)^(?:example|placeholder|fake|dummy)[_-]?[a-z0-9_]*$''',
+  '''(?i)^(?:x{4,}|\*{4,}|\.{4,})$''',
+]
