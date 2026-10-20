@@ -78,7 +78,9 @@ sixth:
 - [`templates/repository-hygiene-wake.md`](templates/repository-hygiene-wake.md)
   — a seat that owns the daily repository-hygiene sweep: worktree and branch
   inventory, reachability by tip, cleanup candidates, and a report-only
-  default with a narrow safe-deletion gate.
+  default with a narrow safe-deletion gate; plus the post-release sweep
+  (provisional inventory, owner claims, removal-time gate, separate yes for
+  server branches).
 - [`templates/project-tracker-message.md`](templates/project-tracker-message.md)
   — the scheduled pass message: board rows, an explicit request for every named
   member to report its own progress, and the three-step follow-up when a member

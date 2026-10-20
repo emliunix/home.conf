@@ -216,6 +216,49 @@ remote target, or candidate has an unstated owner or an unreadable state that
 prevents disposition. A sweep that finds no dangling object is done; a sweep
 that cannot inspect a candidate is blocked, not clean.
 
+## Post-release sweep
+
+The same seat runs once at the close of a release, across every repository the
+release touched. It differs from the daily wake in who decides and when.
+
+1. **Inventory while the release is open; act after it closes.** Publish the
+   inventory as a revisable document (one revision per change, not a new table
+   in chat) and mark it provisional: release-train branches and worktrees can
+   change disposition at closure. Freeze the baseline (deployed refs, image or
+   deployment ids, open holds) and remove nothing until the owner declares the
+   release closed or explicitly says to clean.
+2. **Owners claim their rows.** Group rows by likely owner so each one can find
+   theirs: first the worktree or branch name's agent prefix, then the tip
+   commit's author. A host's default git identity names a machine, not an owner;
+   list those rows as unattributed. Each owner answers per row with one word,
+   `active` (name the card), `merge-ready`, or `released`. A row without an
+   answer stays. A `released` word is a disposition, not cleanup permission.
+3. **Re-run the gate at removal time, per object, dry run first.** Read the
+   target live immediately before acting, retrying a failed read before calling
+   the repository `unconfirmed`. Repeat the ancestry, clean-tree,
+   ignored-file, lock, prunable, and `lsof +D` checks on each object as it is
+   removed; the inventory's earlier reading is not evidence. Allow-list the
+   ignored paths that may go with a worktree (dependency and build caches, and a
+   symlink to a credentials file outside the tree, whose target survives);
+   anything else ignored, such as evidence under a scratch directory, keeps the
+   worktree. Remove worktrees before deleting the branches they hold.
+4. **Superseded is not merged.** A branch whose work reached the target through
+   different commits, or only by patch equivalence, is refused by
+   `git branch -d`, and that refusal stands. Deleting it is a separate owner act
+   naming the replacing commit; this sweep does not substitute `-D`.
+5. **One remote, one row family.** A second remote that points at the same
+   repository (for example the same URL over SSH) duplicates every branch as a
+   stale cached ref. Report it once and drop it with `git remote prune <name>`
+   in the checkout that owns it; that deletes nothing on the server.
+6. **Remote branches need their own yes.** After local cleanup, ask the owner
+   separately before deleting server branches, and list only those whose tips
+   are reachable from the target, so each can be recreated from it.
+
+The receipt lists every removed or deleted object with its tip, every refused
+object with the gate's reason, and every object deliberately untouched (active,
+unclaimed, shared checkouts, stashes). Publish it as the next revision of the
+inventory.
+
 ## Schedule
 
 When this seat is active, anchor the reminder to the owning work thread. Keep the
