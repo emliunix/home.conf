@@ -1,0 +1,35 @@
+# home.conf's follow-up file contract: the `draft-followup` shape `flow-grill-review` §3 defines
+# for review sweeps and `flow-retro` §4 verdict 2 writes. Units of findings, no three heads, no
+# obligation until picked up, so none of home.design's head constraints apply. What is checked:
+# the one status word, and that every reference resolves (the back-pointer to the review or
+# retro entry included). Selected by the `-followup.md` name (design/00-design-file-guide.md).
+schema_version: 2
+kind: verification-module
+module: home.design-followup
+extends: [doc-verify:references]
+params:
+  statuses: ['draft-followup']
+rules:
+  top(D, S): core.section(D, S, _), core.depth(D, S, 2)
+  status_section(D, S): top(D, S), core.heading(D, S, 'Status')
+  has_status_word(D): core.meta(D, status, _)
+  one_word_status(D): has_status_word(D), core.meta(D, status_words, '1')
+constraints:
+  followup-has-status-section:
+    forall: core.meta(D, kind, 'design-followup')
+    require: status_section(D, S)
+    severity: error
+    message: "{D} has no '## Status' section"
+    repair: "Add '## Status' whose first line is draft-followup."
+  followup-status-is-one-word:
+    forall: status_section(D, S)
+    require: one_word_status(D)
+    severity: error
+    message: "{D}: the first line under '## Status' is not one status word"
+    repair: "Put draft-followup alone on the first line under '## Status'."
+  followup-status-in-vocabulary:
+    forall: core.meta(D, status, W)
+    require: W in $statuses
+    severity: error
+    message: "{D}: status '{W}' is not one of {statuses}"
+    repair: "A follow-up file's status is draft-followup; a unit picked up becomes a new design."

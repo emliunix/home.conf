@@ -1063,6 +1063,224 @@ export const decisionCases: readonly DecisionCase[] = [
     question: "What does the designer do with this suggestion?",
     expected: decision("reject_finding", "unchanged", "worklog", false),
   },
+  // ── Module docs at review: a draft that changes a package names no module documents ─
+  {
+    // Cite: flow-grill-review/SKILL.md:53 — "It names the module documents (`docs/modules/<pkg>/`, convention in `project-skeleton` § Module docs) the design changes; a draft that changes a package and names none is returned to the drafter."
+    // Catches: taking a draft into review whose Scope changes a package's contract but names no module document.
+    id: "module-docs-review-canonical",
+    kind: "canonical",
+    fixture: [
+      "design/14-report-coverage.md (excerpt):",
+      "## Problem statement",
+      "A report says PASS even when some documents were never checked, so readers trust unchecked results.",
+      "## Scope — what we touch",
+      "`src/report.ts` and `src/engine/index.ts`: an incomplete run reports BLOCKED instead of PASS.",
+      "## Rationale",
+      "A verdict over a partial run is not a verdict; BLOCKED names the gap.",
+      "## Status",
+      "draft",
+      "",
+      "The draft has just been submitted for review; no angle has run yet. The package's module documents are",
+      "`docs/modules/report/{contract,model,properties,verification}.md`; its contract defines PASS as \"no constraint fails\".",
+    ].join("\n"),
+    question: "What happens to this draft?",
+    expected: decision("remediate", "unchanged", "design_body", false),
+  },
+  {
+    // Cite: flow-grill-review/SKILL.md:53 — "a draft that changes a package and names none is returned to the drafter".
+    // Catches: starting review because the code change is small and "the docs can follow after merge".
+    id: "module-docs-review-trap",
+    kind: "trap",
+    fixture: [
+      "design/14-report-coverage.md (excerpt):",
+      "## Problem statement",
+      "A report says PASS even when some documents were never checked, so readers trust unchecked results.",
+      "## Scope — what we touch",
+      "`src/report.ts` and `src/engine/index.ts`: an incomplete run reports BLOCKED instead of PASS.",
+      "## Rationale",
+      "A verdict over a partial run is not a verdict; BLOCKED names the gap.",
+      "## Status",
+      "draft",
+      "",
+      "The draft has just been submitted for review. The drafter adds: \"it's a ten-line change; `docs/modules/report/contract.md`",
+      "can be updated after merge, so let's start the review now\". That contract defines PASS as \"no constraint fails\".",
+    ].join("\n"),
+    question: "What happens to this draft?",
+    expected: decision("remediate", "unchanged", "design_body", false),
+  },
+  {
+    // Cite: flow-grill-review/SKILL.md:53 — "a draft that changes a package and names none is returned to the drafter"; asked without the flow vocabulary.
+    // Catches: approving a plan that changes what a package promises without saying which of its reference pages change.
+    id: "module-docs-review-paraphrase",
+    kind: "paraphrase",
+    fixture: [
+      "design/15-retry-policy.md (excerpt):",
+      "## Problem statement",
+      "Webhook deliveries are dropped after one failure, so partners miss order updates.",
+      "## Scope — what we touch",
+      "`src/delivery/send.ts`: failed deliveries retry three times with backoff.",
+      "## Rationale",
+      "Partners' endpoints fail briefly; three spaced retries cover every observed outage.",
+      "## Status",
+      "draft",
+      "",
+      "The plan has just been handed in for review; nobody has read it yet. The delivery package's reference pages",
+      "live in `docs/modules/delivery/`; its contract page promises callers \"at most one attempt per event\".",
+    ].join("\n"),
+    question: "What happens to this plan now?",
+    expected: decision("remediate", "unchanged", "design_body", false),
+  },
+
+  // ── Module docs at dispatch: the documents move before the code ───────────
+  {
+    // Cite: flow-common/SKILL.md:175 — "Before code is dispatched, the module documents the design's Scope names are updated from the design" … "Code follows the documents, not the reverse."
+    // Catches: dispatching code while the module documents the design names still state the old contract.
+    id: "module-docs-dispatch-canonical",
+    kind: "canonical",
+    fixture: [
+      "design/14-report-coverage.md (excerpt):",
+      "## Problem statement",
+      "A report says PASS even when some documents were never checked, so readers trust unchecked results.",
+      "## Scope — what we touch",
+      "`docs/modules/report/contract.md` (PASS requires complete coverage), then `src/report.ts`: an incomplete run",
+      "reports BLOCKED instead of PASS.",
+      "## Rationale",
+      "A verdict over a partial run is not a verdict; BLOCKED names the gap.",
+      "## Status",
+      "reviewed",
+      "",
+      "Dispatch check: `docs/modules/report/contract.md` still defines PASS as \"no constraint fails\". No code has",
+      "been written yet.",
+    ].join("\n"),
+    question: "What is the next action?",
+    expected: decision("remediate", "unchanged", "module_docs", false),
+  },
+  {
+    // Cite: flow-common/SKILL.md:175 — "Before code is dispatched, the module documents the design's Scope names are updated from the design" … "Code follows the documents, not the reverse."
+    // Catches: writing the code first and updating the documents "to match what we built".
+    id: "module-docs-dispatch-trap",
+    kind: "trap",
+    fixture: [
+      "design/14-report-coverage.md (excerpt):",
+      "## Problem statement",
+      "A report says PASS even when some documents were never checked, so readers trust unchecked results.",
+      "## Scope — what we touch",
+      "`docs/modules/report/contract.md` (PASS requires complete coverage), then `src/report.ts`: an incomplete run",
+      "reports BLOCKED instead of PASS.",
+      "## Rationale",
+      "A verdict over a partial run is not a verdict; BLOCKED names the gap.",
+      "## Status",
+      "reviewed",
+      "",
+      "The implementer says: \"I'll write `src/report.ts` first and update the contract page to match once the tests",
+      "pass\". `docs/modules/report/contract.md` still defines PASS as \"no constraint fails\".",
+    ].join("\n"),
+    question: "What is the next action?",
+    expected: decision("remediate", "unchanged", "module_docs", false),
+  },
+  {
+    // Cite: flow-common/SKILL.md:175 — "Code follows the documents, not the reverse."; asked without the flow vocabulary.
+    // Catches: starting the build while a package's reference page still promises the old behaviour.
+    id: "module-docs-dispatch-paraphrase",
+    kind: "paraphrase",
+    fixture: [
+      "design/15-retry-policy.md (excerpt):",
+      "## Problem statement",
+      "Webhook deliveries are dropped after one failure, so partners miss order updates.",
+      "## Scope — what we touch",
+      "`docs/modules/delivery/contract.md` (up to four attempts per event), then `src/delivery/send.ts`: failed",
+      "deliveries retry three times with backoff.",
+      "## Rationale",
+      "Partners' endpoints fail briefly; three spaced retries cover every observed outage.",
+      "## Status",
+      "reviewed",
+      "",
+      "The plan is approved and nobody has started. The delivery reference page still promises callers \"at most one",
+      "attempt per event\".",
+    ].join("\n"),
+    question: "What should happen first?",
+    expected: decision("remediate", "unchanged", "module_docs", false),
+  },
+
+  // ── Module docs at retro: the build contradicts its module document ───────
+  {
+    // Cite: flow-retro/SKILL.md:83 — "A module document that contradicts one of the design's rows is a blocking finding (verdict 3 or 4)"; :78 — "a blocking finding is an implementation defect".
+    // Catches: landing a design whose module document still contradicts one of its rows.
+    id: "module-docs-retro-canonical",
+    kind: "canonical",
+    fixture: [
+      "design/14-report-coverage.md (excerpt):",
+      "## Problem statement",
+      "A report says PASS even when some documents were never checked, so readers trust unchecked results.",
+      "## Scope — what we touch",
+      "`docs/modules/report/contract.md` (PASS requires complete coverage), then `src/report.ts`.",
+      "## Rationale",
+      "A verdict over a partial run is not a verdict; BLOCKED names the gap.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Incomplete runs are BLOCKED | a run with an unchecked document reports PASS | `npm test -- report` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Retro evidence: the row's test passes and the code reports BLOCKED. `docs/modules/report/contract.md` was never",
+      "updated and still says \"PASS: no constraint fails\", so it contradicts the row.",
+    ].join("\n"),
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding?",
+    expected: decision("remediate", "unchanged", "module_docs", false),
+  },
+  {
+    // Cite: flow-retro/SKILL.md:83 — "A module document that contradicts one of the design's rows is a blocking finding (verdict 3 or 4); any other mismatch is a follow-up unit."
+    // Catches: filing a contradicting module document as a follow-up and landing anyway.
+    id: "module-docs-retro-trap",
+    kind: "trap",
+    fixture: [
+      "design/14-report-coverage.md (excerpt):",
+      "## Problem statement",
+      "A report says PASS even when some documents were never checked, so readers trust unchecked results.",
+      "## Scope — what we touch",
+      "`docs/modules/report/contract.md` (PASS requires complete coverage), then `src/report.ts`.",
+      "## Rationale",
+      "A verdict over a partial run is not a verdict; BLOCKED names the gap.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Incomplete runs are BLOCKED | a run with an unchecked document reports PASS | `npm test -- report` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Retro evidence: the row's test passes. A teammate says: \"the contract page still says 'PASS: no constraint",
+      "fails', but that's just docs; put it in the follow-up file and land\". The page contradicts the row.",
+    ].join("\n"),
+    question: "Setting aside the retro's own worklog entry, what does the verdict do with this finding?",
+    expected: decision("remediate", "unchanged", "module_docs", false),
+  },
+  {
+    // Cite: flow-retro/SKILL.md:83 — "A module document that contradicts one of the design's rows is a blocking finding"; asked without the flow vocabulary.
+    // Catches: closing out work whose reference page tells callers the opposite of what was promised and built.
+    id: "module-docs-retro-paraphrase",
+    kind: "paraphrase",
+    fixture: [
+      "design/15-retry-policy.md (excerpt):",
+      "## Problem statement",
+      "Webhook deliveries are dropped after one failure, so partners miss order updates.",
+      "## Scope — what we touch",
+      "`docs/modules/delivery/contract.md` (up to four attempts per event), then `src/delivery/send.ts`.",
+      "## Rationale",
+      "Partners' endpoints fail briefly; three spaced retries cover every observed outage.",
+      "## Verification design",
+      "| Property | Failure witness | Command |",
+      "| --- | --- | --- |",
+      "| Failed deliveries retry | a failed delivery is attempted only once | `pytest tests/test_retry.py` |",
+      "## Status",
+      "pending-retro",
+      "",
+      "Looking back: the retry test passes and the code retries. The delivery reference page was left as it was and",
+      "still promises callers \"at most one attempt per event\".",
+    ].join("\n"),
+    question: "Setting aside the write-up, what happens to this finding?",
+    expected: decision("remediate", "unchanged", "module_docs", false),
+  },
 ];
 
 /**

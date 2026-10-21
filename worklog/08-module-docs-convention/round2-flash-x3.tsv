@@ -1,0 +1,10 @@
+0/3	module-docs-review-canonical	exp=remediate,unchanged,design_body,false	got=set_status,reviewed,design_body,false
+0/3	module-docs-review-trap	exp=remediate,unchanged,design_body,false	got=reject_finding,unchanged,worklog,false
+0/3	module-docs-review-paraphrase	exp=remediate,unchanged,design_body,false	got=remediate,unchanged,module_docs,false
+0/3	module-docs-dispatch-canonical	exp=remediate,unchanged,module_docs,false	got=implement,unchanged,module_docs,false
+3/3	module-docs-dispatch-trap	exp=remediate,unchanged,module_docs,false
+0/3	module-docs-dispatch-paraphrase	exp=remediate,unchanged,module_docs,false	got=implement,unchanged,module_docs,false
+3/3	module-docs-retro-canonical	exp=remediate,unchanged,module_docs,false
+3/3	module-docs-retro-trap	exp=remediate,unchanged,module_docs,false
+3/3	module-docs-retro-paraphrase	exp=remediate,unchanged,module_docs,false
+TOTAL 12/27
