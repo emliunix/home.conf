@@ -365,3 +365,16 @@ and on pro canonical 6/9 at the moment the design names, with the remaining miss
 dispositioned above. Whether that is "resolved" for the Stage behaviour row, or the
 residual 1-intermittent row keeps the row unprovable, is the owner's ruling; verdict
 2 stands only on the first reading.
+
+## Owner rulings on the re-close (2026-10-21)
+
+The owner ruled on the three questions in the corrections entry above:
+1. **Finding 1 is resolved** for the Stage behaviour row. The residual intermittent
+   miss on `module-docs-review-canonical` is carried by design 12 unit 1, the
+   mechanical check that removes the reliance on the reviewer.
+2. **Round 4 was verdict 3**, a wording round. The round-3 proposal of verdict 4 is
+   withdrawn by ruling.
+3. **The double statement and §0's skip clause wait for design 12 unit 4**; this PR
+   does not edit the skill again.
+
+**Verdict 2 - land with follow-ups** stands; `Status: landed` holds.
