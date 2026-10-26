@@ -14,7 +14,7 @@ description: >-
 
 This skill **composes** other skills — read and follow them; do not restate their internals:
 
-- `flow-common` — the lifecycle vocabulary, role-to-impl mapping, and the implementation gate (round budget, verification, commits, stop condition, dispatch notes)
+- `flow-common` — the lifecycle vocabulary, role-to-impl mapping, **review types and routing** (including the small-change one-review path and the calibrated-absence rule), and the implementation gate (round budget, verification, commits, stop condition, dispatch notes)
 - `goal-file` — the anchored root + funnel the review reconciles against (Covers rows, AC coverage, workstreams/phases). This skill consults it; it does not restate the funnel vocabulary.
 - `flow-retro` — closes the loop at `pending-retro` → `landed`
 - `verification` — the shared evidence levels and risk-selected practice library. Select from it; do not copy its catalog here.

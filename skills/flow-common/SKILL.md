@@ -2,9 +2,11 @@
 name: flow-common
 description: >-
   Use as the shared home for the flow lifecycle: the four-word design status
-  vocabulary, role-to-impl mapping, the implementation gate (round budget,
-  verification, commits, stop condition), user-input context, and dispatch notes.
-  `flow-grill-review` and `flow-retro` reference this skill instead of restating it.
+  vocabulary, role-to-impl mapping, review types and routing (including the
+  small-change one-review path and the calibrated-absence rule), the implementation
+  gate (round budget, verification, commits, stop condition), user-input context, and
+  dispatch notes. `flow-grill-review` and `flow-retro` reference this skill instead
+  of restating it.
 ---
 
 # Flow: Common — lifecycle + implementation machinery
@@ -136,6 +138,83 @@ goal file exists, re-read the design heads and any User inputs. Read relevant
 excerpts with their accompanying context and analysis as defined above.
 
 Review-gate finding defense stays in `flow-grill-review` §3. Breakout adjudication is this skill.
+
+## Review types and routing
+
+**Route by what the artifact IS, not by how much ceremony the change attracted.** Every
+review type answers one question and never establishes the next one. Pick the lightest type
+whose question covers the claim, and move up only when the artifact stops being one claim.
+
+| Type | Deciding question | Default route | Does not establish |
+| --- | --- | --- | --- |
+| **Design review** | does this design state the whole decision, and can it deliver its **Covers** rows? | `flow-grill-review`, one independent reviewer seat | that the code exists or works |
+| **Evidence review** | does the supplied receipt + artifact support the claim it makes? | one reviewer reads the receipt and reproduces only what the receipt says it did not | behavior outside the receipt's population |
+| **Multi-design final review** | do several designs, taken together, still compose into the anchored root? | one final review over named slots, when a workstream spans more than two designs | any single design's detail reviewed at that level |
+| **Source review** | is the exact source object correct, and are its controls non-vacuous? | one reviewer on the pinned object; transfer by proven byte identity when the tree is unchanged | composition, runtime, or a provider |
+| **Local verification** | does the artifact do the thing, on this machine? | the implementer or an operator runs it; not a review gate | any environment other than the one recorded |
+| **Composition review** | do the accepted pieces, joined, still hold their claims? | read the accepted receipt, re-run only a claim the join changes | the composed object's behavior |
+| **Runtime verification** | does the composed object work against a real provider or real dependency? | operator, under an explicit grant | production |
+| **Production observation** | does it behave in production? | operator, after deploy | anything before deploy |
+
+**Ordinary review respects implementer-supplied evidence.** A reviewer reads what the
+implementer supplied and reproduces only a claim that (a) the receipt says it did not verify,
+(b) the join changes, or (c) is a silent-wrong-green claim — an instrument that reports PASS
+on state it never exercised. **Re-running a command the receipt already shows, on an unchanged
+object, is not review; it is duplicated work wearing a verdict.**
+
+**One final review may cover a workstream spanning more than two designs**, over named slots.
+Batching is a property of the workstream, not a shortcut: each slot keeps its own deciding
+question, and a slot that fails sends only that slot back.
+
+**Explicit local verification and post-release production verification are exceptions to the
+batching rule** — they are per-machine and per-environment facts, so neither substitutes for
+the other and neither is covered by a document review.
+
+### Small changes — one quick review, no goal file
+
+Some changes are one decision carried straight through design and code. For those, **a
+recording design file and the implementation land together in a single commit and take one
+quick review of the combined exact object.** Do not split it into design-review → source-review
+layers to satisfy a shape.
+
+Qualify only when all four hold:
+
+1. **the design is bounded** — it states the whole decision, and no second contract decision is
+   hidden inside the code;
+2. **the implementation is its direct, local consequence** — not a different machine reached via
+   the design;
+3. **the witness executes** — the reviewer sees the check run, not only its output;
+4. **design and code remain one claim** — a reviewer can state both in one sentence.
+
+- Such a change **needs no goal file**, and **must not be entered into a sprint goal as a
+  master or batch item**. A note in the sprint's master goal is enough.
+- ⚠ **An amendment to an existing design's normative text is NOT a bounded design for this
+  path** — it takes the critical route, because the failure it can cause is a contradiction
+  inside canon, which no single combined witness detects.
+- If the implementation exposes a second contract decision, or the reviewer cannot state design
+  and code as one claim, **the change returns to the critical path** — and the round it already
+  used is counted, per the round budget.
+- **A later operational card catches what this path misses.** That is the trade the lightweight
+  path is making, and it is deliberate: a cheap review plus a downstream detector is preferred
+  to an expensive review that duplicates the detector.
+
+### Absence claims need a calibrated instrument
+
+A count is not evidence that something is absent. Before any absence verdict, the instrument
+must be shown able to return **"I could not see it"**, with two controls:
+
+- **known-present, of the target phrase in that artifact's own wording** — a bare file hit
+  (`grep -c <word>`) proves the instrument is *alive*, not that its pattern reaches the claim;
+- **known-absent** — a case where the state the search is meant to exclude is known to exist,
+  so a zero there is a real zero rather than a miss.
+
+⚠ **When several artifacts express one rule in local wording, discover each artifact's known
+sentence first.** Do not carry one artifact's phrase into a search over the others — the sentence
+that proves the matcher works in file A is not the sentence file B uses. This is the failure that
+produces a confident zero from a pattern that never matched anything.
+
+An instrument that cannot return "I could not see it" does not support an absence verdict. Say
+**unmeasured**, not absent.
 
 ## Breakout adjudication (architecture redesign)
 
