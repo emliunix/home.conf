@@ -17,8 +17,8 @@ Automated privacy security review for git repositories. Detects sensitive data e
 
 ## Checks Performed
 
-### 1. Sensitive Files in Commits
-Scans git history for committed files with sensitive extensions:
+### 1. Sensitive Files Tracked in Git
+Scans tracked files (including staged additions) for sensitive extensions:
 - `.env`, `.env.local` - Environment configuration
 - `.pem`, `.p12` - Private keys and certificates
 - `*_secrets.*` - Secret configuration
@@ -39,15 +39,18 @@ Checks if local `.env` exists with real credentials (not committed).
 
 ## Quick Start
 
+Stage the files you intend to commit first (`git add`): the scanner reads the
+git index, so staged additions are checked before they enter history.
+
 ```bash
 # Scan current directory
-python privacy_scan.py
+python scripts/privacy_scan.py
 
 # Scan specific repository
-python privacy_scan.py --repo-path /path/to/repo
+python scripts/privacy_scan.py --repo-path /path/to/repo
 
-# Quiet mode (show only issues)
-python privacy_scan.py --quiet
+# Quiet mode (show only issues; exits non-zero when findings exist)
+python scripts/privacy_scan.py --quiet
 ```
 
 ## Report Format
@@ -145,7 +148,7 @@ API_KEY=your-api-key-here
 
 ## Patterns Detected
 
-See [PATTERNS.md](PATTERNS.md) for complete list of sensitive patterns:
+See [references/patterns.md](references/patterns.md) for the complete list of sensitive patterns:
 - Database URLs with credentials
 - API keys (OpenAI, AWS, etc.)
 - Authentication tokens
@@ -197,7 +200,7 @@ Add to GitHub Actions:
 ```yaml
 - name: Privacy Scan
   run: |
-    python -m privacy_scan.scripts.privacy_scan --quiet
+    python scripts/privacy_scan.py --quiet
 ```
 
 ### Custom Patterns

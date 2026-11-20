@@ -34,7 +34,10 @@ def check_sensitive_patterns_in_content(
 
     # Define sensitive patterns with exclusion patterns
     patterns = [
-        (r"postgresql://[^u][^s]+@[^\s]+", "Database URL with credentials"),
+        (
+            r"(?:postgres(?:ql)?|mysql|mongodb|redis)://[^:\s/@]+:[^@\s/]+@[^\s]+",
+            "Database URL with credentials",
+        ),
         (r"(?i)sk-[a-zA-Z0-9]{20,}", "API token (sk-)"),
         (r"AKIA[0-9A-Z]{16}", "AWS access key"),
         (r"Bearer\s+[a-zA-Z0-9._~+/-]{20,}", "Bearer token"),
@@ -81,13 +84,13 @@ def check_committed_files(repo_path: Path) -> dict:
         "key_files": [],
     }
 
-    # List committed files with sensitive extensions
-    files_output = run_git_command(
-        ["ls-tree", "-r", "HEAD", "--name-only"], cwd=repo_path
-    )
-    committed_files = files_output.split("\n")
+    # List tracked files (including staged additions) with sensitive extensions.
+    # `git ls-files` sees the index, so a `.env` that is staged for the next
+    # commit is caught before it enters history.
+    files_output = run_git_command(["ls-files"], cwd=repo_path)
+    tracked_files = files_output.split("\n")
 
-    for file_path in committed_files:
+    for file_path in tracked_files:
         if not file_path:
             continue
 
@@ -189,7 +192,7 @@ def print_report(repo_path: Path):
     print()
 
     # Check for sensitive committed files
-    print("📁 CHECK 1: Sensitive Files in Git")
+    print("📁 CHECK 1: Sensitive Files Tracked in Git")
     print("-" * 70)
     sensitive_files = check_committed_files(repo_path)
     if sensitive_files["sensitive_files"]:
@@ -197,11 +200,11 @@ def print_report(repo_path: Path):
         for f in sensitive_files["sensitive_files"]:
             print(f"   - {f}")
     else:
-        print("✅ No sensitive files committed")
+        print("✅ No sensitive files tracked")
     print()
 
     # Scan for secrets in code
-    print("🔍 CHECK 2: Secrets in Committed Code")
+    print("🔍 CHECK 2: Secrets in Tracked Code")
     print("-" * 70)
     findings = scan_commit_for_secrets(repo_path)
     if findings:
@@ -215,7 +218,7 @@ def print_report(repo_path: Path):
         if len(findings) > 20:
             print(f"\n   ... and {len(findings) - 20} more findings")
     else:
-        print("✅ No secrets found in committed files")
+        print("✅ No secrets found in tracked files")
     print()
 
     # Check .gitignore protection
@@ -285,6 +288,12 @@ def main():
         help="Path to git repository (default: current directory)",
     )
     parser.add_argument(
+        "--repo-path",
+        dest="repo_path_option",
+        default=None,
+        help="Path to git repository (overrides the positional argument)",
+    )
+    parser.add_argument(
         "--quiet",
         "-q",
         action="store_true",
@@ -293,7 +302,7 @@ def main():
 
     args = parser.parse_args()
 
-    repo_path = Path(args.repo_path).resolve()
+    repo_path = Path(args.repo_path_option or args.repo_path).resolve()
 
     # Check if it's a git repository
     if not (repo_path / ".git").exists():
