@@ -65,18 +65,20 @@ export function canonicalCheckoutRoot(root: string): string | undefined {
   }
 }
 
-/** Read the gitignored repo dotenv file. An existing TYPESAFE_API_KEY wins. */
+/** Read the gitignored repo dotenv file. An existing TYPESAFE_API_KEY or TYPESAFE_BASE_URL wins. */
 export function loadDocVerifyEnv(root: string): void {
   const keyMissing = (process.env.TYPESAFE_API_KEY ?? "").trim().length === 0;
+  const baseUrlMissing = processBaseUrl() === undefined;
   const proxyMissing = processProxy() === undefined;
-  if (keyMissing || proxyMissing) {
+  if (keyMissing || baseUrlMissing || proxyMissing) {
     let text: string | undefined;
     try {
       text = credentialText(root);
     } catch (error) {
-      // The key is required to run; the proxy is not. An unreadable file stays fatal for the
-      // key, as it always was, and must not fail a run that already has one -- otherwise a
-      // broken credential symlink would redden a commit that the key alone was sufficient for.
+      // The key is required to run; the proxy and base URL are not. An unreadable file stays
+      // fatal for the key, as it always was, and must not fail a run that already has one --
+      // otherwise a broken credential symlink would redden a commit that the key alone was
+      // sufficient for.
       if (keyMissing) {
         throw error;
       }
@@ -87,6 +89,12 @@ export function loadDocVerifyEnv(root: string): void {
         const apiKey = dotenvValue(text, "API_KEY")?.trim();
         if (apiKey !== undefined && apiKey.length > 0) {
           process.env.TYPESAFE_API_KEY = apiKey;
+        }
+      }
+      if (baseUrlMissing) {
+        const fromFile = fileBaseUrl(text);
+        if (fromFile !== undefined) {
+          process.env.TYPESAFE_BASE_URL = fromFile;
         }
       }
       if (proxyMissing) {
@@ -133,6 +141,27 @@ function processProxy(): string | undefined {
     }
   }
   return undefined;
+}
+
+/** The custom judge base URL already set in the process environment, if any. */
+function processBaseUrl(): string | undefined {
+  const value = (process.env.TYPESAFE_BASE_URL ?? "").trim();
+  return value.length > 0 ? value : undefined;
+}
+
+/** Whether a custom judge base URL is configured in the process or credential file. */
+export function hasJudgeBaseUrl(root: string): boolean {
+  if (processBaseUrl() !== undefined) {
+    return true;
+  }
+  const text = credentialText(root);
+  return text !== undefined && fileBaseUrl(text) !== undefined;
+}
+
+/** The custom judge base URL named by the credential file, if any. */
+function fileBaseUrl(text: string): string | undefined {
+  const value = dotenvValue(text, "TYPESAFE_BASE_URL")?.trim();
+  return value !== undefined && value.length > 0 ? value : undefined;
 }
 
 /**

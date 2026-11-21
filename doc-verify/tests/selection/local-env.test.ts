@@ -169,6 +169,38 @@ describe("local credential file", () => {
     expect(output).toBe("proxy=http://from-process.invalid:2");
   });
 
+  it("reads TYPESAFE_BASE_URL from .env.doc-verify, prefers an explicit env value, and ignores bare BASE_URL", () => {
+    const fromFile = mkdtempSync(path.join(tmpdir(), "doc-verify-env-"));
+    const bareOnly = mkdtempSync(path.join(tmpdir(), "doc-verify-env-"));
+    const saved = environment(["TYPESAFE_API_KEY", "TYPESAFE_BASE_URL", "BASE_URL", "HTTPS_PROXY", "HTTP_PROXY"]);
+    try {
+      writeFileSync(
+        path.join(fromFile, ".env.doc-verify"),
+        "API_KEY=key\nBASE_URL=http://bare.invalid\nTYPESAFE_BASE_URL=http://127.0.0.1:19999/jev\n",
+      );
+      writeFileSync(
+        path.join(bareOnly, ".env.doc-verify"),
+        "API_KEY=key\nBASE_URL=http://bare.invalid\n",
+      );
+      process.env.BASE_URL = "http://process-bare.invalid";
+      loadDocVerifyEnv(fromFile);
+      expect(process.env.TYPESAFE_BASE_URL).toBe("http://127.0.0.1:19999/jev");
+      expect(process.env.BASE_URL).toBe("http://process-bare.invalid");
+
+      delete process.env.TYPESAFE_BASE_URL;
+      loadDocVerifyEnv(bareOnly);
+      expect(process.env.TYPESAFE_BASE_URL).toBeUndefined();
+
+      process.env.TYPESAFE_BASE_URL = "http://explicit.invalid";
+      loadDocVerifyEnv(fromFile);
+      expect(process.env.TYPESAFE_BASE_URL).toBe("http://explicit.invalid");
+    } finally {
+      rmSync(fromFile, { recursive: true, force: true });
+      rmSync(bareOnly, { recursive: true, force: true });
+      restoreEnvironment(saved);
+    }
+  });
+
   it("applies the file during a check and keeps the key out of the report", async () => {
     const root = await fixtureRepository();
     const canary = "local-env-canary-key";

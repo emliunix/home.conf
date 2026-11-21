@@ -1,10 +1,15 @@
 // The judge boundary (design 04 "Trust boundary holds"): without a key the judge is BLOCKED and
 // never faked, a failing judge is BLOCKED without echoing its response, and the pure evaluation
 // program can reach neither a judge, an LLM, nor a tool.
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { createServer } from "node:http";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
 import { createMockJevJudgeBackend } from "deepclause-sdk";
 import { describe, expect, it } from "vitest";
 
-import { productionBackend } from "../../src/judge.js";
+import { judgePrerequisiteGap, productionBackend } from "../../src/judge.js";
 import { runProgram } from "../../src/engine/index.js";
 import { assertRestrictedDml, runPureDml } from "../../src/engine/prolog.js";
 import { BlockedError } from "../../src/types.js";
@@ -64,6 +69,119 @@ describe("semantic boundary", () => {
       rmSync(root, { recursive: true, force: true });
       if (previous !== undefined) {
         process.env.TYPESAFE_API_KEY = previous;
+      }
+    }
+  });
+
+  it("routes requests through TYPESAFE_BASE_URL when set", async () => {
+    let capturedMethod: string | undefined;
+    let capturedUrl: string | undefined;
+    let capturedAuth: string | undefined;
+    const server = createServer((request, response) => {
+      capturedMethod = request.method;
+      capturedUrl = request.url;
+      capturedAuth = request.headers.authorization;
+      request.on("data", () => {});
+      request.on("end", () => {
+        response.writeHead(200, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ model: "jev-1.13.0", answers: { q1: { noul: 0.9 } } }));
+      });
+    });
+    await new Promise<void>((resolve) => {
+      server.listen(0, "127.0.0.1", () => {
+        resolve();
+      });
+    });
+    const address = server.address();
+    if (address === null || typeof address === "string") {
+      throw new Error("server did not bind a TCP port");
+    }
+    const previousKey = process.env.TYPESAFE_API_KEY;
+    const previousBaseUrl = process.env.TYPESAFE_BASE_URL;
+    process.env.TYPESAFE_API_KEY = "test-key";
+    process.env.TYPESAFE_BASE_URL = `http://127.0.0.1:${String(address.port)}/jev/`;
+    try {
+      const result = await productionBackend("jev-1.13.0").complete({
+        state: { evidence: { q1: { text: "body" } } },
+        questions: [{ id: "q1", kind: "verify", instruction: "Holds?" }],
+      });
+      expect(capturedMethod).toBe("POST");
+      expect(capturedUrl).toBe("/jev/v1/systemone");
+      expect(capturedAuth).toBe("Bearer test-key");
+      expect(result.answers[0]?.value).toBe("yes");
+    } finally {
+      await new Promise<void>((resolve) => {
+        server.close(() => {
+          resolve();
+        });
+      });
+      if (previousKey === undefined) {
+        delete process.env.TYPESAFE_API_KEY;
+      } else {
+        process.env.TYPESAFE_API_KEY = previousKey;
+      }
+      if (previousBaseUrl === undefined) {
+        delete process.env.TYPESAFE_BASE_URL;
+      } else {
+        process.env.TYPESAFE_BASE_URL = previousBaseUrl;
+      }
+    }
+  });
+
+  it("blocks invalid TYPESAFE_BASE_URL values without echoing them, and ignores whitespace", () => {
+    const previousKey = process.env.TYPESAFE_API_KEY;
+    const previousBaseUrl = process.env.TYPESAFE_BASE_URL;
+    process.env.TYPESAFE_API_KEY = "test-key";
+    try {
+      for (const bad of ["not a url/secret-canary", "ftp://secret-canary.invalid"]) {
+        process.env.TYPESAFE_BASE_URL = bad;
+        let caught: unknown;
+        try {
+          productionBackend("jev-1.13.0");
+        } catch (error) {
+          caught = error;
+        }
+        expect(caught).toBeInstanceOf(BlockedError);
+        expect((caught as Error).message).not.toContain("secret-canary");
+      }
+      process.env.TYPESAFE_BASE_URL = "   ";
+      expect(() => productionBackend("jev-1.13.0")).not.toThrow();
+    } finally {
+      if (previousKey === undefined) {
+        delete process.env.TYPESAFE_API_KEY;
+      } else {
+        process.env.TYPESAFE_API_KEY = previousKey;
+      }
+      if (previousBaseUrl === undefined) {
+        delete process.env.TYPESAFE_BASE_URL;
+      } else {
+        process.env.TYPESAFE_BASE_URL = previousBaseUrl;
+      }
+    }
+  });
+
+  it("reports missing routing in judgePrerequisiteGap unless TYPESAFE_BASE_URL is configured", () => {
+    const root = mkdtempSync(path.join(tmpdir(), "doc-verify-gap-"));
+    const saved = new Map<string, string | undefined>();
+    for (const name of ["TYPESAFE_BASE_URL", "HTTPS_PROXY", "HTTP_PROXY"]) {
+      saved.set(name, process.env[name]);
+      delete process.env[name];
+    }
+    try {
+      expect(judgePrerequisiteGap(root)).toContain("TYPESAFE_BASE_URL");
+      process.env.TYPESAFE_BASE_URL = "http://127.0.0.1:9";
+      expect(judgePrerequisiteGap(root)).toBeUndefined();
+      delete process.env.TYPESAFE_BASE_URL;
+      writeFileSync(path.join(root, ".env.doc-verify"), "TYPESAFE_BASE_URL=http://127.0.0.1:9\n");
+      expect(judgePrerequisiteGap(root)).toBeUndefined();
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+      for (const [name, value] of saved) {
+        if (value === undefined) {
+          delete process.env[name];
+        } else {
+          process.env[name] = value;
+        }
       }
     }
   });
