@@ -1,5 +1,4 @@
 import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
 import { documentSectionsNote, explainSectionMatch, sectionIdMatches } from "./normalize.js";
 import path from "node:path";
 import { createMockJevJudgeBackend, type JudgeBackend } from "deepclause-sdk";
@@ -14,6 +13,7 @@ import {
   parseConfig,
 } from "./config.js";
 import { fileOracleCache } from "./cache.js";
+import { inventoryExists } from "./dependencies.js";
 import { loadDocVerifyEnv } from "./local-env.js";
 import { judgePrerequisiteGap, productionBackend } from "./judge.js";
 import {
@@ -116,7 +116,7 @@ export async function checkDocuments(options: CheckOptions): Promise<Verificatio
     }
   }
   const selectedIds = options.sections?.map(sectionId);
-  const exists = candidateExists(root, pair.candidateInventory, pair.workingTree);
+  const exists = inventoryExists(root, pair.candidateInventory, pair.workingTree);
   const repository = { exists, files: pair.candidateInventory, gitRefs: pair.gitRefs, resolveSpec: specResolver(root),
     readTarget: targetReader(exists, pair.readCandidateText) };
   const artifacts: ArtifactReport[] = [];
@@ -463,22 +463,6 @@ function gitResolves(root: string, args: string[]): boolean {
   } catch {
     return false;
   }
-}
-
-/**
- * Whether a repository path is a file or directory of the candidate: in its tree (a directory
- * when some file lies under it) or, when the working tree is part of the candidate, on disk.
- */
-function candidateExists(root: string, inventory: readonly string[], workingTree: boolean): (repoPath: string) => boolean {
-  const files = new Set(inventory);
-  const directories = new Set<string>();
-  for (const file of inventory) {
-    for (let index = file.indexOf("/"); index > 0; index = file.indexOf("/", index + 1)) {
-      directories.add(file.slice(0, index));
-    }
-  }
-  return (repoPath) => files.has(repoPath) || directories.has(repoPath)
-    || (workingTree && existsSync(path.join(root, repoPath)));
 }
 
 /** A goal keeps its status as the title suffix: `# <goal> — OPEN|BLOCKED|CLOSED-GREEN (<date>)`. */

@@ -15,10 +15,11 @@ repos:
       - id: document-structure
         name: document structure (whole repository, draft)
         language: system
-        # Backstop for the staged check above: its closure follows links, `§` citations and
-        # code-span paths, but a reference it does not model (a bare file name, a `design/NN`
-        # with no `§`) can still break a document nobody staged. This pass re-checks every
-        # configured document structurally: no judge, about 3 s.
+        # Backstop for the staged check above: its closure covers every repository read a
+        # document's check makes, but some answers come from outside the diff (an untracked
+        # file on disk, Git refs, a `<rev>:<path>` revision) and can still break a document
+        # nobody staged. This pass re-checks every configured document structurally: no judge,
+        # about 3 s.
         entry: node scripts/run-document-contracts.mjs --auto-setup check --all --profile draft --format text
         pass_filenames: false
         files: '(^|/).+\.(md|ya?ml)$|^doc-verify/|^package(-lock)?\.json$|^scripts/run-document-contracts\.mjs$'

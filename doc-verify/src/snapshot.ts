@@ -11,7 +11,7 @@ import remarkParse from "remark-parse";
 import YAML from "yaml";
 import { z } from "zod";
 
-import { citedDocuments } from "./engine/facts.js";
+import { DependencyIndex, inventoryExists, observeDocument } from "./dependencies.js";
 import { canonicalJson, sha256 } from "./hash.js";
 import { DocumentSelector, resolveDocumentSelector } from "./selection.js";
 import { RepoPath, Snapshot, SnapshotEntry, TextBlob, UsageError, repoPath } from "./types.js";
@@ -77,7 +77,7 @@ export async function captureSnapshots(input: {
     const candidateInventory = gitLines(input.root, ["ls-tree", "-r", "--name-only", head]);
     const baselinePaths = filterDocuments(baselineInventory, input.documentRules);
     const candidatePaths = filterDocuments(candidateInventory, input.documentRules);
-    const changed = gitLines(input.root, ["diff", "--name-only", "--diff-filter=ACDMRT", base, head]);
+    const changed = changedFiles(input.root, [base, head]);
     return buildPair({
       root: input.root,
       baselineLabel: base,
@@ -92,6 +92,7 @@ export async function captureSnapshots(input: {
       readBaseline: (file) => readGitBlob(input.root, base, file),
       readCandidate: (file) => readGitBlob(input.root, head, file),
       readCandidateText: (file) => readGitTextSync(input.root, head, file),
+      baselineInventory,
       candidateInventory,
       workingTree: false,
     });
@@ -99,6 +100,7 @@ export async function captureSnapshots(input: {
 
   const headExists = hasHead(input.root);
   const baselinePaths = headExists ? filterDocuments(allTracked, input.documentRules) : [];
+  const headInventory = headExists ? gitLines(input.root, ["ls-tree", "-r", "--name-only", "HEAD"]) : [];
   const readBaseline = (file: RepoPath): Promise<TextBlob> => {
     if (!headExists) {
       throw new UsageError(`no baseline blob for ${file}`);
@@ -108,7 +110,7 @@ export async function captureSnapshots(input: {
 
   if (input.mode.kind === "staged") {
     const candidatePaths = filterDocuments(allTracked, input.documentRules);
-    const changed = gitLines(input.root, ["diff", "--cached", "--name-only", "--diff-filter=ACDMRT"]);
+    const changed = changedFiles(input.root, ["--cached"]);
     return buildPair({
       root: input.root,
       baselineLabel: headExists ? "HEAD" : "empty",
@@ -123,6 +125,7 @@ export async function captureSnapshots(input: {
       readBaseline,
       readCandidate: (file) => readGitBlob(input.root, ":", file),
       readCandidateText: (file) => readGitTextSync(input.root, ":", file),
+      baselineInventory: headInventory,
       candidateInventory: allTracked,
       workingTree: true,
     });
@@ -147,28 +150,32 @@ export async function captureSnapshots(input: {
     readBaseline,
     readCandidate: (file) => readWorkingBlob(input.root, file),
     readCandidateText: (file) => readWorkingTextSync(input.root, file),
+    baselineInventory: input.mode.kind === "all" ? [] : headInventory,
     candidateInventory: workingInventory,
     workingTree: true,
   });
 }
 
-export function affectedClosure(input: {
+interface ClosureInput {
   changed: RepoPath[];
   baselineLinks: ReadonlyMap<RepoPath, RepoPath[]>;
   candidateLinks: ReadonlyMap<RepoPath, RepoPath[]>;
+  /** What each document's check read, on either snapshot (`observeDocument`). */
+  dependencies?: DependencyIndex | undefined;
   allDocuments: RepoPath[];
   invalidatesAll: boolean;
-}): RepoPath[] {
+}
+
+export function affectedClosure(input: ClosureInput): RepoPath[] {
   return affectedSelection(input).artifacts;
 }
 
-function affectedSelection(input: {
-  changed: RepoPath[];
-  baselineLinks: ReadonlyMap<RepoPath, RepoPath[]>;
-  candidateLinks: ReadonlyMap<RepoPath, RepoPath[]>;
-  allDocuments: RepoPath[];
-  invalidatesAll: boolean;
-}): { artifacts: RepoPath[]; impactPaths: Map<RepoPath, RepoPath[]> } {
+/**
+ * The check set of a diff: its changed roots, closed under "a document is re-checked when
+ * anything it depends on is". A document depends on what it links (links, companions, modules)
+ * and on what its check read of the repository (`DependencyIndex`), on either snapshot.
+ */
+function affectedSelection(input: ClosureInput): { artifacts: RepoPath[]; impactPaths: Map<RepoPath, RepoPath[]> } {
   const roots = [...new Set(input.changed)].sort();
   if (input.invalidatesAll) {
     const artifacts = [...input.allDocuments].sort();
@@ -202,7 +209,12 @@ function affectedSelection(input: {
       break;
     }
     const currentPath = paths.get(current) ?? [current];
-    for (const dependent of [...(reverse.get(current) ?? [])].sort()) {
+    const dependents = new Set([
+      ...(reverse.get(current) ?? []),
+      ...(input.dependencies?.hearers(current) ?? []).map(repoPath),
+    ]);
+    dependents.delete(current);
+    for (const dependent of [...dependents].sort()) {
       if (!visited.has(dependent)) {
         visited.add(dependent);
         paths.set(dependent, [...currentPath, dependent]);
@@ -254,6 +266,7 @@ async function buildPair(input: {
   readBaseline: (path: RepoPath) => Promise<TextBlob>;
   readCandidate: (path: RepoPath) => Promise<TextBlob>;
   readCandidateText: (path: string) => string | undefined;
+  baselineInventory: readonly string[];
   candidateInventory: readonly string[];
   workingTree: boolean;
 }): Promise<SnapshotPair> {
@@ -261,16 +274,24 @@ async function buildPair(input: {
     capture(input.baselineLabel, input.baselineInputPaths, input.readBaseline),
     capture(input.candidateLabel, input.candidateInputPaths, input.readCandidate),
   ]);
-  // What a prose citation may bind to: every file either side holds. A file one side deleted
-  // still binds, so the document citing it is re-checked.
-  const files = [...new Set([...input.candidateInventory, ...baseline.entries.keys(), ...candidate.entries.keys()])].sort();
-  const known = new Set(files);
-  const baselineLinks = linkGraph(baseline, input.baselinePaths, input.documentRules, files, known);
-  const candidateLinks = linkGraph(candidate, input.candidatePaths, input.documentRules, files, known);
+  const gitRefs = gitRefNames(input.root);
   const changedRoots = input.changed.map((file) => normalizeRepoPath(input.root, file));
   const allDocuments = [...new Set([...input.baselinePaths, ...input.candidatePaths])].sort();
   const invalidatesAll = changedRoots.some((file) => input.invalidationPatterns.some((pattern) => minimatch(file, pattern, { dot: true })));
-  const affected = affectedSelection({ changed: changedRoots, baselineLinks, candidateLinks, allDocuments, invalidatesAll });
+  const baselineLinks = linkGraph(baseline, input.baselinePaths, input.documentRules);
+  const candidateLinks = linkGraph(candidate, input.candidatePaths, input.documentRules);
+  // Each side's reads are observed against that side's own tree, as its check would answer them:
+  // the baseline's are what the last verdict depended on, the candidate's what the next one will.
+  const baselineTree = { files: input.baselineInventory, exists: inventoryExists(input.root, input.baselineInventory, false) };
+  const candidateTree = { files: input.candidateInventory, exists: inventoryExists(input.root, input.candidateInventory, input.workingTree) };
+  const dependencies = new DependencyIndex(baselineTree, candidateTree);
+  // When every document is already a root the closure is every document, and nothing is observed.
+  const roots = new Set(changedRoots);
+  if (!invalidatesAll && !allDocuments.every((file) => roots.has(file))) {
+    observeSnapshot(dependencies, baseline, input.baselinePaths, { ...baselineTree, gitRefs });
+    observeSnapshot(dependencies, candidate, input.candidatePaths, { ...candidateTree, gitRefs });
+  }
+  const affected = affectedSelection({ changed: changedRoots, baselineLinks, candidateLinks, dependencies, allDocuments, invalidatesAll });
   return {
     baseline,
     candidate,
@@ -281,7 +302,7 @@ async function buildPair(input: {
     candidatePaths: affected.artifacts,
     candidateInventory: input.candidateInventory,
     workingTree: input.workingTree,
-    gitRefs: gitRefNames(input.root),
+    gitRefs,
   };
 }
 
@@ -304,12 +325,25 @@ async function capture(label: string, paths: RepoPath[], reader: (path: RepoPath
   return { id: sha256(canonicalJson(identity)), label, entries };
 }
 
+/** Record what each present document's check reads of the snapshot's tree. */
+function observeSnapshot(
+  index: DependencyIndex,
+  snapshot: Snapshot,
+  documentPaths: RepoPath[],
+  tree: { files: readonly string[]; exists: (repoPath: string) => boolean; gitRefs: readonly string[] },
+): void {
+  for (const file of documentPaths) {
+    const entry = snapshot.entries.get(file);
+    if (entry !== undefined && !("deleted" in entry)) {
+      index.add(file, observeDocument({ path: file, markdown: entry.content, ...tree }));
+    }
+  }
+}
+
 function linkGraph(
   snapshot: Snapshot,
   documentPaths: RepoPath[],
   documentRules: DocumentReferenceRule[],
-  files: readonly string[],
-  known: ReadonlySet<string>,
 ): Map<RepoPath, RepoPath[]> {
   const graph = new Map<RepoPath, RepoPath[]>();
   for (const [file, entry] of snapshot.entries) {
@@ -329,9 +363,6 @@ function linkGraph(
     const moduleFiles = (rule?.modules ?? []).flatMap((reference) => referencePath(repoPath("."), reference));
     graph.set(file, [...new Set([
       ...extractMarkdownLinks(file, entry.content),
-      // Prose names a document too (`design/04 §Heading`, a path in a code span); without these
-      // edges a renamed heading or a moved file breaks a document the staged check never reaches.
-      ...citedDocuments(entry.content, { path: file, files, exists: (repoPath) => known.has(repoPath) }).map(repoPath),
       companionPath,
       ...moduleFiles,
       ...(companion === undefined || "deleted" in companion ? [] : extractCompanionDependencies(companion.content)),
@@ -526,6 +557,14 @@ function gitRefNames(root: string): string[] {
   } catch {
     return [];
   }
+}
+
+/**
+ * A diff's changed files. A rename is split into a deletion and an addition (`--no-renames`): the
+ * old path is a changed root too, or a document that names it would not be re-checked.
+ */
+function changedFiles(root: string, diffArgs: string[]): string[] {
+  return gitLines(root, ["diff", "--name-only", "--no-renames", "--diff-filter=ADMT", ...diffArgs]);
 }
 
 function gitLines(root: string, args: string[]): string[] {

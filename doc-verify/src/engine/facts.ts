@@ -44,7 +44,19 @@ export interface DocumentInput {
    * fragments and `§` references are not checked, and nothing is claimed about them.
    */
   readTarget?: (repoPath: string) => string | undefined;
+  /** Hears every question asked of `files`; see `InventoryQuery`. */
+  onInventoryQuery?: (query: InventoryQuery) => void;
 }
+
+/**
+ * A question asked of the file list rather than of one path: how many files have this name, and
+ * which files directly in this directory begin with this prefix (`design/04` is `design/04-*`).
+ * Its answer changes only when a matching file is added or deleted, so the affected closure
+ * re-checks the asking document on exactly those changes.
+ */
+export type InventoryQuery =
+  | { kind: "basename"; name: string }
+  | { kind: "prefix"; directory: string; prefix: string };
 
 /** Why a `<rev>:<path>` reference did not resolve. */
 export type SpecResolution = "ok" | "revision" | "path";
@@ -122,6 +134,7 @@ export function documentFacts(document: DocumentInput): DocumentFacts {
     ...(document.gitRefs === undefined ? {} : { gitRefs: document.gitRefs }),
     ...(document.resolveSpec === undefined ? {} : { resolveSpec: document.resolveSpec }),
     ...(document.readTarget === undefined ? {} : { readTarget: document.readTarget }),
+    ...(document.onInventoryQuery === undefined ? {} : { onInventoryQuery: document.onInventoryQuery }),
   };
   for (const reference of documentReferences(document.markdown, sections, context)) {
     const key = `${reference.section}\u0000${reference.target}\u0000${reference.kind}`;
@@ -197,6 +210,8 @@ export interface ReferenceContext {
   resolveSpec?: SpecResolver;
   /** A repository file's text (memoised by the host); decides `fragment` references. */
   readTarget?: (repoPath: string) => string | undefined;
+  /** Hears every question asked of `files` (the affected closure's record of what was read). */
+  onInventoryQuery?: (query: InventoryQuery) => void;
 }
 
 /** A scheme (`https:`, `mailto:`) or a protocol-relative `//host` makes a link a URL. */
@@ -273,6 +288,7 @@ function shorthandResolves(stem: string, context: ReferenceContext | undefined):
   if (directory === "." || !exists(directory)) {
     return false;
   }
+  context.onInventoryQuery?.({ kind: "prefix", directory, prefix });
   return (context.files ?? []).some(
     (file) => path.posix.dirname(file) === directory && path.posix.basename(file).startsWith(prefix),
   );
@@ -289,7 +305,7 @@ function bareStemResolves(stem: string, context: ReferenceContext | undefined): 
   if (context === undefined || context.exists === undefined) {
     return false;
   }
-  return resolvesTarget(context.path, stem, context.exists) || basenameCount(context.files, stem) === 1;
+  return resolvesTarget(context.path, stem, context.exists) || basenameCount(context, stem) === 1;
 }
 
 /** Whether a code span is a line locator on any of the stems above. */
@@ -477,13 +493,15 @@ function spanKind(value: string, context: ReferenceContext | undefined): Documen
   if (exists === undefined || context === undefined) {
     return "path";
   }
-  return resolvesTarget(context.path, value, exists) || basenameCount(context.files, value) === 1 ? "path" : "name";
+  return resolvesTarget(context.path, value, exists) || basenameCount(context, value) === 1 ? "path" : "name";
 }
 
 const basenameIndexes = new WeakMap<readonly string[], Map<string, number>>();
 
 /** How many tracked files have this file name. */
-function basenameCount(files: readonly string[] | undefined, name: string): number {
+function basenameCount(context: ReferenceContext | undefined, name: string): number {
+  context?.onInventoryQuery?.({ kind: "basename", name });
+  const files = context?.files;
   if (files === undefined) {
     return 0;
   }
@@ -515,7 +533,7 @@ export function referenceResolves(reference: DocumentReference, context: Referen
   if (resolvesTarget(context.path, reference.target, context.exists)) {
     return true;
   }
-  return reference.kind !== "link" && !reference.target.includes("/") && basenameCount(context.files, reference.target) > 0;
+  return reference.kind !== "link" && !reference.target.includes("/") && basenameCount(context, reference.target) > 0;
 }
 
 /**
@@ -710,37 +728,12 @@ export function sectionReferences(markdown: string, sections: Section[], context
   return scanSectionReferences(markdown, sections, context, context.exists ?? ((repoPath: string): boolean => read(repoPath) !== undefined));
 }
 
-/**
- * The documents this one names in prose, for the affected closure: each `.md` file a `§` citation
- * binds to, and each repository path a code span names (`DocumentReference` kind `path`). A target
- * is not read: binding needs only `exists` and `files`, so a renamed heading or a deleted file
- * still leaves its edge. Markdown links are the link graph's own (`extractMarkdownLinks`).
- */
-export function citedDocuments(markdown: string, context: ReferenceContext & { exists: (repoPath: string) => boolean }): string[] {
-  const cited = new Set<string>();
-  const { readTarget: _readTarget, ...unread } = context;
-  scanSectionReferences(markdown, [], unread, context.exists, (repoPath) => cited.add(repoPath));
-  for (const reference of documentReferences(markdown, [], unread)) {
-    if (reference.kind === "path") {
-      const repoPath = resolveTargetPath(context.path, reference.target, context.exists);
-      if (repoPath !== undefined) {
-        cited.add(repoPath);
-      }
-    }
-  }
-  return [...cited].sort();
-}
-
-/**
- * `sectionReferences` without the guard: `onCite` hears every document a `§` citation binds to,
- * before its headings are read (so it hears it even when nothing can be read).
- */
+/** `sectionReferences` without the guard. */
 function scanSectionReferences(
   markdown: string,
   sections: Section[],
   context: ReferenceContext,
   exists: (repoPath: string) => boolean,
-  onCite?: (repoPath: string) => void,
 ): SectionReference[] {
   const tree = unified().use(remarkParse).parse(markdown);
   const metadataEnd = frontMatterEnd(markdown);
@@ -930,6 +923,7 @@ function scanSectionReferences(
         offset: match.index,
         text: match[0],
         resolve: () => {
+          context.onInventoryQuery?.({ kind: "prefix", directory: "design", prefix: `${match[1] ?? ""}-` });
           const matches = (context.files ?? []).filter((file) => file.startsWith(prefix) && file.endsWith(".md") && !file.slice(prefix.length).includes("/"));
           return matches.length === 1 ? matches[0] : undefined;
         },
@@ -963,7 +957,6 @@ function scanSectionReferences(
     if (bound === undefined || !/\.md$/i.test(bound.repoPath)) {
       continue;
     }
-    onCite?.(bound.repoPath);
     const headings = readHeadings(context, bound.repoPath);
     if (headings === undefined) {
       continue;
