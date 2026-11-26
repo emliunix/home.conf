@@ -319,6 +319,18 @@ keeps deletions, renames, retargeted references, and baseline-only edges in the
 affected set. Surviving artifacts use candidate bytes. Deleted artifacts produce
 tombstone facts for reference and ownership rules.
 
+The check set is built from the diff, not guessed from reference syntax. The
+diff's changed files are the roots; a rename counts as its deleted and its added
+path. A document's edges are its links, companion and modules, plus what its own
+fact extraction reads of the repository. That extraction runs against each
+snapshot's tree, and every question it asks is recorded: a path's existence or
+text, the count of a file name, the files beginning with a prefix. A changed file
+re-checks a document when it is a path the document read, or when it changes the
+answer to a question the document asked: a directory's existence, a count read as
+none, one or several, or the one match itself. The check is a function of the
+document and those answers, so a document left out of the set reaches the same
+verdict.
+
 Each provider captures every input blob once before parsing. The snapshot ID is
 the SHA-256 of canonical sorted tuples containing repository-relative path,
 blob hash, and deletion marker.
@@ -479,12 +491,13 @@ it is given no arguments, builds a missing `dist/`, and with `--auto-setup`
 installs dependencies in a fresh worktree (#310, #312).
 
 The second, `document-structure`, runs the same wrapper with
-`check --all --profile draft --format text`. The closure follows a changed file
-to the documents that link to it, cite it with `§`, or name its path in a code
-span; a reference the closure does not model (a bare file name, a `design/NN`
-with no `§`) can still break a document nobody staged, so this pass re-checks
-every configured document structurally, without the judge. CI runs the same whole-repository
-check, and `.pre-commit-hooks.yaml` publishes it for consumers to opt into.
+`check --all --profile draft --format text`. The closure covers every repository
+read a document's check makes against the snapshot trees. A few answers come from
+outside the diff, though: an untracked file on disk, the Git refs, a revision a
+`<rev>:<path>` names. Those can still break a document nobody staged, so this pass
+re-checks every configured document structurally, without the judge. CI runs the
+same whole-repository check, and `.pre-commit-hooks.yaml` publishes it for
+consumers to opt into.
 
 Root `.pre-commit-hooks.yaml` publishes `document-contracts` as a Node hook from
 this repository package. An adopting project pins an immutable `home.conf`

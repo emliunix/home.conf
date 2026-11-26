@@ -98,7 +98,68 @@ describe("snapshot and graph behavior", () => {
     expect(pair.candidatePaths).toEqual([repoPath("docs/a.md"), repoPath("docs/cites.md"), repoPath("docs/names.md")]);
     expect(pair.impactPaths.get(repoPath("docs/cites.md"))).toEqual([repoPath("docs/a.md"), repoPath("docs/cites.md")]);
   });
+
+  it("splits a rename into its deleted and added paths, so a document linking the old name is re-checked", async () => {
+    const root = await repository({
+      "docs/a.md": "# A\n\nSee [b](b.md).\n",
+      "docs/b.md": "# B\n\nBody.\n",
+      "docs/other.md": "# Other\n\nNothing here.\n",
+    });
+    git(root, ["mv", "docs/b.md", "docs/c.md"]);
+    const pair = await stagedPair(root);
+    expect(pair.changedRoots).toEqual([repoPath("docs/b.md"), repoPath("docs/c.md")]);
+    expect(pair.candidatePaths).toEqual([repoPath("docs/a.md"), repoPath("docs/c.md")]);
+    expect(pair.impactPaths.get(repoPath("docs/a.md"))).toEqual([repoPath("docs/b.md"), repoPath("docs/a.md")]);
+  });
+
+  it("re-checks a document whose bare file name gains a second owner, not one whose file only changed bytes", async () => {
+    const root = await repository({
+      "docs/names.md": "# Names\n\nThe IR lives in `ir.py`.\n",
+      "docs/other.md": "# Other\n\nNothing here.\n",
+      "pkg/ir.py": "x = 1\n",
+    });
+    await writeFile(path.join(root, "pkg/ir.py"), "x = 2\n");
+    git(root, ["add", "pkg/ir.py"]);
+    expect((await stagedPair(root)).candidatePaths).toEqual([]);
+
+    await mkdir(path.join(root, "lib"), { recursive: true });
+    await writeFile(path.join(root, "lib/ir.py"), "y = 1\n");
+    git(root, ["add", "lib/ir.py"]);
+    const pair = await stagedPair(root);
+    expect(pair.candidatePaths).toEqual([repoPath("docs/names.md")]);
+    expect(pair.impactPaths.get(repoPath("docs/names.md"))).toEqual([repoPath("lib/ir.py"), repoPath("docs/names.md")]);
+  });
+
+  it("re-checks a `design/NN §` citation when a second design/NN file makes its binding ambiguous", async () => {
+    const root = await repository({
+      "design/04-rules.md": "# Rules\n\n## Rule\n\nText.\n",
+      "docs/cites.md": "# Cites\n\nAs design/04 §Rule says.\n",
+      "docs/other.md": "# Other\n\nNothing here.\n",
+    });
+    await writeFile(path.join(root, "design/04-rules-followup.md"), "# Followup\n");
+    git(root, ["add", "design/04-rules-followup.md"]);
+    const pair = await stagedPair(root, "{docs,design}/*.md");
+    expect(pair.candidatePaths).toEqual([repoPath("design/04-rules-followup.md"), repoPath("docs/cites.md")]);
+  });
 });
+
+async function repository(files: Record<string, string>): Promise<string> {
+  const root = await mkdtemp(path.join(tmpdir(), "doc-verify-closure-"));
+  for (const [file, content] of Object.entries(files)) {
+    await mkdir(path.join(root, path.dirname(file)), { recursive: true });
+    await writeFile(path.join(root, file), content);
+  }
+  git(root, ["init"]);
+  git(root, ["config", "user.email", "test@example.invalid"]);
+  git(root, ["config", "user.name", "Test"]);
+  git(root, ["add", "."]);
+  git(root, ["commit", "-m", "base"]);
+  return root;
+}
+
+function stagedPair(root: string, pattern = "docs/*.md"): ReturnType<typeof captureSnapshots> {
+  return captureSnapshots({ root, mode: { kind: "staged" }, documentRules: [{ pattern, modules: [] }], invalidationPatterns: [] });
+}
 
 function git(root: string, args: string[]): void {
   execFileSync("git", args, { cwd: root, stdio: "ignore" });
