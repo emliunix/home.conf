@@ -173,7 +173,7 @@ describe("snapshot and graph behavior", () => {
     expect(pair.candidatePaths).toEqual([repoPath("docs/b.md")]);
   });
 
-  it("reports structure.deleted NO-GO for a staged deletion, the verdict a range over the commit gives", async () => {
+  it("warns structure.deleted and passes for a staged deletion, as a range over the commit does", async () => {
     const root = await repository({
       ".doc-verify.yaml": CONFIG,
       "docs/a.md": "# A\n\nBody.\n",
@@ -184,9 +184,11 @@ describe("snapshot and graph behavior", () => {
       artifact.path,
       artifact.verdict,
       artifact.findings.map((finding) => finding.ruleId),
+      artifact.warnings.map((warning) => warning.ruleId),
     ]);
     const staged = await checkDocuments({ root, mode: { kind: "staged" }, profile: "draft", cache: "off" });
-    expect(deleted(staged)).toEqual([["docs/b.md", "NO-GO", ["structure.deleted"]]]);
+    expect(deleted(staged)).toEqual([["docs/b.md", "PASS", [], ["structure.deleted"]]]);
+    expect(staged.verdict).toBe("PASS");
 
     git(root, ["commit", "-q", "-m", "delete b"]);
     const range = await checkDocuments({ root, mode: { kind: "range", range: "HEAD~1...HEAD" }, profile: "draft", cache: "off" });

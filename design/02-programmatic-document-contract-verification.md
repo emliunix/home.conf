@@ -317,7 +317,9 @@ The verifier compares a baseline snapshot with a candidate snapshot. It builds
 the reverse dependency closure over the union of both document graphs. This
 keeps deletions, renames, retargeted references, and baseline-only edges in the
 affected set. Surviving artifacts use candidate bytes. Deleted artifacts produce
-tombstone facts for reference and ownership rules.
+tombstone facts for reference and ownership rules. A deleted configured document
+is reported as a `structure.deleted` warning, not refused: retiring a document is
+allowed (owner decision 2026-11-27).
 
 The check set is built from the diff, not guessed from reference syntax. The
 diff's changed files are the roots; a rename counts as its deleted and its added
