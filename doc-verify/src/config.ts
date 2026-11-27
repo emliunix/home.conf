@@ -84,10 +84,10 @@ export function documentTraceFor(
   return documentSelectorTrace(rules, file);
 }
 
-/** The README section a v1 consumer follows to move a rule onto modules. */
+/** Names the README section (`README.md` §Migrating from v1 rubrics) a v1 consumer follows to move a rule onto modules. */
 export const MIGRATION_HINT = "the v1 rubric reader was removed; replace `verification:` with `modules: [...]` " +
   "naming design-04 verification modules (repository paths or engine libraries such as doc-verify:design); " +
-  "see \"Migrating from v1 rubrics\" in the doc-verify README";
+  "see \"Migrating from v1 rubrics\" in home.conf's README.md";
 
 export function parseConfig(blob: TextBlob): DocVerifyConfig {
   const value: unknown = YAML.parse(blob.content);

@@ -21,7 +21,7 @@ const USAGE = `usage: doc-verify <segments|check|mutate> [options]
   doc-verify check FILE...              check the named documents
   doc-verify check --paths FILE|GLOB... check named files or configured glob matches
   doc-verify check --staged             check documents staged in Git
-  doc-verify check --range A..B         check documents changed in a Git range
+  doc-verify check --range BASE...HEAD  check documents changed in a Git range
   doc-verify check --all                check every configured document
   doc-verify segments DOCUMENT          list a document's sections (--format text|json)
   doc-verify mutate TABLE.yaml          run a mutation table against a live document
