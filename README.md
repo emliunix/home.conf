@@ -10,10 +10,11 @@ pstack links as third-party and read-only. Install it beside these skills; it is
 
 ## doc-verify
 
-`doc-verify` checks Markdown documents against verification modules (design 04,
-`design/04-modular-verification-language.md`). A module is a YAML program of facts over the
-document's section tree, judge-backed oracles, rules and constraints; the engine evaluates it in
-three-valued logic and reports each constraint's population, bindings, proof and repair hint.
+`doc-verify` checks Markdown documents against verification modules
+(`docs/modules/language/contract.md`). A module is a YAML program of facts over the document's
+section tree, judge-backed oracles, rules and constraints; the engine evaluates it in three-valued
+logic (`docs/doc-verify-model.md`) and reports each constraint's population, bindings, proof and
+repair hint.
 
 ```sh
 npm ci && npm run build   # required in every fresh linked worktree (#310)
@@ -28,11 +29,11 @@ node doc-verify/dist/cli.js mutate TABLE.yaml --judge  # include promotion/oracl
 `--profile draft|promotion|auto`, `--section ID` (repeatable; restricts the `selected(D, S)`
 fact), `--format text|json`, `--verbose`, `--no-cache` and `--output PATH`. Exit codes: 0 PASS, 1 NO-GO,
 2 NEEDS-REVIEW, 3 BLOCKED, 64 usage or configuration error, 65 config not in the Git index
-(`--staged`), 66 config missing.
+(`--staged`), 66 config missing, 70 internal error.
 
 The commit hook runs `--profile auto`: drafts get structural checks, anything later asks the
-judge. For a quick commit, `SKIP=document-contracts` and run `--profile draft` by hand (design 02,
-§Snapshots and affected closure).
+judge. For a quick commit, `SKIP=document-contracts` and run `--profile draft` by hand. Which
+documents a commit checks is the affected set (`docs/modules/selection/model.md`).
 
 `mutate` takes one YAML mutation table. Exit 0 only when every scored row is RED, KEPT, or
 GAP-CONFIRMED (SKIPPED judge-leg rows are not scored). BROKEN, WRONG-CASE, GREEN, HARNESS,
@@ -349,7 +350,7 @@ anything runs:
 doc-verify: invalid .doc-verify.yaml: documents[3] (pattern "docs/**/*.md") names a v1
 `verification:` strategy; the v1 rubric reader was removed; replace `verification:` with
 `modules: [...]` naming design-04 verification modules (repository paths or engine libraries
-such as doc-verify:design); see "Migrating from v1 rubrics" in the doc-verify README
+such as doc-verify:design); see "Migrating from v1 rubrics" in home.conf's README.md
 ```
 
 To migrate a rule (design 04 §Migration):

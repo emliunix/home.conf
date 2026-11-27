@@ -9,6 +9,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { checkDocuments, titleStatus } from "../../src/checker.js";
+import { MIGRATION_HINT } from "../../src/config.js";
 import { engineLibraries } from "../../src/engine/index.js";
 import { renderText } from "../../src/report.js";
 import { UsageError } from "../../src/types.js";
@@ -197,8 +198,15 @@ describe("doc-verify check on design-04 modules", () => {
       'invalid .doc-verify.yaml: documents[0] (pattern "design/*.md") names a v1 `verification:` strategy; ' +
       "the v1 rubric reader was removed; replace `verification:` with `modules: [...]` naming design-04 verification " +
       "modules (repository paths or engine libraries such as doc-verify:design); " +
-      'see "Migrating from v1 rubrics" in the doc-verify README',
+      'see "Migrating from v1 rubrics" in home.conf\'s README.md',
     );
+  });
+
+  it("the migration message names a heading README.md has", () => {
+    const heading = /see "([^"]+)" in home\.conf's README\.md/.exec(MIGRATION_HINT)?.[1];
+    expect(heading).toBeDefined();
+    const readme = readFileSync(new URL("../../../README.md", import.meta.url), "utf8");
+    expect(readme.split("\n")).toContain(`### ${heading ?? ""}`);
   });
 
   it("refuses a v1 rule even when it also names modules", async () => {
