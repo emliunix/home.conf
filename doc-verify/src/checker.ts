@@ -477,7 +477,8 @@ function deletedReport(
   impactPath: RepoPath[],
   selectorTrace: ArtifactReport["selectorTrace"],
 ): ArtifactReport {
-  const item = finding(file, undefined, "structure.deleted", "NO-GO", "configured document was deleted");
+  // Owner decision 2026-11-27: deleting a configured document is allowed (a retired design, a
+  // renamed page). It is reported, not refused: a warning, and the artifact passes.
   return {
     path: file,
     artifactKind: rule.artifact_kind,
@@ -488,9 +489,9 @@ function deletedReport(
     sections: [],
     semanticCalls: 0,
     cacheHits: 0,
-    warnings: [],
-    findings: [item],
-    verdict: "NO-GO",
+    warnings: [warning(file, "structure.deleted", "configured document was deleted")],
+    findings: [],
+    verdict: "PASS",
   };
 }
 

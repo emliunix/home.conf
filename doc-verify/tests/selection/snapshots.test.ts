@@ -5,6 +5,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { checkDocuments } from "../../src/checker.js";
 import { affectedClosure, captureSnapshots } from "../../src/snapshot.js";
 import { repoPath } from "../../src/types.js";
 
@@ -108,7 +109,9 @@ describe("snapshot and graph behavior", () => {
     git(root, ["mv", "docs/b.md", "docs/c.md"]);
     const pair = await stagedPair(root);
     expect(pair.changedRoots).toEqual([repoPath("docs/b.md"), repoPath("docs/c.md")]);
-    expect(pair.candidatePaths).toEqual([repoPath("docs/a.md"), repoPath("docs/c.md")]);
+    // The old path is a configured document deleted from the candidate: selected (and reported
+    // deleted), as a range over the same rename selects it.
+    expect(pair.candidatePaths).toEqual([repoPath("docs/a.md"), repoPath("docs/b.md"), repoPath("docs/c.md")]);
     expect(pair.impactPaths.get(repoPath("docs/a.md"))).toEqual([repoPath("docs/b.md"), repoPath("docs/a.md")]);
   });
 
@@ -141,7 +144,76 @@ describe("snapshot and graph behavior", () => {
     const pair = await stagedPair(root, "{docs,design}/*.md");
     expect(pair.candidatePaths).toEqual([repoPath("design/04-rules-followup.md"), repoPath("docs/cites.md")]);
   });
+
+  // Design 02: hook, agent and CI agree. The baseline of `--staged` and `--paths` is HEAD's tree,
+  // not the index, or a document deleted in the index is on neither side and is never reported.
+  it("selects a document deleted in the index as deleted, as a range over the same commit does", async () => {
+    const root = await repository({
+      "docs/a.md": "# A\n\nBody.\n",
+      "docs/b.md": "# B\n\nBody.\n",
+    });
+    git(root, ["rm", "-q", "docs/b.md"]);
+    const staged = await stagedPair(root);
+    expect(staged.candidatePaths).toEqual([repoPath("docs/b.md")]);
+    expect(staged.baseline.entries.has(repoPath("docs/b.md"))).toBe(true);
+    expect(staged.candidate.entries.get(repoPath("docs/b.md"))).toBeUndefined();
+
+    git(root, ["commit", "-q", "-m", "delete b"]);
+    const range = await captureSnapshots({ root, mode: { kind: "range", range: "HEAD~1...HEAD" }, documentRules: [{ pattern: "docs/*.md", modules: [] }], invalidationPatterns: [] });
+    expect(range.candidatePaths).toEqual(staged.candidatePaths);
+  });
+
+  it("selects a named file deleted in the index under --paths, from HEAD's tree", async () => {
+    const root = await repository({
+      "docs/a.md": "# A\n\nBody.\n",
+      "docs/b.md": "# B\n\nBody.\n",
+    });
+    git(root, ["rm", "-q", "docs/b.md"]);
+    const pair = await captureSnapshots({ root, mode: { kind: "paths", paths: ["docs/b.md"] }, documentRules: [{ pattern: "docs/*.md", modules: [] }], invalidationPatterns: [] });
+    expect(pair.candidatePaths).toEqual([repoPath("docs/b.md")]);
+  });
+
+  it("warns structure.deleted and passes for a staged deletion, as a range over the commit does", async () => {
+    const root = await repository({
+      ".doc-verify.yaml": CONFIG,
+      "docs/a.md": "# A\n\nBody.\n",
+      "docs/b.md": "# B\n\nBody.\n",
+    });
+    git(root, ["rm", "-q", "docs/b.md"]);
+    const deleted = (report: Awaited<ReturnType<typeof checkDocuments>>): unknown[] => report.artifacts.map((artifact) => [
+      artifact.path,
+      artifact.verdict,
+      artifact.findings.map((finding) => finding.ruleId),
+      artifact.warnings.map((warning) => warning.ruleId),
+    ]);
+    const staged = await checkDocuments({ root, mode: { kind: "staged" }, profile: "draft", cache: "off" });
+    expect(deleted(staged)).toEqual([["docs/b.md", "PASS", [], ["structure.deleted"]]]);
+    expect(staged.verdict).toBe("PASS");
+
+    git(root, ["commit", "-q", "-m", "delete b"]);
+    const range = await checkDocuments({ root, mode: { kind: "range", range: "HEAD~1...HEAD" }, profile: "draft", cache: "off" });
+    expect(deleted(range)).toEqual(deleted(staged));
+  });
 });
+
+const CONFIG = `schema_version: 1
+kind: document-verification
+documents:
+  - pattern: docs/*.md
+    artifact_kind: design
+    modules: [doc-verify:references]
+invalidation_patterns: [.doc-verify.yaml]
+judge:
+  kind: jev
+  model: jev-1.13.0
+  client_sha256: ce983f8de97d5b30d527a7116f0c49ad3d17e098d2c3f17c9600041260c65dcb
+  attestation_max_age_seconds: 3600
+policy:
+  kind: semantic-boundary
+  version: 1
+  max_evidence_bytes: 12000
+  forbidden_literals: []
+`;
 
 async function repository(files: Record<string, string>): Promise<string> {
   const root = await mkdtemp(path.join(tmpdir(), "doc-verify-closure-"));
