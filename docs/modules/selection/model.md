@@ -20,7 +20,8 @@ refused, naming the declared ones.
 ## Affected set
 
 A run's **changed files** are the diff between baseline and candidate; a rename is its deleted
-path and its added path. The **affected set** is the documents whose verdict a changed file can
+path and its added path. The baseline of `--staged` and `--paths` is `HEAD`'s tree, not the index,
+so a document deleted from the candidate is still a baseline document and is checked as deleted. The **affected set** is the documents whose verdict a changed file can
 change: what references the changed files, not what they reference. A document references a
 file when it links it (a link, its companion, its modules) or when its check reads it. A check's
 reads are recorded by running its fact extraction against each snapshot's tree: a path's

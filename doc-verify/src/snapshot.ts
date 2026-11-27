@@ -99,8 +99,11 @@ export async function captureSnapshots(input: {
   }
 
   const headExists = hasHead(input.root);
-  const baselinePaths = headExists ? filterDocuments(allTracked, input.documentRules) : [];
+  // The baseline is HEAD's tree, not the index: a document deleted in the index is still a
+  // baseline document, so it is captured as deleted on the candidate side, as `--range` does.
   const headInventory = headExists ? gitLines(input.root, ["ls-tree", "-r", "--name-only", "HEAD"]) : [];
+  const baselinePaths = filterDocuments(headInventory, input.documentRules);
+  const baselineInputPaths = inputPaths(headInventory, baselinePaths);
   const readBaseline = (file: RepoPath): Promise<TextBlob> => {
     if (!headExists) {
       throw new UsageError(`no baseline blob for ${file}`);
@@ -117,7 +120,7 @@ export async function captureSnapshots(input: {
       candidateLabel: "index",
       baselinePaths,
       candidatePaths,
-      baselineInputPaths: inputPaths(allTracked, baselinePaths),
+      baselineInputPaths,
       candidateInputPaths: inputPaths(allTracked, candidatePaths),
       changed,
       invalidationPatterns: input.invalidationPatterns,
@@ -142,7 +145,7 @@ export async function captureSnapshots(input: {
     candidateLabel: "working-tree",
     baselinePaths: input.mode.kind === "all" ? [] : baselinePaths,
     candidatePaths,
-    baselineInputPaths: input.mode.kind === "all" ? [] : inputPaths(allTracked, baselinePaths),
+    baselineInputPaths: input.mode.kind === "all" ? [] : baselineInputPaths,
     candidateInputPaths: inputPaths(workingInventory, candidatePaths),
     changed,
     invalidationPatterns: input.invalidationPatterns,
